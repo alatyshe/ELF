@@ -77,9 +77,9 @@ add_subdirectory(
 # ELF games
 
 # Go
-# add_subdirectory(
-#     src_cpp/elfgames/go
-#     ${CMAKE_CURRENT_BINARY_DIR}/elfgames/go)
+add_subdirectory(
+    src_cpp/elfgames/go
+    ${CMAKE_CURRENT_BINARY_DIR}/elfgames/go)
 
 # Checkers
 add_subdirectory(

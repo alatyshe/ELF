@@ -9,8 +9,12 @@
 MODEL=$1
 shift
 
-game=elfgames.checkers.game model=df_pred model_file=elfgames.checkers.df_model3 python3 df_console.py --mode online --keys_in_reply V rv \
-    --use_mcts --mcts_verbose_time --mcts_use_prior --mcts_persistent_tree --load $MODEL \
+game=elfgames.checkers.game \
+model=df_pred \
+model_file=elfgames.checkers.df_model3 \
+python3 df_console.py --mode online --keys_in_reply V rv \
+    --use_mcts --mcts_verbose_time \
+    --mcts_use_prior --mcts_persistent_tree --load $MODEL \
     --server_addr localhost --port 1234 \
     --replace_prefix resnet.module,resnet \
     --no_check_loaded_options \

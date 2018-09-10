@@ -11,6 +11,7 @@ import sys
 
 import torch
 
+# оборачиваем в наш переписанный для терминалаы GameContext
 from console_lib import GoConsoleGTP
 from rlpytorch import Evaluator, load_env
 
@@ -28,6 +29,7 @@ def main():
     }
 
     # Set game to online model.
+    print("\t\t\tENV : ")
     env = load_env(
         os.environ,
         overrides={
@@ -41,26 +43,39 @@ def main():
 
     evaluator = env['evaluator']
 
+    print("ENV : ")
+    for i in env:
+        print(i, "\t : ", env[i])
+    print("\t\t\tGC : ")
     GC = env["game"].initialize()
 
+    print("model_loader : ")
     model_loader = env["model_loaders"][0]
+    
+    print("\t\t\tmodel : ")
     model = model_loader.load_model(GC.params)
 
+    print("\t\t\tmi : ")
     mi = env['mi']
     mi.add_model("model", model)
     mi.add_model("actor", model)
     mi["model"].eval()
     mi["actor"].eval()
 
+    print("\t\t\tconsole : ")
+    # оборачиваем в наш переписанный для терминалаы GameContext
     console = GoConsoleGTP(GC, evaluator)
 
     def human_actor(batch):
+        print("HUMAN : ")
         return console.prompt("", batch)
 
     def actor(batch):
+        print("ACTOR : ")
         return console.actor(batch)
 
     def train(batch):
+        print("TRAIN : ")
         console.prompt("DF Train> ", batch)
 
     evaluator.setup(sampler=env["sampler"], mi=mi)
