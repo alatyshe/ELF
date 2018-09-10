@@ -6,7 +6,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-save=./myserver game=elfgames.go.game model=df_kl model_file=elfgames.go.df_model3 \
+save=./myserver game=elfgames.checkers.game model=df_kl model_file=elfgames.checkers.df_model3 \
     stdbuf -o 0 -e 0 python -u ./train.py \
     --mode train    --batchsize 2048 \
     --num_games 2048    --keys_in_reply V \
@@ -29,5 +29,5 @@ save=./myserver game=elfgames.go.game model=df_kl model_file=elfgames.go.df_mode
     --expected_num_client 496 \
     --selfplay_init_num 0 --selfplay_update_num 0 \
     --eval_num_games 0 --selfplay_async \
-    --lr 0.01    --momentum 0.9 
+    --lr 0.01    --momentum 0.9     
     # 1>> log.log 2>&1 &

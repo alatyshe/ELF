@@ -1,0 +1,50 @@
+Python version: 3.6.6 |Anaconda, Inc.| (default, Jun 28 2018, 17:14:51) 
+[GCC 7.2.0]
+PyTorch version: 0.4.1.post2
+CUDA version 9.0.176
+Conda env: 
+[2018-09-10 08:19:35.900] [rlpytorch.model_loader.load_env] [info] Loading env
+Traceback (most recent call last):
+  File "./train.py", line 144, in <module>
+    main()
+  File "./train.py", line 38, in main
+    env = load_env(os.environ, additional_to_load=additional_to_load)
+  File "/home/ubuntu/arvi_dima/elf/OUR_VERSION/src_py/rlpytorch/model_loader.py", line 228, in load_env
+    game_loader_class = load_module(envs["game"]).Loader
+  File "/home/ubuntu/arvi_dima/elf/OUR_VERSION/src_py/rlpytorch/model_loader.py", line 27, in load_module
+    module = importlib.import_module(mod)
+  File "/home/ubuntu/miniconda3/lib/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 941, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 953, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'elfgames.checkers'
+Python version: 3.6.6 |Anaconda, Inc.| (default, Jun 28 2018, 17:14:51) 
+[GCC 7.2.0]
+PyTorch version: 0.4.1.post2
+CUDA version 9.0.176
+Conda env: 
+[2018-09-10 08:19:49.793] [rlpytorch.model_loader.load_env] [info] Loading env
+Traceback (most recent call last):
+  File "./train.py", line 144, in <module>
+    main()
+  File "./train.py", line 38, in main
+    env = load_env(os.environ, additional_to_load=additional_to_load)
+  File "/home/ubuntu/arvi_dima/elf/OUR_VERSION/src_py/rlpytorch/model_loader.py", line 228, in load_env
+    game_loader_class = load_module(envs["game"]).Loader
+  File "/home/ubuntu/arvi_dima/elf/OUR_VERSION/src_py/rlpytorch/model_loader.py", line 27, in load_module
+    module = importlib.import_module(mod)
+  File "/home/ubuntu/miniconda3/lib/python3.6/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 941, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 994, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 953, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'elfgames.checkers'
