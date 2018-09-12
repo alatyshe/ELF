@@ -70,6 +70,8 @@ void HandicapTable::apply(int handi, Board* board) const {
   }
 }
 
+
+
 ///////////// GoState ////////////////////
 bool GoState::forward(const Coord& c) {
   if (c == M_INVALID) {

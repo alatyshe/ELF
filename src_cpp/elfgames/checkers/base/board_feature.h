@@ -56,6 +56,11 @@ struct BoardHistory {
   }
 };
 
+
+
+
+
+
 class GoState;
 
 class BoardFeature {

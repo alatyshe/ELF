@@ -92,6 +92,14 @@ inline int simple_tt_scoring(const Board& b, std::ostream* oo = nullptr) {
   return black_v - white_v;
 }
 
+
+
+
+
+
+
+
+
 class GoState {
  public:
   GoState() {
