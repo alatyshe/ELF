@@ -53,6 +53,15 @@ struct ResignCheck {
   }
 };
 
+
+
+
+
+
+
+
+
+
 struct Ranking {
   std::vector<uint64_t> counts;
   uint64_t total_count;
@@ -82,6 +91,16 @@ struct Ranking {
     return ss.str();
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 struct WinRateStats {
   uint64_t black_wins = 0, white_wins = 0;

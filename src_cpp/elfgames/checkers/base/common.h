@@ -31,7 +31,7 @@ void error(const char* format, ...);
 #define __STR_EXPAND(tok) #tok
 #define __STR(tok) __STR_EXPAND(tok)
 
-typedef unsigned short Coord;
+typedef int64_t Coord;
 typedef unsigned char Stone;
 
 #define S_EMPTY 0
@@ -41,9 +41,7 @@ typedef unsigned char Stone;
 
 // Two special moves.
 #define M_PASS 0 // (-1, -1)
-#define M_RESIGN 1 // (0, -1)
 // Used when we want to skip and let the opponent play.
-#define M_SKIP 2
 #define M_INVALID 3
 #define M_CLEAR 4
 

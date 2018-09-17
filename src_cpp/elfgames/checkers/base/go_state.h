@@ -19,80 +19,15 @@
 #include "board.h"
 #include "board_feature.h"
 
-class HandicapTable {
- private:
-  // handicap table.
-  std::unordered_map<int, std::vector<Coord>> _handicaps;
+// class HandicapTable {
+//  private:
+//   // handicap table.
+//   std::unordered_map<int, std::vector<Coord>> _handicaps;
 
- public:
-  HandicapTable();
-  void apply(int handi, Board* board) const;
-};
-
-inline std::vector<bool>
-simple_flood_fill(const Board& b, Stone player, std::ostream* oo = nullptr) {
-  std::queue<Coord> q;
-  for (int i = 0; i < BOARD_SIZE; ++i) {
-    for (int j = 0; j < BOARD_SIZE; ++j) {
-      Coord c = OFFSETXY(i, j);
-      if (b._infos[c].color == player) {
-        q.push(c);
-      }
-    }
-  }
-
-  if (oo != nullptr)
-    *oo << "For player " << player2str(player) << ": #stone: " << q.size()
-        << std::endl;
-
-  std::vector<bool> open(BOARD_SIZE * BOARD_SIZE, false);
-  std::vector<bool> f(BOARD_SIZE * BOARD_SIZE, false);
-
-  int counter = 0;
-  while (!q.empty()) {
-    Coord c = q.front();
-    // if (oo != nullptr) *oo << coord2str2(c) << " ";
-    q.pop();
-    f[EXPORT_OFFSET(c)] = true;
-    counter++;
-
-    FOR4(c, _, cc)
-    int offset = EXPORT_OFFSET(cc);
-    if (b._infos[cc].color == S_EMPTY && !open[offset]) {
-      open[offset] = true;
-      q.push(cc);
-    }
-    ENDFOR4
-  }
-
-  if (oo != nullptr)
-    *oo << std::endl
-        << "For player " << player2str(player) << ": territory = " << counter
-        << std::endl;
-  return f;
-}
-
-inline int simple_tt_scoring(const Board& b, std::ostream* oo = nullptr) {
-  // No dead stone considered.
-  // [TODO] Can be more efficient with bitset.
-  // if (oo != nullptr) *oo << "In tt scoring" << endl;
-  std::vector<bool> black = simple_flood_fill(b, S_BLACK, oo);
-  std::vector<bool> white = simple_flood_fill(b, S_WHITE, oo);
-
-  int black_v = 0, white_v = 0;
-  for (size_t i = 0; i < black.size(); ++i) {
-    if (black[i] && !white[i])
-      black_v++;
-    else if (white[i] && !black[i])
-      white_v++;
-  }
-
-  if (oo != nullptr)
-    *oo << "black_v: " << black_v << ", white: " << white_v << std::endl;
-  return black_v - white_v;
-}
-
-
+//  public:
+//   HandicapTable();
+//   void apply(int handi, Board* board) const;
+// };
 
 
 
@@ -105,36 +40,77 @@ class GoState {
   GoState() {
     reset();
   }
-  bool forward(const Coord& c);
-  bool checkMove(const Coord& c) const;
 
-  void setFinalValue(float final_value) {
-    _final_value = final_value;
-    _has_final_value = true;
-  }
-  float getFinalValue() const {
-    return _final_value;
-  }
-  bool HasFinalValue() const {
-    return _has_final_value;
-  }
-
-  void reset();
-  void applyHandicap(int handi);
 
   GoState(const GoState& s)
       : _history(s._history),
-        _board_hash(s._board_hash),
         _moves(s._moves),
         _final_value(s._final_value),
         _has_final_value(s._has_final_value) {
     copyBoard(&_board, &s._board);
   }
 
-  static HandicapTable& handi_table() {
-    return _handi_table;
+
+  void reset() {
+    clearBoard(&_board);
+    _moves.clear();
+    _history.clear();
+    _final_value = 0.0;
+    _has_final_value = false;
   }
 
+  // получаем action и делаем шаг вперед проверяя на валидность
+  bool forward(const Coord& c){
+    // if (c == M_INVALID) {
+    //   throw std::range_error("GoState::forward(): move is M_INVALID");
+    // }
+    // если игра окончена = выходим
+    if (terminated())
+      return false;
+
+
+    // GroupId4 ids;
+    // if (!TryPlay2(&_board, c, &ids))
+    //   return false;
+
+    // Play(&_board, &ids);
+
+// шаги после данного шага
+    // _moves.push_back(c);
+    // _history.emplace_back(_board);
+    // if (_history.size() > MAX_NUM_AGZ_HISTORY)
+    //   _history.pop_front();
+    return true;
+  }
+
+
+  // проверяем валидность хода?
+  bool checkMove(const Coord& c) const {
+    // GroupId4 ids;
+    // if (c == M_INVALID)
+    //   return false;
+    // return TryPlay2(&_board, c, &ids);
+    return true;
+  }
+
+  // устанавливаем финальные awards
+  void setFinalValue(float final_value) {
+    _final_value = final_value;
+    _has_final_value = true;
+  }
+
+
+  // финальная оценка игры
+  float getFinalValue() const {
+    return _final_value;
+  }
+  
+  // закончена ли игра true/false (в плане есть ли финальная оценка)
+  bool HasFinalValue() const {
+    return _has_final_value;
+  }
+
+  // просто борда??
   const Board& board() const {
     return _board;
   }
@@ -143,28 +119,43 @@ class GoState {
   bool justStarted() const {
     return _board._ply == 1;
   }
+
+  // номер шага
   int getPly() const {
     return _board._ply;
   }
+
+  // сдались ли 2-е игроков
   bool isTwoPass() const {
-    return _board._last_move == M_PASS && _board._last_move2 == M_PASS;
+    // return _board._last_move == M_PASS && _board._last_move2 == M_PASS;
+    return false;
   }
 
+  // окончена ли игра
   bool terminated() const {
-    return isTwoPass() || getPly() >= BOARD_MAX_MOVE || _check_superko();
+    // return isTwoPass() || getPly() >= BOARD_MAX_MOVE || _check_superko();
+    return false;
   }
 
+  // Последний шаг первого игрока
   Coord lastMove() const {
     return _board._last_move;
   }
+
+  // Последний шаг второго игрока
   Coord lastMove2() const {
     return _board._last_move2;
   }
+
+  // следующий игрок
   Stone nextPlayer() const {
     return _board._next_player;
   }
 
+
+
   bool moves_since(size_t* next_move_number, std::vector<Coord>* moves) const {
+    // шаги после данного шага
     if (*next_move_number > _moves.size()) {
       // The move number is not right.
       return false;
@@ -177,13 +168,21 @@ class GoState {
     return true;
   }
 
-  uint64_t getHashCode() const {
-    return _board._hash;
-  }
+
+
 
   const std::vector<Coord>& getAllMoves() const {
+    // MY
+    for (int i = 0; i < (int)_moves.size(); i++)
+      std::cout << _moves.at(i) << std::endl;
+    // MY END
+    
     return _moves;
   }
+
+
+
+
   std::string getAllMovesString() const {
     std::stringstream ss;
     for (const Coord& c : _moves) {
@@ -192,6 +191,10 @@ class GoState {
     return ss.str();
   }
 
+
+
+
+  // отображает нашу борду в консоль
   std::string showBoard() const {
     char buf[2000];
     showBoard2Buf(&_board, SHOW_LAST_MOVE, buf);
@@ -199,13 +202,17 @@ class GoState {
         ", nextPlayer: " + (nextPlayer() == S_BLACK ? "Black" : "White") + "\n";
   }
 
+
+
+
+  // оценка для текущего игрока???
   float evaluate(float komi, std::ostream* oo = nullptr) const {
     float final_score = 0.0;
-    if (_check_superko()) {
-      final_score = nextPlayer() == S_BLACK ? 1.0 : -1.0;
-    } else {
-      final_score = (float)simple_tt_scoring(_board, oo) - komi;
-    }
+    // if (_check_superko()) {
+    //   final_score = nextPlayer() == S_BLACK ? 1.0 : -1.0;
+    // } else {
+    //   final_score = (float)simple_tt_scoring(_board, oo) - komi;
+    // }
 
     return final_score;
   }
@@ -223,17 +230,30 @@ class GoState {
     Board::Bits bits;
   };
 
-  std::unordered_map<uint64_t, std::vector<_BoardRecord>> _board_hash;
-
   std::vector<Coord> _moves;
   float _final_value = 0.0;
   bool _has_final_value = false;
 
-  static HandicapTable _handi_table;
-
-  bool _check_superko() const;
-  void _add_board_hash(const Coord& c);
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 struct GoReply {
   const BoardFeature& bf;

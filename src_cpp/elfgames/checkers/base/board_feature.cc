@@ -12,6 +12,12 @@
 #include <utility>
 #include "go_state.h"
 
+// #define S_EMPTY 0
+// #define S_BLACK 1
+// #define S_WHITE 2
+// #define S_OFF_BOARD 3
+
+// проверяет на камень игрока или пустое место на поле
 #define S_ISA(c1, c2) ((c2 == S_EMPTY) || (c1 == c2))
 // For feature extraction.
 // Distance transform
@@ -38,67 +44,33 @@ static void DistanceTransform(float* arr) {
 #undef IDX
 }
 
-// If we set player = 0 (S_EMPTY), then the liberties of both side will be
-// returned.
-bool BoardFeature::getLibertyMap(Stone player, float* data) const {
-  // We assume the output liberties is a 19x19 tensor.
-  /*
-  if (THTensor_nDimension(liberties) != 2) return false;
-  if (THTensor_size(liberties, 1) != BOARD_SIZE) return false;
-  if (THTensor_size(liberties, 2) != BOARD_SIZE) return false;
-  float *data = THTensor_data(liberties);
 
-  int stride = THTensor_stride(liberties, 1);
-  */
-  const Board* _board = &s_.board();
 
-  memset(data, 0, kBoardRegion * sizeof(float));
-  for (int i = 1; i < _board->_num_groups; ++i) {
-    if (S_ISA(_board->_groups[i].color, player)) {
-      int liberty = _board->_groups[i].liberties;
-      TRAVERSE(_board, i, c) {
-        data[transform(c)] = liberty;
-      }
-      ENDTRAVERSE
-    }
-  }
 
-  return true;
-}
 
-bool BoardFeature::getLibertyMap3(Stone player, float* data) const {
-  // We assume the output liberties is a 3x19x19 tensor.
-  // == 1, == 2, >= 3
-  const Board* _board = &s_.board();
 
-  memset(data, 0, 3 * kBoardRegion * sizeof(float));
-  for (int i = 1; i < _board->_num_groups; ++i) {
-    if (S_ISA(_board->_groups[i].color, player)) {
-      int liberty = _board->_groups[i].liberties;
-      TRAVERSE(_board, i, c) {
-        if (liberty == 1)
-          data[transform(c, 0)] = liberty;
-        else if (liberty == 2)
-          data[transform(c, 1)] = liberty;
-        else
-          data[transform(c, 2)] = liberty;
-      }
-      ENDTRAVERSE
-    }
-  }
 
-  return true;
-}
 
+// const GoState&            s_;
+// static constexpr int64_t  kBoardRegion = BOARD_SIZE * BOARD_SIZE;
+// typedef unsigned char Stone;
+// свободная карта?
 bool BoardFeature::getLibertyMap3binary(Stone player, float* data) const {
   // We assume the output liberties is a 3x19x19 tensor.
   // == 1, == 2, >= 3
   const Board* _board = &s_.board();
 
+  // запоняем нулями необходимый нам участок памяти в data
+  // в данном случае это борда + 3 слоя?
   memset(data, 0, 3 * kBoardRegion * sizeof(float));
+
+
   for (int i = 1; i < _board->_num_groups; ++i) {
     if (S_ISA(_board->_groups[i].color, player)) {
       int liberty = _board->_groups[i].liberties;
+    // #define TRAVERSE(b, id, c) \
+    //   for (Coord c = b->_groups[id].start; c != 0; c = b->_infos[c].next) {
+    // #define ENDTRAVERSE }
       TRAVERSE(_board, i, c) {
         if (liberty == 1)
           data[transform(c, 0)] = 1.0;
@@ -140,21 +112,8 @@ bool BoardFeature::getSimpleKo(Stone /*player*/, float* data) const {
   return false;
 }
 
+
 // If player == S_EMPTY, get history of both sides.
-bool BoardFeature::getHistory(Stone player, float* data) const {
-  const Board* _board = &s_.board();
-
-  memset(data, 0, kBoardRegion * sizeof(float));
-  for (int i = 0; i < BOARD_SIZE; ++i) {
-    for (int j = 0; j < BOARD_SIZE; ++j) {
-      Coord c = OFFSETXY(i, j);
-      if (S_ISA(_board->_infos[c].color, player))
-        data[transform(i, j)] = _board->_infos[c].last_placed;
-    }
-  }
-  return true;
-}
-
 bool BoardFeature::getHistoryExp(Stone player, float* data) const {
   const Board* _board = &s_.board();
 
@@ -187,6 +146,25 @@ bool BoardFeature::getDistanceMap(Stone player, float* data) const {
   return true;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 static float* board_plane(float* features, int idx) {
   return features + idx * BOARD_SIZE * BOARD_SIZE;
 }
@@ -196,15 +174,10 @@ static float* board_plane(float* features, int idx) {
 /* darkforestGo/utils/goutils.lua
 extended = {
     "our liberties", "opponent liberties", "our simpleko", "our stones",
-"opponent stones", "empty stones", "our history", "opponent history",
+    "opponent stones", "empty stones", "our history", "opponent history",
     "border", 'position_mask', 'closest_color'
 },
 */
-
-void BoardFeature::extract(std::vector<float>* features) const {
-  features->resize(MAX_NUM_FEATURE * kBoardRegion);
-  extract(&(*features)[0]);
-}
 
 void BoardFeature::extract(float* features) const {
   std::fill(features, features + MAX_NUM_FEATURE * kBoardRegion, 0.0);
@@ -214,19 +187,19 @@ void BoardFeature::extract(float* features) const {
   Stone player = _board->_next_player;
 
   // Save the current board state to game state.
-  getLibertyMap3binary(player, LAYER(OUR_LIB));
-  getLibertyMap3binary(OPPONENT(player), LAYER(OPPONENT_LIB));
-  getSimpleKo(player, LAYER(OUR_SIMPLE_KO));
+  this->getLibertyMap3binary(player, LAYER(OUR_LIB));
+  this->getLibertyMap3binary(OPPONENT(player), LAYER(OPPONENT_LIB));
+  this->getSimpleKo(player, LAYER(OUR_SIMPLE_KO));
 
-  getStones(player, LAYER(OUR_STONES));
-  getStones(OPPONENT(player), LAYER(OPPONENT_STONES));
-  getStones(S_EMPTY, LAYER(EMPTY_STONES));
+  this->getStones(player, LAYER(OUR_STONES));
+  this->getStones(OPPONENT(player), LAYER(OPPONENT_STONES));
+  this->getStones(S_EMPTY, LAYER(EMPTY_STONES));
 
-  getHistoryExp(player, LAYER(OUR_HISTORY));
-  getHistoryExp(OPPONENT(player), LAYER(OPPONENT_HISTORY));
+  this->getHistoryExp(player, LAYER(OUR_HISTORY));
+  this->getHistoryExp(OPPONENT(player), LAYER(OPPONENT_HISTORY));
 
-  getDistanceMap(player, LAYER(OUR_CLOSEST_COLOR));
-  getDistanceMap(OPPONENT(player), LAYER(OPPONENT_CLOSEST_COLOR));
+  this->getDistanceMap(player, LAYER(OUR_CLOSEST_COLOR));
+  this->getDistanceMap(OPPONENT(player), LAYER(OPPONENT_CLOSEST_COLOR));
 
   float* black_indicator = LAYER(BLACK_INDICATOR);
   float* white_indicator = LAYER(WHITE_INDICATOR);
@@ -261,6 +234,7 @@ void BoardFeature::extractAGZ(float* features) const {
         "#history.size() = {}, > {}", history.size(), MAX_NUM_AGZ_HISTORY);
     assert(false);
   }
+
 
   // Save the current board state to game state.
   int i = 0;

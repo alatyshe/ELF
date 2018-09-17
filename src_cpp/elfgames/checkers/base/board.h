@@ -173,7 +173,8 @@ typedef struct {
 
 
 
-
+// #define S_BLACK 1
+// #define S_WHITE 2
 #define OPPONENT(p) ((Stone)(S_WHITE + S_BLACK - (int)(p)))
 #define HAS_STONE(s) (((s) == S_BLACK) || ((s) == S_WHITE))
 #define EMPTY(s) ((s) == S_EMPTY)

@@ -14,7 +14,7 @@
 
 #include "elf/base/extractor.h"
 
-enum SpecialActionType { SA_SKIP = -100, SA_PASS, SA_RESIGN, SA_CLEAR };
+enum SpecialActionType { SA_PASS = -99,  SA_CLEAR };
 
 class GoFeature {
  public:
@@ -49,12 +49,6 @@ class GoFeature {
 
   static void ReplyAction(GoReply& reply, const int64_t* action) {
     switch ((SpecialActionType)*action) {
-      case SA_RESIGN:
-        reply.c = M_RESIGN;
-        break;
-      case SA_SKIP:
-        reply.c = M_SKIP;
-        break;
       case SA_PASS:
         reply.c = M_PASS;
         break;
@@ -84,10 +78,6 @@ class GoFeature {
       const GoStateExtOffline& s,
       float* predicted_value) {
     *predicted_value = s.getPredictedValue(s._state.getPly() - 1);
-  }
-
-  static void extractAugCode(const GoStateExtOffline& s, int* code) {
-    *code = s._bf.getD4Code();
   }
 
   static void extractWinner(const GoStateExtOffline& s, float* winner) {
@@ -191,7 +181,6 @@ class GoFeature {
         .addFunction<int32_t>("move_idx", extractMoveIdx)
         .addFunction<int32_t>("num_move", extractNumMove)
         .addFunction<float>("predicted_value", extractPredictedValue)
-        .addFunction<int32_t>("aug_code", extractAugCode)
         .addFunction<float>("winner", extractWinner)
         .addFunction<float>("mcts_scores", extractMCTSPi)
         .addFunction<int64_t>("offline_a", extractOfflineAction)
@@ -213,9 +202,8 @@ class GoFeature {
         {"num_planes", _num_plane},
         {"our_stone_plane", _our_stone_plane},
         {"opponent_stone_plane", _opponent_stone_plane},
-        {"ACTION_SKIP", SA_SKIP},
         {"ACTION_PASS", SA_PASS},
-        {"ACTION_RESIGN", SA_RESIGN},
+        // {"ACTION_RESIGN", SA_RESIGN},
         {"ACTION_CLEAR", SA_CLEAR},
     };
   }

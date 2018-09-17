@@ -37,16 +37,9 @@ void GoGameTrain::act() {
       if (_state_ext[i]->switchRandomMove(&_rng))
         break;
     }
-
-    _state_ext[i]->generateD4Code(&_rng);
-
-    // elf::FuncsWithState funcs =
-    // client_->BindStateToFunctions({"train"}, &_state_ext);
     funcsToSend.push_back(
         client_->BindStateToFunctions({"train"}, _state_ext[i].get()));
   }
-
-  // client_->sendWait({"train"}, &funcs);
 
   std::vector<elf::FuncsWithState*> funcPtrsToSend(funcsToSend.size());
   for (size_t i = 0; i < funcsToSend.size(); ++i) {

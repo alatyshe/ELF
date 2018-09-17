@@ -27,6 +27,12 @@ GoGameSelfPlay::GoGameSelfPlay(
           "elfgames::go::GoGameSelfPlay-" + std::to_string(game_idx) + "-",
           "")) {}
 
+
+
+
+
+
+
 MCTSGoAI* GoGameSelfPlay::init_ai(
     const std::string& actor_name,
     const elf::ai::tree_search::TSOptions& mcts_options,
@@ -77,6 +83,11 @@ MCTSGoAI* GoGameSelfPlay::init_ai(
   return new MCTSGoAI(opt, [&](int) { return new MCTSActor(client_, params); });
 }
 
+
+
+
+
+
 Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSGoAI* mcts_go_ai, Coord c) {
   auto policy = mcts_go_ai->getMCTSPolicy();
 
@@ -93,6 +104,11 @@ Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSGoAI* mcts_go_ai, Coord c) {
 
   return c;
 }
+
+
+
+
+
 
 Coord GoGameSelfPlay::mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c) {
   float predicted_value = mcts_go_ai->getValue();
@@ -117,6 +133,11 @@ Coord GoGameSelfPlay::mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c) {
   }
   return c;
 }
+
+
+
+
+
 
 void GoGameSelfPlay::finish_game(FinishReason reason) {
   if (!_state_ext.currRequest().vers.is_selfplay() &&
@@ -148,6 +169,11 @@ void GoGameSelfPlay::finish_game(FinishReason reason) {
   _state_ext.restart();
 }
 
+
+
+
+
+
 void GoGameSelfPlay::setAsync() {
   _ai->setRequiredVersion(-1);
   if (_ai2 != nullptr)
@@ -155,6 +181,11 @@ void GoGameSelfPlay::setAsync() {
 
   _state_ext.addCurrentModel();
 }
+
+
+
+
+
 
 void GoGameSelfPlay::restart() {
   const MsgRequest& request = _state_ext.currRequest();
@@ -219,6 +250,11 @@ void GoGameSelfPlay::restart() {
   }
 }
 
+
+
+
+
+
 bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
   if (*reply == RestartReply::UPDATE_COMPLETE)
     return false;
@@ -269,6 +305,32 @@ bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+  // ThreadedDispatcher* dispatcher_ = nullptr;
+  // GameNotifierBase* notifier_ = nullptr;
+  // GoStateExt _state_ext;
+
+  // Sgf _preload_sgf;
+  // Sgf::iterator _sgf_iter;
+
+  // int _online_counter = 0;
+
+  // std::unique_ptr<MCTSGoAI> _ai;
+  // // Opponent ai (used for selfplay evaluation)
+  // std::unique_ptr<MCTSGoAI> _ai2;
+  // std::unique_ptr<AI> _human_player;
+
+  // std::shared_ptr<spdlog::logger> logger_;
+
 void GoGameSelfPlay::act() {
   if (_online_counter % 5 == 0) {
     using std::placeholders::_1;
@@ -288,21 +350,100 @@ void GoGameSelfPlay::act() {
   _online_counter++;
 
   bool show_board = (_options.verbose && _context_options.num_games == 1);
+
+  // GoStateExt _state_ext;
+  // src_cpp/elfgames/go/common/go_state_ext.h
+  // имеет в себе такие переменные:
+  // 
+  //       const int _game_idx;
+  //       int _seq = 0;
+  //!!!!!!!GoState _state;
+  //       Coord _last_move_for_the_game;
+  //       MsgRequest curr_request_;
+  //       std::set<int64_t> using_models_;
+  //       float _last_value;
+  //       ResignCheck _resign_check;
+  //       GameOptions _options;
+  //       std::vector<CoordRecord> _mcts_policies;
+  //       std::vector<float> _predicted_values;
+  //       std::shared_ptr<spdlog::logger> _logger;
   const GoState& s = _state_ext.state();
 
+  // проверка если играет челауек
   if (_human_player != nullptr) {
+    std::cout << "GoGameSelfPlay::act HUMAN PLAYER!" << std::endl;
     do {
       if (s.terminated()) {
         finish_game(FR_ILLEGAL);
         return;
       }
 
+      // src_cpp/elfgames/go/base/board_feature.h
+      // class BoardFeature {
+      //    public:
+      //     enum Rot { NONE = 0, CCW90, CCW180, CCW270 };
+
+      //     BoardFeature(const GoState& s, Rot rot, bool flip);
+      //     BoardFeature(const GoState& s);
+      //     static BoardFeature RandomShuffle(const GoState& s, std::mt19937* rng);
+      //     const GoState& state() const;
+      //     void setD4Group(Rot new_rot, bool new_flip);
+      //     void setD4Code(int code);
+      //     int getD4Code() const;
+      //     std::pair<int, int> Transform(const std::pair<int, int>& p) const;
+      //     std::pair<int, int> InvTransform(const std::pair<int, int>& p) const;
+      //     int64_t coord2Action(Coord m) const;
+      //     Coord action2Coord(int64_t action) const;
+
+      //     void extract(std::vector<float>* features) const;
+      //     void extractAGZ(std::vector<float>* features) const;
+      //     void extract(float* features) const;
+      //     void extractAGZ(float* features) const;
+
+      //    private:
+      //     const GoState& s_;
+      //     Rot _rot = NONE;
+      //     bool _flip = false;
+      //     static constexpr int64_t kBoardRegion = BOARD_SIZE * BOARD_SIZE;
+      //     std::shared_ptr<spdlog::logger> logger_;
+
+      //     int transform(int x, int y) const;
+      //     int transform(Coord m) const;
+      //     int transform(Coord m, int c) const;
+      //     bool getLibertyMap3(Stone player, float* data) const;
+      //     bool getLibertyMap(Stone player, float* data) const;
+      //     bool getLibertyMap3binary(Stone player, float* data) const;
+      //     bool getStones(Stone player, float* data) const;
+      //     bool getSimpleKo(Stone player, float* data) const;
+      //     bool getHistory(Stone player, float* data) const;
+      //     bool getHistoryExp(Stone player, float* data) const;
+      //     bool getDistanceMap(Stone player, float* data) const;
+      //   }
+      // Как я понял это контейнер(BoardFeature) для нашего состояния(GoState), нужен для того, чтобы 
+      // сократить количество вариантов досок(поворачивая ее по разным плоскостям)
       BoardFeature bf(s);
+
+      // src_cpp/elfgames/go/base/go_state.h
+      // Возможные(все) actions при таком состоянии?
+      // Вернее берем состояние и все actions(даже не валидные) и отдаем нашей нейронке для анализа?
+      // struct GoReply {
+      //     const BoardFeature& bf;
+      //     Coord c;
+      //     std::vector<float> pi;
+      //     float value = 0;
+      //     // Model version.
+      //     int64_t version = -1;
+      //     GoReply(const BoardFeature& bf) : bf(bf), pi(BOARD_NUM_ACTION, 0.0) {}
+      //   };
       GoReply reply(bf);
+
+      // Получаем фитбэк исходя из нашего сотояния
       _human_player->act(bf, &reply);
+
+
       // skip the current move, and ask the ai to move.
-      if (reply.c == M_SKIP)
-        break;
+      // if (reply.c == M_SKIP)
+      //   break;
       if (reply.c == M_CLEAR) {
         if (!_state_ext.state().justStarted()) {
           finish_game(FR_CLEAR);
@@ -310,10 +451,11 @@ void GoGameSelfPlay::act() {
         return;
       }
 
-      if (reply.c == M_RESIGN) {
-        finish_game(FR_RESIGN);
-        return;
-      }
+      // if (reply.c == M_RESIGN) {
+      //   finish_game(FR_RESIGN);
+      //   return;
+      // }
+      // Берем наш лучший шаг для текущего сотояния и исполняем его
       // Otherwise we forward.
       if (_state_ext.forward(reply.c)) {
         if (_state_ext.state().isTwoPass()) {
@@ -329,23 +471,43 @@ void GoGameSelfPlay::act() {
           coord2str(reply.c));
     } while (!client_->checkPrepareToStop());
   } else {
+    // Трейним нейронку
+    std::cout << "GoGameSelfPlay::act NOT HUMAN PLAYER!" << std::endl;
     // If re receive this, then we should not send games anymore
     // (otherwise the process never stops)
     if (client_->checkPrepareToStop()) {
       // [TODO] A lot of hack here. We need to fix it later.
+
+      // Юзается этот класс
+      // src_cpp/elf/ai/tree_search/mcts.h
+      // using AI = elf::ai::AIClientT<BoardFeature, GoReply>;
+      // AIClientT(elf::GameClient* client, const std::vector<std::string>& targets)
+      // client_ = elf::GameClient* 
+      // {"actor_black"} = WTF????
       AI ai(client_, {"actor_black"});
+
+      // Как я понял это контейнер(BoardFeature) для нашего состояния(GoState), нужен для того, чтобы 
+      // сократить количество вариантов досок(поворачивая ее по разным плоскастям)
+      // src_cpp/elfgames/go/base/board_feature.h
       BoardFeature bf(s);
+
+      // Контейнер для возможных(всех) actions и текущего состояния?
+      // src_cpp/elfgames/go/base/go_state.h
       GoReply reply(bf);
+
+      // Получаем фитбэк исходя из нашего сотояния
+      // src_cpp/elf/ai/ai.h
       ai.act(bf, &reply);
 
+      // Проверям на окончание игры
       if (client_->DoStopGames())
         return;
+
 
       AI ai_white(client_, {"actor_white"});
       ai_white.act(bf, &reply);
 
-      elf::FuncsWithState funcs = client_->BindStateToFunctions(
-          {"game_start"}, &_state_ext.currRequest().vers);
+      elf::FuncsWithState funcs = client_->BindStateToFunctions({"game_start"}, &_state_ext.currRequest().vers);
       client_->sendWait({"game_start"}, &funcs);
 
       funcs = client_->BindStateToFunctions({"game_end"}, &_state_ext.state());
@@ -376,6 +538,10 @@ void GoGameSelfPlay::act() {
 
   c = mcts_update_info(curr_ai, c);
 
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Отображение доски в терминале при обучении
   if (show_board) {
     logger_->info(
         "Current board:\n{}\n[{}] Propose move {}\n",
@@ -383,12 +549,18 @@ void GoGameSelfPlay::act() {
         s.getPly(),
         elf::ai::tree_search::ActionTrait<Coord>::to_string(c));
   }
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-  const bool shouldResign = _state_ext.shouldResign(&_rng);
-  if (shouldResign && s.getPly() >= 50) {
-    finish_game(FR_RESIGN);
-    return;
-  }
+  // const bool shouldResign = _state_ext.shouldResign(&_rng);
+
+  // Проверка на окончание игр
+
+  // if (shouldResign && s.getPly() >= 50) {
+  //   finish_game(FR_RESIGN);
+  //   return;
+  // }
 
   if (_preload_sgf.numMoves() > 0) {
     if (_sgf_iter.done()) {

@@ -36,6 +36,18 @@ struct MCTSActorParams {
   }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
 class MCTSActor {
  public:
   using Action = Coord;
@@ -68,9 +80,7 @@ class MCTSActor {
   }
 
   // batch evaluate.
-  void evaluate(
-      const std::vector<const GoState*>& states,
-      std::vector<NodeResponse>* p_resps) {
+  void evaluate( const std::vector<const GoState*>& states, std::vector<NodeResponse>* p_resps) {
     if (states.empty())
       return;
 
@@ -127,7 +137,10 @@ class MCTSActor {
     PreEvalResult res = pre_evaluate(s, resp);
 
     if (res == EVAL_NEED_NN) {
+      // оборачиваем в Board Feature
       BoardFeature bf = get_extractor(s);
+
+      
       // GoReply struct initialization
       // members containing:
       // Coord c, vector<float> pi, float v;
@@ -174,11 +187,12 @@ class MCTSActor {
     // RandomShuffle: static
     // All extractor will go through a
     // random symmetry
-    if (params_.rotation_flip)
-      return BoardFeature::RandomShuffle(s, &rng_);
-    else
-      return BoardFeature(s);
+    // if (params_.rotation_flip)
+    //   return BoardFeature::RandomShuffle(s, &rng_);
+    // else
+    return BoardFeature(s);
   }
+
 
   PreEvalResult pre_evaluate(const GoState& s, NodeResponse* resp) {
     resp->q_flip = s.nextPlayer() == S_WHITE;
@@ -251,8 +265,7 @@ class MCTSActor {
     }
   }
 
-  static void pi2response(
-      const BoardFeature& bf,
+  static void pi2response(const BoardFeature& bf,
       const std::vector<float>& pi,
       bool pass_enabled,
       std::vector<std::pair<Coord, float>>* output_pi,
@@ -329,6 +342,16 @@ class MCTSActor {
       *oo << "#Valid move: " << output_pi->size() << std::endl;
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 namespace elf {
 namespace ai {

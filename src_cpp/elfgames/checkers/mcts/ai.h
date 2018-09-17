@@ -37,9 +37,6 @@ struct StateTrait<GoState, Coord> {
   static std::string to_string(const GoState& s) {
     return "tt score (no komi): " + std::to_string(s.evaluate(0));
   }
-  static bool equals(const GoState& s1, const GoState& s2) {
-    return s1.getHashCode() == s2.getHashCode();
-  }
 
   static bool moves_since(
       const GoState& s,

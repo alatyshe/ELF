@@ -96,6 +96,16 @@ struct MsgVersion {
   MsgVersion(int ver = -1) : model_ver(ver) {}
 };
 
+
+
+
+
+
+
+
+
+
+
 enum RestartReply {
   NO_OP,
   ONLY_WAIT,
@@ -105,12 +115,30 @@ enum RestartReply {
   UPDATE_COMPLETE,
 };
 
+
+
+
+
+
+
+
+
+
 struct MsgRestart {
   RestartReply result;
   int game_idx;
   MsgRestart(RestartReply res = NO_OP, int game_idx = -1)
       : result(res), game_idx(game_idx) {}
 };
+
+
+
+
+
+
+
+
+
 
 struct MsgRequest {
   ModelPair vers;
@@ -148,6 +176,16 @@ struct MsgRequest {
     return !(m1 == m2);
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 struct MsgRequestSeq {
   int64_t seq = -1;
@@ -248,6 +286,16 @@ struct MsgResult {
     return res;
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 struct Record {
   MsgRequest request;
@@ -397,6 +445,16 @@ struct ThreadState {
     return ss.str();
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 struct Records {
   std::string identity;

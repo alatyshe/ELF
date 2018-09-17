@@ -58,6 +58,7 @@ class GoGameBase {
  protected:
   elf::GameClient* client_ = nullptr;
   uint64_t _seed = 0;
+  // УДАЛИТЬ !!!!! типу для поворота
   std::mt19937 _rng;
 
   int _game_idx = -1;

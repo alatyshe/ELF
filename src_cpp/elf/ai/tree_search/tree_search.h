@@ -483,12 +483,6 @@ class TreeSearchT {
 
     root->setStateIfUnset([&]() { return new State(root_state); });
 
-    // Check hash code.
-    if (!elf::ai::tree_search::StateTrait<State, Action>::equals(
-            root_state, *root->getStatePtr())) {
-      throw std::range_error(
-          "TreeSearch::Root state is not the same as the input state");
-    }
   }
 
   MCTSResult chooseAction() const {

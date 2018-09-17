@@ -8,21 +8,6 @@
 
 #include "go_state_ext.h"
 
-void replaceAll(
-    std::string& s,
-    const std::string& search,
-    const std::string& replace) {
-  for (size_t pos = 0;; pos += replace.length()) {
-    // Locate the substring to replace
-    pos = s.find(search, pos);
-    if (pos == std::string::npos)
-      break;
-    // Replace by erasing and inserting
-    s.erase(pos, search.length());
-    s.insert(pos, replace);
-  }
-}
-
 std::string GoStateExt::dumpSgf(const std::string& filename) const {
   std::vector<Coord> moves = _state.getAllMoves();
 
@@ -66,13 +51,6 @@ std::string GoStateExt::dumpSgf(const std::string& filename) const {
     if (i < _predicted_values.size()) {
       comments += "PredV: " + std::to_string(_predicted_values[i]); // + "\n";
     }
-    /*
-    if (i < _mcts_policies.size()) {
-        string mcts_info = _mcts_policies[i].info_packed(coord2str);
-        replaceAll(mcts_info, "[", "\\[");
-        replaceAll(mcts_info, "]", "\\]");
-        comments += mcts_info;
-    }*/
 
     ss << "C[" << comments << "]";
   }
@@ -98,13 +76,13 @@ void GoStateExt::showFinishInfo(FinishReason reason) const {
       used_model);
 
   switch (reason) {
-    case FR_RESIGN:
-      _logger->info(
-          "Player {} resigned at {} Resign Thres: {}",
-          player2str(player),
-          _state.getPly(),
-          _resign_check.resign_thres);
-      break;
+    // case FR_RESIGN:
+    //   _logger->info(
+    //       "Player {} resigned at {} Resign Thres: {}",
+    //       player2str(player),
+    //       _state.getPly(),
+    //       _resign_check.resign_thres);
+    //   break;
     case FR_MAX_STEP:
       _logger->info(
           "Ply: {} exceeds thread_state. Restarting the game", _state.getPly());
@@ -134,6 +112,6 @@ void GoStateExt::showFinishInfo(FinishReason reason) const {
   _logger->info(
       "Value: {}, Predicted: {}, ResCheck: {}",
       _state.getFinalValue(),
-      getLastPredictedValue(),
-      _resign_check.info());
+      getLastPredictedValue());
+      // _resign_check.info());
 }

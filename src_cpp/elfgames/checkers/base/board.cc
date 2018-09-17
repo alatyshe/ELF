@@ -20,20 +20,6 @@
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 
 
-uint64_t transform_hash(uint64_t h, Stone s) {
-  switch (s) {
-    case S_EMPTY:
-    case S_OFF_BOARD:
-      return 0;
-    case S_BLACK:
-      return h;
-    case S_WHITE:
-      return (h >> 32) | ((h & ((1ULL << 32) - 1)) << 32);
-    default:
-      return h;
-  }
-}
-
 inline void set_color(Board* board, Coord c, Stone s) {
   Stone old_s = board->_infos[c].color;
   board->_infos[c].color = s;
@@ -45,8 +31,6 @@ inline void set_color(Board* board, Coord c, Stone s) {
 
   uint64_t h = _board_hash[c];
 
-  board->_hash ^= transform_hash(h, old_s);
-  board->_hash ^= transform_hash(h, s);
 }
 
 bool isBitsEqual(const Board::Bits bits1, const Board::Bits bits2) {
@@ -659,7 +643,7 @@ bool TryPlay(const Board* board, int x, int y, Stone player, GroupId4* ids) {
   myassert(ids, "TryPlay: GroupIds4 is nil!");
 
   Coord c = OFFSETXY(x, y);
-  if (c == M_PASS || c == M_RESIGN) {
+  if (c == M_PASS) {
     memset(ids, 0, sizeof(GroupId4));
     ids->c = c;
     ids->player = player;
@@ -790,7 +774,7 @@ bool Play(Board* board, const GroupId4* ids) {
   // Place the stone on the coordinate, and update other structures.
   Coord c = ids->c;
   Stone player = ids->player;
-  if (c == M_PASS || c == M_RESIGN) {
+  if (c == M_PASS) {
     update_next_move(board, c, player);
     return isGameEnd(board);
   }
@@ -880,17 +864,12 @@ bool Play(Board* board, const GroupId4* ids) {
   return false;
 }
 
-// bool UndoPass(Board* board) {
-//   if (board->_last_move != M_PASS)
-//     return false;
-//   update_undo(board);
-//   return true;
-// }
 
 void str_concat(char* buf, int* len, const char* str) {
   *len += sprintf(buf + *len, "%s", str);
 }
 
+// пишем борду в buf
 void showBoard2Buf(const Board* board, ShowChoice choice, char* buf) {
   // Warning [TODO]: possibly buffer overflow.
   char buf2[30];
@@ -1003,8 +982,7 @@ bool isTrueEye(const Board* board, Coord c, Stone player) {
 
 bool isGameEnd(const Board* board) {
   return board->_ply > 1 &&
-      ((board->_last_move == M_PASS && board->_last_move2 == M_PASS) ||
-       board->_last_move == M_RESIGN);
+      ((board->_last_move == M_PASS && board->_last_move2 == M_PASS));
 }
 
 // Utilities..Here I assume buf has sufficient space (e.g., >= 30).
@@ -1029,8 +1007,6 @@ char* get_move_str(Coord m, Stone player, char* buf) {
     sprintf(buf, "%c PASS", p);
   } else if (m == M_INVALID) {
     sprintf(buf, "%c INVALID", p);
-  } else if (m == M_RESIGN) {
-    sprintf(buf, "%c RESIGN", p);
   } else {
     sprintf(buf, "%c %c%d", p, cols[X(m)], Y(m) + 1);
   }

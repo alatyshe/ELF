@@ -65,105 +65,46 @@ class GoState;
 
 class BoardFeature {
  public:
-  enum Rot { NONE = 0, CCW90, CCW180, CCW270 };
 
-  BoardFeature(const GoState& s, Rot rot, bool flip)
+  BoardFeature(const GoState& s)
       : s_(s),
-        _rot(rot),
-        _flip(flip),
         logger_(
             elf::logging::getLogger("elfgames::go::base::BoardFeature-", "")) {}
-  BoardFeature(const GoState& s) : s_(s), _rot(NONE), _flip(false) {}
 
-  static BoardFeature RandomShuffle(const GoState& s, std::mt19937* rng) {
-    BoardFeature bf(s);
-    bf.setD4Code((*rng)() % 8);
-    return bf;
-  }
 
   const GoState& state() const {
     return s_;
   }
 
-  void setD4Group(Rot new_rot, bool new_flip) {
-    _rot = new_rot;
-    _flip = new_flip;
-  }
-  void setD4Code(int code) {
-    auto rot = (BoardFeature::Rot)(code % 4);
-    bool flip = (code >> 2) == 1;
-    setD4Group(rot, flip);
-  }
-  int getD4Code() const {
-    return (int)_rot + ((_flip ? 1 : 0) << 2);
-  }
-
-  std::pair<int, int> Transform(const std::pair<int, int>& p) const {
-    std::pair<int, int> output;
-
-    if (_rot == CCW90)
-      output = std::make_pair(p.second, BOARD_SIZE - p.first - 1);
-    else if (_rot == CCW180)
-      output =
-          std::make_pair(BOARD_SIZE - p.first - 1, BOARD_SIZE - p.second - 1);
-    else if (_rot == CCW270)
-      output = std::make_pair(BOARD_SIZE - p.second - 1, p.first);
-    else
-      output = p;
-
-    if (_flip)
-      std::swap(output.first, output.second);
-    return output;
-  }
-
-  std::pair<int, int> InvTransform(const std::pair<int, int>& p) const {
-    std::pair<int, int> output(p);
-
-    if (_flip)
-      std::swap(output.first, output.second);
-
-    if (_rot == CCW90)
-      output = std::make_pair(BOARD_SIZE - output.second - 1, output.first);
-    else if (_rot == CCW180)
-      output = std::make_pair(
-          BOARD_SIZE - output.first - 1, BOARD_SIZE - output.second - 1);
-    else if (_rot == CCW270)
-      output = std::make_pair(output.second, BOARD_SIZE - output.first - 1);
-
-    return output;
-  }
 
   int64_t coord2Action(Coord m) const {
     if (m == M_PASS)
       return BOARD_ACTION_PASS;
-    auto p = Transform(std::make_pair(X(m), Y(m)));
-    return EXPORT_OFFSET_XY(p.first, p.second);
+    return EXPORT_OFFSET_XY(X(m), Y(m));
   }
 
   Coord action2Coord(int64_t action) const {
     if (action == -1 || action == BOARD_ACTION_PASS)
       return M_PASS;
-    auto p = InvTransform(std::make_pair(EXPORT_X(action), EXPORT_Y(action)));
-    return OFFSETXY(p.first, p.second);
+    return OFFSETXY(EXPORT_X(action), EXPORT_Y(action));
   }
 
-  void extract(std::vector<float>* features) const;
+
   void extractAGZ(std::vector<float>* features) const;
   void extract(float* features) const;
   void extractAGZ(float* features) const;
 
  private:
-  const GoState& s_;
-  Rot _rot = NONE;
-  bool _flip = false;
 
-  static constexpr int64_t kBoardRegion = BOARD_SIZE * BOARD_SIZE;
-
+  // доска
+  const GoState&            s_;
+  // размер доски
+  static constexpr int64_t  kBoardRegion = BOARD_SIZE * BOARD_SIZE;
+  
   std::shared_ptr<spdlog::logger> logger_;
 
   int transform(int x, int y) const {
-    auto p = Transform(std::make_pair(x, y));
-    return EXPORT_OFFSET_XY(p.first, p.second);
+    return EXPORT_OFFSET_XY(x, y);
   }
 
   int transform(Coord m) const {
@@ -175,12 +116,9 @@ class BoardFeature {
   }
 
   // Compute features.
-  bool getLibertyMap3(Stone player, float* data) const;
-  bool getLibertyMap(Stone player, float* data) const;
   bool getLibertyMap3binary(Stone player, float* data) const;
   bool getStones(Stone player, float* data) const;
   bool getSimpleKo(Stone player, float* data) const;
-  bool getHistory(Stone player, float* data) const;
   bool getHistoryExp(Stone player, float* data) const;
   bool getDistanceMap(Stone player, float* data) const;
 };

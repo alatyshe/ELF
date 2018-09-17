@@ -75,14 +75,22 @@ struct GoStateExt {
     return curr_request_;
   }
 
+  // GoState      _state;
+  // Coord        _last_move_for_the_game;
+  // MsgRequest   curr_request_;
+  // вызываем внутренние методы нашей GoState (она хранит в себе Board).
+  // сами чекаем 
+  // Устанавливаем финальные rewards
   float setFinalValue(FinishReason reason, std::mt19937* rng) {
     float final_value = 0.0;
-    _last_move_for_the_game = _state.lastMove();
 
-    if (reason == FR_RESIGN) {
-      final_value = _state.nextPlayer() == S_WHITE ? 1.0 : -1.0;
-      _last_move_for_the_game = M_RESIGN;
-    } else if (
+    _last_move_for_the_game = _state.lastMove();
+    // if (reason == FR_RESIGN) {
+    //   final_value = _state.nextPlayer() == S_WHITE ? 1.0 : -1.0;
+    //   _last_move_for_the_game = M_RESIGN;
+    // // ВОТ ЧТО ЭТО ЗА ПИЗДЕЦ?????
+    // } else 
+    if (
         reason == FR_CHEAT_NEWER_WINS_HALF &&
         !curr_request_.vers.is_selfplay()) {
       auto h = std::hash<std::string>{}(
@@ -99,10 +107,17 @@ struct GoStateExt {
     } else {
       final_value = _state.evaluate(_options.komi);
     }
+
+
+
+
+
     _state.setFinalValue(final_value);
     return final_value;
   }
 
+  // вызываем внутренние методы 
+  // GoState _state;
   Coord lastMove() const {
     if (_state.justStarted())
       return _last_move_for_the_game;
@@ -203,17 +218,11 @@ struct GoStateExt {
       return _predicted_values.back();
   }
 
-  bool shouldResign(std::mt19937* rng) {
-    // Run it after addPredictedValue
-    float predicted_value = getLastPredictedValue();
-    Stone player = _state.nextPlayer();
-    return (
-        player == S_BLACK ? _resign_check.check(predicted_value, rng)
-                          : _resign_check.check(-predicted_value, rng));
-  }
-
   void showFinishInfo(FinishReason reason) const;
 
+  // GoState _state;
+  // вызываем внутренние методы нашей GoState (она хранит в себе Board).
+  // иделаем шаг вперед
   bool forward(Coord c) {
     return _state.forward(c);
   }
@@ -255,6 +264,16 @@ struct GoStateExt {
   std::shared_ptr<spdlog::logger> _logger;
 };
 
+
+
+
+
+
+
+
+
+
+
 class GoStateExtOffline {
  public:
   friend class GoFeature;
@@ -294,9 +313,9 @@ class GoStateExtOffline {
     return true;
   }
 
-  void generateD4Code(std::mt19937* rng) {
-    _bf.setD4Code((*rng)() % 8);
-  }
+  // void generateD4Code(std::mt19937* rng) {
+  //   _bf.setD4Code((*rng)() % 8);
+  // }
 
   void switchBeforeMove(size_t move_to) {
     assert(move_to < _offline_all_moves.size());

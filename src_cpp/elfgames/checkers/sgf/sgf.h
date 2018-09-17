@@ -73,8 +73,6 @@ inline std::string player2str(Stone player) {
 inline std::string coord2str2(Coord c) {
   if (c == M_PASS)
     return "PASS";
-  if (c == M_RESIGN)
-    return "RESIGN";
   int x = X(c);
   if (x >= 8)
     x++;
