@@ -315,6 +315,7 @@ class GCWrapper:
             gpu(int): gpu to use.
             params(dict): additional parameters
         '''
+        print("\x1b[1;33;40mPython GCWrapper::init()\x1b[0m")
 
         # TODO Make a unified argument server and remove ``params``
         self.batches, self.name2idx, self.idx2name = Allocator.spec2batches(
@@ -326,6 +327,15 @@ class GCWrapper:
         self.params = params
         self.GC = GC
         self._cb = {}
+
+        # print("self.name2idx\t : ", self.name2idx)
+        # print("self.idx2name\t : ", self.idx2name)
+        # print("self.batchdim\t : ", self.batchdim)
+        # print("self.histdim\t : ", self.histdim)
+        # print("self.params\t : ", self.params)
+        # print("self.GC\t : ", self.GC)
+        # print("self.game_obj\t : ", self.game_obj)
+        # print("self._cb\t : ", self._cb)
 
     def reg_has_callback(self, key):
         return key in self.name2idx

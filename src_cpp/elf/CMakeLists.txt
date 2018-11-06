@@ -12,6 +12,7 @@ set(ELF_SOURCES
     options/OptionMap.cc
     options/OptionSpec.cc
     options/Pybind.cc
+    debug/debug.cc
 )
 
 # set(ELF_TEST_SOURCES

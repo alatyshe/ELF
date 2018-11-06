@@ -20,6 +20,7 @@
 
 #include "tree_search_base.h"
 #include "tree_search_options.h"
+#include "elf/debug/debug.h"
 
 namespace elf {
 namespace ai {
@@ -33,13 +34,19 @@ class NodeBaseT {
  public:
   enum StateType { NODE_STATE_NULL = 0, NODE_STATE_INVALID, NODE_STATE_SET };
 
-  NodeBaseT() : stateType_(NODE_STATE_NULL) {}
+  NodeBaseT() : stateType_(NODE_STATE_NULL) {
+    display_debug_info("NodeBaseT", __FUNCTION__, GREEN_B);
+  }
 
   const State* getStatePtr() const {
+    display_debug_info("NodeBaseT", __FUNCTION__, GREEN_B);
+
     return state_.get();
   }
 
   bool setStateIfUnset(std::function<State*()> func) {
+    display_debug_info("NodeBaseT", __FUNCTION__, GREEN_B);
+
     if (func == nullptr) {
       return false;
     }
@@ -82,6 +89,18 @@ class NodeBaseT {
   StateType stateType_;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
 // Tree node.
 template <typename State, typename Action>
 class NodeT : public NodeBaseT<State> {
@@ -99,6 +118,8 @@ class NodeT : public NodeBaseT<State> {
       : status_(NOT_VISITED),
         numVisits_(0),
         unsignedParentQ_(unsigned_parent_q) {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     unsignedMeanQ_ = unsignedParentQ_;
   }
 
@@ -106,30 +127,44 @@ class NodeT : public NodeBaseT<State> {
   Node& operator=(const Node&) = delete;
 
   const std::unordered_map<Action, EdgeInfo>& getStateActions() const {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     return stateActions_;
   }
 
   int getNumVisits() const {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     return numVisits_;
   }
 
   float getValue() const {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     return V_;
   }
 
   float getMeanUnsignedQ() const {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     return unsignedMeanQ_;
   }
 
   VisitType status() const {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     return status_;
   }
 
   bool isVisited() const {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     return status_ == VISITED;
   }
 
   void enhanceExploration(float epsilon, float alpha, std::mt19937* rng) {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     // Note that this is not thread-safe.
     // It should be called once and only once for each node.
     if (epsilon == 0.0) {
@@ -155,6 +190,8 @@ class NodeT : public NodeBaseT<State> {
   }
 
   bool requestEvaluation() {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     if (status_ != NOT_VISITED)
       return false;
 
@@ -167,6 +204,8 @@ class NodeT : public NodeBaseT<State> {
   }
 
   void waitEvaluation() {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     // Simple busy wait here.
     while (status_ != VISITED) {
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -174,6 +213,8 @@ class NodeT : public NodeBaseT<State> {
   }
 
   bool setEvaluation(const NodeResponseT<Action>& resp) {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     if (status_ == VISITED)
       return false;
 
@@ -208,6 +249,8 @@ class NodeT : public NodeBaseT<State> {
       // const NodeDynInfo& node_info,
       Action* action,
       std::ostream* oo = nullptr) {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     if (status_ != VISITED)
       return false;
 
@@ -231,6 +274,8 @@ class NodeT : public NodeBaseT<State> {
   }
 
   bool addVirtualLoss(const Action& action, float virtual_loss) {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     if (status_ != VISITED)
       return false;
 
@@ -251,6 +296,8 @@ class NodeT : public NodeBaseT<State> {
   }
 
   bool updateEdgeStats(const Action& action, float reward, float virtual_loss) {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     if (status_ != VISITED)
       return false;
 
@@ -278,6 +325,8 @@ class NodeT : public NodeBaseT<State> {
   }
 
   NodeId followEdge(const Action& action, SearchTree& tree) {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     if (status_ != VISITED)
       return InvalidNodeId;
 
@@ -328,13 +377,18 @@ class NodeT : public NodeBaseT<State> {
         : action_with_max_score(ActionTrait<Action>::default_value()),
           max_score(std::numeric_limits<float>::lowest()),
           total_unsigned_q(0),
-          total_visits(0) {}
+          total_visits(0) {
+      display_debug_info("struct NodeT->BestAction", __FUNCTION__, GREEN_B);
+
+    }
 
     void addAction(
         const Action& action,
         float score,
         float unsigned_q,
         bool first_visit) {
+      display_debug_info("struct NodeT->BestAction", __FUNCTION__, GREEN_B);
+
       if (score > max_score) {
         max_score = score;
         action_with_max_score = action;
@@ -347,6 +401,8 @@ class NodeT : public NodeBaseT<State> {
     }
 
     std::string info() const {
+      display_debug_info("struct NodeT->BestAction", __FUNCTION__, GREEN_B);
+
       std::stringstream ss;
       ss << " max_score: " << max_score << ", best_action: "
          << ActionTrait<Action>::to_string(action_with_max_score)
@@ -360,6 +416,8 @@ class NodeT : public NodeBaseT<State> {
   // Algorithms.
   BestAction UCT(const SearchAlgoOptions& alg_opt, std::ostream* oo = nullptr)
       const {
+    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
+
     BestAction best_action;
 
     if (oo) {
@@ -397,6 +455,18 @@ class NodeT : public NodeBaseT<State> {
   };
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
 template <typename State, typename Action>
 class SearchTreeT {
  public:
@@ -404,6 +474,8 @@ class SearchTreeT {
   using SearchTree = SearchTreeT<State, Action>;
 
   SearchTreeT() {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     clear();
   }
 
@@ -411,6 +483,8 @@ class SearchTreeT {
   SearchTree& operator=(const SearchTree&) = delete;
 
   void clear() {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     allocatedNodes_.clear();
     allocatedNodeCount_ = 0;
     rootId_ = InvalidNodeId;
@@ -418,6 +492,8 @@ class SearchTreeT {
   }
 
   void treeAdvance(const Action& action) {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     NodeId next_root = InvalidNodeId;
     Node* r = getRootNode();
 
@@ -436,25 +512,35 @@ class SearchTreeT {
   }
 
   Node* getRootNode() {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     return (*this)[rootId_];
   }
 
   const Node* getRootNode() const {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     return (*this)[rootId_];
   }
 
   // Low level functions.
   NodeId addNode(float unsigned_parent_q) {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     std::lock_guard<std::mutex> lock(allocMutex_);
     allocatedNodes_[allocatedNodeCount_].reset(new Node(unsigned_parent_q));
     return allocatedNodeCount_++;
   }
 
   void freeNode(NodeId id) {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     allocatedNodes_.erase(id);
   }
 
   void recursiveFree(NodeId id) {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     if (id == InvalidNodeId) {
       return;
     }
@@ -467,21 +553,29 @@ class SearchTreeT {
   }
 
   Node* operator[](NodeId i) {
+    // display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     std::lock_guard<std::mutex> lock(allocMutex_);
     return getNode(i);
   }
 
   const Node* operator[](NodeId i) const {
+    // display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     std::lock_guard<std::mutex> lock(allocMutex_);
     return getNode(i);
   }
 
   std::string printTree() const {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     // [TODO]: Only called when no search is performed!
     return printTree(0, getRootNode());
   }
 
   std::string printTree(int indent, const Node* node) const {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     std::stringstream ss;
     std::string indent_str;
     for (int i = 0; i < indent; ++i) {
@@ -535,6 +629,8 @@ class SearchTreeT {
   mutable std::mutex allocMutex_;
 
   const Node* getNode(NodeId i) const {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     auto it = allocatedNodes_.find(i);
     if (it == allocatedNodes_.end()) {
       return nullptr;
@@ -544,6 +640,8 @@ class SearchTreeT {
   }
 
   Node* getNode(NodeId i) {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+
     auto it = allocatedNodes_.find(i);
     if (it == allocatedNodes_.end()) {
       return nullptr;
@@ -553,6 +651,8 @@ class SearchTreeT {
   }
 
   bool allocateRoot() {
+    display_debug_info("SearchTreeT", __FUNCTION__, GREEN_B);
+    
     if (rootId_ == InvalidNodeId) {
       rootId_ = addNode(0.0);
       return true;

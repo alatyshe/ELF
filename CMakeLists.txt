@@ -43,8 +43,10 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(PYBIND11_CPP_STANDARD -std=c++17)
 set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS}  -Wno-deprecated-declarations -fPIC -march=native")
-    # -Wall -Werror -Wextra -Wno-register
+    "${CMAKE_CXX_FLAGS} -g -Wno-deprecated-declarations -fPIC -march=native")
+# -g
+# set(CMAKE_CXX_FLAGS
+#     "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -Wno-register -Wno-deprecated-declarations -fPIC -march=native")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -77,12 +79,6 @@ add_subdirectory(
 
 # ELF games
 
-# Go
-# add_subdirectory(
-#     src_cpp/elfgames/go
-#     ${CMAKE_CURRENT_BINARY_DIR}/elfgames/go)
-
-# Checkers
 add_subdirectory(
-    src_cpp/elfgames/checkers    
-    ${CMAKE_CURRENT_BINARY_DIR}/elfgames/checkers)
+    src_cpp/elfgames/go
+    ${CMAKE_CURRENT_BINARY_DIR}/elfgames/go)

@@ -19,6 +19,7 @@
 #include "common.h"
 
 #include "elf/logging/IndexedLoggerFactory.h"
+#include "elf/debug/debug.h"
 
 // This file exists to bind functionss of the form f(State, MemoryAddress).
 // to its arguments
@@ -54,6 +55,8 @@ struct FuncStateMemT {
 
   template <typename S, typename T>
   void Init(FuncType<S, T> func) {
+    display_debug_info("struct FuncStateMemT", __FUNCTION__, GREEN_B);
+
     auto f = [func](SType<S> s, AnyPType anyp, int batch_idx) {
       func(s, anyp.template getAddress<T>({batch_idx}));
     };
@@ -62,11 +65,15 @@ struct FuncStateMemT {
 
   template <typename S>
   void Init(FuncAnyPType<S> func) {
+    display_debug_info("struct FuncStateMemT", __FUNCTION__, GREEN_B);
+
     func_.reset(new _Func<S>(func));
   }
 
   template <typename S>
   OutputFuncType Bind(SType<S> s) const {
+    display_debug_info("struct FuncStateMemT", __FUNCTION__, GREEN_B);
+
     auto* p = dynamic_cast<_Func<S>*>(func_.get());
 
     if (p == nullptr) {
@@ -87,11 +94,18 @@ struct FuncStateMemT {
   class _Func : public _FuncBase {
    public:
     FuncAnyPType<S> func;
-    _Func(FuncAnyPType<S> func) : func(func) {}
+    _Func(FuncAnyPType<S> func) : func(func) {
+      display_debug_info("FuncStateMemT->_FuncBase", __FUNCTION__, GREEN_B);
+    }
   };
 
   std::unique_ptr<_FuncBase> func_;
 };
+
+
+
+
+
 
 using FuncStateToMem = FuncStateMemT<true>;
 using FuncMemToState = FuncStateMemT<false>;
@@ -99,19 +113,36 @@ using FuncMemToState = FuncStateMemT<false>;
 template <typename T>
 class FuncMapT;
 
+
+
+
+
+
+
+
+
+
 struct FuncMapBase {
  public:
-  FuncMapBase(const std::string& name) : name_(name) {}
+  FuncMapBase(const std::string& name) : name_(name) {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+  }
 
   const std::string& getName() const {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+
     return name_;
   }
 
   int getBatchSize() const {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+
     return batchsize_;
   }
 
   const Size& getSize() const {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+
     return extents_;
   }
 
@@ -120,6 +151,8 @@ struct FuncMapBase {
   virtual size_t getSizeOfType() const = 0;
 
   std::string info() const {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+
     std::stringstream ss;
     ss << "key: " << name_ << ", batchsize: " << batchsize_
        << ", Size: " << extents_.info() << ", Type name: " << getTypeName();
@@ -134,18 +167,24 @@ struct FuncMapBase {
 
   template <typename S>
   FuncMapBase& addFunction(FuncStateToMem::FuncAnyPType<S> func) {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+
     state_to_mem_funcs_[typeid(S).name()].template Init<S>(func);
     return *this;
   }
 
   template <typename S>
   FuncMapBase& addFunction(FuncMemToState::FuncAnyPType<S> func) {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+
     mem_to_state_funcs_[typeid(S).name()].template Init<S>(func);
     return *this;
   }
 
   template <typename S>
   FuncStateToMem::OutputFuncType BindStateToStateToMemFunc(const S& s) const {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+
     auto it = state_to_mem_funcs_.find(typeid(S).name());
     if (it == state_to_mem_funcs_.end()) {
       return nullptr;
@@ -155,6 +194,8 @@ struct FuncMapBase {
 
   template <typename S>
   FuncMemToState::OutputFuncType BindStateToMemToStateFunc(S& s) const {
+    display_debug_info("struct FuncMapBase", __FUNCTION__, GREEN_B);
+
     auto it = mem_to_state_funcs_.find(typeid(S).name());
     if (it == mem_to_state_funcs_.end()) {
       return nullptr;
@@ -174,63 +215,103 @@ struct FuncMapBase {
   std::unordered_map<std::string, FuncMemToState> mem_to_state_funcs_;
 };
 
+
+
+
+
+
+
+
+
+
+
 template <typename T>
 class FuncMapT : public FuncMapBase {
  public:
   using FuncMap = FuncMapT<T>;
 
-  FuncMapT(const std::string& name) : FuncMapBase(name) {}
+  FuncMapT(const std::string& name) : FuncMapBase(name) {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+  }
 
   std::string getTypeName() const override {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     return TypeNameT<T>::name();
   }
 
   size_t getSizeOfType() const override {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     return sizeof(T);
   }
 
   template <typename S>
   FuncMap& addFunction(FuncStateToMem::FuncType<S, T> func) {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     state_to_mem_funcs_[typeid(S).name()].template Init<S, T>(func);
     return *this;
   }
 
   template <typename S>
   FuncMap& addFunction(FuncMemToState::FuncType<S, T> func) {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     mem_to_state_funcs_[typeid(S).name()].template Init<S, T>(func);
     return *this;
   }
 
   template <typename S>
   FuncMap& addFunction(FuncStateToMem::FuncAnyPType<S> func) {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     state_to_mem_funcs_[typeid(S).name()].template Init<S>(func);
     return *this;
   }
 
   template <typename S>
   FuncMap& addFunction(FuncMemToState::FuncAnyPType<S> func) {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     mem_to_state_funcs_[typeid(S).name()].template Init<S>(func);
     return *this;
   }
 
   FuncMap& addExtent(int batchsize) {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     batchsize_ = batchsize;
     extents_ = Size{batchsize};
     return *this;
   }
 
   FuncMap& addExtents(int batchsize, const Size& sz) {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     batchsize_ = batchsize;
     extents_ = sz;
     return *this;
   }
 
   FuncMap& addExtents(int batchsize, std::initializer_list<int> l) {
+    display_debug_info("FuncMapT", __FUNCTION__, GREEN_B);
+
     batchsize_ = batchsize;
     extents_ = Size(l);
     return *this;
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 template <typename T>
 struct FieldsT {
@@ -239,17 +320,23 @@ struct FieldsT {
   using FuncMap = FuncMapT<T>;
 
   Fields& add(FuncMapT<T>& f) {
+    display_debug_info("struct FieldsT", __FUNCTION__, GREEN_B);
+
     fields_.push_back(&f);
     return *this;
   }
 
   Fields& addExtent(int batchsize) {
+    display_debug_info("struct FieldsT", __FUNCTION__, GREEN_B);
+
     for (FuncMap* f : fields_) {
       f->addExtent(batchsize);
     }
     return *this;
   }
   Fields& addExtents(int batchsize, const Size& sz) {
+    display_debug_info("struct FieldsT", __FUNCTION__, GREEN_B);
+
     for (FuncMap* f : fields_) {
       f->addExtents(batchsize, sz);
     }
@@ -257,6 +344,8 @@ struct FieldsT {
   }
 
   Fields& addExtents(int batchsize, std::initializer_list<int> l) {
+    display_debug_info("struct FieldsT", __FUNCTION__, GREEN_B);
+
     for (FuncMap* f : fields_) {
       f->addExtents(batchsize, l);
     }
@@ -267,23 +356,54 @@ struct FieldsT {
   std::vector<FuncMap*> fields_;
 };
 
+
+
+
+
+
+
+
+
+
 template <typename T>
 bool FuncMapBase::check() const {
   return dynamic_cast<const FuncMapT<T>*>(this) != nullptr;
 }
+
+
+
+
+
+
+
+
+
 
 template <typename T>
 FuncMapT<T>* FuncMapBase::cast() {
   return dynamic_cast<FuncMapT<T>*>(this);
 }
 
+
+
+
+
+
+
+
 class AnyP {
  public:
-  AnyP(const FuncMapBase& f) : f_(f) {}
+  AnyP(const FuncMapBase& f) : f_(f) {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+  }
 
-  AnyP(const AnyP& anyp) : f_(anyp.f_), stride_(anyp.stride_), p_(anyp.p_) {}
+  AnyP(const AnyP& anyp) : f_(anyp.f_), stride_(anyp.stride_), p_(anyp.p_) {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+  }
 
   int LinearIdx(std::initializer_list<int> l) const {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     int res = 0;
     int i = 0;
     for (int idx : l) {
@@ -296,16 +416,22 @@ class AnyP {
   }
 
   const FuncMapBase& field() const {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     return f_;
   }
 
   void setAddress(uint64_t p, const std::vector<int>& stride) {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     p_ = reinterpret_cast<unsigned char*>(p);
     setStride(stride);
   }
 
   template <typename T>
   T* getAddress(std::initializer_list<int> l) {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     // [TODO] Fix this
     assert(check<T>());
     return reinterpret_cast<T*>(p_ + LinearIdx(l));
@@ -313,6 +439,8 @@ class AnyP {
 
   template <typename T>
   const T* getAddress(std::initializer_list<int> l) const {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     // [TODO] Fix this
     assert(check<T>());
     return reinterpret_cast<const T*>(p_ + LinearIdx(l));
@@ -320,6 +448,8 @@ class AnyP {
 
   template <typename T>
   T* getAddress(int l) {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     // [TODO] Fix this
     assert(check<T>());
     return reinterpret_cast<T*>(p_ + LinearIdx({l}));
@@ -327,12 +457,16 @@ class AnyP {
 
   template <typename T>
   const T* getAddress(int l) const {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     // [TODO] Fix this
     assert(check<T>());
     return reinterpret_cast<const T*>(p_ + LinearIdx({l}));
   }
 
   std::string info() const {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     std::stringstream ss;
     ss << std::hex << (void*)p_ << std::dec << ", Field: " << f_.info();
     return ss.str();
@@ -345,10 +479,14 @@ class AnyP {
 
   template <typename T>
   bool check() const {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     return p_ != nullptr && f_.check<T>();
   }
 
   void setStride(const Size& stride) {
+    display_debug_info("AnyP", __FUNCTION__, GREEN_B);
+
     assert(stride.size() == f_.getSize().size());
 
     Size default_stride = f_.getSize().getContinuousStrides(f_.getSizeOfType());
@@ -359,6 +497,15 @@ class AnyP {
     stride_ = stride;
   }
 };
+
+
+
+
+
+
+
+
+
 
 class SharedMem;
 
@@ -376,9 +523,13 @@ class FuncsWithStateT {
   using SharedMem_t =
       typename std::conditional<use_const, SharedMem, const SharedMem>::type&;
 
-  FuncsWithStateT() {}
+  FuncsWithStateT() {
+    display_debug_info("FuncsWithStateT", __FUNCTION__, GREEN_B);
+  }
 
   bool addFunction(const std::string& key, Func func) {
+    display_debug_info("FuncsWithStateT", __FUNCTION__, GREEN_B);
+
     if (func != nullptr) {
       funcs_[key] = func;
       return true;
@@ -429,6 +580,8 @@ class FuncsWithStateT {
 #endif
 
   void add(const FuncsWithState& funcs) {
+    display_debug_info("FuncsWithStateT", __FUNCTION__, GREEN_B);
+
     for (const auto& p : funcs.funcs_) {
       funcs_.insert(p);
     }
@@ -460,6 +613,8 @@ struct FuncsWithState {
 #endif
 
   void add(const FuncsWithState& funcs) {
+    display_debug_info("struct FuncsWithState", __FUNCTION__, GREEN_B);
+
     state_to_mem_funcs.add(funcs.state_to_mem_funcs);
     mem_to_state_funcs.add(funcs.mem_to_state_funcs);
   }
@@ -468,6 +623,24 @@ struct FuncsWithState {
 template <typename S>
 class ClassFieldT;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //
 class Extractor {
  public:
@@ -475,6 +648,8 @@ class Extractor {
 
   template <typename T>
   FuncMapT<T>& addField(const std::string& key) {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     auto& f = fields_[key];
     auto* p = new FuncMapT<T>(key);
     f.reset(p);
@@ -483,6 +658,8 @@ class Extractor {
 
   template <typename T>
   FieldsT<T> addField(const std::vector<std::string>& keys) {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     FieldsT<T> res;
     for (const auto& key : keys) {
       res.add(addField<T>(key));
@@ -492,6 +669,8 @@ class Extractor {
 
   template <typename T>
   FieldsT<T> addField(std::initializer_list<std::string> l) {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     FieldsT<T> res;
     for (const auto& key : l) {
       res.add(addField<T>(key));
@@ -501,10 +680,14 @@ class Extractor {
 
   template <typename S>
   ClassFieldT<S> addClass() {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     return ClassFieldT<S>(this);
   }
 
   const FuncMapBase* getFunctions(const std::string& key) const {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     auto it = fields_.find(key);
 
     if (it == fields_.end()) {
@@ -515,6 +698,8 @@ class Extractor {
   }
 
   FuncMapBase* getFunctions(const std::string& key) {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     auto it = fields_.find(key);
 
     if (it == fields_.end()) {
@@ -526,6 +711,8 @@ class Extractor {
 
   template <typename T>
   FuncMapT<T>* getFunctions(const std::string& key) {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     auto it = fields_.find(key);
 
     if (it == fields_.end()) {
@@ -537,12 +724,15 @@ class Extractor {
 
   void apply(std::function<void(const std::string& key, const FuncMapBase&)>
                  func) const {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
     for (const auto& f : fields_) {
       func(f.first, *f.second);
     }
   }
 
   std::string info() const {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     std::stringstream ss;
     apply([&ss](const std::string& key, const FuncMapBase& f) {
       ss << "\"" << key << "\": " << f.info() << std::endl;
@@ -553,6 +743,8 @@ class Extractor {
   // For python interface
   std::unordered_map<std::string, AnyP> getAnyP(
       const std::vector<std::string>& keys) const {
+    display_debug_info("Extractor", __FUNCTION__, GREEN_B);
+
     // Create a bunch of anyp.
     std::unordered_map<std::string, AnyP> pointers;
     for (const std::string& k : keys) {
@@ -572,6 +764,26 @@ class Extractor {
   std::shared_ptr<spdlog::logger> logger_;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 template <typename S>
 class ClassFieldT {
  public:
@@ -579,12 +791,16 @@ class ClassFieldT {
 
   ClassFieldT(Extractor* ext)
       : ext_(ext),
-        logger_(elf::logging::getLogger("elf::base::ClassFieldT-", "")) {}
+        logger_(elf::logging::getLogger("elf::base::ClassFieldT-", "")) {
+    display_debug_info("ClassFieldT", __FUNCTION__, GREEN_B);
+  }
 
   template <typename T>
   ClassField& addFunction(
       const std::string& key,
       FuncStateToMem::FuncType<S, T> func) {
+    display_debug_info("ClassFieldT", __FUNCTION__, GREEN_B);
+
     get<T>(key)->template addFunction<S>(func);
     return *this;
   }
@@ -592,6 +808,8 @@ class ClassFieldT {
   ClassField& addFunction(
       const std::string& key,
       FuncStateToMem::FuncAnyPType<S> func) {
+    display_debug_info("ClassFieldT", __FUNCTION__, GREEN_B);
+
     get(key)->template addFunction<S>(func);
     return *this;
   }
@@ -600,6 +818,8 @@ class ClassFieldT {
   ClassField& addFunction(
       const std::string& key,
       FuncMemToState::FuncType<S, T> func) {
+    display_debug_info("ClassFieldT", __FUNCTION__, GREEN_B);
+
     get<T>(key)->template addFunction<S>(func);
     return *this;
   }
@@ -607,6 +827,8 @@ class ClassFieldT {
   ClassField& addFunction(
       const std::string& key,
       FuncMemToState::FuncAnyPType<S> func) {
+    display_debug_info("ClassFieldT", __FUNCTION__, GREEN_B);
+
     get(key)->template addFunction<S>(func);
     return *this;
   }
@@ -617,6 +839,8 @@ class ClassFieldT {
 
   template <typename T>
   FuncMapT<T>* get(const std::string& key) {
+    display_debug_info("ClassFieldT", __FUNCTION__, GREEN_B);
+
     FuncMapT<T>* f = ext_->getFunctions<T>(key);
     if (f == nullptr) {
       logger_->error("ClassFieldT: cannot find {}", key);
@@ -626,6 +850,8 @@ class ClassFieldT {
   }
 
   FuncMapBase* get(const std::string& key) {
+    display_debug_info("ClassFieldT", __FUNCTION__, GREEN_B);
+
     FuncMapBase* f = ext_->getFunctions(key);
     if (f == nullptr) {
       logger_->error("ClassFieldT: cannot find {}", key);

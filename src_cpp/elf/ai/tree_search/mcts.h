@@ -44,20 +44,27 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
       : options_(options),
         logger_(
             elf::logging::getLogger("elf::ai::tree_search::MCTSAI_T-", "")) {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+    
     ts_.reset(new TreeSearch(options_, gen));
   }
 
   const elf::ai::tree_search::TSOptions& options() const {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     return options_;
   }
 
   TreeSearch* getEngine() {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     return ts_.get();
   }
 
   bool act(const State& s, Action* a) override {
-    align_state(s);
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
 
+    align_state(s);
     if (options_.verbose_time) {
       elf_utils::MyClock clock;
       clock.restart();
@@ -80,6 +87,8 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   }
 
   bool actPolicyOnly(const State& s, Action* a) {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     align_state(s);
     lastResult_ = ts_->runPolicyOnly(s);
 
@@ -88,15 +97,21 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   }
 
   bool endGame(const State&) override {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     resetTree();
     return true;
   }
 
   const MCTSResult& getLastResult() const {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     return lastResult_;
   }
 
   std::string getCurrentTree() const {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     std::stringstream ss;
     ss << options_.info(true) << std::endl;
     ss << elf::ai::tree_search::ActorTrait<Actor>::to_string(ts_->getActor(0))
@@ -120,6 +135,8 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
 
  protected:
   void onSetID() override {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     for (size_t i = 0; i < ts_->getNumActors(); ++i) {
       ts_->getActor(i).setID(this->getID());
     }
@@ -133,11 +150,15 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   std::shared_ptr<spdlog::logger> logger_;
 
   void resetTree() {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     ts_->clear();
     nextMoveNumber_ = 0;
   }
 
   void align_state(const State& s) {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+
     if (!options_.persistent_tree) {
       resetTree();
     } else {
@@ -152,6 +173,8 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   // Once it is done, the move_number will be advanced to the most recent move
   // number.
   void advanceMoves(const State& s) {
+    display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+    
     std::vector<Action> recent_moves;
     bool move_valid =
         elf::ai::tree_search::StateTrait<State, Action>::moves_since(

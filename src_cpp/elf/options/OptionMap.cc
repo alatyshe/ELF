@@ -19,6 +19,8 @@ namespace elf {
 namespace options {
 
 void OptionMap::registerPy(pybind11::module& m) {
+  display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
+
   namespace py = pybind11;
 
   py::class_<OptionMap>(m, "OptionMap")
@@ -32,12 +34,16 @@ void OptionMap::registerPy(pybind11::module& m) {
 }
 
 void OptionMap::loadJSON(const json& data) {
+  display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
+
   for (auto it = data.begin(); it != data.end(); ++it) {
     data_[it.key()] = it.value();
   }
 }
 
 const json& OptionMap::getAsJSON(const std::string& optionName) const {
+  display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
+  
   const auto& elem = data_.find(optionName);
   if (elem == data_.end()) {
     throw std::runtime_error(optionName + " has not been set!");

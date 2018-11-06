@@ -19,6 +19,8 @@
 #include <mutex>
 #include <thread>
 
+#include "elf/debug/debug.h"
+
 namespace elf {
 namespace concurrency {
 
@@ -27,7 +29,9 @@ class Counter {
  public:
   using value_type = T;
 
-  Counter(T initialValue = 0) : count_(initialValue) {}
+  Counter(T initialValue = 0) : count_(initialValue) {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+  }
 
   /**
    * This method updates count using the predicate and returns the new count
@@ -35,6 +39,8 @@ class Counter {
    */
   template <typename PredicateT>
   T replace(PredicateT predicate) {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+
     std::unique_lock<std::mutex> lock(mutex_);
     count_ = predicate(count_);
     cv_.notify_all();
@@ -46,6 +52,8 @@ class Counter {
    */
   template <typename PredicateT>
   T wait(PredicateT predicate) {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+
     std::unique_lock<std::mutex> lock(mutex_);
     cv_.wait(lock, [this, &predicate]() { return predicate(this->count_); });
     return count_;
@@ -57,6 +65,8 @@ class Counter {
    */
   template <typename PredicateT, typename Rep, typename Period>
   T wait(PredicateT predicate, std::chrono::duration<Rep, Period> timeout) {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+
     std::unique_lock<std::mutex> lock(mutex_);
     cv_.wait_for(lock, timeout, [this, &predicate]() {
       return predicate(this->count_);
@@ -70,6 +80,8 @@ class Counter {
    * This method increments count.
    */
   T increment(T increment = 1) {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+
     return replace([=](T value) { return value + increment; });
   }
 
@@ -77,6 +89,8 @@ class Counter {
    * This method sets count = newValue.
    */
   T set(T newValue) {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+
     return replace([=](T) { return newValue; });
   }
 
@@ -84,6 +98,8 @@ class Counter {
    * This method sets count = 0.
    */
   T reset() {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+
     return set(0);
   }
 
@@ -91,6 +107,8 @@ class Counter {
    * This method blocks until count >= expectedCount, then returns the count.
    */
   T waitUntilCount(T expectedCount) {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+
     return wait([=](T count) { return count >= expectedCount; });
   }
 
@@ -102,6 +120,8 @@ class Counter {
   T waitUntilCount(
       T expectedCount,
       std::chrono::duration<Rep, Period> timeout) {
+    display_debug_info("Counter", __FUNCTION__, GREEN_B);
+
     return wait([=](T count) { return count >= expectedCount; }, timeout);
   }
 
@@ -118,33 +138,47 @@ extern template class Counter<bool>;
 
 class Switch : public Counter<bool> {
  public:
-  Switch(bool initialValue = false) : Counter(initialValue) {}
+  Switch(bool initialValue = false) : Counter(initialValue) {
+    display_debug_info("Switch", __FUNCTION__, GREEN_B);
+  }
 
   bool waitUntilValue(bool value) {
+    display_debug_info("Switch", __FUNCTION__, GREEN_B);
+
     return wait([=](bool currentValue) { return currentValue == value; });
   }
 
   template <typename Rep, typename Period>
   bool waitUntilValue(bool value, std::chrono::duration<Rep, Period> timeout) {
+    display_debug_info("Switch", __FUNCTION__, GREEN_B);
+
     return wait(
         [=](bool currentValue) { return currentValue == value; }, timeout);
   }
 
   bool waitUntilTrue() {
+    display_debug_info("Switch", __FUNCTION__, GREEN_B);
+
     return waitUntilValue(true);
   }
 
   template <typename Rep, typename Period>
   bool waitUntilTrue(std::chrono::duration<Rep, Period> timeout) {
+    display_debug_info("Switch", __FUNCTION__, GREEN_B);
+
     return waitUntilValue(true, timeout);
   }
 
   bool waitUntilFalse() {
+    display_debug_info("Switch", __FUNCTION__, GREEN_B);
+
     return waitUntilValue(false);
   }
 
   template <typename Rep, typename Period>
   bool waitUntilFalse(std::chrono::duration<Rep, Period> timeout) {
+    display_debug_info("Switch", __FUNCTION__, GREEN_B);
+
     return waitUntilValue(false, timeout);
   }
 };

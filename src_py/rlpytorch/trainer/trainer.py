@@ -22,6 +22,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'elf'))
 class Evaluator(object):
     @classmethod
     def get_option_spec(cls, name='eval'):
+        print("\x1b[1;32;40mEvaluator.get_option_spec\x1b[0m")
+
         spec = PyOptionSpec()
         spec.addStrListOption(
             'keys_in_reply',
@@ -48,6 +50,9 @@ class Evaluator(object):
             verbose=False,
             actor_name="actor"):
         """Initialization for Evaluator."""
+
+        print("\x1b[1;32;40mEvaluator.init\x1b[0m")
+
         import_options(self, option_map, self.get_option_spec(name))
 
         if stats:
@@ -68,6 +73,9 @@ class Evaluator(object):
         Args:
             i(int): index in the minibatch
         '''
+
+        print("\x1b[1;32;40mEvaluator.episode_start\x1b[0m")
+
         self.actor_count = 0
 
     def actor(self, batch):
@@ -88,6 +96,9 @@ class Evaluator(object):
                 ``V``: value, `rv`: reply version,
                 signatured by step
         """
+
+        print("\x1b[1;32;40mEvaluator.actor\x1b[0m")
+
         if self.verbose:
             print("In Evaluator[%s]::actor" % self.name)
 
@@ -120,6 +131,9 @@ class Evaluator(object):
         Args:
             i(int): index in the minibatch
         '''
+
+        print("\x1b[1;32;40mEvaluator.episode_summary\x1b[0m")
+
         print(
             "[%s] actor count: %d/%d" %
             (self.name,
@@ -138,11 +152,38 @@ class Evaluator(object):
             mi(`ModelInterface`)
             sample(`Sampler`)
         '''
+
+        print("\x1b[1;32;40mEvaluator.setup\x1b[0m")
+
         self.mi = mi
         self.sampler = sampler
 
         if self.stats is not None:
             self.stats.reset()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Trainer(object):
@@ -166,6 +207,8 @@ class Trainer(object):
             'batch size',
             128)
 
+        print("\x1b[1;32;40mTrainer.get_option_spec\x1b[0m")
+
         spec.merge(Evaluator.get_option_spec('trainer'))
         spec.merge(ModelSaver.get_option_spec())
 
@@ -174,6 +217,9 @@ class Trainer(object):
     @auto_import_options
     def __init__(self, option_map, verbose=False, actor_name="actor"):
         """Initialization for Trainer."""
+
+        print("\x1b[1;32;40mTrainer.init        \x1b[0m")
+
         self.timer = RLTimer()
         self.verbose = verbose
         self.last_time = None
@@ -203,6 +249,9 @@ class Trainer(object):
                 ``pi``: policy, ``a``: action, ``V``: value,
                 `rv`: reply version, signatured by step
         """
+
+        print("\x1b[1;32;40mTrainer.actor        \x1b[0m")
+
         self.counter.inc("actor")
         return self.evaluator.actor(batch)
 
@@ -213,6 +262,9 @@ class Trainer(object):
         Args:
             batch(dict): batch data
         '''
+
+        print("\x1b[1;32;40mTrainer.train        \x1b[0m")
+
         mi = self.evaluator.mi
 
         self.counter.inc("train")
@@ -237,6 +289,9 @@ class Trainer(object):
 
     def episode_reset(self):
         ''' Reset stats '''
+
+        print("\x1b[1;32;40mTrainer.episode_reset        \x1b[0m")
+
         self.counter.reset()
         self.timer.restart()
 
@@ -246,6 +301,9 @@ class Trainer(object):
         Args:
             i(int): index in the minibatch
         '''
+
+        print("\x1b[1;32;40mTrainer.episode_reset        \x1b[0m")
+
         self.evaluator.episode_start(i)
 
     def episode_summary(self, i, save=True):
@@ -256,6 +314,9 @@ class Trainer(object):
         Args:
             i(int): index in the minibatch
         """
+
+        print("\x1b[1;32;40mTrainer.episode_summary        \x1b[0m")
+
         prefix = "[%s][%d] Iter" % (
             str(datetime.now()), self.options.batchsize) + "[%d]: " % i
         print(prefix)
@@ -281,6 +342,9 @@ class Trainer(object):
             mi(`ModelInterface`)
             sample(`Sampler`)
         '''
+
+        print("\x1b[1;32;40mTrainer.setup        \x1b[0m")
+
         self.rl_method = rl_method
         self.evaluator.setup(mi=mi, sampler=sampler)
         if self.options.save_first:

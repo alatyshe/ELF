@@ -25,6 +25,8 @@ namespace elf {
 namespace distri {
 
 inline std::string s_recv(zmq::socket_t& socket) {
+  display_debug_info("", __FUNCTION__, PURPLE_B);
+
   zmq::message_t message;
   socket.recv(&message);
 
@@ -32,6 +34,8 @@ inline std::string s_recv(zmq::socket_t& socket) {
 }
 
 inline bool s_recv_noblock(zmq::socket_t& socket, std::string* msg) {
+  display_debug_info("", __FUNCTION__, PURPLE_B);
+
   zmq::message_t message;
 
   if (socket.recv(&message, ZMQ_NOBLOCK)) {
@@ -44,6 +48,8 @@ inline bool s_recv_noblock(zmq::socket_t& socket, std::string* msg) {
 
 //  Convert string to 0MQ string and send to socket
 inline bool s_send(zmq::socket_t& socket, const std::string& s) {
+  display_debug_info("", __FUNCTION__, PURPLE_B);
+
   zmq::message_t message(s.size());
   memcpy(message.data(), s.data(), s.size());
 
@@ -53,6 +59,8 @@ inline bool s_send(zmq::socket_t& socket, const std::string& s) {
 
 //  Sends string as 0MQ string, as multipart non-terminal
 inline bool s_sendmore(zmq::socket_t& socket, const std::string& s) {
+  display_debug_info("", __FUNCTION__, PURPLE_B);
+
   zmq::message_t message(s.size());
   memcpy(message.data(), s.data(), s.size());
 
@@ -61,6 +69,8 @@ inline bool s_sendmore(zmq::socket_t& socket, const std::string& s) {
 }
 
 inline std::string s_version() {
+  display_debug_info("", __FUNCTION__, PURPLE_B);
+
   int major, minor, patch;
   zmq_version(&major, &minor, &patch);
 
@@ -70,18 +80,32 @@ inline std::string s_version() {
 }
 
 inline void set_opts(zmq::socket_t* opt) {
+  display_debug_info("", __FUNCTION__, PURPLE_B);
+
   opt->setsockopt(ZMQ_LINGER, 1000);
   opt->setsockopt(ZMQ_BACKLOG, 32767);
   opt->setsockopt(ZMQ_RCVHWM, 32767);
   opt->setsockopt(ZMQ_SNDHWM, 32767);
 }
 
+
+
+
+
+
+
+
+
+
+
 class SegmentedRecv {
  public:
   SegmentedRecv(zmq::socket_t& socket)
       : socket_(socket),
         logger_(
-            elf::logging::getLogger("elf::distributed::SegmentedRecv-", "")) {}
+            elf::logging::getLogger("elf::distributed::SegmentedRecv-", "")) {
+    display_debug_info("SegmentedRecv", __FUNCTION__, GREEN_B);
+  }
 
   /*
   void recvBlocked(size_t n, std::vector<std::string>* p_msgs) {
@@ -96,6 +120,8 @@ class SegmentedRecv {
   */
 
   bool recvNonblocked(size_t n, std::vector<std::string>* p_msgs) {
+    display_debug_info("SegmentedRecv", __FUNCTION__, GREEN_B);
+
     p_msgs->clear();
     while (p_msgs->size() < n) {
       std::string s;
@@ -115,6 +141,8 @@ class SegmentedRecv {
       const std::string& prefix,
       size_t prefix_idx,
       std::vector<std::string>* p_msgs) {
+    display_debug_info("SegmentedRecv", __FUNCTION__, GREEN_B);
+
     std::vector<std::string> msgs;
     p_msgs->clear();
     //
@@ -154,6 +182,8 @@ class SegmentedRecv {
   std::shared_ptr<spdlog::logger> logger_;
 
   bool getNoblock(std::string* s) {
+    display_debug_info("SegmentedRecv", __FUNCTION__, GREEN_B);
+
     if (!last_msgs_.empty()) {
       *s = last_msgs_.front();
       last_msgs_.pop_front();
@@ -164,6 +194,8 @@ class SegmentedRecv {
   }
 
   void revoke(std::vector<std::string>* msgs) {
+    display_debug_info("SegmentedRecv", __FUNCTION__, GREEN_B);
+
     if (msgs->empty())
       return;
 
@@ -176,16 +208,26 @@ class SegmentedRecv {
   }
 };
 
+
+
+
+
+
+
+
 class SameThreadChecker {
  public:
   SameThreadChecker()
       : logger_(elf::logging::getLogger(
             "elf::distributed::SameThreadChecker-",
             "")) {
+    display_debug_info("SameThreadChecker", __FUNCTION__, GREEN_B);
     id_ = std::this_thread::get_id();
   }
 
   bool check() const {
+    display_debug_info("SameThreadChecker", __FUNCTION__, GREEN_B);
+
     auto id = std::this_thread::get_id();
     return id_ == id;
   }
@@ -206,11 +248,23 @@ class SameThreadChecker {
 static const std::string kSendPrefix = "ZMQSend";
 static const std::string kRecvPrefix = "ZMQRecv";
 
+
+
+
+
+
+
+
+
+
+
 class ZMQReceiver : public SameThreadChecker {
  public:
   ZMQReceiver(int port, bool use_ipv6)
       : context_(1),
         logger_(elf::logging::getLogger("elf::distributed::ZMQReceiver-", "")) {
+    display_debug_info("ZMQReceiver", __FUNCTION__, GREEN_B);
+
     broker_.reset(new zmq::socket_t(context_, ZMQ_ROUTER));
     if (use_ipv6) {
       int ipv6 = 1;
@@ -226,6 +280,8 @@ class ZMQReceiver : public SameThreadChecker {
       const std::string& identity,
       const std::string& title,
       const std::string& msg) {
+    display_debug_info("ZMQReceiver", __FUNCTION__, GREEN_B);
+
     std::lock_guard<std::mutex> locker(mutex_);
 
     try {
@@ -245,6 +301,8 @@ class ZMQReceiver : public SameThreadChecker {
 
   bool
   recv_noblock(std::string* identity, std::string* title, std::string* msg) {
+    display_debug_info("ZMQReceiver", __FUNCTION__, GREEN_B);
+
     assert(msg != nullptr);
     std::lock_guard<std::mutex> locker(mutex_);
 
@@ -278,6 +336,14 @@ class ZMQReceiver : public SameThreadChecker {
   std::shared_ptr<spdlog::logger> logger_;
 };
 
+
+
+
+
+
+
+
+
 class ZMQSender : public SameThreadChecker {
  public:
   ZMQSender(
@@ -287,6 +353,8 @@ class ZMQSender : public SameThreadChecker {
       bool use_ipv6)
       : context_(1),
         logger_(elf::logging::getLogger("elf::distributed::ZMQSender-", "")) {
+    display_debug_info("ZMQSender", __FUNCTION__, GREEN_B);
+
     sender_.reset(new zmq::socket_t(context_, ZMQ_DEALER));
     if (use_ipv6) {
       int ipv6 = 1;
@@ -300,6 +368,8 @@ class ZMQSender : public SameThreadChecker {
   }
 
   void send(const std::string& title, const std::string& msg) {
+    display_debug_info("ZMQSender", __FUNCTION__, GREEN_B);
+
     std::lock_guard<std::mutex> locker(mutex_);
     try {
       s_sendmore(*sender_, "");
@@ -314,6 +384,8 @@ class ZMQSender : public SameThreadChecker {
   }
 
   bool recv_noblock(std::string* title, std::string* msg) {
+    display_debug_info("ZMQSender", __FUNCTION__, GREEN_B);
+    
     assert(msg != nullptr);
 
     std::lock_guard<std::mutex> locker(mutex_);

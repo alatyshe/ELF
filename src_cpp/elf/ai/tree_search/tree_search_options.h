@@ -74,6 +74,19 @@ struct SearchAlgoOptions {
       root_unexplored_q_zero);
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 struct TSOptions {
   int max_num_moves = 0;
   int num_threads = 16;
@@ -82,7 +95,7 @@ struct TSOptions {
   bool verbose = false;
   bool verbose_time = false;
   int seed = 0;
-  bool persistent_tree = false;
+  bool persistent_tree = true;
   float root_epsilon = 0.0;
   float root_alpha = 0.0;
   std::string log_prefix = "";
@@ -231,6 +244,21 @@ struct TSOptions {
 } // namespace tree_search
 } // namespace ai
 } // namespace elf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 namespace std {
 

@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "elf/debug/debug.h"
 
 namespace elf {
 
@@ -40,14 +41,30 @@ TYPE_NAME_CLASS(int32_t);
 
 struct Size {
  public:
-  Size(std::initializer_list<int> l) : sz_(l) {}
-  Size(const std::vector<int>& l) : sz_(l) {}
-  Size(const Size& s) : sz_(s.sz_) {}
+  Size(std::initializer_list<int> l) : sz_(l) {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+  }
+
+  Size(const std::vector<int>& l) : sz_(l) {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+  }
+
+  Size(const Size& s) : sz_(s.sz_) {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+  }
+
   Size(int s) {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
     sz_.push_back(s);
   }
-  Size() {}
+
+  Size() {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+  }
+
   size_t nelement() const {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+
     int n = 1;
     for (const int& v : sz_)
       n *= v;
@@ -55,16 +72,23 @@ struct Size {
   }
 
   const std::vector<int>& vec() const {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+
     return sz_;
   }
   int operator[](int i) const {
+    // display_debug_info("Size", __FUNCTION__, GREEN_B);
+
     return sz_[i];
   }
   size_t size() const {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+
     return sz_.size();
   }
 
   Size getContinuousStrides(int type_size) const {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
     // size to stride.
     std::vector<int> prod(sz_.size(), 1);
     for (int i = sz_.size() - 1; i >= 1; --i) {
@@ -77,6 +101,8 @@ struct Size {
   }
 
   Size divide(int k) const {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+
     std::vector<int> res(sz_);
     for (int& r : res) {
       r /= k;
@@ -85,9 +111,14 @@ struct Size {
   }
 
   size_t norder() const {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+
     return sz_.size();
   }
+
   std::string info() const {
+    display_debug_info("Size", __FUNCTION__, GREEN_B);
+    
     std::stringstream ss;
     ss << "(";
     for (const int& v : sz_)

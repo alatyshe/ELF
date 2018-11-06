@@ -43,6 +43,8 @@
 #include <blockingconcurrentqueue.h>
 #include <tbb/concurrent_queue.h>
 
+#include "elf/debug/debug.h"
+
 namespace elf {
 namespace concurrency {
 
@@ -56,10 +58,14 @@ class ConcurrentQueueMoodyCamel {
   using value_type = T;
 
   void push(const T& value) {
+    display_debug_info("ConcurrentQueueMoodyCamel", __FUNCTION__, GREEN_B);
+
     q_.enqueue(value);
   }
 
   void pop(T* value) {
+    display_debug_info("ConcurrentQueueMoodyCamel", __FUNCTION__, GREEN_B);
+
     _check_consumer();
     if (_prefetch(value))
       return;
@@ -68,6 +74,8 @@ class ConcurrentQueueMoodyCamel {
 
   template <typename Rep, typename Period>
   bool pop(T* value, std::chrono::duration<Rep, Period> timeout) {
+    display_debug_info("ConcurrentQueueMoodyCamel", __FUNCTION__, GREEN_B);
+
     _check_consumer();
     if (_prefetch(value))
       return true;
@@ -83,6 +91,8 @@ class ConcurrentQueueMoodyCamel {
   bool no_consumer_ = true;
 
   void _check_consumer() {
+    display_debug_info("ConcurrentQueueMoodyCamel", __FUNCTION__, GREEN_B);
+
     if (no_consumer_) {
       single_consumer_ = std::this_thread::get_id();
       no_consumer_ = false;
@@ -92,6 +102,8 @@ class ConcurrentQueueMoodyCamel {
   }
 
   bool _prefetch(T* v) {
+    display_debug_info("ConcurrentQueueMoodyCamel", __FUNCTION__, GREEN_B);
+
     T value;
     while (q_.wait_dequeue_timed(value, std::chrono::microseconds(0))) {
       buffer_.push_back(value);
@@ -106,16 +118,26 @@ class ConcurrentQueueMoodyCamel {
   }
 };
 
+
+
+
+
+
+
 template <typename T>
 class ConcurrentQueueTBB {
  public:
   using value_type = T;
 
   void push(const T& value) {
+    display_debug_info("ConcurrentQueueTBB", __FUNCTION__, GREEN_B);
+
     q_.push(value);
   }
 
   void pop(T* value) {
+    display_debug_info("ConcurrentQueueTBB", __FUNCTION__, GREEN_B);
+
     while (true) {
       if (q_.try_pop(*value)) {
         return;
@@ -125,6 +147,8 @@ class ConcurrentQueueTBB {
 
   template <typename Rep, typename Period>
   bool pop(T* value, std::chrono::duration<Rep, Period> timeout) {
+    display_debug_info("ConcurrentQueueTBB", __FUNCTION__, GREEN_B);
+
     if (!q_.try_pop(*value)) {
       // Sleep would not efficiently return the element.
       std::this_thread::sleep_for(timeout);

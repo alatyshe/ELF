@@ -21,6 +21,7 @@
 
 #include "elf/concurrency/TBBHashers.h"
 #include "elf/logging/IndexedLoggerFactory.h"
+#include "elf/debug/debug.h"
 
 #include "broadcast.h"
 
@@ -107,7 +108,9 @@ class CommInternalT {
  protected:
   class Client {
    public:
-    explicit Client(CommInternal* p) : p_(p) {}
+    explicit Client(CommInternal* p) : p_(p) {
+      display_debug_info("CommInternalT->Client", __FUNCTION__, GREEN_B);
+    }
 
    protected:
     // If Comm does not see this thread id before, it will create a new record
@@ -116,6 +119,8 @@ class CommInternalT {
     // can be resent
     // (e.g., the action returned from the reply will be sent for training).
     ReplyStatus sendWait(Id id, const std::vector<Id>& server_ids, Data data) {
+      display_debug_info("CommInternalT->Client", __FUNCTION__, GREEN_B);
+
       return sendBatchWait(id, server_ids, std::vector<Data>{data});
     }
 
@@ -123,6 +128,8 @@ class CommInternalT {
         Id id,
         const std::vector<Id>& server_ids,
         const std::vector<Data>& data) {
+      display_debug_info("CommInternalT->Client", __FUNCTION__, GREEN_B);
+
       assert(!data.empty());
       // Find server that could accept this task.
       std::vector<ClientToServerMsg> messages;
@@ -174,6 +181,9 @@ class CommInternalT {
     CommInternal* p_;
   };
 
+
+
+
   class Server {
    protected:
     // We define a C++ interface, and a Python wrapper.
@@ -185,16 +195,21 @@ class CommInternalT {
         Id id,
         const WaitOptions& opt,
         std::vector<ClientToServerMsg>* batch) {
+      display_debug_info("CommInternalT->Server", __FUNCTION__, GREEN_B);
       ServerNode* node = p_->server(id);
       return node->waitSessionInvite(opt, batch);
     }
 
    public:
-    explicit Server(CommInternal* p) : p_(p) {}
+    explicit Server(CommInternal* p) : p_(p) {
+      display_debug_info("CommInternalT->Server", __FUNCTION__, GREEN_B);
+    }
 
     bool sendClosuresWaitDone(
         const std::vector<ClientToServerMsg>& messages,
         const std::vector<ReplyFunction>& functions) {
+      display_debug_info("CommInternalT->Server", __FUNCTION__, GREEN_B);
+
       if (messages.empty()) {
         return true;
       }
@@ -217,6 +232,8 @@ class CommInternalT {
     bool ReleaseBatch(
         const std::vector<ClientToServerMsg>& messages,
         ReplyStatus task_result) {
+      display_debug_info("CommInternalT->Server", __FUNCTION__, GREEN_B);
+
       if (kExpectReply) {
         std::vector<ReplyFunction> functions;
         functions.resize(
@@ -234,8 +251,14 @@ class CommInternalT {
     CommInternal* p_;
   };
 
+
+
+
+
  private:
   ClientNode* client(Id id) {
+    display_debug_info("CommInternalT", __FUNCTION__, GREEN_B);
+
     typename ClientMap::accessor elem;
     bool uninitialized = clients_.insert(elem, id);
     if (uninitialized) {
@@ -245,6 +268,8 @@ class CommInternalT {
   }
 
   ServerNode* server(Id id) {
+    display_debug_info("CommInternalT", __FUNCTION__, GREEN_B);
+
     typename ServerMap::accessor elem;
     bool uninitialized = servers_.insert(elem, id);
     if (uninitialized) {
@@ -284,7 +309,9 @@ struct RecvOptions {
       int batchsize,
       int timeout_usec = 0,
       int min_batchsize = 0)
-      : label(label), wait_opt(batchsize, timeout_usec, min_batchsize) {}
+      : label(label), wait_opt(batchsize, timeout_usec, min_batchsize) {
+      display_debug_info("struct RecvOptions ", __FUNCTION__, GREEN_B);
+    }
 };
 
 ///
@@ -327,9 +354,13 @@ class CommT : public CommInternalT<
         : CommInternal::Client(pp),
           pp_(pp),
           rng_(time(NULL)),
-          logger_(elf::logging::getLogger("elf::comm::Client-", "")) {}
+          logger_(elf::logging::getLogger("elf::comm::Client-", "")) {
+      display_debug_info("CommT->Client", __FUNCTION__, GREEN_B);
+    }
 
     ReplyStatus sendWait(Data data, const std::vector<std::string>& labels) {
+      display_debug_info("CommT->Client", __FUNCTION__, GREEN_B);
+
       return CommInternal::Client::sendWait(
           std::this_thread::get_id(), label2server(labels), data);
     }
@@ -337,6 +368,8 @@ class CommT : public CommInternalT<
     ReplyStatus sendBatchWait(
         const std::vector<Data>& data,
         const std::vector<std::string>& labels) {
+      display_debug_info("CommT->Client", __FUNCTION__, GREEN_B);
+
       return CommInternal::Client::sendBatchWait(
           std::this_thread::get_id(), label2server(labels), data);
     }
@@ -347,6 +380,8 @@ class CommT : public CommInternalT<
     std::shared_ptr<spdlog::logger> logger_;
 
     std::vector<Id> label2server(const std::vector<std::string>& labels) {
+      display_debug_info("CommT->Client", __FUNCTION__, GREEN_B);
+
       assert(!labels.empty());
       std::vector<Id> server_ids;
 
@@ -370,12 +405,22 @@ class CommT : public CommInternalT<
     }
   };
 
+
+
+
+
+
+
   class Server : public CommInternal::Server {
    public:
-    explicit Server(Comm* pp) : CommInternal::Server(pp), pp_(pp) {}
+    explicit Server(Comm* pp) : CommInternal::Server(pp), pp_(pp) {
+      display_debug_info("CommT->Server", __FUNCTION__, GREEN_B);
+    }
 
     // TODO: Put these logic to a separate place.
     void RegServer(const std::string& label) {
+      display_debug_info("CommT->Server", __FUNCTION__, GREEN_B);
+
       std::lock_guard<std::mutex> lock(pp_->register_mutex_);
       ServerLabelMap::accessor elem;
       bool uninitialized = pp_->serverLabels_.insert(elem, label);
@@ -387,11 +432,15 @@ class CommT : public CommInternalT<
     }
 
     void waitForRegs(int n) {
+      display_debug_info("CommT->Server", __FUNCTION__, GREEN_B);
+
       counter_.waitUntilCount(n);
       counter_.reset();
     }
 
     bool waitBatch(const RecvOptions& options, std::vector<Message>* batch) {
+      display_debug_info("CommT->Server", __FUNCTION__, GREEN_B);
+
       return CommInternal::Server::waitBatch(
           std::this_thread::get_id(), options.wait_opt, batch);
     }
@@ -401,13 +450,25 @@ class CommT : public CommInternalT<
     elf::concurrency::Counter<int> counter_;
   };
 
+
+
+
+
+
+
+
+
   // Create and return a client object
   std::unique_ptr<Client> getClient() {
+    display_debug_info("CommT", __FUNCTION__, GREEN_B);
+
     return std::unique_ptr<Client>(new Client(this));
   }
 
   // Create and return a server object
   std::unique_ptr<Server> getServer() {
+    display_debug_info("CommT", __FUNCTION__, GREEN_B);
+
     return std::unique_ptr<Server>(new Server(this));
   }
 

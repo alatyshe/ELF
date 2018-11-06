@@ -15,6 +15,8 @@ namespace elf {
 namespace options {
 
 void OptionSpec::registerPy(pybind11::module& m) {
+  display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
+  
   /* clang-format off */
   namespace py = pybind11;
 

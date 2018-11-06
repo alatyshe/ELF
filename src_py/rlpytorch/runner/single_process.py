@@ -30,11 +30,17 @@ class SingleProcessRun(object):
             'tqdm',
             'toggle tqdm visualization',
             False)
+
+        print("\x1b[1;32;40mSingleProcessRun.get_option_spec    \x1b[0m")
+
         return spec
 
     @auto_import_options
     def __init__(self, option_map):
         """Initialization for SingleProcessRun."""
+
+        print("\x1b[1;32;40mSingleProcessRun.init    \x1b[0m")
+
         pass
 
     def setup(self, GC, episode_start=None, episode_summary=None,
@@ -48,6 +54,9 @@ class SingleProcessRun(object):
             after_start(func): operations called after GC.start() but
                                before the main loop.
         '''
+
+        print("\x1b[1;32;40mSingleProcessRun.setup    \x1b[0m")
+
         self.GC = GC
         self.episode_summary = episode_summary
         self.episode_start = episode_start
@@ -67,6 +76,10 @@ class SingleProcessRun(object):
 
         In the end, print summary for game context and stop it.
         """
+
+
+        print("\x1b[1;32;40mSingleProcessRun.run    \x1b[0m")
+
         self.GC.start()
         if self.after_start is not None:
             self.after_start()
@@ -115,14 +128,26 @@ class SingleProcessRun(object):
         self.GC.stop()
 
     def set_episode_counter(self, counter):
+
+        print("\x1b[1;32;40mSingleProcessRun.set_episode_counter    \x1b[0m")
+
         self.episode_counter = counter
 
     def inc_episode_counter(self, delta):
+
+        print("\x1b[1;32;40mSingleProcessRun.inc_episode_counter    \x1b[0m")
+
         self.episode_counter += delta
 
     def run_multithread(self):
         ''' Start training in a multithreaded environment '''
+
+
+        print("\x1b[1;32;40mSingleProcessRun.run_multithread    \x1b[0m")
+
         def train_thread():
+            print("\x1b[1;32;40mSingleProcessRun.train_thread    \x1b[0m")
+
             for i in range(self.options.num_episode):
                 for k in range(self.options.num_minibatch):
                     if self.episode_start is not None:
@@ -139,6 +164,7 @@ class SingleProcessRun(object):
                 self.episode_summary(i)
 
         def actor_thread():
+            print("\x1b[1;32;40mSingleProcessRun.actor_thread    \x1b[0m")
             while True:
                 self.GC.runGroup("actor")
 
