@@ -5,6 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 
 import sys
+import inspect
+import os
 from collections import defaultdict
 
 import numpy as np
@@ -377,8 +379,13 @@ class GCWrapper:
 
     def _call(self, smem, *args, **kwargs):
         idx = smem.getSharedMemOptions().idx()
+        
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+        print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         # print("smem idx: %d, label: %s" % (idx, self.idx2name[idx]))
         # print(self.name2idx)
+
         if idx not in self._cb:
             raise ValueError("smem.idx[%d] is not in callback functions" % idx)
 
@@ -392,12 +399,14 @@ class GCWrapper:
         if self.gpu is not None:
             picked = picked.cpu2gpu(self.gpu)
 
+        print("1111111")
         # Save the infos structure, if people want to have access to state
         # directly, they can use infos.s[i], which is a state pointer.
         picked.smem = smem
         picked.batchsize = batchsize
         picked.max_batchsize = smem.getSharedMemOptions().batchsize()
 
+        print("2222222")
         # Get the reply array
         if self.batches[idx]["reply"] is not None:
             sel_reply = self._makebatch(
@@ -405,7 +414,12 @@ class GCWrapper:
         else:
             sel_reply = None
 
+        print("3333333")
         reply = self._cb[idx](picked, *args, **kwargs)
+        
+        print("4444444")
+
+        print("reply :: ", reply)
         # If reply is meaningful, send them back.
         if isinstance(reply, dict) and sel_reply is not None:
             if self.gpu is not None:
@@ -441,9 +455,11 @@ class GCWrapper:
         '''
         # print("before wait")
         smem = self.GC.ctx().wait()
-        # print("before calling")
+
+        print("before calling")
         self._call(smem, *args, **kwargs)
-        # print("before_step")
+
+        print("before_step")
         self.GC.ctx().step()
 
     def start(self):

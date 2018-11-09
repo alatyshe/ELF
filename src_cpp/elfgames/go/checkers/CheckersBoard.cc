@@ -1,26 +1,36 @@
 #include "CheckersBoard.h"
 
-void				clearBoard(CheckersBoard* board) {
-	board->_total_moves = 0;
-	board->active = BLACK;
-	board->passive = WHITE;
+#define myassert(p, text) \
+  do {                    \
+    if (!(p)) {           \
+      printf((text));     \
+    }                     \
+  } while (0)
+
+void				ClearBoard(CheckersBoard* board) {
+	// board->_total_moves = 0;
+	board->active = BLACK_PLAYER;
+	board->passive = WHITE_PLAYER;
 
 	board->empty = 0;
+	board->_ply = 1;
 
-	board->forward[BLACK] = 0x1eff;
-	board->backward[BLACK] = 0;
-	board->pieces[BLACK] = (board->forward[BLACK]) | (board->backward[BLACK]);
+	board->forward[BLACK_PLAYER] = 0x1eff;
+	board->backward[BLACK_PLAYER] = 0;
+	board->pieces[BLACK_PLAYER] = (board->forward[BLACK_PLAYER]) | (board->backward[BLACK_PLAYER]);
 
-	board->forward[WHITE] = 0;
-	board->backward[WHITE] = 0x7fbc00000;
-	board->pieces[WHITE] = (board->forward[WHITE]) | (board->backward[WHITE]);
+	board->forward[WHITE_PLAYER] = 0;
+	board->backward[WHITE_PLAYER] = 0x7fbc00000;
+	board->pieces[WHITE_PLAYER] = (board->forward[WHITE_PLAYER]) | (board->backward[WHITE_PLAYER]);
 
-	board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK] | board->pieces[WHITE]);
+	board->_last_move = 0;
+
+	board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK_PLAYER] | board->pieces[WHITE_PLAYER]);
 
 	board->jump = 0;
 }
 
-bool				make_move(CheckersBoard *board, int64_t action_index) {
+bool				CheckersPlay(CheckersBoard *board, int64_t action_index) {
 	/*
 		Updates the game state to reflect the effects of the input
 		move.
@@ -39,10 +49,11 @@ bool				make_move(CheckersBoard *board, int64_t action_index) {
 	auto index = moves::i_to_m.find(action_index);
 	move = index->second[0];
 
+	board->_last_move = action_index;
 	active = board->active;
 	passive = board->passive;
 	buffer = 0;
-	board->_total_moves += 1;
+	board->_ply += 1;
 	if (move < 0) {
 		move *= -1;
 
@@ -67,7 +78,7 @@ bool				make_move(CheckersBoard *board, int64_t action_index) {
 		board->backward[active] ^= move;
 
 	destination = move & board->pieces[active];
-	board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK] | board->pieces[WHITE]);
+	board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK_PLAYER] | board->pieces[WHITE_PLAYER]);
 
 	if (board->jump) {
 		board->mandatory_jumps = _jumps_from(*board, destination);
@@ -75,10 +86,10 @@ bool				make_move(CheckersBoard *board, int64_t action_index) {
 			return true;
 	}
 
-	if (active == BLACK && (destination & 0x780000000) != 0)
-		board->backward[BLACK] |= destination;
-	else if (active == WHITE && (destination & 0xf) != 0)
-		board->forward[WHITE] |= destination;
+	if (active == BLACK_PLAYER && (destination & 0x780000000) != 0)
+		board->backward[BLACK_PLAYER] |= destination;
+	else if (active == WHITE_PLAYER && (destination & 0xf) != 0)
+		board->forward[WHITE_PLAYER] |= destination;
 
 	board->jump = 0;
 	buffer = board->active;
@@ -89,7 +100,51 @@ bool				make_move(CheckersBoard *board, int64_t action_index) {
 	return false;
 }
 
-std::vector<std::array<int64_t, 2>>	get_legal_moves(CheckersBoard board, int player) {
+
+
+
+std::array<int, ALL_ACTIONS>		GetValidMovesBinary(CheckersBoard board, int player) {
+	// std::vector<std::array<int64_t, 2>>	result;
+	int 								buffer;
+	std::vector<int64_t>				moves;
+	std::string							move_buff;
+	std::array<int, ALL_ACTIONS>		result;
+
+	result.fill(0);
+	if (player != board.active) {
+		buffer = board.active;
+		board.active = board.passive;
+		board.passive = buffer;
+
+		moves = _get_moves(board);
+		for (auto i = moves.begin(); i != moves.end(); ++i) {
+			move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
+			
+			std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
+
+			result[moves::m_to_i.find(move_buff)->second] = 1;
+		}
+
+		buffer = board.active;
+		board.active = board.passive;
+		board.passive = buffer;
+	}
+	else {
+		moves = _get_moves(board);
+		for (auto i = moves.begin(); i != moves.end(); ++i) {
+			move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
+
+			std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
+
+			result[moves::m_to_i.find(move_buff)->second] = 1;
+		}
+	}
+
+	return result;
+}
+
+
+std::vector<std::array<int64_t, 2>>	GetValidMovesIndexes(CheckersBoard board, int player) {
 	std::vector<std::array<int64_t, 2>>	result;
 	int 								buffer;
 	std::vector<int64_t>				moves;
@@ -118,6 +173,13 @@ std::vector<std::array<int64_t, 2>>	get_legal_moves(CheckersBoard board, int pla
 		}
 	}
 	return result;
+}
+
+bool				CheckersTryPlay(CheckersBoard board, Coord c) {
+	std::array<int, ALL_ACTIONS> res = GetValidMovesBinary(board, board.active);
+	if (res[c])
+		return true;
+	return false;
 }
 
 bool				is_over(CheckersBoard board) {
@@ -207,12 +269,12 @@ std::array<std::array<int, 8>, 8>	get_observation(CheckersBoard board, int playe
 
 	for (int i = 0; i < 8; i++)
 		board_out[i].fill(0);
-	bin_black_pawn = board.forward[BLACK];
-    bin_black_king = board.backward[BLACK];
-    bin_white_pawn = board.backward[WHITE];
-    bin_white_king = board.forward[WHITE];
+	bin_black_pawn = board.forward[BLACK_PLAYER];
+    bin_black_king = board.backward[BLACK_PLAYER];
+    bin_white_pawn = board.backward[WHITE_PLAYER];
+    bin_white_king = board.forward[WHITE_PLAYER];
 
-    if (player == BLACK){
+    if (player == BLACK_PLAYER){
         for (int i = 0; i < 35; i++) {
             if (((bin_black_king >> i) & 1) == 1) {
                 buff = (1+i-i/9)-1;
@@ -265,7 +327,7 @@ std::array<std::array<int, 8>, 8>	get_observation(CheckersBoard board, int playe
 }
 
 std::array<std::array<int, 8>, 8>	get_true_state(CheckersBoard board) {
-	return (get_observation(board, BLACK));
+	return (get_observation(board, BLACK_PLAYER));
 }
 
 std::string			get_true_state_str(const CheckersBoard board) {
@@ -307,6 +369,40 @@ void				set_current_player(CheckersBoard *board, int player) {
 		board->passive = buffer;
     }
 }
+
+
+void				CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src) {
+  myassert(dst, "dst cannot be nullptr");
+  myassert(src, "src cannot be nullptr");
+
+  memcpy(dst, src, sizeof(CheckersBoard));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -481,7 +577,7 @@ std::vector<int64_t>		_jumps_from(CheckersBoard board, int64_t piece) {
 
 	uint64_t 				buff;
 
-    if (board.active == BLACK) {
+    if (board.active == BLACK_PLAYER) {
         rfj = ((board.empty >> 8) & (board.pieces[board.passive] >> 4) & piece);
         lfj = ((board.empty >> 10) & (board.pieces[board.passive] >> 5) & piece);
         if (piece & board.backward[board.active]) { // piece at square is a king

@@ -499,6 +499,7 @@ class TreeSearchT {
     treeReady_.waitUntilCount(threadPool_.size());
     treeReady_.reset();
 
+
     return chooseAction();
   }
 
@@ -591,6 +592,7 @@ class TreeSearchT {
     MCTSResult result;
     result.root_value = root->getValue();
 
+    std::cout << "options_.pick_method : " << options_.pick_method << std::endl;
     // MCTSResult result2;
     if (options_.pick_method == "strongest_prior") {
       result.action_rank_method = MCTSResult::PRIOR;

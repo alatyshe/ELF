@@ -63,6 +63,9 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
 
   bool act(const State& s, Action* a) override {
     display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
+    std::cout << "action : " << *a << std::endl;
+    std::cout << "board : " << s.showBoard() << std::endl;
+
 
     align_state(s);
     if (options_.verbose_time) {

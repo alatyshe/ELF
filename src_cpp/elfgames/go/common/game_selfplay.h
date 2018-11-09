@@ -23,6 +23,12 @@
 #include "game_stats.h"
 #include "notifier.h"
 
+#include "../checkers/CheckersStateExt.h"
+#include "../checkers/CheckersFeature.h"
+#include "../checkers/CheckersState.h"
+
+class AIClientT;
+
 // Game interface for Go.
 class GoGameSelfPlay : public GoGameBase {
  public:
@@ -40,33 +46,39 @@ class GoGameSelfPlay : public GoGameBase {
 
   std::string showBoard() const {
     display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+    std::cout << _checkers_state_ext.state().showBoard() << std::endl << std::endl;
 
     return _state_ext.state().showBoard();
   }
 
-  std::string getNextPlayer() const {
-    display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  // std::string getNextPlayer() const {
+  //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  //   std::cout << player2str(_state_ext.state().nextPlayer()) << std::endl << std::endl;
 
-    return player2str(_state_ext.state().nextPlayer());
-  }
+  //   return player2str(_state_ext.state().nextPlayer());
+  // }
 
-  std::string getLastMove() const {
-    display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  // std::string getLastMove() const {
+  //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  //   std::cout << coord2str2(_state_ext.lastMove()) << std::endl << std::endl;
 
-    return coord2str2(_state_ext.lastMove());
-  }
+  //   return coord2str2(_state_ext.lastMove());
+  // }
 
   float getScore() {
     display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+    std::cout << _state_ext.state().evaluate(_options.komi) << std::endl << std::endl;
 
     return _state_ext.state().evaluate(_options.komi);
   }
 
-  float getLastScore() const {
-    display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
-    
-    return _state_ext.getLastGameFinalValue();
-  }
+  // float getLastScore() const {
+  //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  //   std::cout << _state_ext.getLastGameFinalValue() << std::endl << std::endl;
+
+
+  //   return _state_ext.getLastGameFinalValue();
+  // }
 
  private:
   void setAsync();
@@ -85,15 +97,20 @@ class GoGameSelfPlay : public GoGameBase {
 
  private:
   ThreadedDispatcher* dispatcher_ = nullptr;
-  GameNotifierBase* notifier_ = nullptr;
-  GoStateExt _state_ext;
+  GameNotifierBase*   notifier_ = nullptr;
+  GoStateExt          _state_ext;
+  // My
+  CheckersStateExt    _checkers_state_ext;
 
   int _online_counter = 0;
 
-  std::unique_ptr<MCTSGoAI> _ai;
+  std::unique_ptr<MCTSGoAI> go_ai1;
   // Opponent ai (used for selfplay evaluation)
-  std::unique_ptr<MCTSGoAI> _ai2;
+  std::unique_ptr<MCTSGoAI> go_ai2;
   std::unique_ptr<AI> _human_player;
+
+
+  // std::unique_ptr<AIClientT> _checkers_ai;
 
   std::shared_ptr<spdlog::logger> logger_;
 };

@@ -18,6 +18,7 @@ set(ELFGAMES_GO_SOURCES
     checkers/CheckersState.cc
     checkers/CheckersBoard.cc
     checkers/CheckersFeature.cc
+    checkers/CheckersStateExt.cc
 )
 
 set(ELFGAMES_GO_INFERENCE_SOURCES

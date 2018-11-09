@@ -367,37 +367,69 @@ class Loader(object):
                 batchsize=1,
             )
             # Used for MCTS/Direct play.
-            desc["actor_black"] = dict(
-                input=["s"],
-                reply=["pi", "V", "a", "rv"],
+            # desc["actor_black"] = dict(
+            #     input=["s"],
+            #     reply=["pi", "V", "a", "rv"],
+            #     timeout_usec=10,
+            #     batchsize=co.mcts_options.num_rollouts_per_batch
+            # )
+
+            desc["checkers_actor_black"] = dict(
+                input=["checkers_s"],
+                reply=["checkers_pi", "checkers_V", "checkers_a", "checkers_rv"],
                 timeout_usec=10,
                 batchsize=co.mcts_options.num_rollouts_per_batch
             )
+
         elif self.options.mode == "selfplay":
             # Used for MCTS/Direct play.
-            desc["actor_black"] = dict(
-                input=["s"],
-                reply=["pi", "V", "a", "rv"],
-                batchsize=self.options.batchsize,
-                timeout_usec=self.options.selfplay_timeout_usec,
-            )
-            desc["actor_white"] = dict(
-                input=["s"],
-                reply=["pi", "V", "a", "rv"],
-                batchsize=self.options.batchsize2
-                if self.options.batchsize2 > 0
-                else self.options.batchsize,
-                timeout_usec=self.options.selfplay_timeout_usec,
-            )
+            # desc["actor_black"] = dict(
+            #     input=["s"],
+            #     reply=["pi", "V", "a", "rv"],
+            #     batchsize=self.options.batchsize,
+            #     timeout_usec=self.options.selfplay_timeout_usec,
+            # )
+            # desc["actor_white"] = dict(
+            #     input=["s"],
+            #     reply=["pi", "V", "a", "rv"],
+            #     batchsize=self.options.batchsize2
+            #     if self.options.batchsize2 > 0
+            #     else self.options.batchsize,
+            #     timeout_usec=self.options.selfplay_timeout_usec,
+            # )
             desc["game_end"] = dict(
                 batchsize=1,
             )
             desc["game_start"] = dict(
                 batchsize=1,
-                input=["black_ver", "white_ver"],
+                input=[
+                        # "black_ver", 
+                        # "white_ver", 
+                        "checkers_white_ver", 
+                        "checkers_black_ver"],
                 reply=None
             )
+
+            # checkers
+            desc["checkers_actor_white"] = dict(
+                input=["checkers_s"],
+                reply=["checkers_pi", "checkers_V", "checkers_a", "checkers_rv"],
+                batchsize=self.options.batchsize2
+                if self.options.batchsize2 > 0
+                else self.options.batchsize,
+                timeout_usec=self.options.selfplay_timeout_usec,
+            )            
+            desc["checkers_actor_black"] = dict(
+                input=["checkers_s"],
+                reply=["checkers_pi", "checkers_V", "checkers_a", "checkers_rv"],
+                batchsize=self.options.batchsize2
+                if self.options.batchsize2 > 0
+                else self.options.batchsize,
+                timeout_usec=self.options.selfplay_timeout_usec,
+            )
+
         elif self.options.mode == "train" or self.options.mode == "offline_train":
+
             desc["train"] = dict(
                 input=["s", "offline_a", "winner", "mcts_scores", "move_idx",
                        "selfplay_ver"],

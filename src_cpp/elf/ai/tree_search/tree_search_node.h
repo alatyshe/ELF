@@ -129,6 +129,10 @@ class NodeT : public NodeBaseT<State> {
   const std::unordered_map<Action, EdgeInfo>& getStateActions() const {
     display_debug_info("NodeT", __FUNCTION__, GREEN_B);
 
+    for (auto& t : stateActions_) 
+    std::cout << "action : " <<  t.first << " : " 
+              << "info : " << t.second.info() << "\n";
+
     return stateActions_;
   }
 

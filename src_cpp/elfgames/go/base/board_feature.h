@@ -44,6 +44,7 @@ struct BoardHistory {
 
   BoardHistory(const Board& b) {
     display_debug_info("struct BoardHistory", __FUNCTION__, RED_B);
+    
     for (int i = 0; i < BOARD_SIZE; ++i) {
       for (int j = 0; j < BOARD_SIZE; ++j) {
         Coord c = OFFSETXY(i, j);

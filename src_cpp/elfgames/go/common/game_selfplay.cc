@@ -23,11 +23,17 @@ GoGameSelfPlay::GoGameSelfPlay(
       dispatcher_(dispatcher),
       notifier_(notifier),
       _state_ext(game_idx, options),
+      // My
+      _checkers_state_ext(game_idx, options),
       logger_(elf::logging::getLogger(
           "elfgames::go::GoGameSelfPlay-" + std::to_string(game_idx) + "-",
           "")) {
     display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
   }
+
+
+
+
 
 MCTSGoAI* GoGameSelfPlay::init_ai(
     const std::string& actor_name,
@@ -81,6 +87,11 @@ MCTSGoAI* GoGameSelfPlay::init_ai(
   return new MCTSGoAI(opt, [&](int) { return new MCTSActor(client_, params); });
 }
 
+
+
+
+
+
 Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSGoAI* mcts_go_ai, Coord c) {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
@@ -99,6 +110,11 @@ Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSGoAI* mcts_go_ai, Coord c) {
 
   return c;
 }
+
+
+
+
+
 
 Coord GoGameSelfPlay::mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c) {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
@@ -126,6 +142,11 @@ Coord GoGameSelfPlay::mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c) {
   return c;
 }
 
+
+
+
+
+
 void GoGameSelfPlay::finish_game(FinishReason reason) {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
@@ -146,9 +167,9 @@ void GoGameSelfPlay::finish_game(FinishReason reason) {
   }
 
   // reset tree if MCTS_AI, otherwise just do nothing
-  _ai->endGame(_state_ext.state());
-  if (_ai2 != nullptr) {
-    _ai2->endGame(_state_ext.state());
+  go_ai1->endGame(_state_ext.state());
+  if (go_ai2 != nullptr) {
+    go_ai2->endGame(_state_ext.state());
   }
 
   if (notifier_ != nullptr) {
@@ -158,15 +179,25 @@ void GoGameSelfPlay::finish_game(FinishReason reason) {
   _state_ext.restart();
 }
 
+
+
+
+
+
 void GoGameSelfPlay::setAsync() {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
-  _ai->setRequiredVersion(-1);
-  if (_ai2 != nullptr)
-    _ai2->setRequiredVersion(-1);
+  go_ai1->setRequiredVersion(-1);
+  if (go_ai2 != nullptr)
+    go_ai2->setRequiredVersion(-1);
 
   _state_ext.addCurrentModel();
 }
+
+
+
+
+
 
 void GoGameSelfPlay::restart() {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
@@ -174,10 +205,10 @@ void GoGameSelfPlay::restart() {
   const MsgRequest& request = _state_ext.currRequest();
   bool async = request.client_ctrl.async;
 
-  _ai.reset(nullptr);
-  _ai2.reset(nullptr);
+  go_ai1.reset(nullptr);
+  go_ai2.reset(nullptr);
   if (_options.mode == "selfplay") {
-    _ai.reset(init_ai(
+    go_ai1.reset(init_ai(
         "actor_black",
         request.vers.mcts_opt,
         -1.0,
@@ -185,7 +216,7 @@ void GoGameSelfPlay::restart() {
         -1,
         async ? -1 : request.vers.black_ver));
     if (request.vers.white_ver >= 0) {
-      _ai2.reset(init_ai(
+      go_ai2.reset(init_ai(
           "actor_white",
           request.vers.mcts_opt,
           _state_ext.options().white_puct,
@@ -195,10 +226,10 @@ void GoGameSelfPlay::restart() {
     }
     if (!request.vers.is_selfplay() && request.client_ctrl.player_swap) {
       // Swap the two pointer.
-      swap(_ai, _ai2);
+      swap(go_ai1, go_ai2);
     }
   } else if (_options.mode == "online") {
-    _ai.reset(init_ai(
+    go_ai1.reset(init_ai(
         "actor_black",
         request.vers.mcts_opt,
         -1.0,
@@ -211,10 +242,17 @@ void GoGameSelfPlay::restart() {
     throw std::range_error("Unknown mode");
   }
 
+
   _state_ext.restart();
 }
 
+
+
+
+
+
 bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
+  // при связи с сервером
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
   if (*reply == RestartReply::UPDATE_COMPLETE)
@@ -286,6 +324,9 @@ bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
 
 
 
+
+
+
 void GoGameSelfPlay::act() {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
   
@@ -306,125 +347,167 @@ void GoGameSelfPlay::act() {
   }
   _online_counter++;
 
-  bool show_board = (_options.verbose && _context_options.num_games == 1);
-  const GoState& s = _state_ext.state();
 
-  if (_human_player != nullptr) {
-    do {
-      if (s.terminated()) {
-        finish_game(FR_ILLEGAL);
-        return;
-      }
 
-      BoardFeature bf(s);
-      GoReply reply(bf);
-      _human_player->act(bf, &reply);
-      // skip the current move, and ask the ai to move.
-      if (reply.c == M_SKIP)
-        break;
-      if (reply.c == M_CLEAR) {
-        if (!_state_ext.state().justStarted()) {
-          finish_game(FR_CLEAR);
-        }
-        return;
-      }
-      // Otherwise we forward.
-      if (_state_ext.forward(reply.c)) {
-        if (_state_ext.state().isTwoPass()) {
-          // If the human opponent pass, we pass as well.
-          finish_game(FR_TWO_PASSES);
-        }
-        return;
-      }
-      logger_->warn(
-          "Invalid move: x = {} y = {} move: {} please try again",
-          X(reply.c),
-          Y(reply.c),
-          coord2str(reply.c));
-    } while (!client_->checkPrepareToStop());
-  } else {
-    // If re receive this, then we should not send games anymore
-    // (otherwise the process never stops)
-    if (client_->checkPrepareToStop()) {
-      // [TODO] A lot of hack here. We need to fix it later.
-      AI ai(client_, {"actor_black"});
-      BoardFeature bf(s);
-      GoReply reply(bf);
-      ai.act(bf, &reply);
 
-      if (client_->DoStopGames())
-        return;
 
-      AI ai_white(client_, {"actor_white"});
-      ai_white.act(bf, &reply);
 
-      elf::FuncsWithState funcs = client_->BindStateToFunctions(
-          {"game_start"}, &_state_ext.currRequest().vers);
-      client_->sendWait({"game_start"}, &funcs);
 
-      funcs = client_->BindStateToFunctions({"game_end"}, &_state_ext.state());
-      client_->sendWait({"game_end"}, &funcs);
 
-      logger_->info("Received command to prepare to stop");
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      return;
-    }
-  }
 
-  Stone player = s.nextPlayer();
-  bool use_policy_network_only =
-      (player == S_WHITE && _options.white_use_policy_network_only) ||
-      (player == S_BLACK && _options.black_use_policy_network_only);
+  // bool show_board = (_options.verbose && _context_options.num_games == 1);
+  // const GoState& s = _state_ext.state();
 
-  Coord c = M_INVALID;
-  MCTSGoAI* curr_ai =
-      ((_ai2 != nullptr && player == S_WHITE) ? _ai2.get() : _ai.get());
+  // if (_human_player != nullptr) {
+  //   do {
+  //     if (s.terminated()) {
+  //       finish_game(FR_ILLEGAL);
+  //       return;
+  //     }
+  //     // if (сs.terminated())
+  //     //   finish_game(FR_ILLEGAL);
 
-  if (use_policy_network_only) {
-    // Then we only use policy network to move.
-    curr_ai->actPolicyOnly(s, &c);
-  } else {
+  //     BoardFeature bf(s);
+  //     GoReply reply(bf);
+  //     _human_player->act(bf, &reply);
 
-    std::cout << "curr_ai->act(s, &c);" << std::endl;
+  //     // Checkers
+  //     // CheckersFeature cf(cs);
+  //     // CheckersReply creply(cf);
+  //     // _human_plyaer->act(cf, &creply);
+
+  //     // skip the current move, and ask the ai to move.
+  //     if (reply.c == M_SKIP)
+  //       break;
+  //     if (reply.c == M_CLEAR) {
+  //       if (!_state_ext.state().justStarted()) {
+  //         finish_game(FR_CLEAR);
+  //       }
+  //       return;
+  //     }
+  //     // Otherwise we forward.
+  //     if (_state_ext.forward(reply.c)) {
+  //       if (_state_ext.state().isTwoPass()) {
+  //         // If the human opponent pass, we pass as well.
+  //         finish_game(FR_TWO_PASSES);
+  //       }
+  //       return;
+  //     }
+  //     logger_->warn(
+  //         "Invalid move: x = {} y = {} move: {} please try again",
+  //         X(reply.c),
+  //         Y(reply.c),
+  //         coord2str(reply.c));
+  //   } while (!client_->checkPrepareToStop());
+  // } else {
+  //   // If re receive this, then we should not send games anymore
+  //   // (otherwise the process never stops)
+  //   if (client_->checkPrepareToStop()) {
+  //     // [TODO] A lot of hack here. We need to fix it later.
+  //     AI ai(client_, {"actor_black"});
+  //     BoardFeature bf(s);
+  //     GoReply reply(bf);
+  //     ai.act(bf, &reply);
+
+  //     if (client_->DoStopGames())
+  //       return;
+
+  //     AI ai_white(client_, {"actor_white"});
+  //     ai_white.act(bf, &reply);
+
+  //     elf::FuncsWithState funcs = client_->BindStateToFunctions(
+  //         {"game_start"}, &_state_ext.currRequest().vers);
+  //     client_->sendWait({"game_start"}, &funcs);
+
+  //     funcs = client_->BindStateToFunctions({"game_end"}, &_state_ext.state());
+  //     client_->sendWait({"game_end"}, &funcs);
+
+  //     logger_->info("Received command to prepare to stop");
+  //     std::this_thread::sleep_for(std::chrono::seconds(1));
+  //     return;
+  //   }
+  // }
+
+  // Stone player = s.nextPlayer();
+  // bool use_policy_network_only =
+  //     (player == S_WHITE && _options.white_use_policy_network_only) ||
+  //     (player == S_BLACK && _options.black_use_policy_network_only);
+
+  // printf("use_policy_network_only : %d\n", use_policy_network_only);
+  
+  // Coord c = M_INVALID;
+  // MCTSGoAI* curr_ai =
+  //     ((go_ai2 != nullptr && player == S_WHITE) ? go_ai2.get() : go_ai1.get());
+
+  // if (use_policy_network_only) {
+  //   // Then we only use policy network to move.
+  //   curr_ai->actPolicyOnly(s, &c);
+  // } else {
+
+  //   std::cout << "curr_ai->act(s, &c);" << std::endl;
     
-    curr_ai->act(s, &c);
-    c = mcts_make_diverse_move(curr_ai, c);
-  }
+  //   curr_ai->act(s, &c);
+  //   c = mcts_make_diverse_move(curr_ai, c);
+  // }
 
+  // c = mcts_update_info(curr_ai, c);
 
+  // if (show_board) {
+  //   logger_->info(
+  //       "Current board:\n{}\n[{}] Propose move {}\n",
+  //       s.showBoard(),
+  //       s.getPly(),
+  //       elf::ai::tree_search::ActionTrait<Coord>::to_string(c));
+  // }
+  // if (!_state_ext.forward(c)) {
+  //   logger_->error(
+  //       "Something is wrong! Move {} cannot be applied\nCurrent board: "
+  //       "{}\n[{}] Propose move {}\nSGF: {}\n",
+  //       c,
+  //       s.showBoard(),
+  //       s.getPly(),
+  //       elf::ai::tree_search::ActionTrait<Coord>::to_string(c),
+  //       _state_ext.dumpSgf(""));
+  //   return;
+  // }
 
+  // if (s.terminated()) {
+  //   auto reason = s.isTwoPass()
+  //       ? FR_TWO_PASSES
+  //       : s.getPly() >= BOARD_MAX_MOVE ? FR_MAX_STEP : FR_ILLEGAL;
+  //   finish_game(reason);
+  // }
 
-  c = mcts_update_info(curr_ai, c);
+  // if (_options.move_cutoff > 0 && s.getPly() >= _options.move_cutoff) {
+  //   finish_game(FR_MAX_STEP);
+  // }
 
-  if (show_board) {
-    logger_->info(
-        "Current board:\n{}\n[{}] Propose move {}\n",
-        s.showBoard(),
-        s.getPly(),
-        elf::ai::tree_search::ActionTrait<Coord>::to_string(c));
-  }
-  if (!_state_ext.forward(c)) {
-    logger_->error(
-        "Something is wrong! Move {} cannot be applied\nCurrent board: "
-        "{}\n[{}] Propose move {}\nSGF: {}\n",
-        c,
-        s.showBoard(),
-        s.getPly(),
-        elf::ai::tree_search::ActionTrait<Coord>::to_string(c),
-        _state_ext.dumpSgf(""));
-    return;
-  }
+  // ===================================================
+  // ===================================================
+  // ===================================================
+  // checkers
+  // Checkers
+  const CheckersState& cs = _checkers_state_ext.state();
 
-  if (s.terminated()) {
-    auto reason = s.isTwoPass()
-        ? FR_TWO_PASSES
-        : s.getPly() >= BOARD_MAX_MOVE ? FR_MAX_STEP : FR_ILLEGAL;
-    finish_game(reason);
-  }
+  int current_player = cs.nextPlayer();
+  int move = M_INVALID;
 
-  if (_options.move_cutoff > 0 && s.getPly() >= _options.move_cutoff) {
-    finish_game(FR_MAX_STEP);
-  }
+  CheckersFeature cf(cs);
+  CheckersReply creply(cf);
+
+  // MCTSGoAI* ai = checkers_ai.get();
+  // AIClientT checkers_ai(client_, "checkers_actor_white");
+  // checkers_ai->act(cf, &creply);
+
+  elf::FuncsWithState funcs_s = client_->BindStateToFunctions({"checkers_actor_black"}, &cf);
+  elf::FuncsWithState funcs_a = client_->BindStateToFunctions({"checkers_actor_black"}, &creply);
+  funcs_s.add(funcs_a);
+
+  comm::ReplyStatus status = client_->sendWait({"checkers_actor_black"}, &funcs_s);
+
+  // std::cout << creply.info() << std::endl;
+  // 
+  exit(1);
 }
 
 

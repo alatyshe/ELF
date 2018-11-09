@@ -142,8 +142,25 @@ bool BoardFeature::getDistanceMap(Stone player, float* data) const {
   return true;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 static float* board_plane(float* features, int idx) {
   display_debug_info("", __FUNCTION__, BLUE_B);
+  // возвращаем ячейку памяти с которой нужно заполнять 
   return features + idx * BOARD_SIZE * BOARD_SIZE;
 }
 

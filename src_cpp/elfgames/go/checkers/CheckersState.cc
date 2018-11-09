@@ -1,51 +1,31 @@
 #include "CheckersState.h"
 
 ///////////// CheckersState ////////////////////
-// bool CheckersState::forward(const Coord& c) {
-//   display_debug_info("CheckersState", __FUNCTION__, RED_B);
+bool CheckersState::forward(const Coord& c) {
+  display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
 
-//   if (c == M_INVALID) {
-//     throw std::range_error("CheckersState::forward(): move is M_INVALID");
-//   }
-//   if (terminated())
-//     return false;
+  if (c == M_INVALID)
+    throw std::range_error("CheckersState::forward(): move is M_INVALID");
 
-//   GroupId4 ids;
-//   if (!TryPlay2(&_board, c, &ids))
-//     return false;
+  if (terminated())
+    return false;
 
-//   _add_board_hash(c);
+  if (!CheckersTryPlay(_board, c))
+    return false;
 
-//   Play(&_board, &ids);
+  // _add_board_hash(c);
 
-//   _moves.push_back(c);
-//   _history.emplace_back(_board);
-//   if (_history.size() > MAX_NUM_AGZ_HISTORY)
-//     _history.pop_front();
-//   return true;
-// }
+  CheckersPlay(&_board, c);
 
-// bool CheckersState::_check_superko() const {
-//   display_debug_info("CheckersState", __FUNCTION__, RED_B);
-
-//   // Check superko rule.
-//   // need to check whether last move is pass or not.
-//   if (lastMove() == M_PASS)
-//     return false;
-
-//   uint64_t key = _board._hash;
-//   auto it = _board_hash.find(key);
-//   if (it != _board_hash.end()) {
-//     for (const auto& r : it->second) {
-//       if (isBitsEqual(_board._bits, r.bits))
-//         return true;
-//     }
-//   }
-//   return false;
-// }
+  _moves.push_back(c);
+  // _history.emplace_back(_board);
+  if (_history.size() > MAX_CHECKERS_HISTORY)
+    _history.pop_front();
+  return true;
+}
 
 // void CheckersState::_add_board_hash(const Coord& c) {
-//   display_debug_info("CheckersState", __FUNCTION__, RED_B);
+//   display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
 
 //   if (c == M_PASS)
 //     return;
@@ -57,7 +37,7 @@
 // }
 
 // bool CheckersState::checkMove(const Coord& c) const {
-//   display_debug_info("CheckersState", __FUNCTION__, RED_B);
+//   display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
 
 //   GroupId4 ids;
 //   if (c == M_INVALID)
@@ -65,21 +45,13 @@
 //   return TryPlay2(&_board, c, &ids);
 // }
 
-// void CheckersState::applyHandicap(int handi) {
-//   display_debug_info("CheckersState", __FUNCTION__, RED_B);
-
-//   _handi_table.apply(handi, &_board);
-// }
-
 void CheckersState::reset() {
-  display_debug_info("CheckersState", __FUNCTION__, RED_B);
+  display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
   
-  // clearBoard(&_board);
-  // _moves.clear();
+  ClearBoard(&_board);
+  _moves.clear();
   // _board_hash.clear();
   // _history.clear();
   _final_value = 0.0;
   _has_final_value = false;
 }
-
-// HandicapTable CheckersState::_handi_table;

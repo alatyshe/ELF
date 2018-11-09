@@ -43,9 +43,9 @@ typedef unsigned char Stone;
 #define M_PASS 0 // (-1, -1)
 // #define M_RESIGN 1 // (0, -1)
 // Used when we want to skip and let the opponent play.
-#define M_SKIP 2
-#define M_INVALID 3
-#define M_CLEAR 4
+#define M_SKIP -2
+#define M_INVALID -3
+#define M_CLEAR -4
 
 #define STR_BOOL(s) ((s) ? "true" : "false")
 #define STR_STONE(s) ((s) == S_BLACK ? "B" : ((s) == S_WHITE ? "W" : "U"))

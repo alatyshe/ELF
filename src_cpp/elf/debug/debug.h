@@ -29,7 +29,7 @@ namespace debug {
 		bool		verbose;
 
 		s_options(): 
-			verbose(false)
+			verbose(true)
 		{};
 	}				t_options;	
 }

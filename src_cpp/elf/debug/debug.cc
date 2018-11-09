@@ -107,7 +107,7 @@ void		display_debug_info(
 {
 	int 		depth;
 
-	if (debug::options_main.verbose == true) {
+	if (debug::options_main.verbose == true && color != GREEN_B) {
 		depth = depth_stacktrace();
 
 		for (int i = 0; i < depth; i++)

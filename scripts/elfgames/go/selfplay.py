@@ -91,7 +91,13 @@ def main():
     print('Conda env:', os.environ.get("CONDA_DEFAULT_ENV", ""))
 
     # Set game to online model.
-    actors = ["actor_black", "actor_white"]
+    actors = [  
+                # "actor_black", 
+                # "actor_white",
+                "checkers_actor_white",
+                "checkers_actor_black"
+                ]
+
     additional_to_load = {
         ("eval_" + actor_name): (
             Evaluator.get_option_spec(name="eval_" + actor_name),
@@ -106,16 +112,28 @@ def main():
         for name in actors
     })
 
+
+
+    print("additional_to_load : ")
+
+    for i in additional_to_load:
+        print(i, " : ", additional_to_load[i])
+
+    # sys.exit(0)
+
+
+
     env = load_env(
-        os.environ, num_models=2, overrides={'actor_only': True},
+        os.environ, num_models=4, overrides={'actor_only': True},
         additional_to_load=additional_to_load)
 
     GC = env["game"].initialize()
 
-    stats = [Stats(), Stats()]
+    stats = [Stats(), Stats(), Stats(), Stats()]
 
     for i in range(len(actors)):
         actor_name = actors[i]
+
         stat = stats[i]
         e = env["eval_" + actor_name]
 
@@ -123,7 +141,12 @@ def main():
         e.setup(sampler=env["sampler"], mi=env["mi_" + actor_name])
 
         def actor(batch, e, stat):
+            # print("HAHAHAHH")
+            # print("batch : ",  batch["checkers_s"])
+
             reply = e.actor(batch)
+            print("reply : ", reply)
+            print("stat :  ", stat)
             stat.feed(batch)
             return reply
 
@@ -137,8 +160,18 @@ def main():
 
     def game_start(batch):
         print("In game start")
+        # print("batch['black_ver'] : ", batch["black_ver"])
+        # print("batch['white_ver'] : ", batch["white_ver"])
+        print("batch['checkers_white_ver'] : ", batch["checkers_white_ver"])
+        print("batch['checkers_black_ver'] : ", batch["checkers_black_ver"])
 
-        vers = [int(batch["black_ver"][0]), int(batch["white_ver"][0])]
+        vers = [
+                # int(batch["black_ver"][0]), 
+                # int(batch["white_ver"][0]),
+                int(batch["checkers_white_ver"][0]),
+                int(batch["checkers_black_ver"][0])
+                ]
+
 
         # Use the version number to load models.
         for model_loader, ver, actor_name in zip(
@@ -173,12 +206,18 @@ def main():
     GC.reg_callback_if_exists("game_end", game_end)
 
     GC.start()
+
+    print("model_loaders : ", env["model_loaders"])
+
+    print("GC.params : ", GC.params)
     if args.eval_model_pair:
         if args.eval_model_pair.find(",") >= 0:
             black, white = args.eval_model_pair.split(",")
         else:
-            black = extract_ver(env["model_loaders"][0])
-            white = extract_ver(env["model_loaders"][1])
+            # black = extract_ver(env["model_loaders"][0])
+            # white = extract_ver(env["model_loaders"][1])
+            checkers_black = extract_ver(env["model_loaders"][2])
+            checkers_white = extract_ver(env["model_loaders"][3])
 
             # Force them to reload in the future.
             for model_loader, actor_name in zip(env["model_loaders"], actors):
@@ -187,10 +226,12 @@ def main():
 
         # We just use one thread to do selfplay.
         GC.GC.getClient().setRequest(
-            int(black), int(white), 1)
+            int(black), int(white), int(checkers_white), int(checkers_black), 1)
 
     for actor_name in actors:
         env["eval_" + actor_name].episode_start(0)
+
+    # sys.exit(0)
 
     while not loop_end:
         GC.run()

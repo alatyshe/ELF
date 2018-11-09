@@ -25,6 +25,16 @@ void replaceAll(
   }
 }
 
+
+
+
+
+
+
+
+
+
+
 std::string GoStateExt::dumpSgf(const std::string& filename) const {
   display_debug_info("GoStateExt", __FUNCTION__, RED_B);
 
@@ -83,6 +93,15 @@ std::string GoStateExt::dumpSgf(const std::string& filename) const {
   ss << ")";
   return ss.str();
 }
+
+
+
+
+
+
+
+
+
 
 void GoStateExt::showFinishInfo(FinishReason reason) const {
   display_debug_info("GoStateExt", __FUNCTION__, RED_B);

@@ -54,12 +54,16 @@ void registerPy(pybind11::module& m) {
       //.def("restartAllGames", &GameStats::restartAllGames)
       .def("getPlayedGames", &GameStats::getPlayedGames);
 
+
+
+// закоментил за ненадобностью, чтобы перед глазами не маячило
+// (откоментить, нужно для игры в консоле)
   py::class_<GoGameSelfPlay>(m, "GoGameSelfPlay")
-      .def("showBoard", &GoGameSelfPlay::showBoard)
-      .def("getNextPlayer", &GoGameSelfPlay::getNextPlayer)
-      .def("getLastMove", &GoGameSelfPlay::getLastMove)
-      .def("getScore", &GoGameSelfPlay::getScore)
-      .def("getLastScore", &GoGameSelfPlay::getLastScore);
+      .def("showBoard", &GoGameSelfPlay::showBoard);
+      // .def("getNextPlayer", &GoGameSelfPlay::getNextPlayer)
+      // .def("getLastMove", &GoGameSelfPlay::getLastMove)
+      // .def("getScore", &GoGameSelfPlay::getScore)
+      // .def("getLastScore", &GoGameSelfPlay::getLastScore);
 }
 
 } // namespace go

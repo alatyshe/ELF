@@ -14,6 +14,10 @@
 
 static std::vector<std::string> split(const std::string& s, char delim) {
   display_debug_info("", __FUNCTION__, BLUE_B);
+  
+  std::cout << "const std::string& s : " << s << std::endl;
+  std::cout << "char delim : |" << delim << "|" << std::endl;
+
   std::stringstream ss(s);
   std::string item;
   std::vector<std::string> elems;
@@ -26,6 +30,8 @@ static std::vector<std::string> split(const std::string& s, char delim) {
 static Coord s2c(const std::string& s) {
   display_debug_info("", __FUNCTION__, BLUE_B);
 
+  std::cout << "const std::string& s : " << s << std::endl;
+
   int row = s[0] - 'A';
   if (row >= 9)
     row--;
@@ -33,52 +39,11 @@ static Coord s2c(const std::string& s) {
   return getCoord(row, col);
 }
 
-HandicapTable::HandicapTable() {
-  display_debug_info("HandicapTable", __FUNCTION__, RED_B);
-  // darkforestGo/cnnPlayerV2/cnnPlayerV2Framework.lua
-  // Handicap according to the number of stones.
-  const std::map<int, std::string> handicap_table = {
-      {2, "D4 Q16"},
-      {3, "D4 Q16 Q4"},
-      {4, "D4 Q16 D16 Q4"},
-      {5, "*4 K10"},
-      {6, "*4 D10 Q10"},
-      {7, "*4 D10 Q10 K10"},
-      {8, "*4 D10 Q10 K16 K4"},
-      {9, "*8 K10"},
-      // {13, "*9 G13 O13 G7 O7", "*9 C3 R3 C17 R17" },
-  };
-  for (const auto& pair : handicap_table) {
-    _handicaps.insert(std::make_pair(pair.first, std::vector<Coord>()));
-    for (const auto& s : split(pair.second, ' ')) {
-      if (s[0] == '*') {
-        const int prev_handi = stoi(s.substr(1));
-        auto it = _handicaps.find(prev_handi);
-        if (it != _handicaps.end()) {
-          _handicaps[pair.first] = it->second;
-        }
-      }
-      _handicaps[pair.first].push_back(s2c(s));
-    }
-  }
-}
-
-void HandicapTable::apply(int handi, Board* board) const {
-  display_debug_info("HandicapTable", __FUNCTION__, RED_B);
-
-  if (handi > 0) {
-    auto it = _handicaps.find(handi);
-    if (it != _handicaps.end()) {
-      for (const auto& ha : it->second) {
-        PlaceHandicap(board, X(ha), Y(ha), S_BLACK);
-      }
-    }
-  }
-}
-
 ///////////// GoState ////////////////////
 bool GoState::forward(const Coord& c) {
   display_debug_info("GoState", __FUNCTION__, RED_B);
+
+  std::cout << "const Coord& c : " << c << std::endl;
 
   if (c == M_INVALID) {
     throw std::range_error("GoState::forward(): move is M_INVALID");
@@ -90,7 +55,7 @@ bool GoState::forward(const Coord& c) {
   if (!TryPlay2(&_board, c, &ids))
     return false;
 
-  _add_board_hash(c);
+  // _add_board_hash(c);
 
   Play(&_board, &ids);
 
@@ -109,31 +74,35 @@ bool GoState::_check_superko() const {
   if (lastMove() == M_PASS)
     return false;
 
-  uint64_t key = _board._hash;
-  auto it = _board_hash.find(key);
-  if (it != _board_hash.end()) {
-    for (const auto& r : it->second) {
-      if (isBitsEqual(_board._bits, r.bits))
-        return true;
-    }
-  }
+  // uint64_t key = _board._hash;
+  // auto it = _board_hash.find(key);
+  // if (it != _board_hash.end()) {
+  //   for (const auto& r : it->second) {
+  //     if (isBitsEqual(_board._bits, r.bits))
+  //       return true;
+  //   }
+  // }
   return false;
 }
 
-void GoState::_add_board_hash(const Coord& c) {
-  display_debug_info("GoState", __FUNCTION__, RED_B);
+// void GoState::_add_board_hash(const Coord& c) {
+//   display_debug_info("GoState", __FUNCTION__, RED_B);
 
-  if (c == M_PASS)
-    return;
+//   std::cout << "const Coord& c : " << c << std::endl;
 
-  uint64_t key = _board._hash;
-  auto& r = _board_hash[key];
-  r.emplace_back();
-  copyBits(r.back().bits, _board._bits);
-}
+//   if (c == M_PASS)
+//     return;
+
+//   uint64_t key = _board._hash;
+//   auto& r = _board_hash[key];
+//   r.emplace_back();
+//   copyBits(r.back().bits, _board._bits);
+// }
 
 bool GoState::checkMove(const Coord& c) const {
   display_debug_info("GoState", __FUNCTION__, RED_B);
+
+  std::cout << "const Coord& c : " << c << std::endl;
 
   GroupId4 ids;
   if (c == M_INVALID)
@@ -141,21 +110,15 @@ bool GoState::checkMove(const Coord& c) const {
   return TryPlay2(&_board, c, &ids);
 }
 
-void GoState::applyHandicap(int handi) {
-  display_debug_info("GoState", __FUNCTION__, RED_B);
-
-  _handi_table.apply(handi, &_board);
-}
 
 void GoState::reset() {
   display_debug_info("GoState", __FUNCTION__, RED_B);
   
   clearBoard(&_board);
   _moves.clear();
-  _board_hash.clear();
+  // _board_hash.clear();
   _history.clear();
   _final_value = 0.0;
   _has_final_value = false;
 }
 
-HandicapTable GoState::_handi_table;

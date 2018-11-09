@@ -452,6 +452,10 @@ void SimpleSort(unsigned char* ids, int n) {
 void RemoveAllEmptyGroups(Board* board) {
   display_debug_info("", __FUNCTION__, BLUE_B);
 
+  char buf[2000];
+  showBoard2Buf(board, SHOW_LAST_MOVE, buf);
+  std::cout << "board : " << buf << std::endl;
+
   // A simple sorting on the empty group id.
   SimpleSort(board->_removed_group_ids, board->_num_group_removed);
 
@@ -481,6 +485,12 @@ void RemoveAllEmptyGroups(Board* board) {
 unsigned short createNewGroup(Board* board, Coord c, int liberty) {
   display_debug_info("", __FUNCTION__, BLUE_B);
 
+  char buf[2000];
+  showBoard2Buf(board, SHOW_LAST_MOVE, buf);
+  std::cout << "board : " << buf << std::endl;
+  std::cout << "c : " << c << std::endl;
+  std::cout << "liberty : " << liberty << std::endl;
+
   unsigned short id = board->_num_groups++;
   board->_groups[id].color = board->_infos[c].color;
   board->_groups[id].start = c;
@@ -498,6 +508,12 @@ unsigned short createNewGroup(Board* board, Coord c, int liberty) {
 // Here the liberty is that of the single stone (raw liberty).
 bool MergeToGroup(Board* board, Coord c, unsigned short id) {
   display_debug_info("", __FUNCTION__, BLUE_B);
+
+  char buf[2000];
+  showBoard2Buf(board, SHOW_LAST_MOVE, buf);
+  std::cout << "board : " << buf << std::endl;
+  std::cout << "c : " << c << std::endl;
+  std::cout << "id : " << id << std::endl;
 
   // Place the stone.
   set_color(board, c, board->_groups[id].color);
@@ -536,6 +552,12 @@ bool MergeToGroup(Board* board, Coord c, unsigned short id) {
 unsigned short
 MergeGroups(Board* board, unsigned short id1, unsigned short id2) {
   display_debug_info("", __FUNCTION__, BLUE_B);
+
+  char buf[2000];
+  showBoard2Buf(board, SHOW_LAST_MOVE, buf);
+  std::cout << "board : " << buf << std::endl;
+  std::cout << "id1 : " << id1 << std::endl;
+  std::cout << "id2 : " << id2 << std::endl;
 
   // printf("merge beteween %d and %d", id1, id2);
   // Same id, no merge.
@@ -787,13 +809,13 @@ bool Play(Board* board, const GroupId4* ids) {
 }
 
 void str_concat(char* buf, int* len, const char* str) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
+  // display_debug_info("", __FUNCTION__, BLUE_B);
 
   *len += sprintf(buf + *len, "%s", str);
 }
 
 void showBoard2Buf(const Board* board, ShowChoice choice, char* buf) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
+  // display_debug_info("", __FUNCTION__, BLUE_B);
 
   // Warning [TODO]: possibly buffer overflow.
   char buf2[30];
@@ -862,7 +884,7 @@ void showBoard2Buf(const Board* board, ShowChoice choice, char* buf) {
 }
 
 void showBoard(const Board* board, ShowChoice choice) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
+  // display_debug_info("", __FUNCTION__, BLUE_B);
 
   // Simple function to show board.
   char buf[2000];

@@ -287,6 +287,10 @@ class Model_PolicyValue(Model):
                   "(for cooldown = 50) in this case")
 
     def forward(self, x):
+        print("X : ", x)
+        print(x["checkers_s"])
+        print("\n\n\n")
+        
         s = self._var(x["s"])
 
         s = self.init_conv(s)
