@@ -84,55 +84,60 @@
 //   return ss.str();
 // }
 
-// void CheckersStateExt::showFinishInfo(FinishReason reason) const {
-//   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
-  
-//   Stone player = _state.nextPlayer();
-//   _logger->info("{}", _state.showBoard());
-//   std::string sgf_record = dumpSgf("");
-//   _logger->info("{}", sgf_record);
+void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
+  display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
 
-//   std::string used_model;
-//   for (const auto& i : using_models_) {
-//     used_model += std::to_string(i) + ", ";
-//   }
-//   _logger->info(
-//       "[{}:{}] Current request: {}, used_model: {}",
-//       _game_idx,
-//       _seq,
-//       curr_request_.info(),
-//       used_model);
+  _logger->info("{}", _state.showBoard());
+  // std::string sgf_record = dumpSgf("");
+  // _logger->info("{}", sgf_record);
 
-//   switch (reason) {
-//     case FR_MAX_STEP:
-//       _logger->info(
-//           "Ply: {} exceeds thread_state. Restarting the game", _state.getPly());
-//       break;
-//     case FR_TWO_PASSES:
-//       _logger->info("Both pass at {}", _state.getPly());
-//       break;
-//     case FR_ILLEGAL:
-//       _logger->info("Illegal move at {}", _state.getPly());
-//       break;
-//     case FR_CLEAR:
-//       _logger->info("Restarting at {}", _state.getPly());
-//       break;
-//     case FR_CHEAT_NEWER_WINS_HALF:
-//       _logger->info(
-//           "Cheat mode: Version: {}, swap: {}",
-//           curr_request_.vers.info(),
-//           curr_request_.client_ctrl.player_swap);
-//       break;
-//     case FR_CHEAT_SELFPLAY_RANDOM_RESULT:
-//       _logger->info(
-//           "Cheat selfplay mode: Version: {}, swap: {}",
-//           curr_request_.vers.info(),
-//           curr_request_.client_ctrl.player_swap);
-//       break;
-//   }
-//   _logger->info(
-//       "Value: {}, Predicted: {}, ResCheck: {}",
-//       _state.getFinalValue(),
-//       getLastPredictedValue());
-//       // _resign_check.info());
-// }
+  // std::string used_model;
+  // for (const auto& i : using_models_) {
+  //   used_model += std::to_string(i) + ", ";
+  // }
+
+  // _logger->info(
+  //     "[{}:{}] Current request: {}, used_model: {}",
+  //     _game_idx,
+  //     _seq,
+  //     curr_request_.info(),
+  //     used_model);
+
+  switch (reason) {
+    case CHECKERS_MAX_STEP:
+      _logger->info(
+          "Ply: {} exceeds thread_state. Restarting the game", _state.getPly());
+      break;
+    case CHEKCERS_BLACK_WIN:
+      _logger->info("Black(Green) win {}", _state.getPly());
+      break;
+    case CHEKCERS_WHITE_WIN:
+      _logger->info("White(Red) win {}", _state.getPly());
+      break;
+    // case FR_CLEAR:
+    //   _logger->info("Restarting at {}", _state.getPly());
+    //   break;
+    // case FR_CHEAT_NEWER_WINS_HALF:
+    //   _logger->info(
+    //       "Cheat mode: Version: {}, swap: {}",
+    //       curr_request_.vers.info(),
+    //       curr_request_.client_ctrl.player_swap);
+    //   break;
+    // case FR_CHEAT_SELFPLAY_RANDOM_RESULT:
+    //   _logger->info(
+    //       "Cheat selfplay mode: Version: {}, swap: {}",
+    //       curr_request_.vers.info(),
+    //       curr_request_.client_ctrl.player_swap);
+    //   break;
+  }
+
+	_logger->info(
+	  "Value: {}",
+	  _state.getFinalValue());
+
+  // _logger->info(
+  //     "Value: {}, Predicted: {}, ResCheck: {}",
+  //     _state.getFinalValue(),
+  //     getLastPredictedValue(),
+  //     _resign_check.info());
+}

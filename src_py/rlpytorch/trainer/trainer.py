@@ -104,6 +104,9 @@ class Evaluator(object):
 
         # actor model.
         m = self.mi[self.actor_name]
+
+        print("self.mi : ", self.mi)
+
         m.set_volatile(True)
         state_curr = m.forward(batch)
         m.set_volatile(False)
@@ -116,11 +119,30 @@ class Evaluator(object):
         if self.stats is not None:
             self.stats.feed_batch(batch)
 
+
+        # print("\n\n\n\n")
+        # print("keys_in_reply\t: ", self.keys_in_reply)
+        # print("\n\nself.mi[self.actor_name] : ", self.mi[self.actor_name])
+        # print("\n\nstate_curr['V']\t: ", state_curr["V"])
+        # print("\n\nself.mi[self.actor_name].step - ", self.mi[self.actor_name].step)
+        # print("\n\nself.mi[self.actor_name].step - ", self.mi[self.actor_name].step)
+        # print("\n\nstate_curr\t\t: ", state_curr)
+        # print("\n\nself.mi\t\t: ", self.mi)
+
+        # print("\n\nstate_curr['V'].data\t: ", state_curr["V"].data)
+        
         if "rv" in self.keys_in_reply:
             reply_msg["rv"] = self.mi[self.actor_name].step
 
         if "V" in self.keys_in_reply:
             reply_msg["V"] = state_curr["V"].data
+
+        if "checkers_rv" in self.keys_in_reply:
+            reply_msg["checkers_rv"] = self.mi[self.actor_name].step
+
+        if "checkers_V" in self.keys_in_reply:
+            # reply_msg["checkers_V"] = state_curr["checkers_V"]
+            reply_msg["checkers_V"] = state_curr["checkers_V"].data
 
         self.actor_count += 1
         return reply_msg

@@ -26,6 +26,7 @@
 #include "../checkers/CheckersStateExt.h"
 #include "../checkers/CheckersFeature.h"
 #include "../checkers/CheckersState.h"
+// #include "../checkers/Notifier.h"
 
 class AIClientT;
 
@@ -46,7 +47,7 @@ class GoGameSelfPlay : public GoGameBase {
 
   std::string showBoard() const {
     display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
-    std::cout << _checkers_state_ext.state().showBoard() << std::endl << std::endl;
+    // std::cout << _checkers_state_ext.state().showBoard() << std::endl << std::endl;
 
     return _state_ext.state().showBoard();
   }
@@ -99,8 +100,11 @@ class GoGameSelfPlay : public GoGameBase {
   ThreadedDispatcher* dispatcher_ = nullptr;
   GameNotifierBase*   notifier_ = nullptr;
   GoStateExt          _state_ext;
+  
   // My
-  CheckersStateExt    _checkers_state_ext;
+  // CheckersGameNotifier*   checkers_notifier_ = nullptr;
+  CheckersStateExt        _checkers_state_ext;
+
 
   int _online_counter = 0;
 

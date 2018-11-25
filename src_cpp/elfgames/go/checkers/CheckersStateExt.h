@@ -24,14 +24,13 @@
 #include "elf/ai/tree_search/tree_search_base.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
-// enum FinishReason {
-//   FR_TWO_PASSES = 0,
-//   FR_MAX_STEP,
-//   FR_CLEAR,
-//   FR_ILLEGAL,
-//   FR_CHEAT_NEWER_WINS_HALF,
-//   FR_CHEAT_SELFPLAY_RANDOM_RESULT,
-// };
+enum CheckersFinishReason {
+  CHECKERS_MAX_STEP = 0,
+  CHEKCERS_BLACK_WIN,
+  CHEKCERS_WHITE_WIN,
+  // FR_CHEAT_NEWER_WINS_HALF,
+  // FR_CHEAT_SELFPLAY_RANDOM_RESULT,
+};
 
 
 
@@ -47,11 +46,11 @@ struct CheckersStateExt {
   CheckersStateExt(int game_idx, const GameOptions& options)
       : _game_idx(game_idx),
         _last_move_for_the_game(M_INVALID),
-        _last_value(0.0)
+        _last_value(0.0),
         // ,
         // _options(options),
-        // _logger(
-        //     elf::logging::getLogger("elfgames::go::common::CheckersStateExt-", "")) 
+        _logger(
+            elf::logging::getLogger("elfgames::go::common::CheckersStateExt-", "")) 
         {
     std::cout << options.info() << std::endl;
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
@@ -267,7 +266,7 @@ struct CheckersStateExt {
 
 
 
-  // void   showFinishInfo(FinishReason reason) const;
+  void   showFinishInfo(CheckersFinishReason reason) const;
 
 
   bool   forward(Coord c) {
@@ -319,7 +318,7 @@ struct CheckersStateExt {
   // std::vector<CoordRecord> _mcts_policies;
   // std::vector<float> _predicted_values;
 
-  // std::shared_ptr<spdlog::logger> _logger;
+  std::shared_ptr<spdlog::logger> _logger;
 };
 
 
@@ -347,12 +346,11 @@ class CheckersStateExtOffline {
   CheckersStateExtOffline(int game_idx)
   // , const GameOptions& options)
       : _game_idx(game_idx),
-        _bf(_state)
-        // ,
+        _bf(_state),
         // _options(options),
-        // _logger(elf::logging::getLogger(
-        //     "elfgames::go::common::CheckersStateExtOffline-",
-        //     "")) 
+        _logger(elf::logging::getLogger(
+            "elfgames::go::common::CheckersStateExtOffline-",
+            "")) 
         {
     display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[2;30;43m");
   }
@@ -430,5 +428,5 @@ class CheckersStateExtOffline {
   // std::vector<CoordRecord> 	_mcts_policies;
   // std::vector<float> 		_predicted_values;
 
-  // std::shared_ptr<spdlog::logger> _logger;
+  std::shared_ptr<spdlog::logger> _logger;
 };

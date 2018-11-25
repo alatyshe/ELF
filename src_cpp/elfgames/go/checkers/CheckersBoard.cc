@@ -81,8 +81,9 @@ bool				CheckersPlay(CheckersBoard *board, int64_t action_index) {
 	board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK_PLAYER] | board->pieces[WHITE_PLAYER]);
 
 	if (board->jump) {
-		board->mandatory_jumps = _jumps_from(*board, destination);
-		if (board->mandatory_jumps.size() != 0)
+		// board->mandatory_jumps = _jumps_from(*board, destination);
+		// if (board->mandatory_jumps.size() != 0)
+		if (_jumps_from(*board, destination).size() != 0)
 			return true;
 	}
 
@@ -96,7 +97,7 @@ bool				CheckersPlay(CheckersBoard *board, int64_t action_index) {
 	board->active = board->passive;
 	board->passive = buffer;
 
-	std::cout << get_true_state_str(*board) << std::endl;
+	// std::cout << get_true_state_str(*board) << std::endl;
 	return false;
 }
 
@@ -119,8 +120,9 @@ std::array<int, ALL_ACTIONS>		GetValidMovesBinary(CheckersBoard board, int playe
 		moves = _get_moves(board);
 		for (auto i = moves.begin(); i != moves.end(); ++i) {
 			move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
-			
-			std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
+
+			// // print moves			
+			// std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
 
 			result[moves::m_to_i.find(move_buff)->second] = 1;
 		}
@@ -131,10 +133,12 @@ std::array<int, ALL_ACTIONS>		GetValidMovesBinary(CheckersBoard board, int playe
 	}
 	else {
 		moves = _get_moves(board);
+
 		for (auto i = moves.begin(); i != moves.end(); ++i) {
 			move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
-
-			std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
+			
+			// // print moves
+			// std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
 
 			result[moves::m_to_i.find(move_buff)->second] = 1;
 		}
@@ -144,7 +148,7 @@ std::array<int, ALL_ACTIONS>		GetValidMovesBinary(CheckersBoard board, int playe
 }
 
 
-std::vector<std::array<int64_t, 2>>	GetValidMovesIndexes(CheckersBoard board, int player) {
+std::vector<std::array<int64_t, 2>>	GetValidMovesNumberAndDirection(CheckersBoard board, int player) {
 	std::vector<std::array<int64_t, 2>>	result;
 	int 								buffer;
 	std::vector<int64_t>				moves;
@@ -471,9 +475,9 @@ std::vector<int64_t>		_get_moves(CheckersBoard board) {
 
 	uint64_t 				buff;
 	// First check if we are in a jump sequence
-	if (board.jump) {
-		return (board.mandatory_jumps);
-	}
+	// if (board.jump) {
+	// 	return (board.mandatory_jumps);
+	// }
 	// Next check if there are jumps
 	jumps = _get_jumps(board);
 	if (jumps.size() != 0) {

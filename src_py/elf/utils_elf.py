@@ -330,14 +330,13 @@ class GCWrapper:
         self.GC = GC
         self._cb = {}
 
-        # print("self.name2idx\t : ", self.name2idx)
-        # print("self.idx2name\t : ", self.idx2name)
-        # print("self.batchdim\t : ", self.batchdim)
-        # print("self.histdim\t : ", self.histdim)
-        # print("self.params\t : ", self.params)
-        # print("self.GC\t : ", self.GC)
-        # print("self.game_obj\t : ", self.game_obj)
-        # print("self._cb\t : ", self._cb)
+        print("self.name2idx\t : ", self.name2idx)
+        print("self.idx2name\t : ", self.idx2name)
+        print("self.batchdim\t : ", self.batchdim)
+        print("self.histdim\t : ", self.histdim)
+        print("self.params\t : ", self.params)
+        print("self.GC\t : ", self.GC)
+        print("self._cb\t : ", self._cb)
 
     def reg_has_callback(self, key):
         return key in self.name2idx
@@ -360,13 +359,16 @@ class GCWrapper:
               The callback function has the signature
               ``cb(input_batch, input_batch_gpu, reply_batch)``.
         '''
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+        print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        
         if key not in self.name2idx:
             raise ValueError("Callback[%s] is not in the specification" % key)
         if cb is None:
             print("Warning: Callback[%s] is registered to None" % key)
 
         for idx in self.name2idx[key]:
-            # print("Register " + str(cb) + " at idx: %d" % idx)
+            print("Register " + str(cb) + " at idx: %d" % idx)
             self._cb[idx] = cb
         return True
 
@@ -380,9 +382,11 @@ class GCWrapper:
     def _call(self, smem, *args, **kwargs):
         idx = smem.getSharedMemOptions().idx()
         
+        print("\n\n\n")
         print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
         print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
+        # print("\nMAIN FUNC TO WAIT STATE CALL NN AND FILL PI TO ++")
         # print("smem idx: %d, label: %s" % (idx, self.idx2name[idx]))
         # print(self.name2idx)
 
@@ -399,14 +403,12 @@ class GCWrapper:
         if self.gpu is not None:
             picked = picked.cpu2gpu(self.gpu)
 
-        print("1111111")
         # Save the infos structure, if people want to have access to state
         # directly, they can use infos.s[i], which is a state pointer.
         picked.smem = smem
         picked.batchsize = batchsize
         picked.max_batchsize = smem.getSharedMemOptions().batchsize()
 
-        print("2222222")
         # Get the reply array
         if self.batches[idx]["reply"] is not None:
             sel_reply = self._makebatch(
@@ -414,12 +416,12 @@ class GCWrapper:
         else:
             sel_reply = None
 
-        print("3333333")
-        reply = self._cb[idx](picked, *args, **kwargs)
-        
-        print("4444444")
 
-        print("reply :: ", reply)
+        reply = self._cb[idx](picked, *args, **kwargs)
+
+        # print("=====================================")
+        # print("reply : ", reply)
+        # print("=====================================")
         # If reply is meaningful, send them back.
         if isinstance(reply, dict) and sel_reply is not None:
             if self.gpu is not None:
@@ -453,13 +455,18 @@ class GCWrapper:
         Samples in a returned batch are always from the same group,
         but the group key of the batch may be arbitrary.
         '''
-        # print("before wait")
+        print("\n\n\n\n\n")
+        print("======================================================================================")
+        print("======================================================================================")
+        print("======================================================================================")
+        print("\n\n\x1b[6;30;42m\tbefore wait\x1b[0m")
         smem = self.GC.ctx().wait()
 
-        print("before calling")
+        # print("smem :  ", smem.info())
+        print("\n\n\x1b[6;30;42m\tbefore calling\x1b[0m")
         self._call(smem, *args, **kwargs)
 
-        print("before_step")
+        print("\n\n\x1b[6;30;42m\tbefore_step\x1b[0m")
         self.GC.ctx().step()
 
     def start(self):

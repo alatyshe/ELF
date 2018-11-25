@@ -190,15 +190,20 @@ class Model_PolicyValue(Model):
 		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 		super().__init__(option_map, params)
-		print("params : ", params)
 
 		self.board_size = params["checkers_board_size"]
 		self.num_future_actions = params["checkers_num_future_actions"]
 		self.num_planes = params["checkers_num_planes"]
-		print(params)
-		print("self.board_size : ", self.board_size)
-		print("self.num_future_actions : ", self.num_future_actions)
-		print("self.num_planes : ", self.num_planes)
+		self.checkers_num_action = params["checkers_num_action"]
+
+		print("\n\n\n\n")
+		print("params\t\t: ", params)
+		print("self.board_size\t\t: ", self.board_size)
+		print("self.num_future_actions\t: ", self.num_future_actions)
+		print("self.num_planes\t\t: ", self.num_planes)
+		print("self.options.dim\t: ", self.options.dim)
+		print("\n\n\n\n")
+
 		# print("#future_action: " + str(self.num_future_actions))
 		# print("#num_planes: " + str(self.num_planes))
 
@@ -209,16 +214,27 @@ class Model_PolicyValue(Model):
 		self.relu = nn.LeakyReLU(0.1) if self.options.leaky_relu else nn.ReLU()
 		last_planes = self.num_planes
 
-		self.init_conv = self._conv_layer(last_planes)
+		print("\ninit_conv : ")
+		self.init_conv = self._conv_layer(
+			input_channel=last_planes)
 
-		self.pi_final_conv = self._conv_layer(self.options.dim, 2, 1)
-		self.value_final_conv = self._conv_layer(self.options.dim, 1, 1)
+		print("\npi_final_conv : ")
+		self.pi_final_conv = self._conv_layer(
+			input_channel=self.options.dim, 
+			output_channel=1, 
+			kernel=1)
+
+		print("\nvalue_final_conv : ")
+		self.value_final_conv = self._conv_layer(
+			input_channel=self.options.dim, 
+			output_channel=1, 
+			kernel=1)
 
 		d = self.board_size ** 2
 
 		# Plus 1 for pass.
-		self.pi_linear = nn.Linear(d * 2, d)
-		self.value_linear1 = nn.Linear(d, 256)
+		self.pi_linear = nn.Linear(d, self.checkers_num_action)
+		self.value_linear1 = nn.Linear(self.checkers_num_action, 256)
 		self.value_linear2 = nn.Linear(256, 1)
 
 		# Softmax as the final layer
@@ -301,6 +317,11 @@ class Model_PolicyValue(Model):
 			kernel,
 			padding=(kernel // 2)
 		))
+
+		print("input_channel\t: ", input_channel)
+		print("output_channel\t: ", output_channel)
+		print("kernel\t\t: ", kernel)
+
 		if self.options.bn:
 			layers.append(
 				nn.BatchNorm2d(output_channel,
@@ -326,24 +347,45 @@ class Model_PolicyValue(Model):
 		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
 		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 		
+		# приводим в нормальный вид
+		# print("\n\nbefore - self._var(x['checkers_s'])")
 		s = self._var(x["checkers_s"])
+		# print("s.shape : ", s.shape)
 
+		# print("\n\nbefore - self.init_conv(s)")
 		s = self.init_conv(s)
+		# print("s.shape : ", s.shape)
 		# s = self.resnet(s)
 
-		d = self.board_size ** 2
-
+		# print("\n\nbefore - self.pi_final_conv(s)")
 		pi = self.pi_final_conv(s)
-		pi = self.pi_linear(pi.view(-1, d * 2))
+		# print("pi.shape : ", pi.shape)
+
+		# print("\n\nbefore - self.pi_linear(pi.view(-1, d * 2))")
+		d = self.board_size ** 2
+		# print("d : ", d)
+		pi = self.pi_linear(pi.view(-1, d))
+		# print("pi.shape : ", pi.shape)
+
+		# pi = self.pi_linear(pi.view(-1, 170))
+
+		# print("\n\nbefore - self.logsoftmax(pi)")
 		logpi = self.logsoftmax(pi)
+		# print("logpi.shape : ", logpi.shape)
+
+
+		# print("\n\nbefore - logpi.exp()")
 		pi = logpi.exp()
+		# print("pi.shape : ", pi.shape)
 
-		V = self.value_final_conv(s)
-		V = self.relu(self.value_linear1(V.view(-1, d)))
-		V = self.value_linear2(V)
-		V = self.tanh(V)
 
-		return dict(logpi=logpi, pi=pi, V=V)
+		# V = self.value_final_conv(s)
+		# V = self.relu(self.value_linear1(V.view(-1, d)))
+		# V = self.value_linear2(V)
+		# V = self.tanh(V)
+		V = torch.zeros([1,1], dtype=torch.float16, device='cuda:0')
+		# print("\n\npi.shape : ", pi.shape)
+		return dict(logpi=logpi, pi=pi, checkers_V=V)
 
 
 # Format: key, [model, method]

@@ -80,7 +80,7 @@ class CheckersState {
   bool terminated() const {
     display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
 
-    return getPly() >= TOTAL_MAX_MOVE ;
+    return is_over(_board) || getPly() >= TOTAL_MAX_MOVE ;
     // || _check_superko();
     // Original
     // return isTwoPass() || getPly() >= TOTAL_MAX_MOVE || _check_superko();
@@ -139,7 +139,8 @@ class CheckersState {
 
     res = get_true_state_str(_board);
     return std::string(res) + "\n" + "Last move: " + std::to_string(lastMove()) +
-        ", nextPlayer: " + (this->nextPlayer() == BLACK_PLAYER ? "Black" : "White") + "\n";
+        ", CurrentPlayer: " + (this->nextPlayer() == BLACK_PLAYER ? "Green" : "Red") + 
+        "\n move num : " + std::to_string(_board._ply) + "\n";
   }
 
  //  float evaluate(float komi, std::ostream* oo = nullptr) const {

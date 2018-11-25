@@ -251,4 +251,5 @@ class ModelInterface(object):
 
     def __getitem__(self, key):
         ''' Get an item associated with ``key`` from ``self.models``'''
+        # print("self.models : ", self.models)
         return self.models[key]

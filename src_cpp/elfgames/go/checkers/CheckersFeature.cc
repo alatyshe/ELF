@@ -57,19 +57,6 @@ void CheckersFeature::getPawns(int player, float* data) const {
 //   return true;
 // }
 
-// bool CheckersFeature::getSimpleKo(int /*player*/, float* data) const {
-//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
-//   // const Board* _board = &s_.board();
-
-//   // memset(data, 0, kBoardRegion * sizeof(float));
-//   // Coord m = getSimpleKoLocation(_board, NULL);
-//   // if (m != M_PASS) {
-//   //   data[transform(m)] = 1;
-//   //   return true;
-//   // }
-//   return false;
-// }
-
 // // If player == S_EMPTY, get history of both sides.
 // bool CheckersFeature::getHistory(int player, float* data) const {
 //   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
@@ -103,22 +90,6 @@ void CheckersFeature::getPawns(int player, float* data) const {
 //   return true;
 // }
 
-// bool CheckersFeature::getDistanceMap(int player, float* data) const {
-//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
-//   // const Board* _board = &s_.board();
-
-//   // for (int i = 0; i < BOARD_SIZE; ++i) {
-//   //   for (int j = 0; j < BOARD_SIZE; ++j) {
-//   //     Coord c = OFFSETXY(i, j);
-//   //     if (_board->_infos[c].color == player)
-//   //       data[transform(i, j)] = 0;
-//   //     else
-//   //       data[transform(i, j)] = 10000;
-//   //   }
-//   // }
-//   // DistanceTransform(data);
-//   return true;
-// }
 
 static float* board_plane(float* features, int idx) {
   // display_debug_info("", __FUNCTION__, BLUE_B);
@@ -127,14 +98,6 @@ static float* board_plane(float* features, int idx) {
 }
 
 #define LAYER(idx) board_plane(features, idx)
-
-/* darkforestGo/utils/goutils.lua
-extended = {
-    "our liberties", "opponent liberties", "our simpleko", "our stones",
-"opponent stones", "empty stones", "our history", "opponent history",
-    "border", 'position_mask', 'closest_color'
-},
-*/
 
 
 // записываем инфу в ячейку памяти если у нас дохера фич то оно подается в векторе
@@ -159,24 +122,13 @@ void CheckersFeature::extract(float* features) const {
   int passive_player = _board->passive;
 
   // Save the current board state to game state.
-  // заполнаем слои нашего бинарого признака для передачи в python по ключу "s"
+  // заполнаем слои нашего бинарого признака для передачи 
+  // в python по ключу "checkers_s"
   // фишки наши, фишки врага
   getPawns(active_player, LAYER(0));
   getKings(active_player, LAYER(1));
   getPawns(passive_player, LAYER(2));
   getKings(passive_player, LAYER(3));
-
-  // getSimpleKo(player, LAYER(OUR_SIMPLE_KO));
-
-  // getStones(player, LAYER(OUR_STONES));
-  // getStones(OPPONENT(player), LAYER(OPPONENT_STONES));
-  // getStones(S_EMPTY, LAYER(EMPTY_STONES));
-
-  // getHistoryExp(player, LAYER(OUR_HISTORY));
-  // getHistoryExp(OPPONENT(player), LAYER(OPPONENT_HISTORY));
-
-  // getDistanceMap(player, LAYER(OUR_CLOSEST_COLOR));
-  // getDistanceMap(OPPONENT(player), LAYER(OPPONENT_CLOSEST_COLOR));
 
   float* black_indicator = LAYER(4);
   float* white_indicator = LAYER(5);

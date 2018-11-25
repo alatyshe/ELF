@@ -132,10 +132,34 @@ def main():
     stats = [Stats(), Stats(), Stats(), Stats()]
 
     for i in range(len(actors)):
+
+        # "checkers_actor_white",
+        # "checkers_actor_black"
         actor_name = actors[i]
 
+        # Stats                 - статистика по выигрышам
+        # e - Evaluator         - принимает в себя sampler и mi 
+        #                   + вызывает actor(nn)
+        # sampler - Sampler     - Used to sample an action from policy.
+        # mi - ModelInterface   - хранит в себе модели и обновляет их по мере необходимости
+
+        # print("env['sampler'] : ", env["sampler"])
+        # print("env['mi_' + actor_name] : ", env["mi_" + actor_name])
+
         stat = stats[i]
+
         e = env["eval_" + actor_name]
+
+        # e - Evaluator
+        # ("eval_" + actor_name): (
+        #     Evaluator.get_option_spec(name="eval_" + actor_name),
+        #     lambda object_map, actor_name=actor_name: Evaluator(
+        #         object_map, name="eval_" + actor_name,
+        #         actor_name=actor_name, stats=None)
+        # )
+
+        # print("register actors env : ", env)
+        print("eval_" + actor_name, " = ", e)
 
         print(f'register {actor_name} for e = {e!s}')
         e.setup(sampler=env["sampler"], mi=env["mi_" + actor_name])
@@ -145,8 +169,8 @@ def main():
             # print("batch : ",  batch["checkers_s"])
 
             reply = e.actor(batch)
-            print("reply : ", reply)
-            print("stat :  ", stat)
+            # print("actor reply : ", reply)
+            # print("actor stat : ", stat)
             stat.feed(batch)
             return reply
 

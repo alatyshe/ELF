@@ -150,21 +150,28 @@ Coord GoGameSelfPlay::mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c) {
 void GoGameSelfPlay::finish_game(FinishReason reason) {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
-  if (!_state_ext.currRequest().vers.is_selfplay() &&
-      _options.cheat_eval_new_model_wins_half) {
-    reason = FR_CHEAT_NEWER_WINS_HALF;
-  }
-  if (_state_ext.currRequest().vers.is_selfplay() &&
-      _options.cheat_selfplay_random_result) {
-    reason = FR_CHEAT_SELFPLAY_RANDOM_RESULT;
-  }
+  // посмотреть зачем нужны эти опции тк это опции игры
+  // if (!_state_ext.currRequest().vers.is_selfplay() &&
+  //     _options.cheat_eval_new_model_wins_half) {
+  //   reason = FR_CHEAT_NEWER_WINS_HALF;
+  // }
+  // if (_state_ext.currRequest().vers.is_selfplay() &&
+  //     _options.cheat_selfplay_random_result) {
+  //   reason = FR_CHEAT_SELFPLAY_RANDOM_RESULT;
+  // }
 
-  _state_ext.setFinalValue(reason, &_rng);
-  _state_ext.showFinishInfo(reason);
+  // _state_ext.setFinalValue(reason, &_rng);
+  // _state_ext.showFinishInfo(reason);
 
-  if (!_options.dump_record_prefix.empty()) {
-    _state_ext.dumpSgf();
-  }
+
+  // My code
+  // _checkers_state_ext.setFinalValue(reason, &_rng);
+  // _checkers_state_ext.showFinishInfo(reason);
+
+
+  // if (!_options.dump_record_prefix.empty()) {
+  //   _state_ext.dumpSgf();
+  // }
 
   // reset tree if MCTS_AI, otherwise just do nothing
   go_ai1->endGame(_state_ext.state());
@@ -172,11 +179,20 @@ void GoGameSelfPlay::finish_game(FinishReason reason) {
     go_ai2->endGame(_state_ext.state());
   }
 
-  if (notifier_ != nullptr) {
-    notifier_->OnGameEnd(_state_ext);
-  }
-  // clear state, MCTS polices et.al.
-  _state_ext.restart();
+  // if (notifier_ != nullptr) {
+  //   notifier_->OnGameEnd(_state_ext);
+  // }
+
+  // сообщает клиенту, что игры окончена
+  // if (checkers_notifier_ != nullptr)
+  //   checkers_notifier_->OnGameEnd(_checkers_state_ext);
+
+  // // clear state, MCTS polices et.al.
+  // _state_ext.restart();
+
+  // My code
+  _checkers_state_ext.restart();  
+
 }
 
 
@@ -435,7 +451,7 @@ void GoGameSelfPlay::act() {
 
   // printf("use_policy_network_only : %d\n", use_policy_network_only);
   
-  // Coord c = M_INVALID;
+  // // Coord c = M_INVALID;
   // MCTSGoAI* curr_ai =
   //     ((go_ai2 != nullptr && player == S_WHITE) ? go_ai2.get() : go_ai1.get());
 
@@ -489,25 +505,130 @@ void GoGameSelfPlay::act() {
   // Checkers
   const CheckersState& cs = _checkers_state_ext.state();
 
+
+
+
+
+// elf::ai::AIClientT
+
+
+
+
+
+
+if (client_->checkPrepareToStop()) {
+    // [TODO] A lot of hack here. We need to fix it later.
+    CheckersFeature cf(cs);
+    CheckersReply   creply(cf);
+    
+    CheckersAI ai_black(client_, {"checkers_actor_black"});
+    ai_black.act(cf, &creply);
+
+    if (client_->DoStopGames())
+      return;
+
+    CheckersAI ai_white(client_, {"checkers_actor_white"});
+    ai_white.act(cf, &creply);
+
+    elf::FuncsWithState funcs = client_->BindStateToFunctions(
+        {"game_start"}, &_state_ext.currRequest().vers);
+    client_->sendWait({"game_start"}, &funcs);
+
+    funcs = client_->BindStateToFunctions({"game_end"}, &_state_ext.state());
+    client_->sendWait({"game_end"}, &funcs);
+
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!GAME ENDS!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+    logger_->info("Received command to prepare to stop");
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    return;
+  }
+
+
+
+
+
+
+
+
+
   int current_player = cs.nextPlayer();
   int move = M_INVALID;
 
   CheckersFeature cf(cs);
   CheckersReply creply(cf);
 
+  std::string player = current_player == BLACK_PLAYER ? "checkers_actor_black" 
+                                                      : "checkers_actor_black";
+
   // MCTSGoAI* ai = checkers_ai.get();
   // AIClientT checkers_ai(client_, "checkers_actor_white");
   // checkers_ai->act(cf, &creply);
 
-  elf::FuncsWithState funcs_s = client_->BindStateToFunctions({"checkers_actor_black"}, &cf);
-  elf::FuncsWithState funcs_a = client_->BindStateToFunctions({"checkers_actor_black"}, &creply);
+  elf::FuncsWithState funcs_s = client_->BindStateToFunctions({player}, &cf);
+  elf::FuncsWithState funcs_a = client_->BindStateToFunctions({player}, &creply);
   funcs_s.add(funcs_a);
 
-  comm::ReplyStatus status = client_->sendWait({"checkers_actor_black"}, &funcs_s);
+  comm::ReplyStatus status = client_->sendWait({player}, &funcs_s);
 
-  // std::cout << creply.info() << std::endl;
+  // std::cout << "player : " << player << std::endl;
+  // creply.info();
+  // std::cout << cs.showBoard() << std::endl;
+
+
+
+  // пытаемся делать шаг
+  // доостаем валидные шаги
+  std::vector<float> pi = creply.pi;
+  CheckersState c_state = this->_checkers_state_ext.state();
+  CheckersBoard c_board = c_state.board();
+  std::array<int, ALL_ACTIONS> moves = GetValidMovesBinary(c_board, current_player);
+  float temp_pi = 0.0;
+  for (int i = 0; i < moves.size(); i++){
+    if (moves[i] != 0 && pi[i] > temp_pi){
+      temp_pi = pi[i];
+      move = i;
+    }
+  }
+
+  // берем лучший action по вероятностям
+
+  if (!_checkers_state_ext.forward(move)) {
+    logger_->error(
+        "Something is wrong! Move {} cannot be applied\nCurrent board: "
+        "{}\n[{}] Propose move {}\nSGF: {}\n",
+        move,
+        cs.showBoard(),
+        cs.getPly()
+        // elf::ai::tree_search::ActionTrait<Coord>::to_string(c),
+        // _state_ext.dumpSgf("")
+        );
+
+    // my delete this exit(0);
+      exit(0);
+    
+    return;
+  }
+
+  std::cout << cs.showBoard() << std::endl;
+  
+  if (cs.terminated()) {
+
+    std::cout << "GAME ENDS" << std::endl;
+    exit(1);
+    // auto reason = cs.isTwoPass()
+    //     ? FR_TWO_PASSES
+    //     : cs.getPly() >= BOARD_MAX_MOVE ? FR_MAX_STEP : FR_ILLEGAL;
+    // finish_game(reason);
+  }
+
+  if (_options.move_cutoff > 0 && cs.getPly() >= _options.move_cutoff) {
+    std::cout << "GAME ENDS" << std::endl;
+    exit(1);
+    // finish_game(FR_MAX_STEP);
+  }
+
   // 
-  exit(1);
+  // exit(1);
 }
 
 

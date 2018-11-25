@@ -62,7 +62,7 @@ typedef struct
 	// есть ли возможность побить
 	int						jump;
 	// все возможные ходы битья 
-	std::vector<int64_t>	mandatory_jumps;
+	// std::vector<int64_t>	mandatory_jumps;
 
 	int 					_last_move;
 	// общее количество шагов
@@ -81,7 +81,7 @@ void					CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src);
 bool					CheckersPlay(CheckersBoard *board, int64_t action);
 
 std::array<int, ALL_ACTIONS>		GetValidMovesBinary(CheckersBoard board, int player);
-std::vector<std::array<int64_t, 2>>	GetValidMovesIndexes(CheckersBoard board, int player);
+std::vector<std::array<int64_t, 2>>	GetValidMovesNumberAndDirection(CheckersBoard board, int player);
 bool					CheckersTryPlay(CheckersBoard board, Coord c);
 
 bool					is_over(CheckersBoard board);

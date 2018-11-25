@@ -11,7 +11,7 @@ game=elfgames.go.game \
 model=df_kl model_file=elfgames.go.df_model_checkers \
     stdbuf -o 0 -e 0 python -u ./train.py \
     --mode train    --batchsize 1 \
-    --num_games 1    --keys_in_reply V \
+    --num_games 1    --keys_in_reply checkers_V \
     --T 1    --use_data_parallel \
     --num_minibatch 1    --num_episode 10 \
     --mcts_threads 8    --mcts_rollout_per_thread 16 \

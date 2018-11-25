@@ -376,7 +376,7 @@ class Loader(object):
 
             desc["checkers_actor_black"] = dict(
                 input=["checkers_s"],
-                reply=["checkers_pi", "checkers_V", "checkers_a", "checkers_rv"],
+                reply=["pi", "checkers_V", "a", "checkers_rv"],
                 timeout_usec=10,
                 batchsize=co.mcts_options.num_rollouts_per_batch
             )
@@ -413,7 +413,7 @@ class Loader(object):
             # checkers
             desc["checkers_actor_white"] = dict(
                 input=["checkers_s"],
-                reply=["checkers_pi", "checkers_V", "checkers_a", "checkers_rv"],
+                reply=["pi", "checkers_V", "a", "checkers_rv"],
                 batchsize=self.options.batchsize2
                 if self.options.batchsize2 > 0
                 else self.options.batchsize,
@@ -421,7 +421,7 @@ class Loader(object):
             )            
             desc["checkers_actor_black"] = dict(
                 input=["checkers_s"],
-                reply=["checkers_pi", "checkers_V", "checkers_a", "checkers_rv"],
+                reply=["pi", "checkers_V", "a", "checkers_rv"],
                 batchsize=self.options.batchsize2
                 if self.options.batchsize2 > 0
                 else self.options.batchsize,
@@ -431,7 +431,7 @@ class Loader(object):
         elif self.options.mode == "train" or self.options.mode == "offline_train":
 
             desc["train"] = dict(
-                input=["s", "offline_a", "winner", "mcts_scores", "move_idx",
+                input=["checkers_s", "offline_a", "winner", "mcts_scores", "move_idx",
                        "selfplay_ver"],
                 reply=None
             )
@@ -460,3 +460,7 @@ class Loader(object):
             use_numpy=False,
             params=params,
             verbose=self.options.parameter_print)
+
+
+
+

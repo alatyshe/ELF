@@ -8,7 +8,10 @@ bool CheckersState::forward(const Coord& c) {
     throw std::range_error("CheckersState::forward(): move is M_INVALID");
 
   if (terminated())
+  {
+    std::cout << "terminated()" << std::endl; 
     return false;
+  }
 
   if (!CheckersTryPlay(_board, c))
     return false;

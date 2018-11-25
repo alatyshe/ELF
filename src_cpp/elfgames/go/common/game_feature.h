@@ -399,7 +399,8 @@ class GoFeature {
     e.addField<int64_t>("offline_a")
         .addExtents(batchsize, {batchsize, options_.num_future_actions});
     e.addField<float>({"V", "winner", "predicted_value"}).addExtent(batchsize);
-    e.addField<float>({"pi", "mcts_scores"})
+    // e.addField<float>({"pi", "mcts_scores"})
+    e.addField<float>("mcts_scores")
         .addExtents(batchsize, {batchsize, BOARD_NUM_ACTION});
     e.addField<int32_t>({"move_idx", "aug_code", "num_move"})
         .addExtent(batchsize);
@@ -445,7 +446,7 @@ class GoFeature {
 
 
     // добавляем еще поля 
-    e.addField<int64_t>("checkers_a").addExtent(batchsize);
+    e.addField<int64_t>("a").addExtent(batchsize);
     e.addField<int64_t>("checkers_rv").addExtent(batchsize);
     e.addField<int64_t>("checkers_offline_a")
         .addExtents(batchsize, {batchsize, options_.num_future_actions});
@@ -453,7 +454,7 @@ class GoFeature {
       "checkers_V", 
       "checkers_winner", 
       "checkers_predicted_value"}).addExtent(batchsize);
-    e.addField<float>({"checkers_pi", "checkers_mcts_scores"})
+    e.addField<float>({"pi", "checkers_mcts_scores"})
         .addExtents(batchsize, {batchsize, TOTAL_NUM_ACTIONS});
     e.addField<int32_t>({"checkers_move_idx", "checkers_aug_code", "checkers_num_move"})
         .addExtent(batchsize);
@@ -463,8 +464,8 @@ class GoFeature {
 
     // привязываем к каждому полю свой метод для записи инфы в код ++
     e.addClass<CheckersReply>()
-        .addFunction<int64_t>("checkers_a", CheckersReplyAction)
-        .addFunction<float>("checkers_pi", CheckersReplyPolicy)
+        .addFunction<int64_t>("a", CheckersReplyAction)
+        .addFunction<float>("pi", CheckersReplyPolicy)
         .addFunction<float>("checkers_V", CheckersReplyValue)
         .addFunction<int64_t>("checkers_rv", CheckersReplyVersion);
 
