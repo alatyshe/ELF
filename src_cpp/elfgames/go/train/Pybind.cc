@@ -35,7 +35,8 @@ void registerPy(pybind11::module& m) {
 
   py::class_<Client>(m, "Client")
       .def("setRequest", &Client::setRequest)
-      .def("getGameStats", &Client::getGameStats, ref);
+      .def("getGameStats", &Client::getGameStats, ref)
+      .def("getCheckersGameStats", &Client::getCheckersGameStats, ref);
 
   // Also register other objects.
   PYCLASS_WITH_FIELDS(m, ContextOptions)

@@ -18,10 +18,12 @@ GoGameSelfPlay::GoGameSelfPlay(
     const ContextOptions& context_options,
     const GameOptions& options,
     ThreadedDispatcher* dispatcher,
-    GameNotifierBase* notifier)
+    GameNotifierBase* notifier,
+    CheckersGameNotifierBase* checkers_notifier)
     : GoGameBase(game_idx, client, context_options, options),
       dispatcher_(dispatcher),
       notifier_(notifier),
+      checkers_notifier_(checkers_notifier),
       _state_ext(game_idx, options),
       // My
       _checkers_state_ext(game_idx, options),
@@ -151,27 +153,21 @@ void GoGameSelfPlay::finish_game(FinishReason reason) {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
   // посмотреть зачем нужны эти опции тк это опции игры
-  // if (!_state_ext.currRequest().vers.is_selfplay() &&
-  //     _options.cheat_eval_new_model_wins_half) {
-  //   reason = FR_CHEAT_NEWER_WINS_HALF;
-  // }
-  // if (_state_ext.currRequest().vers.is_selfplay() &&
-  //     _options.cheat_selfplay_random_result) {
-  //   reason = FR_CHEAT_SELFPLAY_RANDOM_RESULT;
-  // }
+  if (!_state_ext.currRequest().vers.is_selfplay() &&
+      _options.cheat_eval_new_model_wins_half) {
+    reason = FR_CHEAT_NEWER_WINS_HALF;
+  }
+  if (_state_ext.currRequest().vers.is_selfplay() &&
+      _options.cheat_selfplay_random_result) {
+    reason = FR_CHEAT_SELFPLAY_RANDOM_RESULT;
+  }
 
-  // _state_ext.setFinalValue(reason, &_rng);
-  // _state_ext.showFinishInfo(reason);
+  _state_ext.setFinalValue(reason, &_rng);
+  _state_ext.showFinishInfo(reason);
 
-
-  // My code
-  // _checkers_state_ext.setFinalValue(reason, &_rng);
-  // _checkers_state_ext.showFinishInfo(reason);
-
-
-  // if (!_options.dump_record_prefix.empty()) {
-  //   _state_ext.dumpSgf();
-  // }
+  if (!_options.dump_record_prefix.empty()) {
+    _state_ext.dumpSgf();
+  }
 
   // reset tree if MCTS_AI, otherwise just do nothing
   go_ai1->endGame(_state_ext.state());
@@ -179,22 +175,43 @@ void GoGameSelfPlay::finish_game(FinishReason reason) {
     go_ai2->endGame(_state_ext.state());
   }
 
-  // if (notifier_ != nullptr) {
-  //   notifier_->OnGameEnd(_state_ext);
+  if (notifier_ != nullptr) {
+    notifier_->OnGameEnd(_state_ext);
+  }
+
+  // clear state, MCTS polices et.al.
+  _state_ext.restart();
+}
+
+
+void GoGameSelfPlay::finish_game(CheckersFinishReason reason) {
+  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+
+  // My code
+  _checkers_state_ext.setFinalValue(reason, &_rng);
+  _checkers_state_ext.showFinishInfo(reason);
+
+  // if (!_options.dump_record_prefix.empty()) {
+  //   _state_ext.dumpSgf();
+  // }
+
+  // reset tree if MCTS_AI, otherwise just do nothing
+  // go_ai1->endGame(_state_ext.state());
+  // if (go_ai2 != nullptr) {
+  //   go_ai2->endGame(_state_ext.state());
   // }
 
   // сообщает клиенту, что игры окончена
-  // if (checkers_notifier_ != nullptr)
-  //   checkers_notifier_->OnGameEnd(_checkers_state_ext);
-
-  // // clear state, MCTS polices et.al.
-  // _state_ext.restart();
+  if (checkers_notifier_ != nullptr){
+    std::cout << "checkers_notifier_ != nullptr" << std::endl;
+    checkers_notifier_->OnGameEnd(_checkers_state_ext);
+  }
 
   // My code
   _checkers_state_ext.restart();  
 
+  // exit(1);
 }
-
 
 
 
@@ -537,7 +554,6 @@ if (client_->checkPrepareToStop()) {
     funcs = client_->BindStateToFunctions({"game_end"}, &_state_ext.state());
     client_->sendWait({"game_end"}, &funcs);
 
-    std::cout << "!!!!!!!!!!!!!!!!!!!!!GAME ENDS!!!!!!!!!!!!!!!!!!!!!" << std::endl;
     logger_->info("Received command to prepare to stop");
     std::this_thread::sleep_for(std::chrono::seconds(1));
     return;
@@ -601,33 +617,22 @@ if (client_->checkPrepareToStop()) {
         cs.getPly()
         // elf::ai::tree_search::ActionTrait<Coord>::to_string(c),
         // _state_ext.dumpSgf("")
-        );
-
-    // my delete this exit(0);
-      exit(0);
-    
+        );    
     return;
   }
-
-  std::cout << cs.showBoard() << std::endl;
   
   if (cs.terminated()) {
-
-    std::cout << "GAME ENDS" << std::endl;
-    CheckersFinishReason reason = (cs.nextPlayer() == WHITE_PLAYER)
-        ? CHEKCERS_BLACK_WIN
-        : cs.getPly() >= BOARD_MAX_MOVE ? CHECKERS_MAX_STEP : CHEKCERS_WHITE_WIN;
-    // finish_game(reason);
-    exit(1);
+    CheckersFinishReason reason = cs.getPly() >= BOARD_MAX_MOVE ? CHECKERS_MAX_STEP : 
+    (cs.nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
+    finish_game(reason);
   }
 
   if (_options.move_cutoff > 0 && cs.getPly() >= _options.move_cutoff) {
-    std::cout << "GAME ENDS" << std::endl;
     CheckersFinishReason reason = CHECKERS_MAX_STEP;
-    // finish_game(reason);
-    exit(1);
+    finish_game(reason);
   }
 
+  std::cout << cs.showBoard() << std::endl;
   // 
   // exit(1);
 }

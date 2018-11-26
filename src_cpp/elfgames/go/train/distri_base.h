@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../common/record.h"
+#include "../checkers/Record.h"
 #include "data_loader.h"
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"

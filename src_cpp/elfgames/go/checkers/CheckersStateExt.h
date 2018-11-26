@@ -19,7 +19,8 @@
 // Game options
 #include "../common/go_game_specific.h"
 // #include "CheckersGameSpecific.h"
-// #include "record.h"
+#include "../common/record.h"
+#include "Record.h"
 
 #include "elf/ai/tree_search/tree_search_base.h"
 #include "elf/logging/IndexedLoggerFactory.h"
@@ -144,26 +145,26 @@ struct CheckersStateExt {
 
 
 
-  // Record dumpRecord() const {
-  //   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
+  CheckersRecord dumpRecord() const {
+    display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
 
-  //   Record r;
+    CheckersRecord r;
 
-  //   r.timestamp = elf_utils::sec_since_epoch_from_now();
-  //   r.thread_id = _game_idx;
-  //   r.seq = _seq;
-  //   r.request = curr_request_;
+    // r.timestamp = elf_utils::sec_since_epoch_from_now();
+    // r.thread_id = _game_idx;
+    // r.seq = _seq;
+    // r.request = curr_request_;
 
-  //   r.result.reward = _state.getFinalValue();
-  //   r.result.content = coords2sgfstr(_state.getAllMoves());
-  //   r.result.using_models =
-  //       std::vector<int64_t>(using_models_.begin(), using_models_.end());
-  //   r.result.policies = _mcts_policies;
-  //   r.result.num_move = _state.getPly() - 1;
-  //   r.result.values = _predicted_values;
+    // r.result.reward = _state.getFinalValue();
+    // r.result.content = coords2sgfstr(_state.getAllMoves());
+    // r.result.using_models =
+    //     std::vector<int64_t>(using_models_.begin(), using_models_.end());
+    // r.result.policies = _mcts_policies;
+    // r.result.num_move = _state.getPly() - 1;
+    // r.result.values = _predicted_values;
 
-  //   return r;
-  // }
+    return r;
+  }
 
 
 

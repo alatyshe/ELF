@@ -40,7 +40,8 @@ class GoGameSelfPlay : public GoGameBase {
       const ContextOptions& context_options,
       const GameOptions& options,
       ThreadedDispatcher* dispatcher,
-      GameNotifierBase* notifier = nullptr);
+      GameNotifierBase* notifier = nullptr,
+      CheckersGameNotifierBase* checkers_notifier = nullptr);
 
   void act() override;
   bool OnReceive(const MsgRequest& request, RestartReply* reply);
@@ -94,7 +95,10 @@ class GoGameSelfPlay : public GoGameBase {
       int64_t model_ver);
   Coord mcts_make_diverse_move(MCTSGoAI* curr_ai, Coord c);
   Coord mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c);
-  void finish_game(FinishReason reason);
+  
+  void  finish_game(CheckersFinishReason reason);
+  void  finish_game(FinishReason reason);
+  
 
  private:
   ThreadedDispatcher* dispatcher_ = nullptr;
@@ -102,8 +106,8 @@ class GoGameSelfPlay : public GoGameBase {
   GoStateExt          _state_ext;
   
   // My
-  // CheckersGameNotifier*   checkers_notifier_ = nullptr;
-  CheckersStateExt        _checkers_state_ext;
+  CheckersGameNotifierBase*   checkers_notifier_ = nullptr;
+  CheckersStateExt            _checkers_state_ext;
 
 
   int _online_counter = 0;

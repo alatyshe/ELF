@@ -15,110 +15,215 @@
 #include <vector>
 
 #include <nlohmann/json.hpp>
-#include "model_pair.h"
 
-#include "../base/board.h"
+#include "../common/model_pair.h"
+#include "../checkers/CheckersBoard.h"
 #include "../base/common.h"
 
 using json = nlohmann::json;
 
-enum ClientType {
-  CLIENT_INVALID,
-  CLIENT_SELFPLAY_ONLY,
-  CLIENT_EVAL_THEN_SELFPLAY
+// enum ClientType {
+//   CLIENT_INVALID,
+//   CLIENT_SELFPLAY_ONLY,
+//   CLIENT_EVAL_THEN_SELFPLAY
+// };
+
+// struct ClientCtrl {
+//   ClientType client_type = CLIENT_SELFPLAY_ONLY;
+//   // -1 means to use all the threads.
+//   int num_game_thread_used = -1;
+
+//   float black_resign_thres = 0.0;
+//   float white_resign_thres = 0.0;
+//   float never_resign_prob = 0.0;
+
+//   bool player_swap = false;
+//   bool async = false;
+
+//   void setJsonFields(json& j) const {
+//     display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
+
+//     JSON_SAVE(j, client_type);
+//     JSON_SAVE(j, num_game_thread_used);
+//     JSON_SAVE(j, black_resign_thres);
+//     JSON_SAVE(j, white_resign_thres);
+//     JSON_SAVE(j, never_resign_prob);
+//     JSON_SAVE(j, player_swap);
+//     JSON_SAVE(j, async);
+//   }
+//   static ClientCtrl createFromJson(
+//       const json& j,
+//       bool player_swap_optional = false) {
+//     display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
+
+//     ClientCtrl ctrl;
+//     JSON_LOAD(ctrl, j, client_type);
+//     JSON_LOAD(ctrl, j, num_game_thread_used);
+//     JSON_LOAD(ctrl, j, black_resign_thres);
+//     JSON_LOAD(ctrl, j, white_resign_thres);
+//     JSON_LOAD(ctrl, j, never_resign_prob);
+//     // For backward compatibility.
+//     if (player_swap_optional) {
+//       JSON_LOAD_OPTIONAL(ctrl, j, player_swap);
+//     } else {
+//       JSON_LOAD(ctrl, j, player_swap);
+//     }
+//     JSON_LOAD_OPTIONAL(ctrl, j, async);
+//     return ctrl;
+//   }
+
+//   std::string info() const {
+//     display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
+
+//     std::stringstream ss;
+//     ss << "[client=" << client_type << "][async=" << async << "]"
+//        << "[#th=" << num_game_thread_used << "]"
+//        << "[b_res_th=" << black_resign_thres
+//        << "][w_res_th=" << white_resign_thres << "][swap=" << player_swap
+//        << "][never_res_pr=" << never_resign_prob << "]";
+//     return ss.str();
+//   }
+
+//   friend bool operator==(const ClientCtrl& c1, const ClientCtrl& c2) {
+//     return c1.client_type == c2.client_type &&
+//         c1.num_game_thread_used == c2.num_game_thread_used &&
+//         c1.black_resign_thres == c2.black_resign_thres &&
+//         c1.white_resign_thres == c2.white_resign_thres &&
+//         c1.never_resign_prob == c2.never_resign_prob &&
+//         c1.player_swap == c2.player_swap && c1.async == c2.async;
+//   }
+//   friend bool operator!=(const ClientCtrl& c1, const ClientCtrl& c2) {
+//     return !(c1 == c2);
+//   }
+// };
+
+// struct MsgVersion {
+//   int64_t model_ver;
+//   MsgVersion(int ver = -1) : model_ver(ver) {}
+// };
+
+// enum RestartReply {
+//   NO_OP,
+//   ONLY_WAIT,
+//   UPDATE_REQUEST_ONLY,
+//   UPDATE_MODEL,
+//   UPDATE_MODEL_ASYNC,
+//   UPDATE_COMPLETE,
+// };
+
+
+
+// struct MsgRestart {
+//   RestartReply result;
+//   int game_idx;
+//   MsgRestart(RestartReply res = NO_OP, int game_idx = -1)
+//       : result(res), game_idx(game_idx) {
+//     display_debug_info("struct MsgRestart", __FUNCTION__, RED_B);
+//   }
+// };
+
+
+
+// struct MsgRequest {
+//   ModelPair vers;
+//   ClientCtrl client_ctrl;
+
+//   void setJsonFields(json& j) const {
+//     display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
+
+//     JSON_SAVE_OBJ(j, vers);
+//     JSON_SAVE_OBJ(j, client_ctrl);
+//   }
+
+//   static MsgRequest createFromJson(const json& j) {
+//     display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
+
+//     MsgRequest request;
+//     JSON_LOAD_OBJ(request, j, vers);
+//     JSON_LOAD_OBJ_ARGS(request, j, client_ctrl, request.vers.is_selfplay());
+//     return request;
+//   }
+
+//   std::string setJsonFields() const {
+//     display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
+
+//     json j;
+//     setJsonFields(j);
+//     return j.dump();
+//   }
+
+//   std::string info() const {
+//     display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
+
+//     std::stringstream ss;
+//     ss << client_ctrl.info() << vers.info();
+//     return ss.str();
+//   }
+
+//   friend bool operator==(const MsgRequest& m1, const MsgRequest& m2) {
+//     return m1.vers == m2.vers && m1.client_ctrl == m2.client_ctrl;
+//   }
+
+//   friend bool operator!=(const MsgRequest& m1, const MsgRequest& m2) {
+//     return !(m1 == m2);
+//   }
+// };
+
+
+
+
+
+
+
+
+
+
+// struct MsgRequestSeq {
+//   int64_t seq = -1;
+//   MsgRequest request;
+
+//   void setJsonFields(json& j) const {
+//     display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
+
+//     JSON_SAVE_OBJ(j, request);
+//     JSON_SAVE(j, seq);
+//   }
+
+//   static MsgRequestSeq createFromJson(const json& j) {
+//     display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
+
+//     MsgRequestSeq s;
+//     JSON_LOAD_OBJ(s, j, request);
+//     JSON_LOAD(s, j, seq);
+//     return s;
+//   }
+//   std::string dumpJsonString() const {
+//     display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
+
+//     json j;
+//     setJsonFields(j);
+//     return j.dump();
+//   }
+
+//   std::string info() const {
+//     display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
+
+//     std::stringstream ss;
+//     ss << "[seq=" << seq << "]" << request.info();
+//     return ss.str();
+//   }
+// };
+
+
+
+
+
+
+
+struct CheckersCoordRecord {
+  unsigned char prob[TOTAL_NUM_ACTIONS];
 };
 
-struct ClientCtrl {
-  ClientType client_type = CLIENT_SELFPLAY_ONLY;
-  // -1 means to use all the threads.
-  int num_game_thread_used = -1;
-
-  float black_resign_thres = 0.0;
-  float white_resign_thres = 0.0;
-  float never_resign_prob = 0.0;
-
-  bool player_swap = false;
-  bool async = false;
-
-  void setJsonFields(json& j) const {
-    display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
-
-    JSON_SAVE(j, client_type);
-    JSON_SAVE(j, num_game_thread_used);
-    JSON_SAVE(j, black_resign_thres);
-    JSON_SAVE(j, white_resign_thres);
-    JSON_SAVE(j, never_resign_prob);
-    JSON_SAVE(j, player_swap);
-    JSON_SAVE(j, async);
-  }
-  static ClientCtrl createFromJson(
-      const json& j,
-      bool player_swap_optional = false) {
-    display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
-
-    ClientCtrl ctrl;
-    JSON_LOAD(ctrl, j, client_type);
-    JSON_LOAD(ctrl, j, num_game_thread_used);
-    JSON_LOAD(ctrl, j, black_resign_thres);
-    JSON_LOAD(ctrl, j, white_resign_thres);
-    JSON_LOAD(ctrl, j, never_resign_prob);
-    // For backward compatibility.
-    if (player_swap_optional) {
-      JSON_LOAD_OPTIONAL(ctrl, j, player_swap);
-    } else {
-      JSON_LOAD(ctrl, j, player_swap);
-    }
-    JSON_LOAD_OPTIONAL(ctrl, j, async);
-    return ctrl;
-  }
-
-  std::string info() const {
-    display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
-
-    std::stringstream ss;
-    ss << "[client=" << client_type << "][async=" << async << "]"
-       << "[#th=" << num_game_thread_used << "]"
-       << "[b_res_th=" << black_resign_thres
-       << "][w_res_th=" << white_resign_thres << "][swap=" << player_swap
-       << "][never_res_pr=" << never_resign_prob << "]";
-    return ss.str();
-  }
-
-  friend bool operator==(const ClientCtrl& c1, const ClientCtrl& c2) {
-    return c1.client_type == c2.client_type &&
-        c1.num_game_thread_used == c2.num_game_thread_used &&
-        c1.black_resign_thres == c2.black_resign_thres &&
-        c1.white_resign_thres == c2.white_resign_thres &&
-        c1.never_resign_prob == c2.never_resign_prob &&
-        c1.player_swap == c2.player_swap && c1.async == c2.async;
-  }
-  friend bool operator!=(const ClientCtrl& c1, const ClientCtrl& c2) {
-    return !(c1 == c2);
-  }
-};
-
-struct MsgVersion {
-  int64_t model_ver;
-  MsgVersion(int ver = -1) : model_ver(ver) {}
-};
-
-enum RestartReply {
-  NO_OP,
-  ONLY_WAIT,
-  UPDATE_REQUEST_ONLY,
-  UPDATE_MODEL,
-  UPDATE_MODEL_ASYNC,
-  UPDATE_COMPLETE,
-};
-
-struct MsgRestart {
-  RestartReply result;
-  int game_idx;
-  MsgRestart(RestartReply res = NO_OP, int game_idx = -1)
-      : result(res), game_idx(game_idx) {
-    display_debug_info("struct MsgRestart", __FUNCTION__, RED_B);
-  }
-};
 
 
 
@@ -127,115 +232,7 @@ struct MsgRestart {
 
 
 
-struct MsgRequest {
-  ModelPair vers;
-  ClientCtrl client_ctrl;
-
-  void setJsonFields(json& j) const {
-    display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
-
-    JSON_SAVE_OBJ(j, vers);
-    JSON_SAVE_OBJ(j, client_ctrl);
-  }
-
-  static MsgRequest createFromJson(const json& j) {
-    display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
-
-    MsgRequest request;
-    JSON_LOAD_OBJ(request, j, vers);
-    JSON_LOAD_OBJ_ARGS(request, j, client_ctrl, request.vers.is_selfplay());
-    return request;
-  }
-
-  std::string setJsonFields() const {
-    display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
-
-    json j;
-    setJsonFields(j);
-    return j.dump();
-  }
-
-  std::string info() const {
-    display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
-
-    std::stringstream ss;
-    ss << client_ctrl.info() << vers.info();
-    return ss.str();
-  }
-
-  friend bool operator==(const MsgRequest& m1, const MsgRequest& m2) {
-    return m1.vers == m2.vers && m1.client_ctrl == m2.client_ctrl;
-  }
-
-  friend bool operator!=(const MsgRequest& m1, const MsgRequest& m2) {
-    return !(m1 == m2);
-  }
-};
-
-
-
-
-
-
-
-
-
-struct MsgRequestSeq {
-  int64_t seq = -1;
-  MsgRequest request;
-
-  void setJsonFields(json& j) const {
-    display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
-
-    JSON_SAVE_OBJ(j, request);
-    JSON_SAVE(j, seq);
-  }
-
-  static MsgRequestSeq createFromJson(const json& j) {
-    display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
-
-    MsgRequestSeq s;
-    JSON_LOAD_OBJ(s, j, request);
-    JSON_LOAD(s, j, seq);
-    return s;
-  }
-  std::string dumpJsonString() const {
-    display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
-
-    json j;
-    setJsonFields(j);
-    return j.dump();
-  }
-
-  std::string info() const {
-    display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
-
-    std::stringstream ss;
-    ss << "[seq=" << seq << "]" << request.info();
-    return ss.str();
-  }
-};
-
-
-
-
-
-
-
-struct CoordRecord {
-  unsigned char prob[BOUND_COORD];
-};
-
-
-
-
-
-
-
-
-
-
-struct MsgResult {
+struct CheckersMsgResult {
   int num_move = 0;
   float reward = 0.0;
   bool black_never_resign = false;
@@ -243,11 +240,11 @@ struct MsgResult {
   // Whether this replay is generated by mutliple models.
   std::vector<int64_t> using_models;
   std::string content;
-  std::vector<CoordRecord> policies;
+  std::vector<CheckersCoordRecord> policies;
   std::vector<float> values;
 
   std::string info() const {
-    display_debug_info("struct MsgResult", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersMsgResult", __FUNCTION__, RED_B);
 
     std::stringstream ss;
     ss << "[num_move=" << num_move << "]";
@@ -262,7 +259,7 @@ struct MsgResult {
   }
 
   void setJsonFields(json& j) const {
-    display_debug_info("struct MsgResult", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersMsgResult", __FUNCTION__, RED_B);
 
     JSON_SAVE(j, num_move);
     JSON_SAVE(j, reward);
@@ -282,10 +279,10 @@ struct MsgResult {
     JSON_SAVE(j, values);
   }
 
-  static MsgResult createFromJson(const json& j) {
-    display_debug_info("struct MsgResult", __FUNCTION__, RED_B);
+  static CheckersMsgResult createFromJson(const json& j) {
+    display_debug_info("struct CheckersMsgResult", __FUNCTION__, RED_B);
 
-    MsgResult res;
+    CheckersMsgResult res;
 
     JSON_LOAD(res, j, num_move);
     JSON_LOAD(res, j, reward);
@@ -316,9 +313,15 @@ struct MsgResult {
 
 
 
-struct Record {
+
+
+
+
+
+
+struct CheckersRecord {
   MsgRequest request;
-  MsgResult result;
+  CheckersMsgResult result;
 
   uint64_t timestamp = 0;
   uint64_t thread_id = 0;
@@ -327,7 +330,7 @@ struct Record {
   bool offline = false;
 
   std::string info() const {
-    display_debug_info("struct Record", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersRecord", __FUNCTION__, RED_B);
 
     std::stringstream ss;
     ss << "[t=" << timestamp << "][id=" << thread_id << "][seq=" << seq
@@ -338,7 +341,7 @@ struct Record {
   }
 
   void setJsonFields(json& j) const {
-    display_debug_info("struct Record", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersRecord", __FUNCTION__, RED_B);
 
     JSON_SAVE_OBJ(j, request);
     JSON_SAVE_OBJ(j, result);
@@ -349,10 +352,10 @@ struct Record {
     JSON_SAVE(j, offline);
   }
 
-  static Record createFromJson(const json& j) {
-    display_debug_info("struct Record", __FUNCTION__, RED_B);
+  static CheckersRecord createFromJson(const json& j) {
+    display_debug_info("struct CheckersRecord", __FUNCTION__, RED_B);
 
-    Record r;
+    CheckersRecord r;
 
     JSON_LOAD_OBJ(r, j, request);
     JSON_LOAD_OBJ(r, j, result);
@@ -365,16 +368,16 @@ struct Record {
   }
 
   // Extra serialization.
-  static std::vector<Record> createBatchFromJson(const std::string& json_str) {
-    display_debug_info("struct Record", __FUNCTION__, RED_B);
+  static std::vector<CheckersRecord> createBatchFromJson(const std::string& json_str) {
+    display_debug_info("struct CheckersRecord", __FUNCTION__, RED_B);
 
     return createBatchFromJson(json::parse(json_str));
   }
 
-  static std::vector<Record> createBatchFromJson(const json& j) {
-    display_debug_info("struct Record", __FUNCTION__, RED_B);
+  static std::vector<CheckersRecord> createBatchFromJson(const json& j) {
+    display_debug_info("struct CheckersRecord", __FUNCTION__, RED_B);
 
-    std::vector<Record> records;
+    std::vector<CheckersRecord> records;
     for (size_t i = 0; i < j.size(); ++i) {
       try {
         records.push_back(createFromJson(j[i]));
@@ -385,7 +388,7 @@ struct Record {
   }
 
   static bool loadContent(const std::string& f, std::string* msg) {
-    display_debug_info("struct Record", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersRecord", __FUNCTION__, RED_B);
 
     try {
       std::ifstream iFile(f.c_str());
@@ -402,8 +405,8 @@ struct Record {
 
   static bool loadBatchFromJsonFile(
       const std::string& f,
-      std::vector<Record>* records) {
-    display_debug_info("struct Record", __FUNCTION__, RED_B);
+      std::vector<CheckersRecord>* records) {
+    display_debug_info("struct CheckersRecord", __FUNCTION__, RED_B);
 
     assert(records != nullptr);
 
@@ -420,9 +423,9 @@ struct Record {
   }
 
   static std::string dumpBatchJsonString(
-      std::vector<Record>::const_iterator b,
-      std::vector<Record>::const_iterator e) {
-    display_debug_info("struct Record", __FUNCTION__, RED_B);
+      std::vector<CheckersRecord>::const_iterator b,
+      std::vector<CheckersRecord>::const_iterator e) {
+    display_debug_info("struct CheckersRecord", __FUNCTION__, RED_B);
 
     json j;
     for (auto it = b; it != e; ++it) {
@@ -439,62 +442,58 @@ struct Record {
 
 
 
+// struct ThreadState {
+//   int thread_id = -1;
+//   // Which game we have played.
+//   int seq = 0;
+//   // Which move we have proceeded.
+//   int move_idx = 0;
 
+//   int64_t black = -1;
+//   int64_t white = -1;
 
+//   void setJsonFields(json& j) const {
+//     display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
 
+//     JSON_SAVE(j, thread_id);
+//     JSON_SAVE(j, seq);
+//     JSON_SAVE(j, move_idx);
+//     JSON_SAVE(j, black);
+//     JSON_SAVE(j, white);
+//   }
 
-struct ThreadState {
-  int thread_id = -1;
-  // Which game we have played.
-  int seq = 0;
-  // Which move we have proceeded.
-  int move_idx = 0;
+//   static ThreadState createFromJson(const json& j) {
+//     display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
 
-  int64_t black = -1;
-  int64_t white = -1;
+//     ThreadState state;
+//     JSON_LOAD(state, j, thread_id);
+//     JSON_LOAD(state, j, seq);
+//     JSON_LOAD(state, j, move_idx);
+//     JSON_LOAD(state, j, black);
+//     JSON_LOAD(state, j, white);
+//     return state;
+//   }
 
-  void setJsonFields(json& j) const {
-    display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
+//   friend bool operator==(const ThreadState& t1, const ThreadState& t2) {
+//     return t1.thread_id == t2.thread_id && t1.seq == t2.seq &&
+//         t1.move_idx == t2.move_idx && t1.black == t2.black &&
+//         t1.white == t2.white;
+//   }
 
-    JSON_SAVE(j, thread_id);
-    JSON_SAVE(j, seq);
-    JSON_SAVE(j, move_idx);
-    JSON_SAVE(j, black);
-    JSON_SAVE(j, white);
-  }
+//   friend bool operator!=(const ThreadState& t1, const ThreadState& t2) {
+//     return !(t1 == t2);
+//   }
 
-  static ThreadState createFromJson(const json& j) {
-    display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
+//   std::string info() const {
+//     display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
 
-    ThreadState state;
-    JSON_LOAD(state, j, thread_id);
-    JSON_LOAD(state, j, seq);
-    JSON_LOAD(state, j, move_idx);
-    JSON_LOAD(state, j, black);
-    JSON_LOAD(state, j, white);
-    return state;
-  }
-
-  friend bool operator==(const ThreadState& t1, const ThreadState& t2) {
-    return t1.thread_id == t2.thread_id && t1.seq == t2.seq &&
-        t1.move_idx == t2.move_idx && t1.black == t2.black &&
-        t1.white == t2.white;
-  }
-
-  friend bool operator!=(const ThreadState& t1, const ThreadState& t2) {
-    return !(t1 == t2);
-  }
-
-  std::string info() const {
-    display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
-
-    std::stringstream ss;
-    ss << "[th_id=" << thread_id << "][seq=" << seq << "][mv_idx=" << move_idx
-       << "]"
-       << "[black=" << black << "][white=" << white << "]";
-    return ss.str();
-  }
-};
+//     std::stringstream ss;
+//     ss << "[th_id=" << thread_id << "][seq=" << seq << "][mv_idx=" << move_idx
+//        << "]"
+//        << "[black=" << black << "][white=" << white << "]";
+//     return ss.str();
+//   }
+// };
 
 
 
@@ -505,48 +504,48 @@ struct ThreadState {
 
 
 
-struct Records {
+struct CheckersRecords {
   std::string identity;
   std::unordered_map<int, ThreadState> states;
-  std::vector<Record> records;
+  std::vector<CheckersRecord> records;
 
-  Records() {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+  CheckersRecords() {
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
   
   }
 
-  Records(const std::string& id) : identity(id) {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+  CheckersRecords(const std::string& id) : identity(id) {
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
 
   }
 
   void clear() {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
 
     states.clear();
     records.clear();
   }
 
-  void addRecord(Record&& r) {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+  void addRecord(CheckersRecord&& r) {
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
 
     records.emplace_back(r);
   }
 
   bool isRecordEmpty() const {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
 
     return records.empty();
   }
 
   void updateState(const ThreadState& ts) {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
 
     states[ts.thread_id] = ts;
   }
 
   void setJsonFields(json& j) const {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
 
     JSON_SAVE(j, identity);
     for (const auto& t : states) {
@@ -555,17 +554,17 @@ struct Records {
       j["states"].push_back(jj);
     }
 
-    for (const Record& r : records) {
+    for (const CheckersRecord& r : records) {
       json j1;
       r.setJsonFields(j1);
       j["records"].push_back(j1);
     }
   }
 
-  static Records createFromJson(const json& j) {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+  static CheckersRecords createFromJson(const json& j) {
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
 
-    Records rs;
+    CheckersRecords rs;
     JSON_LOAD(rs, j, identity);
     if (j.find("states") != j.end()) {
       for (size_t i = 0; i < j["states"].size(); ++i) {
@@ -576,28 +575,28 @@ struct Records {
 
     if (j.find("records") != j.end()) {
       for (size_t i = 0; i < j["records"].size(); ++i) {
-        rs.records.push_back(Record::createFromJson(j["records"][i]));
+        rs.records.push_back(CheckersRecord::createFromJson(j["records"][i]));
       }
     }
     return rs;
   }
 
   std::string dumpJsonString() const {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
 
     json j;
     setJsonFields(j);
     return j.dump();
   }
 
-  static Records createFromJsonString(const std::string& s) {
-    display_debug_info("struct Records", __FUNCTION__, RED_B);
+  static CheckersRecords createFromJsonString(const std::string& s) {
+    display_debug_info("struct CheckersRecords", __FUNCTION__, RED_B);
     
     json j = json::parse(s);
     if (j.find("identity") == j.end()) {
       // This is a vector<Records>
-      Records rs("");
-      rs.records = Record::createBatchFromJson(s);
+      CheckersRecords rs("");
+      rs.records = CheckersRecord::createBatchFromJson(s);
       return rs;
     } else {
       return createFromJson(j);

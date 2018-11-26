@@ -70,7 +70,9 @@ class GameContext {
             contextOptions,
             options,
             dispatcher,
-            client_->getNotifier()));
+            client_->getNotifier(),
+            client_->getCheckersNotifier()
+            ));
       }
     }
 

@@ -138,15 +138,19 @@ class CheckersState {
     std::string   res;
 
     res = get_true_state_str(_board);
-    return std::string(res) + "\n" + "Last move: " + std::to_string(lastMove()) +
-        ", CurrentPlayer: " + (this->nextPlayer() == BLACK_PLAYER ? "Green" : "Red") + 
-        "\n move num : " + std::to_string(_board._ply) + "\n";
+    return std::string(res) + "\nLast move\t: " + std::to_string(lastMove()) +
+        "\nCurrentPlayer\t: " + (this->nextPlayer() == BLACK_PLAYER ? 
+          "\x1b[6;32;40mBlack" : "\x1b[6;31;40mWhite") + 
+        "\x1b[0m\nmove num\t: " + std::to_string(_board._ply) + "\n";
   }
 
   float evaluate() const {
     display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
     float final_score = 0.0;
-    final_score = this->nextPlayer() == BLACK_PLAYER ? -1.0 : 1.0;
+    if (getPly() >= TOTAL_MAX_MOVE)
+      final_score = -1;
+    else
+      final_score = this->nextPlayer() == BLACK_PLAYER ? -1.0 : 1.0;
 
     return final_score;
   }

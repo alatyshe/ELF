@@ -87,7 +87,7 @@
 void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
 
-  _logger->info("{}", _state.showBoard());
+  _logger->info("\n{}", _state.showBoard());
   // std::string sgf_record = dumpSgf("");
   // _logger->info("{}", sgf_record);
 
@@ -109,10 +109,10 @@ void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
           "Ply: {} exceeds thread_state. Restarting the game", _state.getPly());
       break;
     case CHEKCERS_BLACK_WIN:
-      _logger->info("Black(Green) win {}", _state.getPly());
+      _logger->info("\x1b[6;32;40mBlack\x1b[0m win at {} move", _state.getPly());
       break;
     case CHEKCERS_WHITE_WIN:
-      _logger->info("White(Red) win {}", _state.getPly());
+      _logger->info("\x1b[6;31;40mWhite\x1b[0m win at {} move", _state.getPly());
       break;
     // case FR_CLEAR:
     //   _logger->info("Restarting at {}", _state.getPly());
