@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 # XXX hack fix path
+import inspect
 import os
 import random
 import sys
@@ -92,6 +93,9 @@ class ParameterServer(object):
         Args:
             mi(`ModelInterface`): model interface to send
         """
+        print("\x1b[1;33;40m|py|", "ParameterServer::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         assert mi is not None
         for i in range(self.n_processes - 1):
             self.queue.put(mi)
@@ -107,6 +111,9 @@ class ParameterServer(object):
         Returns:
             `ModelInterface` shared in clients.
         """
+        print("\x1b[1;33;40m|py|", "ParameterServer::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         mi = self.queue.get()
         # clone the gradients to break the sharing
         for _, model in mi.models.items():
@@ -127,6 +134,9 @@ class ParameterServer(object):
             noblock(bool): indicates if updating models block other threads.
                            Default is blocking.
         '''
+        print("\x1b[1;33;40m|py|", "ParameterServer::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         # if recv is not done, skip it.
         if noblock:
             try:
@@ -154,6 +164,8 @@ class ParameterServer(object):
         Returns:
             refreshed model.
         '''
+        print("\x1b[1;33;40m|py|", "ParameterServer::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         # First wait until we are synced up.
         self.send_done.wait()
@@ -163,6 +175,20 @@ class ParameterServer(object):
             mi = None
         self.recv_done.notify()
         return mi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class SharedData:
@@ -180,6 +206,9 @@ class SharedData:
             cb_remote_batch_process: Callbacks for remote process
             args: additional arguments
         '''
+        print("\x1b[1;33;40m|py|", "SharedData::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.server = ParameterServer(total_process)
         self.cb_remote_initialize = cb_remote_initialize
         self.cb_remote_batch_process = cb_remote_batch_process
@@ -229,6 +258,9 @@ class SharedData:
             i(int): process id
             gpu_id(int): gpu id
         '''
+        print("\x1b[1;33;40m|py|", "SharedData::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         batch = self.qs[i].get()
         self.b.wait()
 
@@ -255,6 +287,9 @@ class SharedData:
         Args:
             batch(dict): batch data
         '''
+        print("\x1b[1;33;40m|py|", "SharedData::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         process_idx = random.randint(0, len(self.shared_batches) - 1)
         try:
             self.cvs_send[process_idx].wait_noblock()

@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import os 
+import inspect
 from elf.options import auto_import_options, PyOptionSpec
 
 
@@ -87,6 +89,9 @@ class ContextArgs(object):
         pass
 
     def initialize(self, co):
+        print("\x1b[1;33;40m|py|", "ContextArgs::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         options = self.options
         mcts = co.mcts_options
 

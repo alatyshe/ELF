@@ -11,6 +11,7 @@ import os
 import sys
 import re
 import time
+import inspect
 
 import torch
 
@@ -68,6 +69,9 @@ def main():
     print(f'Keep prev_selfplay: {keep_prev_selfplay!s}')
 
     def train(batch, *args, **kwargs):
+        print("\x1b[1;33;40m|py|", "main train.py::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         # Check whether the version match.
         if keep_prev_selfplay or \
                 (batch["selfplay_ver"] != selfplay_ver).sum() == 0:
@@ -78,6 +82,10 @@ def main():
             runner.inc_episode_counter(-1)
 
     def train_ctrl(batch, *args, **kwargs):
+        print("\x1b[1;33;40m|py|", "main train.py::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
+
         nonlocal selfplay_ver
         old_selfplay_ver = selfplay_ver
         selfplay_ver = int(batch["selfplay_ver"][0])
@@ -120,6 +128,9 @@ def main():
         rl_method=env["method"])
 
     def episode_summary(i):
+        print("\x1b[1;33;40m|py|", "main train.py::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         nonlocal selfplay_ver
         ver = trainer.episode_summary(i)
         # This might block (when evaluation does not catch up with training).
@@ -128,6 +139,9 @@ def main():
     offline_training = (env["game"].options.mode == "offline_train")
 
     def after_start():
+        print("\x1b[1;33;40m|py|", "main train.py::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         nonlocal selfplay_ver
         if not offline_training:
             print("About to wait for sufficient selfplay")

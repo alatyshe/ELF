@@ -8,6 +8,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import os
+import inspect
 
 from elf import GCWrapper, ContextArgs, MoreLabels
 from elf.options import auto_import_options, PyOptionSpec
@@ -122,6 +123,10 @@ class Loader(object):
         self.more_labels = MoreLabels(option_map)
 
     def _set_params(self):
+        print("\x1b[1;33;40m|py|", "Loader::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
+
         co = go.ContextOptions()
         self.context_args.initialize(co)
         co.job_id = os.environ.get("job_id", "local")
@@ -164,6 +169,10 @@ class Loader(object):
         return co, GC, opt
 
     def initialize(self):
+        print("\x1b[1;33;40m|py|", "Loader::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
+
         co, GC, opt = self._set_params()
 
         params = GC.getParams()

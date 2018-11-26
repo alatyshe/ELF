@@ -346,6 +346,9 @@ void GoGameSelfPlay::act() {
     // If re receive this, then we should not send games anymore
     // (otherwise the process never stops)
     if (client_->checkPrepareToStop()) {
+      // стопаем все игры после получения сигнала 
+      // тк. мы сыграли достаточное количество игр и можно останавливаться.
+      
       // [TODO] A lot of hack here. We need to fix it later.
       AI ai(client_, {"actor_black"});
       BoardFeature bf(s);
@@ -380,16 +383,16 @@ void GoGameSelfPlay::act() {
   MCTSGoAI* curr_ai =
       ((_ai2 != nullptr && player == S_WHITE) ? _ai2.get() : _ai.get());
 
-  if (use_policy_network_only) {
+  // if (use_policy_network_only) {
     // Then we only use policy network to move.
     curr_ai->actPolicyOnly(s, &c);
-  } else {
+  // } else {
 
-    std::cout << "curr_ai->act(s, &c);" << std::endl;
+  //   std::cout << "curr_ai->act(s, &c);" << std::endl;
     
-    curr_ai->act(s, &c);
-    c = mcts_make_diverse_move(curr_ai, c);
-  }
+  //   curr_ai->act(s, &c);
+  //   c = mcts_make_diverse_move(curr_ai, c);
+  // }
 
 
 

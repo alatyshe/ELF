@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 import tqdm
 
 from elf.options import auto_import_options, PyOptionSpec
@@ -52,6 +54,9 @@ class MultiProcessRun(object):
             episode_summary(func): operations to summarize after each epidsode
             args(dict): Additional arguments for class `SharedData`
         '''
+        print("\x1b[1;33;40m|py|", "MultiProcessRun::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.GC = GC
         self.episode_start = episode_start
         self.episode_summary = episode_summary
@@ -68,6 +73,9 @@ class MultiProcessRun(object):
     def _train(self, batch):
         # Send to remote for remote processing.
         # TODO Might have issues when batch is on GPU.
+        print("\x1b[1;33;40m|py|", "MultiProcessRun::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.total_train_count += 1
         success = self.shared_data.send_batch(batch)
         if success:
@@ -83,6 +91,10 @@ class MultiProcessRun(object):
         Print training stats after each episode.
         In the end, print summary for game context and stop it.
         """
+
+        print("\x1b[1;33;40m|py|", "MultiProcessRun::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.GC.reg_callback("train", self._train)
         self.GC.start()
 

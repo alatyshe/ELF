@@ -4,6 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
 import os
 from collections import defaultdict, deque, Counter
 from datetime import datetime
@@ -18,6 +19,9 @@ class SymLink(object):
         self.latest_files = deque()
 
     def feed(self, filename):
+        print("\x1b[1;33;40m|py|", "SymLink::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.latest_files.appendleft(filename)
         if len(self.latest_files) > self.latest_k:
             self.latest_files.pop()
@@ -78,6 +82,9 @@ class ModelSaver(object):
                 self.options.latest_symlink))
 
     def feed(self, model):
+        print("\x1b[1;33;40m|py|", "ModelSaver::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         basename = self.options.save_prefix + "-%d.bin" % model.step
         print("Save to " + self.options.save_dir)
         filename = os.path.join(self.options.save_dir, basename)
@@ -93,6 +100,9 @@ class ValueStats(object):
         self.reset()
 
     def feed(self, v):
+        print("\x1b[1;33;40m|py|", "ValueStats::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.summation += v
         if v > self.max_value:
             self.max_value = v
@@ -104,6 +114,9 @@ class ValueStats(object):
         self.counter += 1
 
     def summary(self, info=None):
+        print("\x1b[1;33;40m|py|", "ValueStats::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         info = "" if info is None else info
         name = "" if self.name is None else self.name
         if self.counter > 0:
@@ -118,6 +131,9 @@ class ValueStats(object):
             return "%s%s[0]" % (info, name)
 
     def reset(self):
+        print("\x1b[1;33;40m|py|", "ValueStats::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.counter = 0
         self.summation = 0.0
         self.max_value = -1e38
@@ -128,6 +144,9 @@ class ValueStats(object):
 
 def topk_accuracy(output, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""
+    print("\x1b[1;33;40m|py|", "utils.py ::", inspect.currentframe().f_code.co_name)
+    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
     maxk = max(topk)
     batch_size = target.size(0)
 
@@ -151,12 +170,18 @@ class MultiCounter(object):
         self.total_count = 0
 
     def inc(self, key):
+        print("\x1b[1;33;40m|py|", "MultiCounter::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         if self.verbose:
             print("[MultiCounter]: %s" % key)
         self.counts[key] += 1
         self.total_count += 1
 
     def reset(self):
+        print("\x1b[1;33;40m|py|", "MultiCounter::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         for k in sorted(self.stats.keys()):
             self.stats[k].reset()
 
@@ -165,6 +190,9 @@ class MultiCounter(object):
         self.last_time = datetime.now()
 
     def summary(self, global_counter=None):
+        print("\x1b[1;33;40m|py|", "MultiCounter::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        
         this_time = datetime.now()
         if self.last_time is not None:
             print(

@@ -6,6 +6,8 @@
 
 from collections import deque
 
+import inspect
+import os
 import torch
 import torch.cuda
 import torch.optim
@@ -71,6 +73,9 @@ class ModelInterface(object):
         Returns:
             cloned `ModelInterface`.
         """
+        print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         mi = ModelInterface(self.option_map)
         for key, model in self.models.items():
             mi.models[key] = model.clone(gpu=gpu)
@@ -128,6 +133,9 @@ class ModelInterface(object):
             Raise exception if key is already in ``self.models``,
             None if model is successfully added.
         '''
+        print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         if key in self.models:
             raise("ModelInterface: key[%s] is already present!" % key)
 
@@ -144,6 +152,9 @@ class ModelInterface(object):
                 self.models[key].cuda()
 
         def set_default(params, ks, arg_ks=None):
+            print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+            print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
             if arg_ks is None:
                 arg_ks = [None] * len(ks)
             for k, arg_k in zip(ks, arg_ks):
@@ -187,6 +198,9 @@ class ModelInterface(object):
             key(str): the key in ``models`` to be updated
             model(`Model`): updated model
         '''
+        print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         # print("Updating model " + key)
         if key not in self.models:
             self.add_model(key, model)
@@ -200,6 +214,9 @@ class ModelInterface(object):
         self.models[key].load_from(model)
 
     def remove_model(self, key):
+        print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         del self.models[key]
         if key in self.optimizers:
             del self.optimizers[key]
@@ -212,6 +229,9 @@ class ModelInterface(object):
             key(str): the key in ``models``
             model(Model): the model containing the parameters to update
         """
+        print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         for param, other_param in zip(
                 self.models[key].parameters(), model.parameters()):
             param.data += other_param.data.cuda(param.data.get_device())
@@ -224,6 +244,8 @@ class ModelInterface(object):
             dst_key(str): destination key in ``self.models``
             src_key(str): source key in ``self.models``
         '''
+        print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         assert dst_key in self.models, \
             f'ModelInterface: dst_key = {dst_key} cannot be found'
@@ -238,12 +260,18 @@ class ModelInterface(object):
 
     def zero_grad(self):
         ''' Zero the gradient for all ``optimizers`` '''
+        print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         for k, optimizer in self.optimizers.items():
             optimizer.zero_grad()
 
     def update_weights(self):
         """For each optimizer, call before_update for all the models,
         then update the weights and increment the step for the model."""
+        print("\x1b[1;33;40m|py|", "Model::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         for k, optimizer in self.optimizers.items():
             self.models[k].before_update()
             optimizer.step()

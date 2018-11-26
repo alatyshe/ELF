@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 import torch.nn as nn
 from torch.autograd import Variable
 
@@ -20,7 +22,8 @@ class MCTSPrediction(object):
     @classmethod
     def get_option_spec(cls):
         
-        print("\x1b[1;32;40mMCTSPrediction.get_option_spec    \x1b[0m")
+        print("\x1b[1;33;40m|py|", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         spec = PyOptionSpec()
         spec.addBoolOption(
@@ -32,7 +35,8 @@ class MCTSPrediction(object):
     @auto_import_options
     def __init__(self, option_map):
         
-        print("\x1b[1;32;40mMCTSPrediction.init    \x1b[0m")
+        print("\x1b[1;33;40m|py|", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.policy_loss = nn.KLDivLoss().cuda()
         self.value_loss = nn.MSELoss().cuda()
@@ -43,7 +47,8 @@ class MCTSPrediction(object):
     def update(self, mi, batch, stats, use_cooldown=False, cooldown_count=0):
         ''' Update given batch '''
         
-        print("\x1b[1;32;40mMCTSPrediction.update    \x1b[0m")
+        print("\x1b[1;33;40m|py|", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.timer.restart()
         if use_cooldown:

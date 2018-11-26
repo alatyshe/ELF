@@ -24,6 +24,9 @@ class DiscountedReward(object):
 
     def setR(self, R, stats):
         """Set rewards and feed to stats."""
+        print("\x1b[1;33;40m|py|", "DiscountedReward::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.R = R
         stats["init_reward"].feed(R.mean())
 
@@ -38,6 +41,9 @@ class DiscountedReward(object):
 
         Feed to stats: immediate reward and accumulated reward
         """
+        print("\x1b[1;33;40m|py|", "DiscountedReward::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        
         r = batch["r"]
         term = batch["terminal"]
 

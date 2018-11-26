@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 from elf.options import auto_import_options, PyOptionSpec
 from .sample_methods import sample_multinomial, epsilon_greedy
 
@@ -47,6 +49,9 @@ class Sampler(object):
         """
         # TODO: This only handles epsilon_greedy and multinomial for now. Add
         # uniform and original_distribution?
+        print("\x1b[1;33;40m|py|", "Sampler::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         sampler = (epsilon_greedy
                    if self.options.store_greedy
                    else sample_multinomial)

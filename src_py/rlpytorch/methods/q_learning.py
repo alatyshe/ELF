@@ -49,6 +49,9 @@ class Q_learning(object):
                 ``terminal``: if game is terminated
             stats(`Stats`): Feed stats for later summarization.
         '''
+        print("\x1b[1;33;40m|py|", "Q_learning::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        
         m = mi["model"]
         Q_node = self.options.Q_node
         a_node = self.options.a_node

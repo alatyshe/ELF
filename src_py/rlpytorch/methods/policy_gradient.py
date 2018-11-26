@@ -62,6 +62,9 @@ class PolicyGradient(object):
             ``policy_err``: polict error
             ``entropy_err``: entropy error
         """
+        print("\x1b[1;33;40m|py|", "PolicyGradient::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         batchsize = a.size(0)
 
         # Add normalization constant
@@ -89,6 +92,9 @@ class PolicyGradient(object):
             ``policy_err``: polict error
             ``entropy_err``: entropy error
         """
+        print("\x1b[1;33;40m|py|", "PolicyGradient::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         errs = {}
         if isinstance(pi, list):
             # Action map, and we need compute the error one by one.
@@ -106,7 +112,13 @@ class PolicyGradient(object):
 
     def _reg_backward(self, v, pg_weights):
         """Register the backward hook. Clip the gradient if necessary."""
+        print("\x1b[1;33;40m|py|", "PolicyGradient::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         def bw_hook(grad_in):
+            print("\x1b[1;33;40m|py|", "PolicyGradient::", inspect.currentframe().f_code.co_name)
+            print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
             grad_clip_norm = self.options.grad_clip_norm
             # this works only on pytorch 0.2.0
             grad = grad_in.mul(pg_weights.view(-1, 1))
@@ -138,6 +150,9 @@ class PolicyGradient(object):
         # We need to set it beforehand.
         # Note that the samples we collect might be off-policy, so we need
         # to do importance sampling.
+        print("\x1b[1;33;40m|py|", "PolicyGradient::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        
         pg_weights = Q.clone()
 
         policy_err = None

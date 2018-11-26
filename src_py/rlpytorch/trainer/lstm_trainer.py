@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 from datetime import datetime
 
 import torch
@@ -71,6 +73,9 @@ class LSTMTrainer(object):
         pass
 
     def actor(self, batch):
+        print("\x1b[1;33;40m|py|", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.counter.inc("actor")
 
         ids = batch["id"][0]
@@ -95,6 +100,9 @@ class LSTMTrainer(object):
         return reply_msg
 
     def train(self, batch):
+        print("\x1b[1;33;40m|py|", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.counter.inc("train")
         mi = self.mi
 
@@ -111,6 +119,9 @@ class LSTMTrainer(object):
             mi.update_model("actor", mi["model"])
 
     def episode_summary(self, i):
+        print("\x1b[1;33;40m|py|", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         prefix = "[%s][%d] Iter" % (
             str(datetime.now()), self.options.batchsize) + "[%d]: " % i
         print(prefix)
@@ -127,6 +138,9 @@ class LSTMTrainer(object):
             self.stats.reset()
 
     def setup(self, rl_method=None, mi=None, sampler=None):
+        print("\x1b[1;33;40m|py|", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
         self.rl_method = rl_method
         self.mi = mi
         self.sampler = sampler

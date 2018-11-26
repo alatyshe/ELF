@@ -51,6 +51,10 @@ class ActorCritic(object):
                 ``terminal``: if game is terminated
             stats(`Stats`): Feed stats for later summarization.
         """
+        print("\x1b[1;33;40m|py|", "ActorCritic::", inspect.currentframe().f_code.co_name)
+        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+
+        
         m = mi["model"]
         value_node = self.options.value_node
 
