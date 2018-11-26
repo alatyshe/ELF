@@ -104,31 +104,15 @@ struct CheckersStateExt {
 
 
 
-  // float  setFinalValue(FinishReason reason, std::mt19937* rng) {
-  //   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
+  float  setFinalValue(CheckersFinishReason reason, std::mt19937* rng) {
+    display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
 
-  //   float final_value = 0.0;
-  //   _last_move_for_the_game = _state.lastMove();
+    float final_value = 0.0;
 
-  //   if (reason == FR_CHEAT_NEWER_WINS_HALF &&
-  //       !curr_request_.vers.is_selfplay()) {
-  //     auto h = std::hash<std::string>{}(
-  //                  std::to_string(curr_request_.vers.black_ver)) ^
-  //         std::hash<std::string>{}(
-  //                  std::to_string(curr_request_.vers.white_ver));
-  //     final_value = h % 2 == 0 ? 1.0 : -1.0;
-  //     if (curr_request_.client_ctrl.player_swap)
-  //       final_value = -final_value;
-  //   } else if (
-  //       reason == FR_CHEAT_SELFPLAY_RANDOM_RESULT &&
-  //       curr_request_.vers.is_selfplay()) {
-  //     final_value = ((*rng)() % 2 == 0 ? 1.0 : -1.0);
-  //   } else {
-  //     final_value = _state.evaluate(_options.komi);
-  //   }
-  //   _state.setFinalValue(final_value);
-  //   return final_value;
-  // }
+    final_value = _state.evaluate();
+    _state.setFinalValue(final_value);
+    return final_value;
+  }
 
 
 

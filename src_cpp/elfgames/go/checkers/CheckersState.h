@@ -143,17 +143,13 @@ class CheckersState {
         "\n move num : " + std::to_string(_board._ply) + "\n";
   }
 
- //  float evaluate(float komi, std::ostream* oo = nullptr) const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
- //    float final_score = 0.0;
- //    if (_check_superko()) {
- //      final_score = nextPlayer() == S_BLACK ? 1.0 : -1.0;
- //    } else {
- //      final_score = (float)simple_tt_scoring(_board, oo) - komi;
- //    }
+  float evaluate() const {
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    float final_score = 0.0;
+    final_score = this->nextPlayer() == BLACK_PLAYER ? -1.0 : 1.0;
 
- //    return final_score;
- //  }
+    return final_score;
+  }
 
  //  // TODO: not a good design..
  //  const std::deque<BoardHistory>& getHistory() const {

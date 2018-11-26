@@ -614,17 +614,18 @@ if (client_->checkPrepareToStop()) {
   if (cs.terminated()) {
 
     std::cout << "GAME ENDS" << std::endl;
-    exit(1);
-    // auto reason = cs.isTwoPass()
-    //     ? FR_TWO_PASSES
-    //     : cs.getPly() >= BOARD_MAX_MOVE ? FR_MAX_STEP : FR_ILLEGAL;
+    CheckersFinishReason reason = (cs.nextPlayer() == WHITE_PLAYER)
+        ? CHEKCERS_BLACK_WIN
+        : cs.getPly() >= BOARD_MAX_MOVE ? CHECKERS_MAX_STEP : CHEKCERS_WHITE_WIN;
     // finish_game(reason);
+    exit(1);
   }
 
   if (_options.move_cutoff > 0 && cs.getPly() >= _options.move_cutoff) {
     std::cout << "GAME ENDS" << std::endl;
+    CheckersFinishReason reason = CHECKERS_MAX_STEP;
+    // finish_game(reason);
     exit(1);
-    // finish_game(FR_MAX_STEP);
   }
 
   // 
