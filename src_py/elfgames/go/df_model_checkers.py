@@ -344,8 +344,8 @@ class Model_PolicyValue(Model):
 				  "(for cooldown = 50) in this case")
 
 	def forward(self, x):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 		
 		# приводим в нормальный вид
 		# print("\n\nbefore - self._var(x['checkers_s'])")
@@ -384,7 +384,10 @@ class Model_PolicyValue(Model):
 		# V = self.value_linear2(V)
 		# V = self.tanh(V)
 		V = torch.zeros([1,1], dtype=torch.float16, device='cuda:0')
-		# print("\n\npi.shape : ", pi.shape)
+
+		# удали это говно
+		a = torch.randn(1, 170, dtype=torch.float16, device="cuda:0") / 10000
+		pi = pi + a
 		return dict(logpi=logpi, pi=pi, checkers_V=V)
 
 

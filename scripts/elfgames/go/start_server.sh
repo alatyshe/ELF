@@ -29,7 +29,7 @@ model=df_kl model_file=elfgames.go.df_model_checkers \
     --weight_decay 0.0002    --opt_method sgd \
     --bn_momentum=0 --num_cooldown=50 \
     --expected_num_client 1 \
-    --selfplay_init_num 0 --selfplay_update_num 0 \
-    --eval_num_games 0 --selfplay_async \
+    --selfplay_init_num 10 --selfplay_update_num 10 \
+    --eval_num_games 40 --selfplay_async \
     --lr 0.01    --momentum 0.9     
     # 1>> log.log 2>&1 &

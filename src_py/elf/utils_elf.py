@@ -382,9 +382,9 @@ class GCWrapper:
     def _call(self, smem, *args, **kwargs):
         idx = smem.getSharedMemOptions().idx()
         
-        print("\n\n\n")
-        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
-        print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\n\n\n")
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+        # print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         # print("\nMAIN FUNC TO WAIT STATE CALL NN AND FILL PI TO ++")
         # print("smem idx: %d, label: %s" % (idx, self.idx2name[idx]))
@@ -419,9 +419,6 @@ class GCWrapper:
 
         reply = self._cb[idx](picked, *args, **kwargs)
 
-        # print("=====================================")
-        # print("reply : ", reply)
-        # print("=====================================")
         # If reply is meaningful, send them back.
         if isinstance(reply, dict) and sel_reply is not None:
             if self.gpu is not None:
@@ -455,18 +452,17 @@ class GCWrapper:
         Samples in a returned batch are always from the same group,
         but the group key of the batch may be arbitrary.
         '''
-        print("\n\n\n\n\n")
-        print("======================================================================================")
-        print("======================================================================================")
-        print("======================================================================================")
-        print("\n\n\x1b[6;30;42m\tbefore wait\x1b[0m")
+
+        # print("\n\n\n\n\n")
+        # print("======================================================================================")
+        # print("======================================================================================")
+        # print("\n\n\x1b[6;30;42m\tbefore wait\x1b[0m")
         smem = self.GC.ctx().wait()
 
-        # print("smem :  ", smem.info())
-        print("\n\n\x1b[6;30;42m\tbefore calling\x1b[0m")
+        # print("\n\n\x1b[6;30;42m\tbefore calling\x1b[0m")
         self._call(smem, *args, **kwargs)
 
-        print("\n\n\x1b[6;30;42m\tbefore_step\x1b[0m")
+        # print("\n\n\x1b[6;30;42m\tbefore_step\x1b[0m")
         self.GC.ctx().step()
 
     def start(self):

@@ -203,14 +203,11 @@ void GoGameSelfPlay::finish_game(CheckersFinishReason reason) {
 
   // сообщает клиенту, что игры окончена
   if (checkers_notifier_ != nullptr){
-    std::cout << "checkers_notifier_ != nullptr" << std::endl;
     checkers_notifier_->OnGameEnd(_checkers_state_ext);
   }
 
   // My code
-  _checkers_state_ext.restart();  
-
-  // exit(1);
+  _checkers_state_ext.restart();
 }
 
 
@@ -620,7 +617,7 @@ if (client_->checkPrepareToStop()) {
         );    
     return;
   }
-  
+
   if (cs.terminated()) {
     CheckersFinishReason reason = cs.getPly() >= BOARD_MAX_MOVE ? CHECKERS_MAX_STEP : 
     (cs.nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
@@ -632,7 +629,7 @@ if (client_->checkPrepareToStop()) {
     finish_game(reason);
   }
 
-  std::cout << cs.showBoard() << std::endl;
+  // std::cout << cs.showBoard() << std::endl;
   // 
   // exit(1);
 }

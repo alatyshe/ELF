@@ -20,9 +20,9 @@ stdbuf -o 0 -e 0 python ./selfplay.py \
     --mcts_puct 0.85    --mcts_rollout_per_thread 16 \
     --mcts_threads 1    --mcts_use_prior \
     --mcts_virtual_loss 5   --mode selfplay \
-    --num_block0 1    --num_block1 1 \
+    --num_block0 5    --num_block1 5 \
     --num_games 1    --ply_pass_enabled 0 \
-    --suicide_after_n_games 2 \
+    --suicide_after_n_games 5000 \
     --policy_distri_cutoff 30    --policy_distri_training_for_all \
     --port 1234 \
     --no_check_loaded_options0    --no_check_loaded_options1 \

@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 import numpy as np
 import torch
 import sys
@@ -35,6 +37,12 @@ def sample_with_check(probs, greedy=False):
         otherwise sample from it.
     """
     num_action = probs.size(1)
+
+    # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Trainer::", inspect.currentframe().f_code.co_name)
+    # print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("num_action\t: ", num_action)
+    # print("probs\t: ", probs)
+
     if greedy:
         _, actions = probs.max(1)
         return actions
