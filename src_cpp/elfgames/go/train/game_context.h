@@ -54,7 +54,7 @@ class GameContext {
       server_.reset(new Server(contextOptions, options, gc));
 
       for (int i = 0; i < numGames; ++i) {
-        games_.emplace_back(new GoGameTrain(
+        games_.emplace_back(new GameTrain(
             i, gc, contextOptions, options, server_->getReplayBuffer()));
       }
     } else {
@@ -96,7 +96,7 @@ class GameContext {
     return goFeature_.getParams();
   }
 
-  const GoGameBase* getGame(int game_idx) const {
+  const GameBase* getGame(int game_idx) const {
     display_debug_info("GameContext", __FUNCTION__, RED_B);
 
     if (_check_game_idx(game_idx)) {
@@ -135,13 +135,13 @@ class GameContext {
  private:
   bool _check_game_idx(int game_idx) const {
     display_debug_info("GameContext", __FUNCTION__, RED_B);
-    
+
     return game_idx < 0 || game_idx >= (int)games_.size();
   }
 
  private:
   std::unique_ptr<elf::Context> context_;
-  std::vector<std::unique_ptr<GoGameBase>> games_;
+  std::vector<std::unique_ptr<GameBase>> games_;
 
   std::unique_ptr<Server> server_;
   std::unique_ptr<Client> client_;

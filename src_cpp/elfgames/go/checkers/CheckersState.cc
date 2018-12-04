@@ -2,16 +2,13 @@
 
 ///////////// CheckersState ////////////////////
 bool CheckersState::forward(const Coord& c) {
-  display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+  display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 
   if (c == M_INVALID)
     throw std::range_error("CheckersState::forward(): move is M_INVALID");
 
   if (terminated())
-  {
-    std::cout << "terminated()" << std::endl; 
     return false;
-  }
 
   if (!CheckersTryPlay(_board, c))
     return false;
@@ -28,7 +25,7 @@ bool CheckersState::forward(const Coord& c) {
 }
 
 // void CheckersState::_add_board_hash(const Coord& c) {
-//   display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+//   display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 
 //   if (c == M_PASS)
 //     return;
@@ -39,17 +36,18 @@ bool CheckersState::forward(const Coord& c) {
 //   copyBits(r.back().bits, _board._bits);
 // }
 
-// bool CheckersState::checkMove(const Coord& c) const {
-//   display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+bool CheckersState::checkMove(const Coord& c) const {
+  display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 
+  return CheckersTryPlay(_board, c);
 //   GroupId4 ids;
 //   if (c == M_INVALID)
 //     return false;
 //   return TryPlay2(&_board, c, &ids);
-// }
+}
 
 void CheckersState::reset() {
-  display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+  display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
   
   ClearBoard(&_board);
   _moves.clear();
@@ -58,3 +56,10 @@ void CheckersState::reset() {
   _final_value = 0.0;
   _has_final_value = false;
 }
+
+
+
+
+
+
+

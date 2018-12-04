@@ -31,8 +31,8 @@ void error(const char* format, ...);
 #define __STR_EXPAND(tok) #tok
 #define __STR(tok) __STR_EXPAND(tok)
 
-typedef unsigned short Coord;
-typedef unsigned char Stone;
+typedef unsigned short 	Coord;
+typedef unsigned char 	Stone;
 
 #define S_EMPTY 0
 #define S_BLACK 1

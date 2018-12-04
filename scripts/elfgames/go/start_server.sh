@@ -10,18 +10,18 @@ save=./myserver \
 game=elfgames.go.game \
 model=df_kl model_file=elfgames.go.df_model_checkers \
     stdbuf -o 0 -e 0 python -u ./train.py \
-    --mode train    --batchsize 1 \
-    --num_games 1    --keys_in_reply checkers_V \
+    --mode train    --batchsize 32 \
+    --num_games 40    --keys_in_reply checkers_V \
     --T 1    --use_data_parallel \
-    --num_minibatch 1    --num_episode 10 \
-    --mcts_threads 8    --mcts_rollout_per_thread 16 \
+    --num_minibatch 32    --num_episode 10 \
+    --mcts_threads 16    --mcts_rollout_per_thread 16 \
     --keep_prev_selfplay    --keep_prev_selfplay \
     --use_mcts     --use_mcts_ai2 \
     --mcts_persistent_tree    --mcts_use_prior \
     --mcts_virtual_loss 5     --mcts_epsilon 0.25 \
     --mcts_alpha 0.03     --mcts_puct 0.85 \
     --gpu 0 \
-    --server_id myserver     --eval_num_games 4 \
+    --server_id myserver     --eval_num_games 5 \
     --eval_winrate_thres 0.55     --port 1234 \
     --q_min_size 10     --q_max_size 100 \
     --save_first     \
@@ -29,7 +29,7 @@ model=df_kl model_file=elfgames.go.df_model_checkers \
     --weight_decay 0.0002    --opt_method sgd \
     --bn_momentum=0 --num_cooldown=50 \
     --expected_num_client 1 \
-    --selfplay_init_num 10 --selfplay_update_num 10 \
-    --eval_num_games 40 --selfplay_async \
+    --selfplay_init_num 5 --selfplay_update_num 5 \
+    --eval_num_games 5 --selfplay_async \
     --lr 0.01    --momentum 0.9     
     # 1>> log.log 2>&1 &

@@ -25,8 +25,16 @@
 //   }
 // }
 
+
+
+
+
+
+
+
+
 // std::string CheckersStateExt::dumpSgf(const std::string& filename) const {
-//   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
+//   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
 //   std::vector<Coord> moves = _state.getAllMoves();
 
@@ -84,8 +92,19 @@
 //   return ss.str();
 // }
 
+
+
+
+
+
+
+
+
+
+
+
 void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
-  display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[2;30;43m");
+  display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
   _logger->info("\n{}", _state.showBoard());
   // std::string sgf_record = dumpSgf("");

@@ -31,7 +31,7 @@
 class AIClientT;
 
 // Game interface for Go.
-class GoGameSelfPlay : public GoGameBase {
+class GoGameSelfPlay : public GameBase {
  public:
   using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
   GoGameSelfPlay(
@@ -50,7 +50,7 @@ class GoGameSelfPlay : public GoGameBase {
     display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
     // std::cout << _checkers_state_ext.state().showBoard() << std::endl << std::endl;
 
-    return _state_ext.state().showBoard();
+    return _checkers_state_ext.state().showBoard();
   }
 
   // std::string getNextPlayer() const {
@@ -67,17 +67,24 @@ class GoGameSelfPlay : public GoGameBase {
   //   return coord2str2(_state_ext.lastMove());
   // }
 
-  float getScore() {
-    display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
-    std::cout << _state_ext.state().evaluate(_options.komi) << std::endl << std::endl;
+  // float getScore() {
+  //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  //   std::cout << _state_ext.state().evaluate(_options.komi) << std::endl << std::endl;
 
-    return _state_ext.state().evaluate(_options.komi);
+  //   return _state_ext.state().evaluate(_options.komi);
+  // }
+
+  float checkersGetScore() {
+    display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+    // std::cout << _checkers_state_ext.state().evaluate() << std::endl << std::endl;
+
+    return _checkers_state_ext.state().evaluate();
   }
+
 
   // float getLastScore() const {
   //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
   //   std::cout << _state_ext.getLastGameFinalValue() << std::endl << std::endl;
-
 
   //   return _state_ext.getLastGameFinalValue();
   // }
@@ -86,25 +93,25 @@ class GoGameSelfPlay : public GoGameBase {
   void setAsync();
   void restart();
 
-  MCTSGoAI* init_ai(
+
+  MCTSCheckersAI* init_checkers_ai(
       const std::string& actor_name,
       const elf::ai::tree_search::TSOptions& mcts_opt,
       float second_puct,
       int second_mcts_rollout_per_batch,
       int second_mcts_rollout_per_thread,
       int64_t model_ver);
-  Coord mcts_make_diverse_move(MCTSGoAI* curr_ai, Coord c);
-  Coord mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c);
+
+
+  Coord mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c);
+  Coord mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c);
   
   void  finish_game(CheckersFinishReason reason);
-  void  finish_game(FinishReason reason);
+  
   
 
  private:
-  ThreadedDispatcher* dispatcher_ = nullptr;
-  GameNotifierBase*   notifier_ = nullptr;
-  GoStateExt          _state_ext;
-  
+  ThreadedDispatcher*         dispatcher_ = nullptr;
   // My
   CheckersGameNotifierBase*   checkers_notifier_ = nullptr;
   CheckersStateExt            _checkers_state_ext;
@@ -112,13 +119,11 @@ class GoGameSelfPlay : public GoGameBase {
 
   int _online_counter = 0;
 
-  std::unique_ptr<MCTSGoAI> go_ai1;
+  std::unique_ptr<MCTSCheckersAI> checkers_ai1;
   // Opponent ai (used for selfplay evaluation)
-  std::unique_ptr<MCTSGoAI> go_ai2;
+  std::unique_ptr<MCTSCheckersAI> checkers_ai2;
+
   std::unique_ptr<AI> _human_player;
-
-
-  // std::unique_ptr<AIClientT> _checkers_ai;
 
   std::shared_ptr<spdlog::logger> logger_;
 };

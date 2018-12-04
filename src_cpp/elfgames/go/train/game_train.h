@@ -9,9 +9,9 @@
 #include "../common/game_base.h"
 #include "elf/distributed/shared_reader.h"
 
-class GoGameTrain : public GoGameBase {
+class GameTrain : public GameBase {
  public:
-  GoGameTrain(
+  GameTrain(
       int game_idx,
       elf::GameClient* client,
       const ContextOptions& context_options,

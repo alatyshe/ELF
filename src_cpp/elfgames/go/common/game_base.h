@@ -15,9 +15,9 @@
 
 #include "game_feature.h"
 
-class GoGameBase {
+class GameBase {
  public:
-  GoGameBase(
+  GameBase(
       int game_idx,
       elf::GameClient* client,
       const ContextOptions& context_options,
@@ -27,8 +27,8 @@ class GoGameBase {
         _options(options),
         _context_options(context_options),
         _logger(
-            elf::logging::getLogger("elfgames::go::common::GoGameBase-", "")) {
-    display_debug_info("GoGameBase", __FUNCTION__, RED_B);
+            elf::logging::getLogger("elfgames::go::common::GameBase-", "")) {
+    display_debug_info("GameBase", __FUNCTION__, RED_B);
 
     if (options.seed == 0) {
       _seed = elf_utils::get_seed(
@@ -40,7 +40,7 @@ class GoGameBase {
   }
 
   void mainLoop() {
-    display_debug_info("GoGameBase", __FUNCTION__, RED_B);
+    display_debug_info("GameBase", __FUNCTION__, RED_B);
     
     if (_options.verbose) {
       _logger->info(
@@ -57,7 +57,7 @@ class GoGameBase {
 
   virtual void act() = 0;
 
-  virtual ~GoGameBase() = default;
+  virtual ~GameBase() = default;
 
  protected:
   elf::GameClient* client_ = nullptr;

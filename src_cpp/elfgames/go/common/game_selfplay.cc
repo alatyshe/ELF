@@ -20,12 +20,9 @@ GoGameSelfPlay::GoGameSelfPlay(
     ThreadedDispatcher* dispatcher,
     GameNotifierBase* notifier,
     CheckersGameNotifierBase* checkers_notifier)
-    : GoGameBase(game_idx, client, context_options, options),
+    : GameBase(game_idx, client, context_options, options),
       dispatcher_(dispatcher),
-      notifier_(notifier),
       checkers_notifier_(checkers_notifier),
-      _state_ext(game_idx, options),
-      // My
       _checkers_state_ext(game_idx, options),
       logger_(elf::logging::getLogger(
           "elfgames::go::GoGameSelfPlay-" + std::to_string(game_idx) + "-",
@@ -35,9 +32,7 @@ GoGameSelfPlay::GoGameSelfPlay(
 
 
 
-
-
-MCTSGoAI* GoGameSelfPlay::init_ai(
+MCTSCheckersAI* GoGameSelfPlay::init_checkers_ai(
     const std::string& actor_name,
     const elf::ai::tree_search::TSOptions& mcts_options,
     float puct_override,
@@ -86,28 +81,27 @@ MCTSGoAI* GoGameSelfPlay::init_ai(
     logger_->warn("Log prefix {}", opt.log_prefix);
   }
 
-  return new MCTSGoAI(opt, [&](int) { return new MCTSActor(client_, params); });
+  return new MCTSCheckersAI(opt, [&](int) { return new CheckersMCTSActor(client_, params); });
 }
 
 
 
 
 
-
-Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSGoAI* mcts_go_ai, Coord c) {
+Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
-  auto policy = mcts_go_ai->getMCTSPolicy();
+  auto policy = mcts_checkers_ai->getMCTSPolicy();
 
   bool diverse_policy =
-      _state_ext.state().getPly() <= _options.policy_distri_cutoff;
+      _checkers_state_ext.state().getPly() <= _options.policy_distri_cutoff;
   if (diverse_policy) {
     // Sample from the policy.
     c = policy.sampleAction(&_rng);
   }
   if (_options.policy_distri_training_for_all || diverse_policy) {
     // [TODO]: Warning: MCTS Policy might not correspond to move idx.
-    _state_ext.addMCTSPolicy(policy);
+    _checkers_state_ext.addMCTSPolicy(policy);
   }
 
   return c;
@@ -118,28 +112,31 @@ Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSGoAI* mcts_go_ai, Coord c) {
 
 
 
-Coord GoGameSelfPlay::mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c) {
+
+
+
+Coord GoGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
-  float predicted_value = mcts_go_ai->getValue();
+  float predicted_value = mcts_checkers_ai->getValue();
 
-  _state_ext.addPredictedValue(predicted_value);
+  _checkers_state_ext.addPredictedValue(predicted_value);
 
-  if (!_options.dump_record_prefix.empty()) {
-    _state_ext.saveCurrentTree(mcts_go_ai->getCurrentTree());
-  }
+  // if (!_options.dump_record_prefix.empty()) {
+  //   _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
+  // }
 
-  bool we_are_good = _state_ext.state().nextPlayer() == S_BLACK
-      ? ((getScore() > 0) && (predicted_value > 0.9))
-      : ((getScore() < 0) && (predicted_value < -0.9));
+  bool we_are_good = _checkers_state_ext.state().nextPlayer() == S_BLACK
+      ? ((checkersGetScore() > 0) && (predicted_value > 0.9))
+      : ((checkersGetScore() < 0) && (predicted_value < -0.9));
   // If the opponent wants pass, and we are in good, we follow.
   if (_human_player != nullptr && we_are_good &&
-      _state_ext.state().lastMove() == M_PASS && _options.following_pass)
+      _checkers_state_ext.state().lastMove() == M_PASS && _options.following_pass)
     c = M_PASS;
 
   // Check the ranking of selected move.
-  if (notifier_ != nullptr) {
-    notifier_->OnMCTSResult(c, mcts_go_ai->getLastResult());
+  if (checkers_notifier_ != nullptr) {
+    checkers_notifier_->OnMCTSResult(c, mcts_checkers_ai->getLastResult());
   }
   return c;
 }
@@ -149,39 +146,7 @@ Coord GoGameSelfPlay::mcts_update_info(MCTSGoAI* mcts_go_ai, Coord c) {
 
 
 
-void GoGameSelfPlay::finish_game(FinishReason reason) {
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
-  // посмотреть зачем нужны эти опции тк это опции игры
-  if (!_state_ext.currRequest().vers.is_selfplay() &&
-      _options.cheat_eval_new_model_wins_half) {
-    reason = FR_CHEAT_NEWER_WINS_HALF;
-  }
-  if (_state_ext.currRequest().vers.is_selfplay() &&
-      _options.cheat_selfplay_random_result) {
-    reason = FR_CHEAT_SELFPLAY_RANDOM_RESULT;
-  }
-
-  _state_ext.setFinalValue(reason, &_rng);
-  _state_ext.showFinishInfo(reason);
-
-  if (!_options.dump_record_prefix.empty()) {
-    _state_ext.dumpSgf();
-  }
-
-  // reset tree if MCTS_AI, otherwise just do nothing
-  go_ai1->endGame(_state_ext.state());
-  if (go_ai2 != nullptr) {
-    go_ai2->endGame(_state_ext.state());
-  }
-
-  if (notifier_ != nullptr) {
-    notifier_->OnGameEnd(_state_ext);
-  }
-
-  // clear state, MCTS polices et.al.
-  _state_ext.restart();
-}
 
 
 void GoGameSelfPlay::finish_game(CheckersFinishReason reason) {
@@ -196,10 +161,10 @@ void GoGameSelfPlay::finish_game(CheckersFinishReason reason) {
   // }
 
   // reset tree if MCTS_AI, otherwise just do nothing
-  // go_ai1->endGame(_state_ext.state());
-  // if (go_ai2 != nullptr) {
-  //   go_ai2->endGame(_state_ext.state());
-  // }
+  checkers_ai1->endGame(_checkers_state_ext.state());
+  if (checkers_ai2 != nullptr) {
+    checkers_ai2->endGame(_checkers_state_ext.state());
+  }
 
   // сообщает клиенту, что игры окончена
   if (checkers_notifier_ != nullptr){
@@ -214,15 +179,21 @@ void GoGameSelfPlay::finish_game(CheckersFinishReason reason) {
 
 
 
+
+
+
 void GoGameSelfPlay::setAsync() {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
-  go_ai1->setRequiredVersion(-1);
-  if (go_ai2 != nullptr)
-    go_ai2->setRequiredVersion(-1);
+  checkers_ai1->setRequiredVersion(-1);
+  if (checkers_ai2 != nullptr)
+    checkers_ai2->setRequiredVersion(-1);
 
-  _state_ext.addCurrentModel();
+  _checkers_state_ext.addCurrentModel();
 }
+
+
+
 
 
 
@@ -232,49 +203,50 @@ void GoGameSelfPlay::setAsync() {
 void GoGameSelfPlay::restart() {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
 
-  const MsgRequest& request = _state_ext.currRequest();
-  bool async = request.client_ctrl.async;
+  const MsgRequest& checkers_request = _checkers_state_ext.currRequest();
+  bool checkers_async = checkers_request.client_ctrl.async;
 
-  go_ai1.reset(nullptr);
-  go_ai2.reset(nullptr);
+  checkers_ai1.reset(nullptr);
+  checkers_ai2.reset(nullptr);
   if (_options.mode == "selfplay") {
-    go_ai1.reset(init_ai(
-        "actor_black",
-        request.vers.mcts_opt,
+    checkers_ai1.reset(init_checkers_ai(
+        "checkers_actor_black",
+        checkers_request.vers.mcts_opt,
         -1.0,
         -1,
         -1,
-        async ? -1 : request.vers.black_ver));
-    if (request.vers.white_ver >= 0) {
-      go_ai2.reset(init_ai(
-          "actor_white",
-          request.vers.mcts_opt,
-          _state_ext.options().white_puct,
-          _state_ext.options().white_mcts_rollout_per_batch,
-          _state_ext.options().white_mcts_rollout_per_thread,
-          async ? -1 : request.vers.white_ver));
+        checkers_async ? -1 : checkers_request.vers.black_ver));
+    if (checkers_request.vers.white_ver >= 0) {
+      checkers_ai2.reset(init_checkers_ai(
+          "checkers_actor_white",
+          checkers_request.vers.mcts_opt,
+          _checkers_state_ext.options().white_puct,
+          _checkers_state_ext.options().white_mcts_rollout_per_batch,
+          _checkers_state_ext.options().white_mcts_rollout_per_thread,
+          checkers_async ? -1 : checkers_request.vers.white_ver));
     }
-    if (!request.vers.is_selfplay() && request.client_ctrl.player_swap) {
+    if (!checkers_request.vers.is_selfplay() && checkers_request.client_ctrl.player_swap) {
       // Swap the two pointer.
-      swap(go_ai1, go_ai2);
+      swap(checkers_ai1, checkers_ai2);
     }
   } else if (_options.mode == "online") {
-    go_ai1.reset(init_ai(
-        "actor_black",
-        request.vers.mcts_opt,
+    checkers_ai1.reset(init_checkers_ai(
+        "checkers_actor_black",
+        checkers_request.vers.mcts_opt,
         -1.0,
         -1,
         -1,
-        request.vers.black_ver));
+        checkers_request.vers.black_ver));
     _human_player.reset(new AI(client_, {"human_actor"}));
   } else {
     logger_->critical("Unknown mode! {}", _options.mode);
     throw std::range_error("Unknown mode");
   }
-
-
-  _state_ext.restart();
+  _checkers_state_ext.restart();
 }
+
+
+
 
 
 
@@ -289,19 +261,19 @@ bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
     return false;
 
   bool is_waiting = request.vers.wait();
-  bool is_prev_waiting = _state_ext.currRequest().vers.wait();
+  bool is_prev_waiting = _checkers_state_ext.currRequest().vers.wait();
 
   if (_options.verbose && !(is_waiting && is_prev_waiting)) {
     logger_->debug(
         "Receive request: {}, old: {}",
         (!is_waiting ? request.info() : "[wait]"),
-        (!is_prev_waiting ? _state_ext.currRequest().info() : "[wait]"));
+        (!is_prev_waiting ? _checkers_state_ext.currRequest().info() : "[wait]"));
   }
 
-  bool same_vers = (request.vers == _state_ext.currRequest().vers);
+  bool same_vers = (request.vers == _checkers_state_ext.currRequest().vers);
   bool same_player_swap =
       (request.client_ctrl.player_swap ==
-       _state_ext.currRequest().client_ctrl.player_swap);
+       _checkers_state_ext.currRequest().client_ctrl.player_swap);
 
   bool async = request.client_ctrl.async;
 
@@ -309,7 +281,7 @@ bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
       (same_vers || async) && same_player_swap && !is_prev_waiting;
 
   // Then we need to reset everything.
-  _state_ext.setRequest(request);
+  _checkers_state_ext.setRequest(request);
 
   if (is_waiting) {
     *reply = RestartReply::ONLY_WAIT;
@@ -347,16 +319,6 @@ bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
 
 
 
-
-
-
-
-
-
-
-
-
-
 void GoGameSelfPlay::act() {
   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
   
@@ -366,24 +328,16 @@ void GoGameSelfPlay::act() {
     auto f = std::bind(&GoGameSelfPlay::OnReceive, this, _1, _2);
 
     do {
-      dispatcher_->checkMessage(_state_ext.currRequest().vers.wait(), f);
-    } while (_state_ext.currRequest().vers.wait());
+      dispatcher_->checkMessage(_checkers_state_ext.currRequest().vers.wait(), f);
+    } while (_checkers_state_ext.currRequest().vers.wait());
 
     // Check request every 5 times.
     // Update current state.
-    if (notifier_ != nullptr) {
-      notifier_->OnStateUpdate(_state_ext.getThreadState());
+    if (checkers_notifier_ != nullptr) {
+      checkers_notifier_->OnStateUpdate(_checkers_state_ext.getThreadState());
     }
   }
   _online_counter++;
-
-
-
-
-
-
-
-
 
   // bool show_board = (_options.verbose && _context_options.num_games == 1);
   // const GoState& s = _state_ext.state();
@@ -465,7 +419,7 @@ void GoGameSelfPlay::act() {
 
   // printf("use_policy_network_only : %d\n", use_policy_network_only);
   
-  // // Coord c = M_INVALID;
+  // Coord c = M_INVALID;
   // MCTSGoAI* curr_ai =
   //     ((go_ai2 != nullptr && player == S_WHITE) ? go_ai2.get() : go_ai1.get());
 
@@ -530,7 +484,7 @@ void GoGameSelfPlay::act() {
 
 
 
-if (client_->checkPrepareToStop()) {
+  if (client_->checkPrepareToStop()) {
     // [TODO] A lot of hack here. We need to fix it later.
     CheckersFeature cf(cs);
     CheckersReply   creply(cf);
@@ -545,10 +499,10 @@ if (client_->checkPrepareToStop()) {
     ai_white.act(cf, &creply);
 
     elf::FuncsWithState funcs = client_->BindStateToFunctions(
-        {"game_start"}, &_state_ext.currRequest().vers);
+        {"game_start"}, &_checkers_state_ext.currRequest().vers);
     client_->sendWait({"game_start"}, &funcs);
 
-    funcs = client_->BindStateToFunctions({"game_end"}, &_state_ext.state());
+    funcs = client_->BindStateToFunctions({"game_end"}, &_checkers_state_ext.state());
     client_->sendWait({"game_end"}, &funcs);
 
     logger_->info("Received command to prepare to stop");
@@ -561,49 +515,37 @@ if (client_->checkPrepareToStop()) {
 
 
 
-
-
-
   int current_player = cs.nextPlayer();
-  int move = M_INVALID;
+  Coord move = M_INVALID;
 
   CheckersFeature cf(cs);
-  CheckersReply creply(cf);
+  CheckersReply   creply(cf);
 
-  std::string player = current_player == BLACK_PLAYER ? "checkers_actor_black" 
-                                                      : "checkers_actor_black";
+  bool use_policy_network_only =
+      (current_player == WHITE_PLAYER && _options.white_use_policy_network_only) ||
+      (current_player == BLACK_PLAYER && _options.black_use_policy_network_only);
 
-  // MCTSGoAI* ai = checkers_ai.get();
-  // AIClientT checkers_ai(client_, "checkers_actor_white");
-  // checkers_ai->act(cf, &creply);
+  MCTSCheckersAI* curr_ai =
+    ((checkers_ai2 != nullptr && current_player == WHITE_PLAYER) 
+      ? checkers_ai2.get() : checkers_ai1.get());
+  
 
-  elf::FuncsWithState funcs_s = client_->BindStateToFunctions({player}, &cf);
-  elf::FuncsWithState funcs_a = client_->BindStateToFunctions({player}, &creply);
-  funcs_s.add(funcs_a);
+  if (use_policy_network_only) {
+    // Then we only use policy network to move.
+    curr_ai->actPolicyOnly(cs, &move);
+  } else {
 
-  comm::ReplyStatus status = client_->sendWait({player}, &funcs_s);
-
-  // std::cout << "player : " << player << std::endl;
-  // creply.info();
-  // std::cout << cs.showBoard() << std::endl;
-
-
-
-  // пытаемся делать шаг
-  // доостаем валидные шаги
-  std::vector<float> pi = creply.pi;
-  CheckersState c_state = this->_checkers_state_ext.state();
-  CheckersBoard c_board = c_state.board();
-  std::array<int, ALL_ACTIONS> moves = GetValidMovesBinary(c_board, current_player);
-  float temp_pi = 0.0;
-  for (int i = 0; i < moves.size(); i++){
-    if (moves[i] != 0 && pi[i] > temp_pi){
-      temp_pi = pi[i];
-      move = i;
-    }
+    std::cout << "curr_ai->act(s, &c);" << std::endl;
+    
+    curr_ai->act(cs, &move);
+    move = mcts_make_diverse_move(curr_ai, move);
   }
 
+
+  move = mcts_update_info(curr_ai, move);
+
   // берем лучший action по вероятностям
+
 
   if (!_checkers_state_ext.forward(move)) {
     logger_->error(
@@ -614,7 +556,7 @@ if (client_->checkPrepareToStop()) {
         cs.getPly()
         // elf::ai::tree_search::ActionTrait<Coord>::to_string(c),
         // _state_ext.dumpSgf("")
-        );    
+        );
     return;
   }
 
@@ -631,7 +573,7 @@ if (client_->checkPrepareToStop()) {
 
   // std::cout << cs.showBoard() << std::endl;
   // 
-  // exit(1);
+  // exit(0);
 }
 
 

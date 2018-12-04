@@ -8,22 +8,22 @@
 
 #include "game_train.h"
 
-GoGameTrain::GoGameTrain(
+GameTrain::GameTrain(
     int game_idx,
     elf::GameClient* client,
     const ContextOptions& context_options,
     const GameOptions& options,
     elf::shared::ReaderQueuesT<Record>* reader)
-    : GoGameBase(game_idx, client, context_options, options), reader_(reader) {
-  display_debug_info("GoGameTrain", __FUNCTION__, RED_B);
+    : GameBase(game_idx, client, context_options, options), reader_(reader) {
+  display_debug_info("GameTrain", __FUNCTION__, RED_B);
 
   for (size_t i = 0; i < kNumState; ++i) {
     _state_ext.emplace_back(new GoStateExtOffline(game_idx, options));
   }
 }
 
-void GoGameTrain::act() {
-  display_debug_info("GoGameTrain", __FUNCTION__, RED_B);
+void GameTrain::act() {
+  display_debug_info("GameTrain", __FUNCTION__, RED_B);
   
   std::vector<elf::FuncsWithState> funcsToSend;
 

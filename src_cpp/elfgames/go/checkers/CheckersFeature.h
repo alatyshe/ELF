@@ -25,7 +25,7 @@ struct CheckersBoardHistory {
 
   // просто копируем положение фишек на доске
   CheckersBoardHistory(const CheckersBoard& b) {
-    display_debug_info("struct CheckersBoardHistory", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("struct CheckersBoardHistory", __FUNCTION__, "\x1b[1;36;40m");
 
     forward[BLACK_PLAYER] = b.forward[BLACK_PLAYER];
     backward[BLACK_PLAYER] = b.backward[BLACK_PLAYER];
@@ -59,16 +59,16 @@ class CheckersFeature {
       // logger_(
       //     elf::logging::getLogger("elfgames::go::base::CheckersFeature-", ""))
     {
-    display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
   }
 
   const CheckersState& state() const {
-    display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
     return s_;
   }
 
   // int64_t coord2Action(int m) const {
-  //   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+  //   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 
   //   if (m == M_PASS)
   //     return BOARD_ACTION_PASS;
@@ -76,7 +76,7 @@ class CheckersFeature {
   // }
 
   // int action2Coord(int64_t action) const {
-  //   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+  //   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
   //   if (action == -1 || action == BOARD_ACTION_PASS)
   //     return M_PASS;
   //   auto p = InvTransform(std::make_pair(EXPORT_X(action), EXPORT_Y(action)));
@@ -119,7 +119,7 @@ struct CheckersReply {
   int64_t version = -1;
 
   CheckersReply(const CheckersFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
-    display_debug_info("struct CheckersReply", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("struct CheckersReply", __FUNCTION__, "\x1b[1;36;40m");
   }
   
   void    info() {

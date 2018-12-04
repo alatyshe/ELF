@@ -124,7 +124,6 @@ class GoState {
 
   void setFinalValue(float final_value) {
     display_debug_info("GoState", __FUNCTION__, RED_B);
-    std::cout << "final_value : " << final_value << std::endl;
 
     _final_value = final_value;
     _has_final_value = true;

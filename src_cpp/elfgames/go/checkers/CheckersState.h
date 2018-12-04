@@ -22,119 +22,124 @@ class CheckersState {
   CheckersState() {
     reset();
   }
-  
+
   bool forward(const Coord& c);
- //  bool checkMove(const Coord& c) const;
+  bool checkMove(const Coord& c) const;
 
   void setFinalValue(float final_value) {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 
     _final_value = final_value;
     _has_final_value = true;
   }
 
   float getFinalValue() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+
     return _final_value;
   }
 
   bool HasFinalValue() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+
     return _has_final_value;
   }
 
   void reset();
 
   CheckersState(const CheckersState& s)
-      : 
-        // _history(s._history),
+      : _history(s._history),
         // _board_hash(s._board_hash),
         _moves(s._moves),
         _final_value(s._final_value),
         _has_final_value(s._has_final_value) {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
     CheckersCopyBoard(&_board, &s._board);
   }
 
   const CheckersBoard& board() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+
     return _board;
   }
 
   // Note that ply started from 1.
   bool justStarted() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+
     return _board._ply == 1;
   }
 
   int getPly() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+    
     return _board._ply;
   }
 
  //  bool isTwoPass() const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+ //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
  //    return _board._last_move == M_PASS && _board._last_move2 == M_PASS;
  //  }
 
   bool terminated() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 
     return is_over(_board) || getPly() >= TOTAL_MAX_MOVE ;
-    // || _check_superko();
     // Original
     // return isTwoPass() || getPly() >= TOTAL_MAX_MOVE || _check_superko();
   }
 
   int lastMove() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
     return _board._last_move;
   }
 
  //  Coord lastMove2() const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+ //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
  //    return _board._last_move2;
  //  }
 
   int nextPlayer() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
     return _board.active;
   }
 
- //  bool moves_since(size_t* next_move_number, std::vector<Coord>* moves) const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
- //    if (*next_move_number > _moves.size()) {
- //      // The move number is not right.
- //      return false;
- //    }
- //    moves->clear();
- //    for (size_t i = *next_move_number; i < _moves.size(); ++i) {
- //      moves->push_back(_moves[i]);
- //    }
- //    *next_move_number = _moves.size();
- //    return true;
- //  }
+  bool moves_since(size_t* next_move_number, std::vector<Coord>* moves) const {
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+    if (*next_move_number > _moves.size()) {
+      // The move number is not right.
+      return false;
+    }
+    moves->clear();
+    for (size_t i = *next_move_number; i < _moves.size(); ++i) {
+      moves->push_back(_moves[i]);
+    }
+    *next_move_number = _moves.size();
+    return true;
+  }
 
  //  uint64_t getHashCode() const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+ //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
  //    return _board._hash;
  //  }
 
- //  const std::vector<Coord>& getAllMoves() const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
- //    return _moves;
- //  }
- //  std::string getAllMovesString() const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
- //    std::stringstream ss;
- //    for (const Coord& c : _moves) {
- //      ss << "[" << coord2str2(c) << "] ";
- //    }
- //    return ss.str();
- //  }
+  const std::vector<Coord>& getAllMoves() const {
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+    return _moves;
+  }
+
+  std::string getAllMovesString() const {
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+    std::stringstream ss;
+    for (const Coord& c : _moves) {
+      ss << "[" << c << "] ";
+    }
+    return ss.str();
+  }
 
   std::string showBoard() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
     std::string   res;
 
     res = get_true_state_str(_board);
@@ -145,7 +150,7 @@ class CheckersState {
   }
 
   float evaluate() const {
-    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
+    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
     float final_score = 0.0;
     if (getPly() >= TOTAL_MAX_MOVE)
       final_score = -1;
@@ -155,11 +160,11 @@ class CheckersState {
     return final_score;
   }
 
- //  // TODO: not a good design..
- //  const std::deque<BoardHistory>& getHistory() const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[2;30;43m");
- //    return _history;
- //  }
+  // TODO: not a good design..
+  // const std::deque<BoardHistory>& getHistory() const {
+  //   display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+  //   return _history;
+  // }
 
  protected:
   CheckersBoard       _board;
@@ -177,6 +182,11 @@ class CheckersState {
 
  //  void _add_board_hash(const Coord& c);
 };
+
+
+
+
+
 
 
 

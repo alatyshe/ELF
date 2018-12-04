@@ -14,7 +14,7 @@
 
 
 void CheckersFeature::getKings(int player, float* data) const {
-  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+  // display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 
   std::array<std::array<int, 8>, 8>   observation;
   observation = get_observation(s_.board(), player);
@@ -29,7 +29,7 @@ void CheckersFeature::getKings(int player, float* data) const {
 
 
 void CheckersFeature::getPawns(int player, float* data) const {
-  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+  // display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 
   std::array<std::array<int, 8>, 8>   observation;
   observation = get_observation(s_.board(), player);
@@ -43,7 +43,7 @@ void CheckersFeature::getPawns(int player, float* data) const {
 }
 
 // bool CheckersFeature::getStones(int player, float* data) const {
-//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 //   // const Board* _board = &s_.board();
 //   // //
 //   // memset(data, 0, kBoardRegion * sizeof(float));
@@ -59,7 +59,7 @@ void CheckersFeature::getPawns(int player, float* data) const {
 
 // // If player == S_EMPTY, get history of both sides.
 // bool CheckersFeature::getHistory(int player, float* data) const {
-//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 //   // const Board* _board = &s_.board();
 
 //   // memset(data, 0, kBoardRegion * sizeof(float));
@@ -74,7 +74,7 @@ void CheckersFeature::getPawns(int player, float* data) const {
 // }
 
 // bool CheckersFeature::getHistoryExp(int player, float* data) const {
-//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 //   // const Board* _board = &s_.board();
 
 //   // memset(data, 0, kBoardRegion * sizeof(float));
@@ -104,14 +104,14 @@ static float* board_plane(float* features, int idx) {
 // из фич например 25 фич по 81 (9x9 размер доски), 
 // то переводим это все в вид 25*91=2275 и просто заполняем как обычно
 void CheckersFeature::extract(std::vector<float>* features) const {
-  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 
   features->resize(CHECKERS_NUM_FEATURES * kBoardRegion);
   extract(&(*features)[0]);
 }
 
 void CheckersFeature::extract(float* features) const {
-  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[2;30;43m");
+  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 
   std::fill(features, features + CHECKERS_NUM_FEATURES * kBoardRegion, 0.0);
 
