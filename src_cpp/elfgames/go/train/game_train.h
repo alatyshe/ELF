@@ -9,6 +9,7 @@
 #include "../common/game_base.h"
 #include "elf/distributed/shared_reader.h"
 
+// server side
 class GameTrain : public GameBase {
  public:
   GameTrain(
@@ -16,13 +17,13 @@ class GameTrain : public GameBase {
       elf::GameClient* client,
       const ContextOptions& context_options,
       const GameOptions& options,
-      elf::shared::ReaderQueuesT<Record>* reader);
+      elf::shared::ReaderQueuesT<CheckersRecord>* reader);
 
   void act() override;
 
  private:
-  elf::shared::ReaderQueuesT<Record>* reader_ = nullptr;
+  elf::shared::ReaderQueuesT<CheckersRecord>* reader_ = nullptr;
 
   static constexpr size_t kNumState = 64;
-  std::vector<std::unique_ptr<GoStateExtOffline>> _state_ext;
+  std::vector<std::unique_ptr<CheckersStateExtOffline>> _checkers_state_ext;
 };

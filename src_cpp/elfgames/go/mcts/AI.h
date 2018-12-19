@@ -11,10 +11,9 @@
 #include "elf/ai/ai.h"
 #include "elf/ai/tree_search/tree_search_base.h"
 
-#include "elfgames/go/base/go_state.h"
 #include "elfgames/go/checkers/CheckersState.h"
 
-using AI = elf::ai::AIClientT<BoardFeature, GoReply>;
+// using AI = elf::ai::AIClientT<BoardFeature, GoReply>;
 using CheckersAI = elf::ai::AIClientT<CheckersFeature, CheckersReply>;
 
 namespace elf {
@@ -35,36 +34,6 @@ struct ActionTrait<Coord> {
     return M_INVALID;
   }
 };
-
-template <>
-struct StateTrait<GoState, Coord> {
- public:
-  static std::string to_string(const GoState& s) {
-    display_debug_info("ai.h StateTrait", __FUNCTION__, RED_B);
-
-    return "tt score (no komi): " + std::to_string(s.evaluate(0));
-  }
-  static bool equals(const GoState& s1, const GoState& s2) {
-    display_debug_info("ai.h StateTrait", __FUNCTION__, RED_B);
-
-    return s1.getHashCode() == s2.getHashCode();
-  }
-
-  static bool moves_since(
-      const GoState& s,
-      size_t* next_move_number,
-      std::vector<Coord>* moves) {
-    display_debug_info("ai.h StateTrait", __FUNCTION__, RED_B);
-
-    return s.moves_since(next_move_number, moves);
-  }
-};
-
-
-
-
-
-
 
 
 template <>
@@ -97,10 +66,7 @@ struct StateTrait<CheckersState, Coord> {
     res += (b1._last_move_green != b2._last_move_green);
     res += (b1._last_move_red != b2._last_move_red);
 
-    std::cout << "RES : " << res << std::endl;
-
     return res == 0;
-    // return s1.getHashCode() == s2.getHashCode();
   }
 
   static bool moves_since(

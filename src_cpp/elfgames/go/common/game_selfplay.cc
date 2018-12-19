@@ -7,39 +7,37 @@
  */
 
 #include "game_selfplay.h"
-#include "../mcts/ai.h"
-#include "../mcts/mcts.h"
-#include "go_game_specific.h"
+#include "../mcts/AI.h"
+#include "../mcts/MCTS.h"
 
 ////////////////// GoGame /////////////////////
-GoGameSelfPlay::GoGameSelfPlay(
+GameSelfPlay::GameSelfPlay(
     int game_idx,
     elf::GameClient* client,
     const ContextOptions& context_options,
     const GameOptions& options,
     ThreadedDispatcher* dispatcher,
-    GameNotifierBase* notifier,
     CheckersGameNotifierBase* checkers_notifier)
     : GameBase(game_idx, client, context_options, options),
       dispatcher_(dispatcher),
       checkers_notifier_(checkers_notifier),
       _checkers_state_ext(game_idx, options),
-      logger_(elf::logging::getLogger(
-          "elfgames::go::GoGameSelfPlay-" + std::to_string(game_idx) + "-",
+      logger_(elf::logging::getIndexedLogger(
+          "elfgames::go::GameSelfPlay-" + std::to_string(game_idx) + "-",
           "")) {
-    display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+    display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
   }
 
 
 
-MCTSCheckersAI* GoGameSelfPlay::init_checkers_ai(
+MCTSCheckersAI* GameSelfPlay::init_checkers_ai(
     const std::string& actor_name,
     const elf::ai::tree_search::TSOptions& mcts_options,
     float puct_override,
     int mcts_rollout_per_batch_override,
     int mcts_rollout_per_thread_override,
     int64_t model_ver) {
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
 
   logger_->info(
       "Initializing actor {}; puct_override: {}; batch_override: {}; "
@@ -52,8 +50,6 @@ MCTSCheckersAI* GoGameSelfPlay::init_checkers_ai(
   MCTSActorParams params;
   params.actor_name = actor_name;
   params.seed = _rng();
-  params.ply_pass_enabled = _options.ply_pass_enabled;
-  params.komi = _options.komi;
   params.required_version = model_ver;
 
   elf::ai::tree_search::TSOptions opt = mcts_options;
@@ -88,8 +84,8 @@ MCTSCheckersAI* GoGameSelfPlay::init_checkers_ai(
 
 
 
-Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+Coord GameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
+  display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
 
   auto policy = mcts_checkers_ai->getMCTSPolicy();
 
@@ -115,8 +111,8 @@ Coord GoGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, C
 
 
 
-Coord GoGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+Coord GameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
+  display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
 
   float predicted_value = mcts_checkers_ai->getValue();
 
@@ -126,13 +122,14 @@ Coord GoGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c
   //   _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
   // }
 
-  bool we_are_good = _checkers_state_ext.state().nextPlayer() == S_BLACK
-      ? ((checkersGetScore() > 0) && (predicted_value > 0.9))
-      : ((checkersGetScore() < 0) && (predicted_value < -0.9));
+  bool we_are_good = _checkers_state_ext.state().nextPlayer() == BLACK_PLAYER
+      ? ((GetScore() > 0) && (predicted_value > 0.9))
+      : ((GetScore() < 0) && (predicted_value < -0.9));
+  
   // If the opponent wants pass, and we are in good, we follow.
-  if (_human_player != nullptr && we_are_good &&
-      _checkers_state_ext.state().lastMove() == M_PASS && _options.following_pass)
-    c = M_PASS;
+  // if (_human_player != nullptr && we_are_good &&
+  //     _checkers_state_ext.state().lastMove() == M_PASS && _options.following_pass)
+  //   c = M_PASS;
 
   // Check the ranking of selected move.
   if (checkers_notifier_ != nullptr) {
@@ -149,11 +146,12 @@ Coord GoGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c
 
 
 
-void GoGameSelfPlay::finish_game(CheckersFinishReason reason) {
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+void GameSelfPlay::finish_game(CheckersFinishReason reason) {
+  display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
 
   // My code
   _checkers_state_ext.setFinalValue(reason, &_rng);
+  // показывает борду
   _checkers_state_ext.showFinishInfo(reason);
 
   // if (!_options.dump_record_prefix.empty()) {
@@ -182,8 +180,8 @@ void GoGameSelfPlay::finish_game(CheckersFinishReason reason) {
 
 
 
-void GoGameSelfPlay::setAsync() {
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+void GameSelfPlay::setAsync() {
+  display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
 
   checkers_ai1->setRequiredVersion(-1);
   if (checkers_ai2 != nullptr)
@@ -200,8 +198,8 @@ void GoGameSelfPlay::setAsync() {
 
 
 
-void GoGameSelfPlay::restart() {
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+void GameSelfPlay::restart() {
+  display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
 
   const MsgRequest& checkers_request = _checkers_state_ext.currRequest();
   bool checkers_async = checkers_request.client_ctrl.async;
@@ -237,7 +235,7 @@ void GoGameSelfPlay::restart() {
         -1,
         -1,
         checkers_request.vers.black_ver));
-    _human_player.reset(new AI(client_, {"human_actor"}));
+    _human_player.reset(new CheckersAI(client_, {"human_actor"}));
   } else {
     logger_->critical("Unknown mode! {}", _options.mode);
     throw std::range_error("Unknown mode");
@@ -253,9 +251,9 @@ void GoGameSelfPlay::restart() {
 
 
 
-bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
+bool GameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
   // при связи с сервером
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
 
   if (*reply == RestartReply::UPDATE_COMPLETE)
     return false;
@@ -319,13 +317,13 @@ bool GoGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
 
 
 
-void GoGameSelfPlay::act() {
-  display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+void GameSelfPlay::act() {
+  display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
   
   if (_online_counter % 5 == 0) {
     using std::placeholders::_1;
     using std::placeholders::_2;
-    auto f = std::bind(&GoGameSelfPlay::OnReceive, this, _1, _2);
+    auto f = std::bind(&GameSelfPlay::OnReceive, this, _1, _2);
 
     do {
       dispatcher_->checkMessage(_checkers_state_ext.currRequest().vers.wait(), f);
@@ -334,143 +332,14 @@ void GoGameSelfPlay::act() {
     // Check request every 5 times.
     // Update current state.
     if (checkers_notifier_ != nullptr) {
+      // 
       checkers_notifier_->OnStateUpdate(_checkers_state_ext.getThreadState());
     }
   }
   _online_counter++;
 
   // bool show_board = (_options.verbose && _context_options.num_games == 1);
-  // const GoState& s = _state_ext.state();
 
-  // if (_human_player != nullptr) {
-  //   do {
-  //     if (s.terminated()) {
-  //       finish_game(FR_ILLEGAL);
-  //       return;
-  //     }
-  //     // if (сs.terminated())
-  //     //   finish_game(FR_ILLEGAL);
-
-  //     BoardFeature bf(s);
-  //     GoReply reply(bf);
-  //     _human_player->act(bf, &reply);
-
-  //     // Checkers
-  //     // CheckersFeature cf(cs);
-  //     // CheckersReply creply(cf);
-  //     // _human_plyaer->act(cf, &creply);
-
-  //     // skip the current move, and ask the ai to move.
-  //     if (reply.c == M_SKIP)
-  //       break;
-  //     if (reply.c == M_CLEAR) {
-  //       if (!_state_ext.state().justStarted()) {
-  //         finish_game(FR_CLEAR);
-  //       }
-  //       return;
-  //     }
-  //     // Otherwise we forward.
-  //     if (_state_ext.forward(reply.c)) {
-  //       if (_state_ext.state().isTwoPass()) {
-  //         // If the human opponent pass, we pass as well.
-  //         finish_game(FR_TWO_PASSES);
-  //       }
-  //       return;
-  //     }
-  //     logger_->warn(
-  //         "Invalid move: x = {} y = {} move: {} please try again",
-  //         X(reply.c),
-  //         Y(reply.c),
-  //         coord2str(reply.c));
-  //   } while (!client_->checkPrepareToStop());
-  // } else {
-  //   // If re receive this, then we should not send games anymore
-  //   // (otherwise the process never stops)
-  //   if (client_->checkPrepareToStop()) {
-  //     // [TODO] A lot of hack here. We need to fix it later.
-  //     AI ai(client_, {"actor_black"});
-  //     BoardFeature bf(s);
-  //     GoReply reply(bf);
-  //     ai.act(bf, &reply);
-
-  //     if (client_->DoStopGames())
-  //       return;
-
-  //     AI ai_white(client_, {"actor_white"});
-  //     ai_white.act(bf, &reply);
-
-  //     elf::FuncsWithState funcs = client_->BindStateToFunctions(
-  //         {"game_start"}, &_state_ext.currRequest().vers);
-  //     client_->sendWait({"game_start"}, &funcs);
-
-  //     funcs = client_->BindStateToFunctions({"game_end"}, &_state_ext.state());
-  //     client_->sendWait({"game_end"}, &funcs);
-
-  //     logger_->info("Received command to prepare to stop");
-  //     std::this_thread::sleep_for(std::chrono::seconds(1));
-  //     return;
-  //   }
-  // }
-
-  // Stone player = s.nextPlayer();
-  // bool use_policy_network_only =
-  //     (player == S_WHITE && _options.white_use_policy_network_only) ||
-  //     (player == S_BLACK && _options.black_use_policy_network_only);
-
-  // printf("use_policy_network_only : %d\n", use_policy_network_only);
-  
-  // Coord c = M_INVALID;
-  // MCTSGoAI* curr_ai =
-  //     ((go_ai2 != nullptr && player == S_WHITE) ? go_ai2.get() : go_ai1.get());
-
-  // if (use_policy_network_only) {
-  //   // Then we only use policy network to move.
-  //   curr_ai->actPolicyOnly(s, &c);
-  // } else {
-
-  //   std::cout << "curr_ai->act(s, &c);" << std::endl;
-    
-  //   curr_ai->act(s, &c);
-  //   c = mcts_make_diverse_move(curr_ai, c);
-  // }
-
-  // c = mcts_update_info(curr_ai, c);
-
-  // if (show_board) {
-  //   logger_->info(
-  //       "Current board:\n{}\n[{}] Propose move {}\n",
-  //       s.showBoard(),
-  //       s.getPly(),
-  //       elf::ai::tree_search::ActionTrait<Coord>::to_string(c));
-  // }
-  // if (!_state_ext.forward(c)) {
-  //   logger_->error(
-  //       "Something is wrong! Move {} cannot be applied\nCurrent board: "
-  //       "{}\n[{}] Propose move {}\nSGF: {}\n",
-  //       c,
-  //       s.showBoard(),
-  //       s.getPly(),
-  //       elf::ai::tree_search::ActionTrait<Coord>::to_string(c),
-  //       _state_ext.dumpSgf(""));
-  //   return;
-  // }
-
-  // if (s.terminated()) {
-  //   auto reason = s.isTwoPass()
-  //       ? FR_TWO_PASSES
-  //       : s.getPly() >= BOARD_MAX_MOVE ? FR_MAX_STEP : FR_ILLEGAL;
-  //   finish_game(reason);
-  // }
-
-  // if (_options.move_cutoff > 0 && s.getPly() >= _options.move_cutoff) {
-  //   finish_game(FR_MAX_STEP);
-  // }
-
-  // ===================================================
-  // ===================================================
-  // ===================================================
-  // checkers
-  // Checkers
   const CheckersState& cs = _checkers_state_ext.state();
 
 
@@ -482,32 +351,52 @@ void GoGameSelfPlay::act() {
 
 
 
+  if (_human_player != nullptr) {
+    do {
+      if (cs.terminated()) {
+        finish_game(CHEKCERS_BLACK_WIN);
+        return;
+      }
 
+      CheckersFeature cf(cs);
+      CheckersReply   creply(cf);
+      _human_player->act(cf, &creply);
 
-  if (client_->checkPrepareToStop()) {
-    // [TODO] A lot of hack here. We need to fix it later.
-    CheckersFeature cf(cs);
-    CheckersReply   creply(cf);
-    
-    CheckersAI ai_black(client_, {"checkers_actor_black"});
-    ai_black.act(cf, &creply);
+      // Otherwise we forward.
+      if (_checkers_state_ext.forward(creply.c)) {
+        return;
+      }
+      logger_->warn(
+          "Invalid move move: {} please try again",
+          creply.c);
+    } while (!client_->checkPrepareToStop());
+  } else {
 
-    if (client_->DoStopGames())
+    if (client_->checkPrepareToStop()) {
+      // [TODO] A lot of hack here. We need to fix it later.
+      CheckersFeature cf(cs);
+      CheckersReply   creply(cf);
+      
+      CheckersAI ai_black(client_, {"checkers_actor_black"});
+      ai_black.act(cf, &creply);
+
+      if (client_->DoStopGames())
+        return;
+
+      CheckersAI ai_white(client_, {"checkers_actor_white"});
+      ai_white.act(cf, &creply);
+
+      elf::FuncsWithState funcs = client_->BindStateToFunctions(
+          {"game_start"}, &_checkers_state_ext.currRequest().vers);
+      client_->sendWait({"game_start"}, &funcs);
+
+      funcs = client_->BindStateToFunctions({"game_end"}, &_checkers_state_ext.state());
+      client_->sendWait({"game_end"}, &funcs);
+
+      logger_->info("Received command to prepare to stop");
+      std::this_thread::sleep_for(std::chrono::seconds(1));
       return;
-
-    CheckersAI ai_white(client_, {"checkers_actor_white"});
-    ai_white.act(cf, &creply);
-
-    elf::FuncsWithState funcs = client_->BindStateToFunctions(
-        {"game_start"}, &_checkers_state_ext.currRequest().vers);
-    client_->sendWait({"game_start"}, &funcs);
-
-    funcs = client_->BindStateToFunctions({"game_end"}, &_checkers_state_ext.state());
-    client_->sendWait({"game_end"}, &funcs);
-
-    logger_->info("Received command to prepare to stop");
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    return;
+    }
   }
 
 
@@ -533,10 +422,7 @@ void GoGameSelfPlay::act() {
   if (use_policy_network_only) {
     // Then we only use policy network to move.
     curr_ai->actPolicyOnly(cs, &move);
-  } else {
-
-    std::cout << "curr_ai->act(s, &c);" << std::endl;
-    
+  } else {    
     curr_ai->act(cs, &move);
     move = mcts_make_diverse_move(curr_ai, move);
   }
@@ -561,7 +447,7 @@ void GoGameSelfPlay::act() {
   }
 
   if (cs.terminated()) {
-    CheckersFinishReason reason = cs.getPly() >= BOARD_MAX_MOVE ? CHECKERS_MAX_STEP : 
+    CheckersFinishReason reason = cs.getPly() >= TOTAL_MAX_MOVE ? CHECKERS_MAX_STEP : 
     (cs.nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
     finish_game(reason);
   }

@@ -16,7 +16,7 @@ struct RecordBufferSimple {
  public:
   RecordBufferSimple(const std::string& prefix) : prefix_(prefix) {}
 
-  void feed(const Record& r) {
+  void feed(const CheckersRecord& r) {
     display_debug_info("struct RecordBufferSimple", __FUNCTION__, RED_B);
 
     std::lock_guard<std::mutex> lock(mutex_);
@@ -32,7 +32,7 @@ struct RecordBufferSimple {
       return false;
 
     std::string games =
-        Record::dumpBatchJsonString(records_.begin(), records_.end());
+        CheckersRecord::dumpBatchJsonString(records_.begin(), records_.end());
     std::ofstream oo(
         prefix_ + "-" + std::to_string(num_file_saved_) + "-" +
         std::to_string(num_record_saved_) + "-" +
@@ -51,7 +51,7 @@ struct RecordBufferSimple {
   std::string prefix_;
   size_t num_file_saved_ = 0;
   size_t num_record_saved_ = 0;
-  std::vector<Record> records_;
+  std::vector<CheckersRecord> records_;
 };
 
 
@@ -96,7 +96,7 @@ struct RecordBuffer {
     return prefix_ + "-" + std::to_string(num_file_saved_);
   }
 
-  void feed(const Record& r) {
+  void feed(const CheckersRecord& r) {
     display_debug_info("struct RecordBuffer", __FUNCTION__, RED_B);
 
     std::lock_guard<std::mutex> lock(mutex_);
@@ -118,7 +118,7 @@ struct RecordBuffer {
       auto it2 =
           (n > num_record_per_segment) ? (it + num_record_per_segment) : it_end;
 
-      std::string games = Record::dumpBatchJsonString(it, it2);
+      std::string games = CheckersRecord::dumpBatchJsonString(it, it2);
 
       std::ofstream oo(
           prefix_ + "-" + std::to_string(num_file_saved_) + "-" +
@@ -139,11 +139,11 @@ struct RecordBuffer {
   }
 
  private:
-  std::mutex mutex_;
-  std::vector<Record> records_;
-  std::vector<Record> offline_records_;
-  int num_file_saved_ = 0;
-  std::string prefix_;
+  std::mutex                  mutex_;
+  std::vector<CheckersRecord> records_;
+  std::vector<CheckersRecord> offline_records_;
+  int                         num_file_saved_ = 0;
+  std::string                 prefix_;
 };
 
 enum FeedResult {

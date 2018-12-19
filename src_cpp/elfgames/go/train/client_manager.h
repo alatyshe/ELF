@@ -157,7 +157,7 @@ class ClientManager {
         max_num_threads_(max_num_threads),
         max_client_delay_sec_(max_client_delay_sec),
         timer_(timer),
-        logger_(elf::logging::getLogger(
+        logger_(elf::logging::getIndexedLogger(
             "elfgames::go::train::ClientManager-",
             "")) {
     display_debug_info("ClientManager", __FUNCTION__, RED_B);

@@ -8,281 +8,142 @@ import inspect
 import traceback
 from collections import Counter
 
+class CheckerMoves:
+    
+    @staticmethod
+    def get_all_moves():
+        UNUSED_BITS = 0b100000000100000000100000000100000000
 
-def move2xy(v):
-    if v.lower() == "pass":
-        return -1, -1
-    x = ord(v[0].lower()) - ord('a')
-    # Skip 'i'
-    if x >= 9:
-        x -= 1
-    y = int(v[1:]) - 1
-    return x, y
+        rfj = 0b100000000111101110111101110111101110 ^ UNUSED_BITS
+        lfj = 0b100000000101110111101110111101110111 ^ UNUSED_BITS
+        rbj = 0b101110111101110111101110111100000000 ^ UNUSED_BITS
+        lbj = 0b111101110111101110111101110100000000 ^ UNUSED_BITS
 
+        rfj_cod = [-0x101 << i for (i, bit) in enumerate(bin(rfj)[::-1]) if bit == '1']
+        lfj_cod = [-0x401 << i for (i, bit) in enumerate(bin(lfj)[::-1]) if bit == '1']
+        rbj_cod = [-0x101 << i - 8 for (i, bit) in enumerate(bin(rbj)[::-1]) if bit == '1']
+        lbj_cod = [-0x401 << i - 10 for (i, bit) in enumerate(bin(lbj)[::-1]) if bit == '1']
 
-def xy2move(x, y):
-    if x == -1 and y == -1:
-        return "pass"
+        # Save it in native coords
+        rfj_pos = [(1 + i - i // 9, 1 + (i + 8) - (i + 8) // 9) for (i, bit) in enumerate(bin(rfj)[::-1]) if bit == '1']
+        lfj_pos = [(1 + i - i // 9, 1 + (i + 10) - (1 + i + 8) // 9) for (i, bit) in enumerate(bin(lfj)[::-1]) if
+                   bit == '1']
+        rbj_pos = [(1 + i - i // 9, 1 + (i - 8) - (i - 8) // 9) for (i, bit) in enumerate(bin(rbj)[::-1]) if bit == '1']
+        lbj_pos = [(1 + i - i // 9, 1 + (i - 10) - (i - 10) // 9) for (i, bit) in enumerate(bin(lbj)[::-1]) if bit == '1']
 
-    if x >= 8:
-        x += 1
-    return chr(x + 65) + str(y + 1)
+        rf = 0b100001111111101111111101111111101111 ^ UNUSED_BITS
+        lf = 0b100000111111110111111110111111110111 ^ UNUSED_BITS
+        rb = 0b111110111111110111111110111111110000 ^ UNUSED_BITS
+        lb = 0b111101111111101111111101111111100000 ^ UNUSED_BITS
 
+        rf_cod = [0x11 << i for (i, bit) in enumerate(bin(rf)[::-1]) if bit == '1']
+        lf_cod = [0x21 << i for (i, bit) in enumerate(bin(lf)[::-1]) if bit == '1']
+        rb_cod = [0x11 << i - 4 for (i, bit) in enumerate(bin(rb)[::-1]) if bit == '1']
+        lb_cod = [0x21 << i - 5 for (i, bit) in enumerate(bin(lb)[::-1]) if bit == '1']
 
-def plot_plane(v):
-    s = ""
-    for j in range(v.size(1)):
-        for i in range(v.size(0)):
-            if v[i, v.size(1) - 1 - j] != 0:
-                s += "o "
+        # Save it in native coords
+        rf_pos = [(1 + i - i // 9, 1 + (i + 4) - (i + 4) // 9) for (i, bit) in enumerate(bin(rf)[::-1]) if bit == '1']
+        lf_pos = [(1 + i - i // 9, 1 + (i + 5) - (i + 5) // 9) for (i, bit) in enumerate(bin(lf)[::-1]) if bit == '1']
+        rb_pos = [(1 + i - i // 9, 1 + (i - 4) - (i - 4) // 9) for (i, bit) in enumerate(bin(rb)[::-1]) if bit == '1']
+        lb_pos = [(1 + i - i // 9, 1 + (i - 5) - (i - 5) // 9) for (i, bit) in enumerate(bin(lb)[::-1]) if bit == '1']
+
+        all_jumps_cod = rfj_cod + lfj_cod + rbj_cod + lbj_cod
+        all_jumps_pos = rfj_pos + lfj_pos + rbj_pos + lbj_pos
+        all_moves_cod = rf_cod + lf_cod + rb_cod + lb_cod
+        all_moves_pos = rf_pos + lf_pos + rb_pos + lb_pos
+
+        total_moves_cod = all_moves_cod + all_jumps_cod
+        total_moves_pos = all_moves_pos + all_jumps_pos
+
+        total_moves_cod = all_moves_cod + all_jumps_cod
+
+        all_moves = []
+
+        for move in total_moves_cod:
+            if (move, True) in all_moves:
+                all_moves.append((move, False))
             else:
-                s += ". "
-        s += "\n"
-    print(s)
+                all_moves.append((move, True))
+
+        return all_moves
 
 
-def topk_accuracy2(batch, state_curr, topk=(1,)):
-    pi = state_curr["pi"]
-    import torch
-    if isinstance(pi, torch.autograd.Variable):
-        pi = pi.data
-    score, indices = pi.sort(dim=1, descending=True)
-
-    maxk = max(topk)
-    topn_count = [0] * maxk
-
-    for ind, gt in zip(indices, batch["offline_a"][0]):
-        for i in range(maxk):
-            if ind[i] == gt[0]:
-                topn_count[i] += 1
-
-    for i in range(maxk):
-        topn_count[i] /= indices.size(0)
-
-    return [topn_count[i - 1] for i in topk]
 
 
-class GoConsole:
-    def __init__(self, GC, evaluator):
-        self.exit = False
-        self.GC = GC
-        self.board_size = GC.params["board_size"]
-        self.evaluator = evaluator
-        self.last_move_idx = None
 
-    def move2action(self, v):
-        if v.lower() == "pass":
-            return self.board_size ** 2
-        x, y = move2xy(v)
-        return x * self.board_size + y
-
-    def action2move(self, a):
-        if a == self.board_size ** 2:
-            return "pass"
-        x = a // self.board_size
-        y = a % self.board_size
-        return xy2move(x, y)
-
-    def check(self, batch):
-        reply = self.evaluator.actor(batch)
-        topk = topk_accuracy2(batch, reply, topk=(1, 2, 3, 4, 5))
-        for i, v in enumerate(topk):
-            self.check_stats[i] += v
-        if sum(topk) == 0:
-            self.check_stats[-1] += 1
-
-    def actor(self, batch):
-        reply = self.evaluator.actor(batch)
-        return reply
-
-    def showboard(self, batch):
-        print(batch.GC.getGame(0).showBoard())
-
-    def prompt(self, prompt_str, batch):
-        if self.last_move_idx is not None:
-            curr_move_idx = batch["move_idx"][0][0]
-            if curr_move_idx - self.last_move_idx == 1:
-                self.check(batch)
-                self.last_move_idx = curr_move_idx
-                return
-            else:
-                n = sum(self.check_stats.values())
-                print("#Move: " + str(n))
-                accu = 0
-                for i in range(5):
-                    accu += self.check_stats[i]
-                    print("Top %d: %.3f" % (i, accu / n))
-                self.last_move_idx = None
-
-        self.showboard(batch)
-        # Ask user to choose
-        while True:
-            if getattr(self, "repeat", 0) > 0:
-                self.repeat -= 1
-                cmd = self.repeat_cmd
-            else:
-                cmd = input(prompt_str)
-            items = cmd.split()
-            if len(items) < 1:
-                print("Invalid input")
-
-            c = items[0]
-            reply = dict(pi=None, a=None, V=0)
-
-            try:
-                if c == 'p':
-                    reply["a"] = self.move2action(items[1])
-                    return reply
-                elif c == 'c':
-                    reply = self.evaluator.actor(batch)
-                    return reply
-                elif c == "s":
-                    channel_id = int(items[1])
-                    plot_plane(batch["s"][0][0][channel_id])
-                elif c == "a":
-                    reply = self.evaluator.actor(batch)
-                    if "pi" in reply:
-                        score, indices = reply["pi"].squeeze().sort(
-                            dim=0, descending=True)
-                        first_n = int(items[1])
-                        for i in range(first_n):
-                            print("%s: %.3f" %
-                                  (self.action2move(indices[i]), score[i]))
-                    else:
-                        print("No key \"pi\"")
-                elif c == "check":
-                    print("Top %d" % self.check(batch))
-
-                elif c == 'check2end':
-                    self.check_stats = Counter()
-                    self.check(batch)
-                    self.last_move_idx = batch["move_idx"][0][0]
-                    if len(items) == 2:
-                        self.repeat = int(items[1])
-                        self.repeat_cmd = "check2end_cont"
-                    return
-
-                elif c == "check2end_cont":
-                    if not hasattr(self, "check_stats"):
-                        self.check_stats = Counter()
-                    self.check(batch)
-                    self.last_move_idx = batch["move_idx"][0][0]
-                    return
-
-                elif c == "aug":
-                    print(batch["aug_code"][0][0])
-                elif c == "show":
-                    self.showboard(batch)
-                elif c == "dbg":
-                    import pdb
-                    pdb.set_trace()
-                elif c == 'offline_a':
-                    if "offline_a" in batch:
-                        for i, offline_a in \
-                                enumerate(batch["offline_a"][0][0]):
-                            print(
-                                "[%d]: %s" %
-                                (i, self.action2move(offline_a)))
-                    else:
-                        print("No offline_a available!")
-                elif c == "exit":
-                    self.exit = True
-                    return reply
-                else:
-                    print("Invalid input: " + cmd + ". Please try again")
-            except Exception as e:
-                print("Something wrong! " + str(e))
-
-                '''
-                elif c == "u":
-                    batch.GC.undoMove(0)
-                    self.showboard(batch)
-                elif c == "h":
-                    handicap = int(items[1])
-                    batch.GC.applyHandicap(0, handicap)
-                    self.showboard(batch)
-                '''
 
 
 class GoConsoleGTP:
-    def on_protocol_version(self, batch, items, reply):
-        return True, "2"
 
-    def on_clear_board(self, batch, items, reply):
-        reply["a"] = self.actions["clear"]
-        return True, reply
+    def on_moves(self, batch, items, reply):
+        valid = batch.GC.getGame(0).GetValidMoves()
 
-    def on_name(self, batch, items, reply):
-        return True, "DF2"
+        for idx in range(len(valid)):
+            if valid[idx]:
 
-    def on_komi(self, batch, items, reply):
-        # For now we just fix komi number.
-        if items[1] != "7.5":
-            return False, "We only support 7.5 komi for now"
-        return True, None
-
-    def on_boardsize(self, batch, items, reply):
-        if items[1] != str(self.board_size):
-            return (
-                False,
-                "We only support %dx%d board for now" % (
-                    self.board_size, self.board_size)
-            )
-        return True, None
+                i = "{0:036b}".format(self.moves_for_human[idx][0])[::-1]
+                index = [pos for pos, char in enumerate(i) if char == "1"]
+                i1, i2 = index
+                buff1 = (1 + i1 - i1 // 9) - 1
+                buff2 = (1 + i2 - i2 // 9) - 1
+                x1, y1 = (6 - (buff1) % 4 * 2 + ((buff1) // 4) % 2, 7 - (buff1) // 4)
+                x2, y2 = (6 - (buff2) % 4 * 2 + ((buff2) // 4) % 2, 7 - (buff2) // 4)
+                if not self.moves_for_human[idx][1]:
+                    x1, y1, x2, y2 = x2, y2, x1, y1
+                print("", idx, " : ", (x1, y1), "=>", (x2, y2), "=>", "Forward" if  self.moves_for_human[idx][1] else "Backward")
+        return True, ""
 
     def on_genmove(self, batch, items, reply):
-        ret, msg = self.check_player(batch, items[1][0])
-        if ret:
-            reply["a"] = self.actions["skip"]
-            return True, reply
-        else:
-            return False, msg
+        reply["a"] = int(items[1])
+        return True, reply
 
     def on_play(self, batch, items, reply):
+        print("ON PLAY")
+        print("batch : ", batch)
+        print("items : ", items)
+        print("reply : ", reply)
+        print("\n\n\n\n")
+
         ret, msg = self.check_player(batch, items[1][0])
         if ret:
-            reply["a"] = self.move2action(items[2])
+            # reply["a"] = self.move2action(items[2])
             return True, reply
         else:
             return False, msg
 
-    def on_showboard(self, batch, items, reply):
+    def on_board(self, batch, items, reply):
         self.showboard(batch)
         return True, None
 
-    def on_final_score(self, batch, items, reply):
-        final_score = self.get_final_score(batch)
-        if final_score > 0:
-            return True, "B+%.1f" % final_score
-        else:
-            return True, "W+%.1f" % (-final_score)
+    # def on_score(self, batch, items, reply):
+    #     print("ON SCORE")
+    #     print("\n\n\n\n")
 
-    def on_version(self, batch, items, reply):
-        return True, "1.0"
+    #     final_score = self.get_final_score(batch)
+    #     if final_score > 0:
+    #         return True, "B+%.1f" % final_score
+    #     else:
+    #         return True, "W+%.1f" % (-final_score)
 
-    def on_exit(self, batch, items, reply):
+    def on_quit(self, batch, items, reply):
+
         self.exit = True
         return True, reply
 
-    def on_quit(self, batch, items, reply):
-        return self.on_exit(batch, items, reply)
 
-    def on_list_commands(self, batch, items, reply):
-        msg = "\n".join(self.commands.keys())
-        return True, msg
+
 
     def __init__(self, GC, evaluator):
         self.exit = False
         self.GC = GC
-        self.board_size = GC.params["board_size"]
+        self.checkers_board_size = GC.params["checkers_board_size"]
         self.evaluator = evaluator
-        self.actions = {
-            "skip": GC.params["ACTION_SKIP"],
-            "pass": GC.params["ACTION_PASS"],
-            "resign": GC.params["ACTION_RESIGN"],
-            "clear": GC.params["ACTION_CLEAR"]
-        }
         self.last_cmd = ""
+        self.moves_for_human = CheckerMoves.get_all_moves()
+
+        # self.actions = {
+        #     "invalid": GC.params["M_INVALID"],
+        # }
 
         self.commands = {
             key[3:]: func
@@ -291,27 +152,16 @@ class GoConsoleGTP:
             if key.startswith("on_")
         }
 
-    def move2action(self, v):
-        if v.lower() in self.actions:
-            return self.actions[v.lower()]
-
-        x, y = move2xy(v)
-        return x * self.board_size + y
-
     def actor(self, batch):
         reply = self.evaluator.actor(batch)
         return reply
 
-    def action2move(self, a):
-        x = a // self.board_size
-        y = a % self.board_size
-        return xy2move(x, y)
+    def list_commands(self, batch, items, reply):
+        msg = "\n".join(self.commands.keys())
+        return True, msg
 
     def showboard(self, batch):
         print(batch.GC.getGame(0).showBoard())
-
-    def get_next_player(self, batch):
-        return batch.GC.getGame(0).getNextPlayer()
 
     def get_last_move(self, batch):
         return batch.GC.getGame(0).getLastMove()
@@ -319,18 +169,6 @@ class GoConsoleGTP:
     def get_final_score(self, batch):
         return batch.GC.getGame(0).getLastScore()
 
-    def check_player(self, batch, player):
-        board_next_player = self.get_next_player(batch)
-        if player.lower() != board_next_player.lower():
-            return (
-                False,
-                ("Specified next player %s is not the same as the "
-                 "next player %s on the board") % (
-                    player, board_next_player
-                )
-            )
-        else:
-            return True, None
 
     def print_msg(self, ret, msg):
         print("\n%s %s\n\n" % (("=" if ret else "?"), msg))
@@ -338,35 +176,39 @@ class GoConsoleGTP:
     def prompt(self, prompt_str, batch):
         # Show last command results.
         if self.last_cmd == "play" or self.last_cmd == "clear_board":
-            self.print_msg(True, "")
+            print("New Game")
         elif self.last_cmd == "genmove":
-            self.print_msg(True, self.get_last_move(batch))
+            print("Last move : ", self.get_last_move(batch))
 
         self.last_cmd = ""
 
         while True:
+
+
             cmd = input(prompt_str)
             items = cmd.split()
             if len(items) < 1:
-                self.print_msg(False, "Invalid input")
+                print("\x1b[1;31;40mInvalid input\x1b[0m : ", cmd)
                 continue
 
             c = items[0]
-            reply = dict(pi=None, a=None, V=0)
+            reply = dict(pi=None, a=None, checkers_V=0)
 
             try:
                 ret, msg = self.commands[c](batch, items, reply)
                 self.last_cmd = c
                 if not ret:
-                    self.print_msg(False, msg)
+                    print(msg)
                 else:
                     if isinstance(msg, dict):
                         return msg
                     elif isinstance(msg, str):
-                        self.print_msg(True, msg)
+                        print(msg)
                     else:
-                        self.print_msg(True, "")
+                        print("")
 
             except Exception:
-                print(traceback.format_exc())
-                self.print_msg(False, "Invalid command")
+                ret, msg = self.list_commands(batch, items, reply)
+                print("\x1b[1;31;40mInvalid command\x1b[0m   : ", cmd, "\n")
+                
+                print("\x1b[1;32;40mAvilable commands\x1b[0m :\n", msg)

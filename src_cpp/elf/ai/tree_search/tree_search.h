@@ -86,7 +86,7 @@ class TreeSearchSingleThreadT {
   TreeSearchSingleThreadT(int thread_id, const TSOptions& options)
       : threadId_(thread_id),
         options_(options),
-        logger_(elf::logging::getLogger(
+        logger_(elf::logging::getIndexedLogger(
             "elf::ai::tree_search::TreeSearchSingleThreadT-",
             "")) {
     display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
@@ -397,8 +397,10 @@ class TreeSearchT {
   TreeSearchT(const TSOptions& options, std::function<Actor*(int)> actor_gen)
       : options_(options),
         stopSearch_(false),
-        logger_(
-            elf::logging::getLogger("elf::ai::tree_search::TreeSearchT-", "")) {
+        logger_(elf::logging::getIndexedLogger(
+            "elf::ai::tree_search::TreeSearchT-",
+            "")) {
+
 
     display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
 
@@ -592,7 +594,6 @@ class TreeSearchT {
     MCTSResult result;
     result.root_value = root->getValue();
 
-    std::cout << "options_.pick_method : " << options_.pick_method << std::endl;
     // MCTSResult result2;
     if (options_.pick_method == "strongest_prior") {
       result.action_rank_method = MCTSResult::PRIOR;

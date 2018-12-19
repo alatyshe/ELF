@@ -12,22 +12,30 @@
 #include <algorithm>
 #include <deque>
 
-#include "../common/go_game_specific.h"
+// ELF
+#include "elf/ai/tree_search/tree_search_options.h"
+#include "elf/logging/IndexedLoggerFactory.h"
+
 #include "client_manager.h"
 #include "ctrl_utils.h"
 
-#include "elf/ai/tree_search/tree_search_options.h"
-#include "elf/logging/IndexedLoggerFactory.h"
+// Checkers
+#include "../checkers/CheckersGameSpecific.h"
+
 
 using TSOptions = elf::ai::tree_search::TSOptions;
 
 
+// Класс отвечающий за сбор инфы от клиента про количество отыгранных игр
+// и прочей мелкой статистики.
+// + метода который сообщает серверу - может ли он начать обучение
+// исходя из полноты батча
 struct SelfPlayRecord {
  public:
   SelfPlayRecord(int ver, const GameOptions& options)
       : ver_(ver),
         options_(options),
-        logger_(elf::logging::getLogger(
+        logger_(elf::logging::getIndexedLogger(
             "elfgames::go::train::SelfPlayRecord-",
             "")) {
     display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
@@ -37,10 +45,11 @@ struct SelfPlayRecord {
     records_.resetPrefix(selfplay_prefix + "-" + std::to_string(ver_));
   }
 
-  void feed(const Record& record) {
+  // Получает новое батч и обновляет инфу 
+  void feed(const CheckersRecord& record) {
     display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
 
-    const MsgResult& r = record.result;
+    const CheckersMsgResult& r = record.result;
 
     const bool didBlackWin = r.reward > 0;
     if (didBlackWin) {
@@ -60,8 +69,9 @@ struct SelfPlayRecord {
     else
       move300_up++;
 
+    // отображаем общую инфу по батчам каждые 100 игр
     if (counter_ - last_counter_shown_ >= 100) {
-      logger_->info("{}\n{}", elf_utils::now(), info());
+      logger_->info("\n{}", info());
       last_counter_shown_ = counter_;
     }
   }
@@ -100,16 +110,25 @@ struct SelfPlayRecord {
     }
   }
 
+  // true если надо подождать для больше времени для батча
   bool needWaitForMoreSample() const {
     display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
 
-    if (options_.selfplay_init_num <= 0)
+    if (options_.selfplay_init_num <= 0){
       return false;
-    if (counter_ < options_.selfplay_init_num)
+    }
+    if (counter_ < options_.selfplay_init_num){
       return true;
+    }
 
-    if (options_.selfplay_update_num <= 0)
+    if (options_.selfplay_update_num <= 0){
       return false;
+    }
+    // counter - счетчик игр которые уже сыграл клиент 
+    // options_.selfplay_init_num - нужно вначале отыграть игр после чего
+    //        формируется батч
+    // options_.selfplay_update_num - после N игр обновляем веса
+    // num_weight_update_ - количесвто раз которые мы обновляли веса
     return counter_ < options_.selfplay_init_num +
         options_.selfplay_update_num * num_weight_update_;
   }
@@ -131,12 +150,19 @@ struct SelfPlayRecord {
     const float black_win_rate = static_cast<float>(black_win_) / (n + 1e-10);
 
     std::stringstream ss;
-    ss << "=== Record Stats (" << ver_ << ") ====" << std::endl;
-    ss << "B/W/A: " << black_win_ << "/" << white_win_ << "/" << n << " ("
-       << black_win_rate * 100 << "%). ";
-    ss << "Move: [0, 100): " << move0_100 << ", [100, 200): " << move100_200
-       << ", [200, 300): " << move200_300 << ", [300, up): " << move300_up
-       << std::endl;
+    ss  << "=== Record Stats (" << ver_ << ") ====" << std::endl;
+    
+    ss  << "B_win/W_win/total: " << black_win_ << "/" << white_win_ << "/" << n 
+        << std::endl 
+        << "B win rate=" << black_win_rate * 100 << "%."
+        << std::endl;
+
+    ss  << "Game finished in N moves: " << std::endl
+        << "[0, 100)\t=" << move0_100 << std::endl
+        << "[100, 200)\t=" << move100_200 << std::endl
+        << "[200, 300)\t=" << move200_300 << std::endl
+        << "[300, up)\t=" << move300_up << std::endl;
+
     ss << "=== End Record Stats ====" << std::endl;
 
     return ss.str();
@@ -190,13 +216,13 @@ class SelfPlaySubCtrl {
       : options_(options),
         mcts_options_(mcts_options),
         curr_ver_(-1),
-        logger_(elf::logging::getLogger(
+        logger_(elf::logging::getIndexedLogger(
             "elfgames::go::train::SelfPlaySubCtrl-",
             "")) {
     display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
   }
 
-  FeedResult feed(const Record& r) {
+  FeedResult feed(const CheckersRecord& r) {
     display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
 
     std::lock_guard<std::mutex> lock(mutex_);
@@ -212,10 +238,9 @@ class SelfPlaySubCtrl {
 
     perf->feed(r);
     total_selfplay_++;
-    if (total_selfplay_ % 1000 == 0) {
+    if (total_selfplay_ % 500 == 0) {
       logger_->info(
-          "{} SelfPlaySubCtrl: # total selfplays processed by feed(): {}, {}",
-          elf_utils::now(),
+          "SelfPlaySubCtrl: # total selfplays processed by feed(): {}, {}",
           total_selfplay_);
     }
     perf->checkAndSave();

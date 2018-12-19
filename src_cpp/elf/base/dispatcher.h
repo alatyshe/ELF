@@ -22,8 +22,9 @@ class ThreadedDispatcherT : public ThreadedCtrlBase {
   ThreadedDispatcherT(Ctrl& ctrl, int num_games)
       : ThreadedCtrlBase(ctrl, 500),
         num_games_(num_games),
-        logger_(
-            elf::logging::getLogger("elf::base::ThreadedDispatcherT-", "")) {
+        logger_(elf::logging::getIndexedLogger(
+          "elf::base::ThreadedDispatcherT-",
+          "")) {
     display_debug_info("ThreadedDispatcherT", __FUNCTION__, GREEN_B);
   }
 

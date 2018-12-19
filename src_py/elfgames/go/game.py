@@ -7,6 +7,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
 import os
 
 from elf import GCWrapper, ContextArgs, MoreLabels
@@ -100,7 +101,7 @@ class Loader(object):
             -1
         )
         spec.addIntOption(
-            'num_future_actions',
+            'checkers_num_future_actions',
             'TODO: fill this help message in',
             1)
         spec.addIntOption(
@@ -119,10 +120,6 @@ class Loader(object):
             'white_use_policy_network_only',
             'TODO: fill this help message in',
             False)
-        spec.addIntOption(
-            'ply_pass_enabled',
-            'TODO: fill this help message in',
-            0)
         spec.addBoolOption(
             'use_mcts',
             'TODO: fill this help message in',
@@ -158,10 +155,6 @@ class Loader(object):
             'policy_distri_cutoff',
             'TODO: fill this help message in',
             0)
-        spec.addBoolOption(
-            'following_pass',
-            'TODO: fill this help message in',
-            False)
         spec.addIntOption(
             'selfplay_timeout_usec',
             'TODO: fill this help message in',
@@ -245,7 +238,7 @@ class Loader(object):
             'return after n games have finished, -1 means it never ends',
             -1)
 
-        print("\x1b[1;32;40mLoader.get_option_spec    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Loader::", inspect.currentframe().f_code.co_name)
 
         spec.merge(PyOptionSpec.fromClasses((ContextArgs, MoreLabels)))
         return spec
@@ -253,14 +246,14 @@ class Loader(object):
     @auto_import_options
     def __init__(self, option_map):
         
-        print("\x1b[1;32;40mLoader.init    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Loader::", inspect.currentframe().f_code.co_name)
 
         self.context_args = ContextArgs(option_map)
         self.more_labels = MoreLabels(option_map)
 
     def _set_params(self):
         
-        print("\x1b[1;32;40mLoader._set_params    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Loader::", inspect.currentframe().f_code.co_name)
 
         co = go.ContextOptions()
         self.context_args.initialize(co)
@@ -269,6 +262,7 @@ class Loader(object):
             co.print()
 
         opt = go.GameOptions()
+
         opt.seed = 0
         opt.list_files = self.options.list_files
 
@@ -301,13 +295,11 @@ class Loader(object):
         opt.q_max_size = self.options.q_max_size
         opt.num_reader = self.options.num_reader
         opt.start_ratio_pre_moves = self.options.start_ratio_pre_moves
-        opt.ply_pass_enabled = self.options.ply_pass_enabled
-        opt.num_future_actions = self.options.num_future_actions
+        opt.checkers_num_future_actions = self.options.checkers_num_future_actions
         opt.num_reset_ranking = self.options.num_reset_ranking
         opt.move_cutoff = self.options.move_cutoff
         opt.policy_distri_cutoff = self.options.policy_distri_cutoff
         opt.num_games_per_thread = self.options.num_games_per_thread
-        opt.following_pass = self.options.following_pass
         opt.keep_prev_selfplay = self.options.keep_prev_selfplay
         opt.expected_num_clients = self.options.expected_num_clients
 
@@ -337,18 +329,21 @@ class Loader(object):
 
         GC = go.GameContext(co, opt)
 
+
+        # print("self.options : ", self.options)
+
         if self.options.parameter_print:
-            print("**** Options ****")
+            print("****************** Options ******************")
             print(opt.info())
-            print("*****************")
+            print("*********************************************")
             print("Version: ", GC.ctx().version())
+            print("*********************************************")
 
         return co, GC, opt
 
     def initialize(self):
 
-        print("\x1b[1;32;40mLoader.initialize    \x1b[0m")
-        print("\t\x1b[1;33;40mself.options.mode == ", self.options.mode, "\x1b[0m\n\n")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Loader::", inspect.currentframe().f_code.co_name)
 
         co, GC, opt = self._set_params()
 
@@ -356,56 +351,35 @@ class Loader(object):
 
         if self.options.parameter_print:
             print("Mode: ", opt.mode)
-            print("Num Actions: ", params["num_action"])
+            print("checkers_num_action: ", params["checkers_num_action"])
 
         desc = {}
 
         if self.options.mode == "online":
             desc["human_actor"] = dict(
-                input=["s"],
-                reply=["pi", "a", "V"],
+                input=["checkers_s"],
+                reply=[ "pi", 
+                        "a", 
+                        "checkers_V"],
                 batchsize=1,
             )
-            # Used for MCTS/Direct play.
-            # desc["actor_black"] = dict(
-            #     input=["s"],
-            #     reply=["pi", "V", "a", "rv"],
-            #     timeout_usec=10,
-            #     batchsize=co.mcts_options.num_rollouts_per_batch
-            # )
-
             desc["checkers_actor_black"] = dict(
                 input=["checkers_s"],
-                reply=["pi", "checkers_V", "a", "checkers_rv"],
+                reply=[ "pi", 
+                        "checkers_V", 
+                        "a", 
+                        "checkers_rv"],
                 timeout_usec=10,
                 batchsize=co.mcts_options.num_rollouts_per_batch
             )
 
         elif self.options.mode == "selfplay":
-            # Used for MCTS/Direct play.
-            # desc["actor_black"] = dict(
-            #     input=["s"],
-            #     reply=["pi", "V", "a", "rv"],
-            #     batchsize=self.options.batchsize,
-            #     timeout_usec=self.options.selfplay_timeout_usec,
-            # )
-            # desc["actor_white"] = dict(
-            #     input=["s"],
-            #     reply=["pi", "V", "a", "rv"],
-            #     batchsize=self.options.batchsize2
-            #     if self.options.batchsize2 > 0
-            #     else self.options.batchsize,
-            #     timeout_usec=self.options.selfplay_timeout_usec,
-            # )
             desc["game_end"] = dict(
                 batchsize=1,
             )
             desc["game_start"] = dict(
                 batchsize=1,
-                input=[
-                        # "black_ver", 
-                        # "white_ver", 
-                        "checkers_white_ver", 
+                input=[ "checkers_white_ver", 
                         "checkers_black_ver"],
                 reply=None
             )
@@ -413,7 +387,10 @@ class Loader(object):
             # checkers
             desc["checkers_actor_white"] = dict(
                 input=["checkers_s"],
-                reply=["pi", "checkers_V", "a", "checkers_rv"],
+                reply=[ "pi", 
+                        "checkers_V", 
+                        "a", 
+                        "checkers_rv"],
                 batchsize=self.options.batchsize2
                 if self.options.batchsize2 > 0
                 else self.options.batchsize,
@@ -421,7 +398,10 @@ class Loader(object):
             )            
             desc["checkers_actor_black"] = dict(
                 input=["checkers_s"],
-                reply=["pi", "checkers_V", "a", "checkers_rv"],
+                reply=[ "pi", 
+                        "checkers_V", 
+                        "a", 
+                        "checkers_rv"],
                 batchsize=self.options.batchsize2
                 if self.options.batchsize2 > 0
                 else self.options.batchsize,
@@ -431,12 +411,16 @@ class Loader(object):
         elif self.options.mode == "train" or self.options.mode == "offline_train":
 
             desc["train"] = dict(
-                input=["checkers_s", "offline_a", "winner", "mcts_scores", "move_idx",
-                       "selfplay_ver"],
+                input=[ "checkers_s", 
+                        "checkers_offline_a", 
+                        "checkers_winner", 
+                        "checkers_mcts_scores", 
+                        "checkers_move_idx",
+                        "checkers_selfplay_ver"],
                 reply=None
             )
             desc["train_ctrl"] = dict(
-                input=["selfplay_ver"],
+                input=["checkers_selfplay_ver"],
                 reply=None,
                 batchsize=1
             )

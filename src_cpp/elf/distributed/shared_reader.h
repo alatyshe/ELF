@@ -219,7 +219,7 @@ class ReaderQueuesT {
       : min_size_satisfied_(false),
         parity_sizes_(2, 0),
         logger_(
-            elf::logging::getLogger("elf::distributed::ReaderQueuesT-", "")) {
+            elf::logging::getIndexedLogger("elf::distributed::ReaderQueuesT-", "")) {
 
     display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
     // Make sure this is an even number.
@@ -352,15 +352,18 @@ class ReaderQueuesT {
     if (qs_.empty())
       return std::string();
     std::stringstream ss;
-    ss << "#Queue: " << qs_.size() << ", spec: " << qs_[0]->info()
-       << ", Length: ";
+
+    ss  << "#Queue: " << qs_.size() 
+        << ", spec: " << qs_[0]->info()
+        << ", Length: ";
     size_t total = 0;
     for (const auto& p : qs_) {
       ss << p->size() << ", ";
       total += p->size();
     }
-    ss << "Total: " << total
-       << ", MinSizeSatisfied: " << min_size_satisfied_.load();
+
+    ss  << "Total: " << total
+        << ", MinSizeSatisfied: " << min_size_satisfied_.load();
     return ss.str();
   }
 
@@ -385,8 +388,7 @@ class ReaderQueuesT {
       float even_ratio = static_cast<float>(parity_sizes_[0]) /
           (parity_sizes_[0] + parity_sizes_[1] + 1e-6);
       logger_->info(
-          "{}, ReaderQueue Insertion: {}, even: {} {}%, odd {}: ",
-          elf_utils::now(),
+          "ReaderQueue Insertion: {}, even: {} {}%, odd {}: ",
           total_insertion_,
           parity_sizes_[0],
           100 * even_ratio,

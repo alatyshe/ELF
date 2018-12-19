@@ -35,7 +35,6 @@ void registerPy(pybind11::module& m) {
 
   py::class_<Client>(m, "Client")
       .def("setRequest", &Client::setRequest)
-      .def("getGameStats", &Client::getGameStats, ref)
       .def("getCheckersGameStats", &Client::getCheckersGameStats, ref);
 
   // Also register other objects.
@@ -50,20 +49,22 @@ void registerPy(pybind11::module& m) {
   PYCLASS_WITH_FIELDS(m, WinRateStats).def(py::init<>());
 
   py::class_<GameStats>(m, "GameStats")
-      .def("getWinRateStats", &GameStats::getWinRateStats)
+      .def("getWinRateStats", &GameStats::getWinRateStats);
       //.def("AllGamesFinished", &GameStats::AllGamesFinished)
       //.def("restartAllGames", &GameStats::restartAllGames)
-      .def("getPlayedGames", &GameStats::getPlayedGames);
+      // .def("getPlayedGames", &GameStats::getPlayedGames);
 
 
 
 // закоментил за ненадобностью, чтобы перед глазами не маячило
 // (откоментить, нужно для игры в консоле)
-  py::class_<GoGameSelfPlay>(m, "GoGameSelfPlay")
-      .def("showBoard", &GoGameSelfPlay::showBoard);
-      // .def("getNextPlayer", &GoGameSelfPlay::getNextPlayer)
-      // .def("getLastMove", &GoGameSelfPlay::getLastMove)
-      // .def("getScore", &GoGameSelfPlay::getScore)
+  py::class_<GameSelfPlay>(m, "GameSelfPlay")
+      .def("showBoard", &GameSelfPlay::showBoard)
+      // для игры в консоле
+      // .def("getNextPlayer", &GameSelfPlay::getNextPlayer)
+      .def("GetValidMoves", &GameSelfPlay::GetValidMoves)
+      .def("getLastMove", &GameSelfPlay::getLastMove);
+      // .def("getScore", &GoGameSelfPlay::getScore);
       // .def("getLastScore", &GoGameSelfPlay::getLastScore);
 }
 

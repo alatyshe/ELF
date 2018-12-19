@@ -13,12 +13,12 @@ GameTrain::GameTrain(
     elf::GameClient* client,
     const ContextOptions& context_options,
     const GameOptions& options,
-    elf::shared::ReaderQueuesT<Record>* reader)
+    elf::shared::ReaderQueuesT<CheckersRecord>* reader)
     : GameBase(game_idx, client, context_options, options), reader_(reader) {
   display_debug_info("GameTrain", __FUNCTION__, RED_B);
 
   for (size_t i = 0; i < kNumState; ++i) {
-    _state_ext.emplace_back(new GoStateExtOffline(game_idx, options));
+    _checkers_state_ext.emplace_back(new CheckersStateExtOffline(game_idx, options));
   }
 }
 
@@ -31,23 +31,19 @@ void GameTrain::act() {
     while (true) {
       int q_idx;
       auto sampler = reader_->getSamplerWithParity(&_rng, &q_idx);
-      const Record* r = sampler.sample();
+      const CheckersRecord* r = sampler.sample();
       if (r == nullptr) {
         continue;
       }
-      _state_ext[i]->fromRecord(*r);
+      _checkers_state_ext[i]->fromRecord(*r);
 
       // Random pick one ply.
-      if (_state_ext[i]->switchRandomMove(&_rng))
+      if (_checkers_state_ext[i]->switchRandomMove(&_rng))
         break;
     }
 
-    _state_ext[i]->generateD4Code(&_rng);
-
-    // elf::FuncsWithState funcs =
-    // client_->BindStateToFunctions({"train"}, &_state_ext);
     funcsToSend.push_back(
-        client_->BindStateToFunctions({"train"}, _state_ext[i].get()));
+        client_->BindStateToFunctions({"train"}, _checkers_state_ext[i].get()));
   }
 
   // client_->sendWait({"train"}, &funcs);

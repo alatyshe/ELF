@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 import threading
 
 from elf.options import auto_import_options, PyOptionSpec
@@ -39,7 +41,7 @@ class SingleProcessRun(object):
     def __init__(self, option_map):
         """Initialization for SingleProcessRun."""
 
-        print("\x1b[1;32;40mSingleProcessRun.init    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
         pass
 
@@ -55,7 +57,7 @@ class SingleProcessRun(object):
                                before the main loop.
         '''
 
-        print("\x1b[1;32;40mSingleProcessRun.setup    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
         self.GC = GC
         self.episode_summary = episode_summary
@@ -78,7 +80,7 @@ class SingleProcessRun(object):
         """
 
 
-        print("\x1b[1;32;40mSingleProcessRun.run    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
         self.GC.start()
         if self.after_start is not None:
@@ -129,13 +131,13 @@ class SingleProcessRun(object):
 
     def set_episode_counter(self, counter):
 
-        print("\x1b[1;32;40mSingleProcessRun.set_episode_counter    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
         self.episode_counter = counter
 
     def inc_episode_counter(self, delta):
 
-        print("\x1b[1;32;40mSingleProcessRun.inc_episode_counter    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
         self.episode_counter += delta
 
@@ -143,10 +145,10 @@ class SingleProcessRun(object):
         ''' Start training in a multithreaded environment '''
 
 
-        print("\x1b[1;32;40mSingleProcessRun.run_multithread    \x1b[0m")
+        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
         def train_thread():
-            print("\x1b[1;32;40mSingleProcessRun.train_thread    \x1b[0m")
+            print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
             for i in range(self.options.num_episode):
                 for k in range(self.options.num_minibatch):
@@ -164,7 +166,7 @@ class SingleProcessRun(object):
                 self.episode_summary(i)
 
         def actor_thread():
-            print("\x1b[1;32;40mSingleProcessRun.actor_thread    \x1b[0m")
+            print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
             while True:
                 self.GC.runGroup("actor")
 

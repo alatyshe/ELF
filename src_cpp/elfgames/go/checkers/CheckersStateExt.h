@@ -1,29 +1,19 @@
-/**
- * Copyright (c) 2018-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 #pragma once
 
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <random>
 #include <set>
-#include "CheckersState.h"
-#include "CheckersFeature.h"
-// #include "game_utils.h"
-// Game options
-#include "../common/go_game_specific.h"
-// #include "CheckersGameSpecific.h"
-#include "../common/record.h"
-#include "Record.h"
 
+// ELF
 #include "elf/ai/tree_search/tree_search_base.h"
 #include "elf/logging/IndexedLoggerFactory.h"
+
+#include "CheckersState.h"
+#include "CheckersFeature.h"
+#include "CheckersGameSpecific.h"
+
+// Game options
+#include "../common/record.h"
+#include "../sgf/sgf.h"
+#include "Record.h"
 
 enum CheckersFinishReason {
   CHECKERS_MAX_STEP = 0,
@@ -36,13 +26,14 @@ enum CheckersFinishReason {
 
 struct CheckersStateExt {
  public:
+  // Ok
   CheckersStateExt(int game_idx, const GameOptions& options)
       : _game_idx(game_idx),
         _last_move_for_the_game(M_INVALID),
         _last_value(0.0),
         _options(options),
         _logger(
-            elf::logging::getLogger("elfgames::go::common::CheckersStateExt-", "")) 
+            elf::logging::getIndexedLogger("elfgames::go::common::CheckersStateExt-", "")) 
         {
     std::cout << options.info() << std::endl;
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
@@ -50,23 +41,7 @@ struct CheckersStateExt {
     restart();
   }
 
-  // std::string dumpSgf(const std::string& filename) const;
-
-
-
-  // void   dumpSgf() const {
-  //   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-  //   std::string filename = _options.dump_record_prefix + "_" +
-  //       std::to_string(_game_idx) + "_" + std::to_string(_seq) + "_" +
-  //       (_state.getFinalValue() > 0 ? "B" : "W") + ".sgf";
-  //   std::string sgf_record = dumpSgf(filename);
-  //   std::ofstream oo(filename);
-  //   oo << sgf_record << std::endl;
-  // }
-
-
-
+  // Ok
   void   setRequest(const MsgRequest& request) {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
@@ -75,8 +50,7 @@ struct CheckersStateExt {
     const auto& ctrl = request.client_ctrl;
   }
 
-
-
+  // Ok
   void   addCurrentModel() {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
@@ -86,16 +60,16 @@ struct CheckersStateExt {
       using_models_.insert(curr_request_.vers.white_ver);
   }
 
-
-
+  // Ok
   const  MsgRequest& currRequest() const {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
     return curr_request_;
   }
 
-
-
+  // ??????????????????????????????????????????????
+  // ??????????????????????????????????????????????
+  // ??????????????????????????????????????????????
   float  setFinalValue(CheckersFinishReason reason, std::mt19937* rng) {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
@@ -106,8 +80,7 @@ struct CheckersStateExt {
     return final_value;
   }
 
-
-
+  // Ok
   Coord  lastMove() const {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
@@ -117,8 +90,7 @@ struct CheckersStateExt {
       return _state.lastMove();
   }
 
-
-
+  // Ok
   void   restart() {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
@@ -135,7 +107,9 @@ struct CheckersStateExt {
   }
 
 
-
+  // ??????????????????????????????????????????????
+  // ??????????????????????????????????????????????
+  // ??????????????????????????????????????????????
   CheckersRecord dumpRecord() const {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
@@ -147,18 +121,32 @@ struct CheckersStateExt {
     r.request = curr_request_;
 
     r.result.reward = _state.getFinalValue();
-    // r.result.content = coords2sgfstr(_state.getAllMoves());
+    // записываем все хода в строку и отправляет json
+    r.result.content = coords2str(_state.getAllMoves());
     r.result.using_models =
         std::vector<int64_t>(using_models_.begin(), using_models_.end());
     r.result.policies = _mcts_policies;
     r.result.num_move = _state.getPly() - 1;
     r.result.values = _predicted_values;
 
+    // std::cout << "GoStateExtOffline::dumpRecord!!!!!!!!!!!" << std::endl;
+    // std::cout << "movesmovesmovesmovesmovesmovesmovesmovesmovesmovesmovesmoves" << std::endl;
+    // std::cout << r.result.content << std::endl;
+    // std::cout << "r.info()r.info()r.info()r.info()r.info()r.info()r.info()" << std::endl;
+    // std::vector<Coord> _moves = _state.getAllMoves();
+    // for (const Coord& c : _moves) {
+    //   std::cout << "[" << c << "] ";
+    // }
+    // std::cout << std::endl;
+    // std::cout << r.info() << std::endl << std::endl;
+    // std::cout << "=======================================" << std::endl;
+    // std::cout << "=======================================" << std::endl;
+
     return r;
   }
 
 
-
+  // Ok
   ThreadState getThreadState() const {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
@@ -186,15 +174,17 @@ struct CheckersStateExt {
   // }
 
 
-
+  // Ok
   float  getLastGameFinalValue() const {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
     return _last_value;
   }
 
-
-
+  // ??????????????????????????????????????????????
+  // ??????????????????????????????????????????????
+  // ??????????????????????????????????????????????  
+  // ПЕРЕПРОВЕРЬ ЭТУ ШТУКУ 300 раз!!!!!!!!!!!
   void   addMCTSPolicy(
       const elf::ai::tree_search::MCTSPolicy<Coord>& mcts_policy) {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
@@ -221,14 +211,12 @@ struct CheckersStateExt {
     }
   }
 
-
-
+  // Ok
   void   addPredictedValue(float predicted_value) {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
     _predicted_values.push_back(predicted_value);
   }
-
 
 
   // float  getLastPredictedValue() const {
@@ -240,19 +228,24 @@ struct CheckersStateExt {
   //     return _predicted_values.back();
   // }
 
-
-
+  // Ok
   void   showFinishInfo(CheckersFinishReason reason) const;
 
-
+  // Ok
   bool   forward(Coord c) {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-    std::cout << std::endl << "MOVE : " << c << std::endl << std::endl; 
 
     return _state.forward(c);
   }
 
+  // Ok
+  const  CheckersState& state() const {
+    display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
+
+    return _state;
+  }
+
+  // Ok
   int    seq() const {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
@@ -266,18 +259,13 @@ struct CheckersStateExt {
   //       _seq >= _options.num_games_per_thread;
   // }
 
+  // Ok
   const  GameOptions& options() const {
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
     return _options;
   }
 
-
-  const  CheckersState& state() const {
-    display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-    return _state;
-  }
 
  protected:
   const int 	        _game_idx;
@@ -321,90 +309,98 @@ class CheckersStateExtOffline {
  public:
   friend class GoFeature;
 
-  CheckersStateExtOffline(int game_idx)
-  // , const GameOptions& options)
+  CheckersStateExtOffline(int game_idx, const GameOptions& options)
       : _game_idx(game_idx),
         _bf(_state),
-        // _options(options),
-        _logger(elf::logging::getLogger(
+        _options(options),
+        _logger(elf::logging::getIndexedLogger(
             "elfgames::go::common::CheckersStateExtOffline-",
             "")) 
         {
     display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
   }
 
-  // void   fromRecord(const Record& r) {
-  //   display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-
-  //   _offline_all_moves = sgfstr2coords(r.result.content);
-  //   _offline_winner = r.result.reward > 0 ? 1.0 : -1.0;
-
-  //   _mcts_policies = r.result.policies;
-  //   curr_request_ = r.request;
-  //   _seq = r.seq;
-  //   _predicted_values = r.result.values;
-  //   _state.reset();
-  // }
-
-  // bool   switchRandomMove(std::mt19937* rng) {
-  //   display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-
-  //   // Random sample one move
-  //   if ((int)_offline_all_moves.size() <= _options.num_future_actions - 1) {
-  //     _logger->warn(
-  //         "[{}] #moves {} smaller than {} - 1",
-  //         _game_idx,
-  //         _offline_all_moves.size(),
-  //         _options.num_future_actions);
-  //     return false;
-  //   }
-  //   size_t move_to = (*rng)() %
-  //       (_offline_all_moves.size() - _options.num_future_actions + 1);
-  //   switchBeforeMove(move_to);
-  //   return true;
-  // }
-
-  // void   generateD4Code(std::mt19937* rng) {
-  //   display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-  // }
-
-  // void   switchBeforeMove(size_t move_to) {
-  //   display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-
-  //   assert(move_to < _offline_all_moves.size());
-
-  //   _state.reset();
-  //   for (size_t i = 0; i < move_to; ++i) {
-  //     _state.forward(_offline_all_moves[i]);
-  //   }
-  // }
-
-  // int  getNumMoves() const {
-  //   display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-
-  //   return _offline_all_moves.size();
-  // }
-
-  // float getPredictedValue(int move_idx) const {
-  //   display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
+  void   fromRecord(const CheckersRecord& r) {
+    display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
     
-  //   return _predicted_values[move_idx];
-  // }
+    _offline_all_moves = str2coords(r.result.content);
+    _offline_winner = r.result.reward > 0 ? 1.0 : -1.0;
+
+    _mcts_policies = r.result.policies;
+    curr_request_ = r.request;
+    _seq = r.seq;
+    _predicted_values = r.result.values;
+    _state.reset();
+
+    // std::cout << "GoStateExtOffline::fromRecord!!!!!!!!!!!" << std::endl;
+    // std::cout << r.result.content << std::endl;
+    // std::cout << "movesmovesmovesmovesmovesmovesmovesmovesmovesmovesmovesmoves" << std::endl;
+    // for (const Coord& c : _offline_all_moves) {
+    //   std::cout << "[" << c << "] ";
+    // }
+    // std::cout << std::endl;
+    // std::cout << "r.info()r.info()r.info()r.info()r.info()r.info()r.info()" << std::endl;
+    // std::cout << r.info() << std::endl << std::endl;
+    // std::cout << "=======================================" << std::endl;
+    // std::cout << "=======================================" << std::endl;
+  }
+
+  bool   switchRandomMove(std::mt19937* rng) {
+    display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
+
+    // Random sample one move
+    if ((int)_offline_all_moves.size() <= _options.checkers_num_future_actions - 1) {
+      _logger->warn(
+          "[{}] #moves {} smaller than {} - 1",
+          _game_idx,
+          _offline_all_moves.size(),
+          _options.checkers_num_future_actions);
+      exit(0);
+      return false;
+    }
+    size_t move_to = (*rng)() %
+        (_offline_all_moves.size() - _options.checkers_num_future_actions + 1);
+    switchBeforeMove(move_to);
+    return true;
+  }
+
+  void   switchBeforeMove(size_t move_to) {
+    display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
+
+    assert(move_to < _offline_all_moves.size());
+
+    _state.reset();
+    for (size_t i = 0; i < move_to; ++i) {
+      _state.forward(_offline_all_moves[i]);
+    }
+  }
+
+  int  getNumMoves() const {
+    display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
+
+    return _offline_all_moves.size();
+  }
+
+  float getPredictedValue(int move_idx) const {
+    display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
+    
+    return _predicted_values[move_idx];
+  }
 
  private:
-  const int 		_game_idx;
+  const int 		  _game_idx;
   CheckersState 	_state;
   CheckersFeature	_bf;
-  // GameOptions 		_options;
+  GameOptions 		_options;
 
   int _seq;
   MsgRequest 		curr_request_;
 
-  // std::vector<Coord> _offline_all_moves;
+  std::vector<Coord> _offline_all_moves;
   float _offline_winner;
 
-  // std::vector<CoordRecord> 	_mcts_policies;
-  // std::vector<float> 		_predicted_values;
+  std::vector<CheckersCoordRecord> 	_mcts_policies;
+  std::vector<float> 		_predicted_values;
 
   std::shared_ptr<spdlog::logger> _logger;
 };

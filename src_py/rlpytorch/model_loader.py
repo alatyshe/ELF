@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 import importlib
 import pprint
 import random
@@ -18,8 +20,8 @@ from .sampler import Sampler
 from .utils.fp16_utils import FP16Model
 
 
-_logger_factory = logging.IndexedLoggerFactory(
-    lambda name: logging.stderr_color_mt(name))
+# _logger_factory = logging.IndexedLoggerFactory(
+#     lambda name: logging.stderr_color_mt(name))
 
 
 def load_module(mod):
@@ -94,7 +96,7 @@ class ModelLoader(object):
         if logger is not None:
             self.logger = logger
         else:
-            self.logger = _logger_factory.makeLogger(
+            self.logger = logging.getIndexedLogger(
                 'rlpytorch.model_loader.ModelLoader-',
                 f'-model_index{model_idx}')
 
@@ -222,7 +224,7 @@ def load_env(
             ``method``: Learning method used
             ``model_loaders``: loaders for model
     """
-    logger = _load_env_logger
+    logger = logging.getIndexedLogger('rlpytorch.model_loader.load_env', '')
     logger.info('Loading env')
 
     game_loader_class = load_module(envs["game"]).Loader

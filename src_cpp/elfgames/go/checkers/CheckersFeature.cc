@@ -1,15 +1,4 @@
-/**
- * Copyright (c) 2018-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 #include "CheckersFeature.h"
-#include <cassert>
-#include <cmath>
-#include <utility>
 #include "CheckersState.h"
 
 
@@ -41,21 +30,6 @@ void CheckersFeature::getPawns(int player, float* data) const {
     }
   }
 }
-
-// bool CheckersFeature::getStones(int player, float* data) const {
-//   display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
-//   // const Board* _board = &s_.board();
-//   // //
-//   // memset(data, 0, kBoardRegion * sizeof(float));
-//   // for (int i = 0; i < BOARD_SIZE; ++i) {
-//   //   for (int j = 0; j < BOARD_SIZE; ++j) {
-//   //     Coord c = OFFSETXY(i, j);
-//   //     if (_board->_infos[c].color == player)
-//   //       data[transform(i, j)] = 1;
-//   //   }
-//   // }
-//   return true;
-// }
 
 // // If player == S_EMPTY, get history of both sides.
 // bool CheckersFeature::getHistory(int player, float* data) const {

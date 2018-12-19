@@ -28,16 +28,19 @@
 #include "elf/logging/IndexedLoggerFactory.h"
 
 #include "../common/game_stats.h"
-#include "../common/go_game_specific.h"
-#include "../common/go_state_ext.h"
 #include "../common/notifier.h"
 
 using namespace std::chrono_literals;
-using ReplayBuffer = elf::shared::ReaderQueuesT<Record>;
+using ReplayBuffer = elf::shared::ReaderQueuesT<CheckersRecord>;
 using ThreadedCtrlBase = elf::ThreadedCtrlBase;
 using Ctrl = elf::Ctrl;
 using Addr = elf::Addr;
 
+
+// Контроль потоков со стороны сервера
+// С помощью этого класса сервер постоянно слушает клиентов
+// и ожидает от них получения batch(состояний игры и reward за игру)
+// выполняет это - метод waitForSufficientSelfplay
 class ThreadedCtrl : public ThreadedCtrlBase {
  public:
   ThreadedCtrl(
@@ -52,7 +55,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
         client_(client),
         rng_(time(NULL)),
         logger_(
-            elf::logging::getLogger("elfgames::go::train::ThreadedCtrl-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::train::ThreadedCtrl-", "")) {
     display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
     selfplay_.reset(new SelfPlaySubCtrl(options, mcts_opt));
@@ -76,18 +79,24 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
     SelfPlaySubCtrl::CtrlResult res;
+    // каждые 30 секунд проверяем на заполненость batch
+    // для нашей модели
     while ((res = selfplay_->needWaitForMoreSample(selfplay_ver)) ==
            SelfPlaySubCtrl::CtrlResult::INSUFFICIENT_SAMPLE) {
       logger_->info(
-          "{}, Insufficient sample for model {}... waiting 30s",
-          elf_utils::now(),
+          "{}Insufficient sample{} for model {}... waiting 30s",
+          WHITE_B,
+          COLOR_END,
           selfplay_ver);
       std::this_thread::sleep_for(30s);
     }
 
     if (res == SelfPlaySubCtrl::CtrlResult::SUFFICIENT_SAMPLE) {
       logger_->info(
-          "{}, Sufficient sample for model {}", elf_utils::now(), selfplay_ver);
+          "{}Sufficient{} sample for model {}", 
+          GREEN_B, 
+          COLOR_END, 
+          selfplay_ver);
       selfplay_->notifyCurrentWeightUpdate();
     }
   }
@@ -150,7 +159,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
   }
 
   // Call by writer thread.
-  std::vector<FeedResult> onSelfplayGames(const std::vector<Record>& records) {
+  std::vector<FeedResult> onSelfplayGames(const std::vector<CheckersRecord>& records) {
     display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
     // Receive selfplay/evaluation games.
@@ -165,7 +174,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
   std::vector<FeedResult> onEvalGames(
       const ClientInfo& info,
-      const std::vector<Record>& records) {
+      const std::vector<CheckersRecord>& records) {
     display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
     // Receive selfplay/evaluation games.
@@ -273,6 +282,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
 
 
+// server side
 class TrainCtrl : public DataInterface {
  public:
   TrainCtrl(
@@ -285,7 +295,7 @@ class TrainCtrl : public DataInterface {
         rng_(time(NULL)),
         selfplay_record_("tc_selfplay"),
         logger_(
-            elf::logging::getLogger("elfgames::go::train::TrainCtrl-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::train::TrainCtrl-", "")) {
     display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
 
     // Register sender for python thread.
@@ -296,14 +306,19 @@ class TrainCtrl : public DataInterface {
 
     replay_buffer_.reset(new ReplayBuffer(rq_ctrl));
     logger_->info(
-        "Finished initializing replay_buffer {}", replay_buffer_->info());
+        "Finished initializing replay_buffer(ReplayBuffer) info : {}", replay_buffer_->info());
     threaded_ctrl_.reset(new ThreadedCtrl(
         ctrl_, client, replay_buffer_.get(), options, mcts_opt));
+    logger_->info(
+        "Finished initializing threaded_ctrl_(ThreadedCtrl)");
     client_mgr_.reset(new ClientManager(
         num_games,
         options.client_max_delay_sec,
         options.expected_num_clients,
         0.5));
+    logger_->info(
+        "Finished initializing client_mgr_(ClientManager)", client_mgr_->info());
+
   }
 
   void OnStart() override {
@@ -340,7 +355,7 @@ class TrainCtrl : public DataInterface {
       override {
     display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
 
-    Records rs = Records::createFromJsonString(s);
+    CheckersRecords rs = CheckersRecords::createFromJsonString(s);
     const ClientInfo& info = client_mgr_->updateStates(rs.identity, rs.states);
 
     if (rs.identity.size() == 0) {
@@ -357,11 +372,11 @@ class TrainCtrl : public DataInterface {
     for (size_t i = 0; i < rs.records.size(); ++i) {
       if (selfplay_res[i] == FeedResult::FEEDED ||
           selfplay_res[i] == FeedResult::VERSION_MISMATCH) {
-        const Record& r = rs.records[i];
+        const CheckersRecord& r = rs.records[i];
 
         bool black_win = r.result.reward > 0;
         insert_info +=
-            replay_buffer_->InsertWithParity(Record(r), &rng_, black_win);
+            replay_buffer_->InsertWithParity(CheckersRecord(r), &rng_, black_win);
         selfplay_record_.feed(r);
         selfplay_record_.saveAndClean(1000);
       }

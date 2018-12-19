@@ -4,13 +4,7 @@ project(elfgames_go)
 # Source files
 
 set(ELFGAMES_GO_SOURCES
-    base/board_feature.cc
-    base/common.cc
-    base/go_state.cc
-    base/board.cc
-    # sgf/sgf.cc
     common/game_selfplay.cc
-    common/go_state_ext.cc
     train/client_manager.cc
     train/game_train.cc
     train/Pybind.cc
@@ -22,14 +16,13 @@ set(ELFGAMES_GO_SOURCES
 )
 
 set(ELFGAMES_GO_INFERENCE_SOURCES
-    base/board_feature.cc
-    base/common.cc
-    base/go_state.cc
-    base/board.cc
-    # sgf/sgf.cc
     common/game_selfplay.cc
-    common/go_state_ext.cc
     inference/Pybind.cc
+    
+    checkers/CheckersState.cc
+    checkers/CheckersBoard.cc
+    checkers/CheckersFeature.cc
+    checkers/CheckersStateExt.cc
 )
 
 # Main Go library

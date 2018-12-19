@@ -34,7 +34,7 @@ class ModelPerf {
       : options_(options),
         curr_pair_(p),
         logger_(
-            elf::logging::getLogger("elfgames::go::train::ModelPerf-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::train::ModelPerf-", "")) {
     display_debug_info("ModelPerf", __FUNCTION__, RED_B);
 
     const size_t cushion = 5;
@@ -107,7 +107,7 @@ class ModelPerf {
     return eval_result_;
   }
 
-  void feed(const ClientInfo& c, const Record& r) {
+  void feed(const ClientInfo& c, const CheckersRecord& r) {
     display_debug_info("ModelPerf", __FUNCTION__, RED_B);
 
     if (r.request.client_ctrl.player_swap) {
@@ -274,7 +274,7 @@ class EvalSubCtrl {
   EvalSubCtrl(const GameOptions& options, const TSOptions& mcts_options)
       : options_(options),
         logger_(
-            elf::logging::getLogger("elfgames::go::train::EvalSubCtrl-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::train::EvalSubCtrl-", "")) {
     display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
 
     // [TODO]: A bit hacky, we need to have a better way for this.
@@ -317,7 +317,7 @@ class EvalSubCtrl {
     return -1;
   }
 
-  FeedResult feed(const ClientInfo& info, const Record& r) {
+  FeedResult feed(const ClientInfo& info, const CheckersRecord& r) {
     display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
 
     if (r.request.vers.is_selfplay())

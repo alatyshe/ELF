@@ -347,6 +347,10 @@ std::string			get_true_state_str(const CheckersBoard board) {
             man = " (" + std::to_string(x) + "," + std::to_string(y) + ")M";
             king = " (" + std::to_string(x) + "," + std::to_string(y) + ")K";
             
+           	// id = " (" + std::to_string(y * 8 + x) + ")E";
+            // man = " (" + std::to_string(y * 8 + x) + ")M";
+            // king = " (" + std::to_string(y * 8 + x) + ")K";
+
             if (observation[y][x] == -1) {
                 id = "\x1b[6;31;40m" + man + "\x1b[0m";
             } else if (observation[y][x] == -3) {

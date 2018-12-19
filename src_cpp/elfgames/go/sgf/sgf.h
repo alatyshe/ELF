@@ -15,94 +15,43 @@
 #include <vector>
 
 #include "elf/logging/IndexedLoggerFactory.h"
-#include "elfgames/go/base/board.h"
-#include "elfgames/go/base/common.h"
+#include "elfgames/go/checkers/CheckersBoard.h"
+
+constexpr int BOARD_SIZE = 9;
+constexpr int BOARD_EXPAND_SIZE = BOARD_SIZE + 2;
+constexpr int BOUND_COORD = BOARD_EXPAND_SIZE * BOARD_EXPAND_SIZE;
+
+
 
 // Load the remaining part.
 inline Coord str2coord(const std::string& s) {
   display_debug_info("", __FUNCTION__, BLUE_B);
-
-  if (s.size() < 2)
-    return M_PASS;
-  size_t i = 0;
-  while (i < s.size() && (s[i] == '\n' || s[i] == ' '))
-    i++;
-  if (i == s.size())
-    return M_INVALID;
-  int x = s[i] - 'a';
-
-  i++;
-  while (i < s.size() && (s[i] == '\n' || s[i] == ' '))
-    i++;
-  if (i == s.size())
-    return M_INVALID;
-  // if (x >= 9) x --;
-  int y = s[i] - 'a';
-
-  // tt
-  if (!ON_BOARD(x, y))
-    return M_INVALID;
-  // if (y >= 9) y --;
-  return OFFSETXY(x, y);
+  
+  return (std::stoi(s));
 }
 
 inline std::string coord2str(Coord c) {
   display_debug_info("", __FUNCTION__, BLUE_B);
-
-  if (c == M_PASS)
-    return "";
-  int x = X(c);
-  // if (x >= 8) x ++;
-  int y = Y(c);
-  // if (y >= 8) y ++;
-
-  return std::string{static_cast<char>('a' + x), static_cast<char>('a' + y)};
+  return std::to_string(c);
 }
 
-inline std::string player2str(Stone player) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
-  switch (player) {
-    case S_WHITE:
-      return "W";
-    case S_BLACK:
-      return "B";
-    case S_UNKNOWN:
-      return "U";
-    case S_OFF_BOARD:
-      return "O";
-    default:
-      return "-";
-  }
-}
-
-inline std::string coord2str2(Coord c) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
-  if (c == M_PASS)
-    return "PASS";
-  int x = X(c);
-  if (x >= 8)
-    x++;
-  int y = Y(c);
-
-  std::string s{static_cast<char>('A' + x)};
-  return s + std::to_string(y + 1);
-}
-
-inline std::string coords2sgfstr(const std::vector<Coord>& moves) {
+inline std::string coords2str(const std::vector<Coord>& moves) {
   display_debug_info("", __FUNCTION__, BLUE_B);
 
   std::string sgf = "(";
   for (size_t i = 0; i < moves.size(); i++) {
-    std::string color = i % 2 == 0 ? "B" : "W";
-    sgf += ";" + color + "[" + coord2str(moves[i]) + "]";
+    // std::string color = i % 2 == 0 ? "B" : "W";
+    // + color 
+    sgf += ";[" + coord2str(moves[i]) + "]";
   }
   sgf += ")";
   return sgf;
 }
 
-inline std::vector<Coord> sgfstr2coords(const std::string& sgf) {
+// (;B[fg];W[de];B[ei];W[bh];B[gc];W[ea];B[di];W[ag];B[gg];W[gh];B[cb];W[ca];B[ac];W[gf];B[hh];W[fd];B[id];W[bi];B[eb];W[af];B[ia];W[eg];B[fa];W[cg];B[ae];W[bb];B[ed];W[ch];B[gb];W[hi];B[cc];W[aa];B[hg];W[fe];B[ce];W[dg];B[if];W[ih];B[gd];W[gi];B[ie];W[ge];B[ec];W[ai];B[hd];W[cf];B[ic];W[df];B[hc];W[fi];B[db];W[ff];B[he];W[fb];B[cd];W[ig];B[dh];W[bg];B[be];W[eh];B[ee];W[ba];B[dd];W[bf];B[fh];W[ab];B[bc];W[ad];B[ii];W[gi];B[hi];W[ef];B[ih];W[ci];B[fi];W[ha];B[gh];W[ah];B[gi];W[fc];B[da];W[hb];B[];W[ib];B[];W[bb];B[];W[ia];B[];W[ab];B[ba];W[];B[])
+// (;[32];[88];[4];[84];[11];[137];[98];[143];[104];[90];[9];[159];[102];[67];[7];[65];[2];[69];[30];[97];[10];[142];[154];[36];[144];[139];[100];[68];[14];[71];[42];[149];[35];[161];[9];[65];[28];[137];[116];[92];[8];[159];[11];[161])
+
+inline std::vector<Coord> str2coords(const std::string& sgf) {
   display_debug_info("", __FUNCTION__, BLUE_B);
   
   std::vector<Coord> moves;

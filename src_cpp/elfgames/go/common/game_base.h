@@ -27,7 +27,7 @@ class GameBase {
         _options(options),
         _context_options(context_options),
         _logger(
-            elf::logging::getLogger("elfgames::go::common::GameBase-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::common::GameBase-", "")) {
     display_debug_info("GameBase", __FUNCTION__, RED_B);
 
     if (options.seed == 0) {
@@ -60,14 +60,14 @@ class GameBase {
   virtual ~GameBase() = default;
 
  protected:
-  elf::GameClient* client_ = nullptr;
-  uint64_t _seed = 0;
-  std::mt19937 _rng;
+  elf::GameClient*  client_ = nullptr;
+  uint64_t          _seed = 0;
+  std::mt19937      _rng;
 
-  int _game_idx = -1;
+  int               _game_idx = -1;
 
-  GameOptions _options;
-  ContextOptions _context_options;
+  GameOptions       _options;
+  ContextOptions    _context_options;
 
  private:
   std::shared_ptr<spdlog::logger> _logger;

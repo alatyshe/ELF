@@ -1,15 +1,4 @@
-/**
- * Copyright (c) 2018-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 #pragma once
-
-#include <random>
-#include <vector>
 
 #include "CheckersBoard.h"
 #include "elf/logging/IndexedLoggerFactory.h"
@@ -55,9 +44,6 @@ class CheckersFeature {
 
   CheckersFeature(const CheckersState& s) 
       : s_(s)
-      // ,
-      // logger_(
-      //     elf::logging::getLogger("elfgames::go::base::CheckersFeature-", ""))
     {
     display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
   }
@@ -95,7 +81,6 @@ class CheckersFeature {
   // Compute features.
   void getPawns(int player, float* data) const;
   void getKings(int player, float* data) const;
-  // bool getStones(int player, float* data) const;
   // bool getHistory(int player, float* data) const;
   // bool getHistoryExp(int player, float* data) const;
 };

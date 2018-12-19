@@ -25,10 +25,11 @@ class Server {
       elf::GameClient* client)
       : contextOptions_(contextOptions),
         options_(options),
-        logger_(elf::logging::getLogger("Server-", "")) {
+        logger_(elf::logging::getIndexedLogger("Server-", "")) {
     display_debug_info("Server", __FUNCTION__, RED_B);
 
     auto netOptions = getNetOptions(contextOptions_, options_);
+
 
     trainCtrl_.reset(new TrainCtrl(
         ctrl_,
@@ -36,15 +37,26 @@ class Server {
         client,
         options,
         contextOptions_.mcts_options));
+    logger_->info(
+        "Finished initializing trainCtrl_(TrainCtrl)");
 
     if (options_.mode == "train") {
       onlineLoader_.reset(new DataOnlineLoader(netOptions));
+      logger_->info(
+        "Finished initializing onlineLoader_(DataOnlineLoader)");
+
       onlineLoader_->start(trainCtrl_.get());
     } else if (options_.mode == "offline_train") {
     } else {
       throw std::range_error("options.mode not recognized! " + options_.mode);
     }
+    logger_->info(
+      "{}Server successfully created{}\n",
+      GREEN_B, 
+      COLOR_END);
   }
+
+
 
   ReplayBuffer* getReplayBuffer() {
     display_debug_info("Server", __FUNCTION__, RED_B);
@@ -99,7 +111,7 @@ class Server {
         logger_->info("Loading offline data, reading file {}", f);
 
         std::string content;
-        if (!Record::loadContent(f, &content)) {
+        if (!CheckersRecord::loadContent(f, &content)) {
           logger_->error("Offline data loader: error reading {}", f);
           return;
         }

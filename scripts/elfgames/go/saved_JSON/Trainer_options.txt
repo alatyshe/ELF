@@ -1,0 +1,105 @@
+[
+{"args":["--save_dir"],"kwargs":
+	{
+		"default":"./myserver",
+		"dest":"save_dir",
+		"help":"directory for savefiles",
+		"required":false,
+		"type":"str"
+	}
+},
+{"args":["--save_prefix"],"kwargs":
+	{
+		"default":"save",
+		"dest":"save_prefix",
+		"help":"prefix of savefiles",
+		"required":false,
+		"type":"str"
+	}
+},
+{"args":["--num_minibatch"],"kwargs":
+	{
+		"default":5000,
+		"dest":"num_minibatch",
+		"help":"number of minibatches",
+		"required":false,
+		"type":"int"
+	}
+},
+{"args":["--keys_in_reply"],"kwargs":
+	{
+		"default":[],
+		"dest":"keys_in_reply",
+		"help":"keys in reply",
+		"nargs":"*",
+		"required":false,
+		"type":"str"
+	}
+},
+{"args":["--parsed_args"],"kwargs":
+	{
+		"default":[],
+		"dest":"parsed_args","help":"dummy option","nargs":"*","required":false,"type":"str"
+		}
+},
+{"args":["--trainer_stats"],"kwargs":
+	{
+		"default":"",
+		"dest":"trainer_stats",
+		"help":"type of stat to report (rewards or winrate)",
+		"required":false,
+		"type":"str"
+	}
+},
+{"args":["--save_first"],"kwargs":
+	{
+		"action":"store_true",
+		"dest":"save_first",
+		"help":"save first model"
+	}
+},
+{"args":["--freq_update"],"kwargs":
+	{
+		"default":1,
+		"dest":"freq_update",
+		"help":"frequency of model update",
+		"required":false,
+		"type":"int"
+	}
+},
+{"args":["--num_games"],"kwargs":
+	{
+		"default":1024,
+		"dest":"num_games",
+		"help":"number of games",
+		"required":false,
+		"type":"int"
+	}
+},
+{"args":["--record_dir"],"kwargs":
+	{
+		"default":"./record",
+		"dest":"record_dir",
+		"help":"directory to record in",
+		"required":false,
+		"type":"str"
+	}
+},
+{"args":["--latest_symlink"],"kwargs":
+	{
+		"default":"latest",
+		"dest":"latest_symlink",
+		"help":"name for latest model symlink",
+		"required":false,
+		"type":"str"
+	}
+},
+{"args":["--batchsize"],"kwargs":
+	{
+		"default":128,
+		"dest":"batchsize",
+		"help":"batch size",
+		"required":false,
+		"type":"int"
+	}
+}]

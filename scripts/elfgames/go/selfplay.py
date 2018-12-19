@@ -31,23 +31,33 @@ class Stats(object):
         self.actor_count += 1
 
         if self.total_sel_batchsize >= 500000:
-            print(datetime.now())
+            print("\x1b[1;31;40m|py|\x1b[0m", end="")
+            print(datetime.now(), "[selfplay.py=>Stats::feed]")
 
             batch_usage = self.total_sel_batchsize / self.total_batchsize
-            print(f'Batch usage: '
-                  f'{self.total_sel_batchsize}/{self.total_batchsize} '
-                  f'({100.0 * batch_usage:.2f}%)')
+            print(f'\tBatch usage: '
+                  f'\t{self.total_sel_batchsize}/{self.total_batchsize} '
+                  f'\t({100.0 * batch_usage:.2f}%)')
 
-            wr = batch.GC.getClient().getGameStats().getWinRateStats()
+            wr = batch.GC.getClient().getCheckersGameStats().getWinRateStats()
             win_rate = (100.0 * wr.black_wins / wr.total_games
                         if wr.total_games > 0
                         else 0.0)
-            print(f'B/W: {wr.black_wins}/{wr.white_wins}. '
-                  f'Black winrate: {win_rate:.2f} {wr.total_games}')
+            print(f'\tB/W: {wr.black_wins}/{wr.white_wins}. '
+                  f'\tBlack winrate: {win_rate:.2f}, Total games:{wr.total_games}')
 
             self.total_sel_batchsize = 0
             self.total_batchsize = 0
-            print('Actor count:', self.actor_count)
+            print('\tActor count:', self.actor_count)
+
+
+
+
+
+
+
+
+
 
 
 name_matcher = re.compile(r"save-(\d+)")
@@ -71,7 +81,7 @@ def reload_model(model_loader, params, mi, actor_name, args):
 
 def reload(mi, model_loader, params, args, root, ver, actor_name):
     if model_loader.options.load is None or model_loader.options.load == "":
-        print('No previous model loaded, loading from', root)
+        print('\x1b[1;31;40m|py|\x1b[0m\x1b[0;33;40mNo previous model loaded, loading from\x1b[0m', root)
         real_path = os.path.join(root, "save-" + str(ver) + ".bin")
     else:
         this_root = os.path.dirname(model_loader.options.load)
@@ -81,7 +91,26 @@ def reload(mi, model_loader, params, args, root, ver, actor_name):
         model_loader.options.load = real_path
         reload_model(model_loader, params, mi, actor_name, args)
     else:
-        print('Warning! Same model, skip loading', real_path)
+        print('\x1b[1;31;40m|py|\x1b[0m\x1b[1;31;40mWarning! Same model, skip loading\x1b[0m', real_path)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def main():
@@ -91,12 +120,8 @@ def main():
     print('Conda env:', os.environ.get("CONDA_DEFAULT_ENV", ""))
 
     # Set game to online model.
-    actors = [  
-                # "actor_black", 
-                # "actor_white",
-                "checkers_actor_white",
-                "checkers_actor_black"
-                ]
+    actors = [  "checkers_actor_white",
+                "checkers_actor_black"]
 
     additional_to_load = {
         ("eval_" + actor_name): (
@@ -114,22 +139,22 @@ def main():
 
 
 
-    print("additional_to_load : ")
+    # print("additional_to_load : ")
 
-    for i in additional_to_load:
-        print(i, " : ", additional_to_load[i])
+    # for i in additional_to_load:
+    #     print(i, " : ", additional_to_load[i])
 
     # sys.exit(0)
 
 
 
     env = load_env(
-        os.environ, num_models=4, overrides={'actor_only': True},
+        os.environ, num_models=2, overrides={'actor_only': True},
         additional_to_load=additional_to_load)
 
     GC = env["game"].initialize()
 
-    stats = [Stats(), Stats(), Stats(), Stats()]
+    stats = [Stats(), Stats()]
 
     for i in range(len(actors)):
 
@@ -159,9 +184,9 @@ def main():
         # )
 
         # print("register actors env : ", env)
-        print("eval_" + actor_name, " = ", e)
+        # print("eval_" + actor_name, " = ", e)
 
-        print(f'register {actor_name} for e = {e!s}')
+        # print(f'register {actor_name} for e = {e!s}')
         e.setup(sampler=env["sampler"], mi=env["mi_" + actor_name])
 
         def actor(batch, e, stat):
@@ -178,20 +203,16 @@ def main():
                         lambda batch, e=e, stat=stat: actor(batch, e, stat))
 
     root = os.environ.get("root", "./")
-    print(f'Root: "{root}"')
+    # print(f'Root: "{root}"')
     args = env["game"].options
     loop_end = False
 
     def game_start(batch):
         print("In game start")
-        # print("batch['black_ver'] : ", batch["black_ver"])
-        # print("batch['white_ver'] : ", batch["white_ver"])
         print("batch['checkers_white_ver'] : ", batch["checkers_white_ver"])
         print("batch['checkers_black_ver'] : ", batch["checkers_black_ver"])
 
         vers = [
-                # int(batch["black_ver"][0]), 
-                # int(batch["white_ver"][0]),
                 int(batch["checkers_white_ver"][0]),
                 int(batch["checkers_black_ver"][0])
                 ]
@@ -217,13 +238,17 @@ def main():
         wr = batch.GC.getClient().getCheckersGameStats().getWinRateStats()
         win_rate = (100.0 * wr.black_wins / wr.total_games
                     if wr.total_games > 0 else 0.0)
-        print(f'{datetime.now()!s} B/W: {wr.black_wins}/{wr.white_wins}.'
-              f'Black winrate: {win_rate:.2f} ({wr.total_games})')
+
+        print("\x1b[1;31;40m|py|\x1b[0m", end="")
+        print(f'[{datetime.now()!s}][selfplay.py=>main::game_end]', end="")
+        print(f'\tB/W: {wr.black_wins}/{wr.white_wins}, ', end="")
+        print(f'Black winrate: {win_rate:.2f}, ', end="")
+        print(f'Total Games:{wr.total_games}')
 
         if args.suicide_after_n_games > 0 and \
                 wr.total_games >= args.suicide_after_n_games:
-            print(f'#suicide_after_n_games: {args.suicide_after_n_games}, '
-                  f'total_games: {wr.total_games}')
+            print(f'\t#suicide_after_n_games: {args.suicide_after_n_games}, ')
+            print(f'\ttotal_games: {wr.total_games}')
             loop_end = True
 
     GC.reg_callback_if_exists("game_start", game_start)
@@ -238,8 +263,6 @@ def main():
         if args.eval_model_pair.find(",") >= 0:
             black, white = args.eval_model_pair.split(",")
         else:
-            # black = extract_ver(env["model_loaders"][0])
-            # white = extract_ver(env["model_loaders"][1])
             checkers_black = extract_ver(env["model_loaders"][2])
             checkers_white = extract_ver(env["model_loaders"][3])
 

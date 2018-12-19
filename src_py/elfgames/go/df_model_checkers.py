@@ -46,8 +46,8 @@ class Block(Model):
 
 	@auto_import_options
 	def __init__(self, option_map, params):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 		super().__init__(option_map, params)
 		self.relu = nn.LeakyReLU(0.1) if self.options.leaky_relu else nn.ReLU()
@@ -60,8 +60,8 @@ class Block(Model):
 			output_channel=None,
 			kernel=3,
 			relu=True):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 		if input_channel is None:
 			input_channel = self.options.dim
@@ -86,8 +86,8 @@ class Block(Model):
 		return nn.Sequential(*layers)
 
 	def forward(self, s):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 		
 		s1 = self.conv_lower(s)
 		s1 = self.conv_upper(s1)
@@ -99,8 +99,8 @@ class Block(Model):
 class GoResNet(Model):
 	@classmethod
 	def get_option_spec(cls):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 		spec = PyOptionSpec()
 		spec.addIntOption(
 			'num_block',
@@ -112,8 +112,8 @@ class GoResNet(Model):
 
 	@auto_import_options
 	def __init__(self, option_map, params):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 		super().__init__(option_map, params)
 		self.blocks = []
@@ -122,8 +122,8 @@ class GoResNet(Model):
 		self.resnet = nn.Sequential(*self.blocks)
 
 	def forward(self, s):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 		return self.resnet(s)
 
@@ -177,8 +177,8 @@ class Model_PolicyValue(Model):
 			'which gpu to use',
 			-1)
 
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 		spec.merge(GoResNet.get_option_spec())
 
@@ -186,8 +186,8 @@ class Model_PolicyValue(Model):
 
 	@auto_import_options
 	def __init__(self, option_map, params):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 		super().__init__(option_map, params)
 
@@ -196,13 +196,14 @@ class Model_PolicyValue(Model):
 		self.num_planes = params["checkers_num_planes"]
 		self.checkers_num_action = params["checkers_num_action"]
 
-		print("\n\n\n\n")
-		print("params\t\t: ", params)
-		print("self.board_size\t\t: ", self.board_size)
-		print("self.num_future_actions\t: ", self.num_future_actions)
-		print("self.num_planes\t\t: ", self.num_planes)
-		print("self.options.dim\t: ", self.options.dim)
-		print("\n\n\n\n")
+		# print("\n\n\n\n")
+		# print("params\t\t: ", params)
+		# print("self.board_size\t\t: ", self.board_size)
+		# print("self.num_future_actions\t: ", self.num_future_actions)
+		# print("self.num_planes\t\t: ", self.num_planes)
+		# print("self.options.dim\t: ", self.options.dim)
+		# print("\n\n\n\n")
+
 
 		# print("#future_action: " + str(self.num_future_actions))
 		# print("#num_planes: " + str(self.num_planes))
@@ -214,17 +215,14 @@ class Model_PolicyValue(Model):
 		self.relu = nn.LeakyReLU(0.1) if self.options.leaky_relu else nn.ReLU()
 		last_planes = self.num_planes
 
-		print("\ninit_conv : ")
 		self.init_conv = self._conv_layer(
 			input_channel=last_planes)
 
-		print("\npi_final_conv : ")
 		self.pi_final_conv = self._conv_layer(
 			input_channel=self.options.dim, 
 			output_channel=1, 
 			kernel=1)
 
-		print("\nvalue_final_conv : ")
 		self.value_final_conv = self._conv_layer(
 			input_channel=self.options.dim, 
 			output_channel=1, 
@@ -234,7 +232,7 @@ class Model_PolicyValue(Model):
 
 		# Plus 1 for pass.
 		self.pi_linear = nn.Linear(d, self.checkers_num_action)
-		self.value_linear1 = nn.Linear(self.checkers_num_action, 256)
+		self.value_linear1 = nn.Linear(d, 256)
 		self.value_linear2 = nn.Linear(256, 1)
 
 		# Softmax as the final layer
@@ -257,8 +255,8 @@ class Model_PolicyValue(Model):
 		self._check_and_init_distributed_model()
 
 	def _check_and_init_distributed_model(self):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 		if not self.options.use_data_parallel_distributed:
 			return
@@ -301,8 +299,8 @@ class Model_PolicyValue(Model):
 			output_channel=None,
 			kernel=3,
 			relu=True):
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
 
 		if input_channel is None:
@@ -318,9 +316,9 @@ class Model_PolicyValue(Model):
 			padding=(kernel // 2)
 		))
 
-		print("input_channel\t: ", input_channel)
-		print("output_channel\t: ", output_channel)
-		print("kernel\t\t: ", kernel)
+		# print("input_channel\t: ", input_channel)
+		# print("output_channel\t: ", output_channel)
+		# print("kernel\t\t: ", kernel)
 
 		if self.options.bn:
 			layers.append(
@@ -333,6 +331,8 @@ class Model_PolicyValue(Model):
 		return nn.Sequential(*layers)
 
 	def prepare_cooldown(self):
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
+		
 		try:
 			for module in self.modules():
 				if module.__class__.__name__.startswith('BatchNorm'):
@@ -347,47 +347,24 @@ class Model_PolicyValue(Model):
 		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
 		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 		
+		# print("FORWARD")
 		# приводим в нормальный вид
-		# print("\n\nbefore - self._var(x['checkers_s'])")
 		s = self._var(x["checkers_s"])
-		# print("s.shape : ", s.shape)
-
-		# print("\n\nbefore - self.init_conv(s)")
 		s = self.init_conv(s)
-		# print("s.shape : ", s.shape)
 		# s = self.resnet(s)
 
-		# print("\n\nbefore - self.pi_final_conv(s)")
-		pi = self.pi_final_conv(s)
-		# print("pi.shape : ", pi.shape)
-
-		# print("\n\nbefore - self.pi_linear(pi.view(-1, d * 2))")
 		d = self.board_size ** 2
-		# print("d : ", d)
+
+		pi = self.pi_final_conv(s)
 		pi = self.pi_linear(pi.view(-1, d))
-		# print("pi.shape : ", pi.shape)
-
-		# pi = self.pi_linear(pi.view(-1, 170))
-
-		# print("\n\nbefore - self.logsoftmax(pi)")
 		logpi = self.logsoftmax(pi)
-		# print("logpi.shape : ", logpi.shape)
-
-
-		# print("\n\nbefore - logpi.exp()")
 		pi = logpi.exp()
-		# print("pi.shape : ", pi.shape)
 
-
-		# V = self.value_final_conv(s)
-		# V = self.relu(self.value_linear1(V.view(-1, d)))
-		# V = self.value_linear2(V)
-		# V = self.tanh(V)
-		V = torch.zeros([1,1], dtype=torch.float16, device='cuda:0')
-
-		# удали это говно
-		a = torch.randn(1, 170, dtype=torch.float16, device="cuda:0") / 10000
-		pi = pi + a
+		V = self.value_final_conv(s)
+		V = self.relu(self.value_linear1(V.view(-1, d)))
+		V = self.value_linear2(V)		
+		V = self.tanh(V)
+		
 		return dict(logpi=logpi, pi=pi, checkers_V=V)
 
 

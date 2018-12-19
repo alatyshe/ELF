@@ -15,10 +15,9 @@
 #include <memory>
 #include <vector>
 
-#include "../base/board_feature.h"
 #include "../common/game_selfplay.h"
 #include "../common/record.h"
-#include "../mcts/ai.h"
+#include "../mcts/AI.h"
 #include "data_loader.h"
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
@@ -32,11 +31,11 @@
 
 class GameContext {
  public:
-  using ThreadedDispatcher = GoGameSelfPlay::ThreadedDispatcher;
+  using ThreadedDispatcher = GameSelfPlay::ThreadedDispatcher;
 
   GameContext(const ContextOptions& contextOptions, const GameOptions& options)
       : goFeature_(options),
-        logger_(elf::logging::getLogger("elfgames::go::GameContext-", "")) {
+        logger_(elf::logging::getIndexedLogger("elfgames::go::GameContext-", "")) {
     display_debug_info("GameContext", __FUNCTION__, RED_B);
 
     context_.reset(new elf::Context);
@@ -64,13 +63,15 @@ class GameContext {
       dispatcher = client_->getDispatcher();
       
       for (int i = 0; i < numGames; ++i) {
-        games_.emplace_back(new GoGameSelfPlay(
+        // создаем необходимое количество игр
+        // у каждой игры свой уникальный id - i
+        // для доступа к ней
+        games_.emplace_back(new GameSelfPlay(
             i,
             gc,
             contextOptions,
             options,
             dispatcher,
-            client_->getNotifier(),
             client_->getCheckersNotifier()
             ));
       }

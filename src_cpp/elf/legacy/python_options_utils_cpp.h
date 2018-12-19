@@ -32,7 +32,7 @@ struct ContextOptions {
   std::shared_ptr<spdlog::logger> _logger;
 
   ContextOptions()
-      : _logger(elf::logging::getLogger("elf::legacy::ContextOptions-", "")) {}
+      : _logger(elf::logging::getIndexedLogger("elf::legacy::ContextOptions-", "")) {}
 
   void print() const {
     _logger->info("JobId: {}", job_id);

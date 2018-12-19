@@ -1,0 +1,362 @@
+[2018-12-15 17:37:22.420] [rlpytorch.model_loader.load_env0] [info] Loading env
+[2018-12-15 17:37:22.431] [rlpytorch.model_loader.load_env0] [info] Parsed options: {'T': 1,
+ 'actor_only': True,
+ 'adam_eps': 0.001,
+ 'additional_labels': [],
+ 'batchsize': 32,
+ 'batchsize2': -1,
+ 'black_use_policy_network_only': False,
+ 'bn0': True,
+ 'bn1': True,
+ 'bn_eps0': 1e-05,
+ 'bn_eps1': 1e-05,
+ 'bn_momentum0': 0.1,
+ 'bn_momentum1': 0.1,
+ 'cheat_eval_new_model_wins_half': False,
+ 'cheat_selfplay_random_result': False,
+ 'check_loaded_options0': False,
+ 'check_loaded_options1': False,
+ 'checkers_num_future_actions': 1,
+ 'client_max_delay_sec': 1200,
+ 'comment': '',
+ 'data_aug': -1,
+ 'dim0': 64,
+ 'dim1': 64,
+ 'dist_rank0': -1,
+ 'dist_rank1': -1,
+ 'dist_url0': '',
+ 'dist_url1': '',
+ 'dist_world_size0': -1,
+ 'dist_world_size1': -1,
+ 'dump_record_prefix': '',
+ 'epsilon': 0.0,
+ 'eval_checkers_actor_black_stats': '',
+ 'eval_checkers_actor_white_stats': '',
+ 'eval_model_pair': '',
+ 'eval_num_games': 400,
+ 'eval_old_model': -1,
+ 'eval_winrate_thres': 0.55,
+ 'expected_num_clients': -1,
+ 'gpu': 0,
+ 'gpu0': -1,
+ 'gpu1': -1,
+ 'keep_prev_selfplay': False,
+ 'keys_in_reply': ['checkers_V', 'checkers_rv'],
+ 'leaky_relu0': False,
+ 'leaky_relu1': False,
+ 'list_files': [],
+ 'load0': '',
+ 'load1': '',
+ 'load_model_sleep_interval0': 0.0,
+ 'load_model_sleep_interval1': 0.0,
+ 'loglevel': 'info',
+ 'lr': 0.001,
+ 'mcts_alpha': 0.03,
+ 'mcts_epsilon': 0.25,
+ 'mcts_persistent_tree': True,
+ 'mcts_pick_method': 'most_visited',
+ 'mcts_puct': 0.85,
+ 'mcts_rollout_per_batch': 1,
+ 'mcts_rollout_per_thread': 16,
+ 'mcts_root_unexplored_q_zero': False,
+ 'mcts_threads': 6,
+ 'mcts_unexplored_q_zero': False,
+ 'mcts_use_prior': True,
+ 'mcts_verbose': False,
+ 'mcts_verbose_time': False,
+ 'mcts_virtual_loss': 5,
+ 'mode': 'selfplay',
+ 'momentum': 0.9,
+ 'move_cutoff': -1,
+ 'multipred_backprop': True,
+ 'num_block0': 5,
+ 'num_block1': 5,
+ 'num_games': 1,
+ 'num_games_per_thread': -1,
+ 'num_minibatch': 5000,
+ 'num_reader': 50,
+ 'num_reset_ranking': 5000,
+ 'omit_keys0': [],
+ 'omit_keys1': [],
+ 'onload0': [],
+ 'onload1': [],
+ 'opt_method': 'adam',
+ 'parameter_print': True,
+ 'parsed_args': ['./selfplay.py',
+                 '--server_id',
+                 'myserver',
+                 '--port',
+                 '1234',
+                 '--mode',
+                 'selfplay',
+                 '--batchsize',
+                 '32',
+                 '--num_games',
+                 '1',
+                 '--keys_in_reply',
+                 'checkers_V',
+                 'checkers_rv',
+                 '--T',
+                 '1',
+                 '--dim0',
+                 '64',
+                 '--dim1',
+                 '64',
+                 '--gpu',
+                 '0',
+                 '--num_block0',
+                 '5',
+                 '--num_block1',
+                 '5',
+                 '--use_mcts',
+                 '--use_mcts_ai2',
+                 '--mcts_epsilon',
+                 '0.25',
+                 '--mcts_persistent_tree',
+                 '--mcts_puct',
+                 '0.85',
+                 '--mcts_rollout_per_thread',
+                 '16',
+                 '--mcts_threads',
+                 '6',
+                 '--mcts_use_prior',
+                 '--mcts_virtual_loss',
+                 '5',
+                 '--mcts_alpha',
+                 '0.03',
+                 '--suicide_after_n_games',
+                 '2000',
+                 '--policy_distri_cutoff',
+                 '30',
+                 '--policy_distri_training_for_all',
+                 '--no_check_loaded_options0',
+                 '--no_check_loaded_options1',
+                 '--replace_prefix0',
+                 'resnet.module,resnet',
+                 'init_conv.module,init_conv',
+                 '--replace_prefix1',
+                 'resnet.module,resnet',
+                 'init_conv.module,init_conv',
+                 '--selfplay_timeout_usec',
+                 '10',
+                 '--use_fp160',
+                 '--use_fp161',
+                 '--verbose'],
+ 'policy_distri_cutoff': 30,
+ 'policy_distri_training_for_all': True,
+ 'port': 1234,
+ 'print_result': False,
+ 'q_max_size': 1000,
+ 'q_min_size': 10,
+ 'ratio_pre_moves': 0,
+ 'replace_prefix0': ['resnet.module,resnet',
+                     'init_conv.module,init_conv'],
+ 'replace_prefix1': ['resnet.module,resnet',
+                     'init_conv.module,init_conv'],
+ 'sample_nodes': ['pi,a'],
+ 'sample_policy': 'epsilon-greedy',
+ 'selfplay_async': False,
+ 'selfplay_init_num': 2000,
+ 'selfplay_timeout_usec': 10,
+ 'selfplay_update_num': 1000,
+ 'server_addr': '',
+ 'server_id': 'myserver',
+ 'start_ratio_pre_moves': 0.5,
+ 'store_greedy': False,
+ 'suicide_after_n_games': 2000,
+ 'use_data_parallel0': False,
+ 'use_data_parallel1': False,
+ 'use_data_parallel_distributed0': False,
+ 'use_data_parallel_distributed1': False,
+ 'use_df_feature': False,
+ 'use_fp160': True,
+ 'use_fp161': True,
+ 'use_mcts': True,
+ 'use_mcts_ai2': True,
+ 'verbose': True,
+ 'weight_decay': 0.0,
+ 'white_mcts_rollout_per_batch': -1,
+ 'white_mcts_rollout_per_thread': -1,
+ 'white_puct': -1.0,
+ 'white_use_policy_network_only': False}
+[2018-12-15 17:37:22.433] [rlpytorch.model_loader.load_env0] [info] Finished loading env
+[2018-12-15 17:37:22.433] [elf::legacy::ContextOptions-0] [info] JobId: local
+[2018-12-15 17:37:22.433] [elf::legacy::ContextOptions-0] [info] #Game: 1
+[2018-12-15 17:37:22.433] [elf::legacy::ContextOptions-0] [info] T: 1
+[2018-12-15 17:37:22.433] [elf::legacy::ContextOptions-0] [info] [#th=6][rl=16][per=1][eps=0.25][alpha=0.03][prior=1][c_puct=0.85][uqz=0][r_uqz=0]
+[2018-12-15 17:37:22.433] [elf::base::ThreadedDispatcherT-11] [info] Wait all games[1] to register their mailbox
+[2018-12-15 17:37:22.434] [elfgames::go::train::ThreadedWriterCtrl-13] [info] Writer info: ZMQVer: 4.2.5 Writer[local-rl-test-2-59b9-536d-c018-f749]. [local] Connect to [127.0.0.1]:1234, ipv6: True, verbose: True, send ctrl with timestamp 1544895442 
+[2018-12-15 17:37:22.434] [elfgames::go::train::ThreadedWriterCtrl-13] [info] Sat Dec 15 17:37:22 2018, WriterCtrl: no message, seq=0, since_last_sec=0
+[2018-12-15 17:37:22.434] [elfgames::go::train::ThreadedWriterCtrl-13] [info] Sleep for 10 sec .. 
+Seed: 0
+Time signature: 181215-173722
+Client max delay in sec: 1200
+#FutureActions: 1
+#GamePerThread: -1
+mode: selfplay
+Selfplay init min #games: 2000, update #games: 1000, async: False
+UseMCTS: True
+Data Aug: -1
+Start_ratio_pre_moves: 0.5
+ratio_pre_moves: 0
+MoveCutOff: -1
+Use DF feature: False
+PolicyDistriCutOff: 30
+Server_addr: [127.0.0.1], server_id: myserver, port: 1234
+#Reader: 50, Qmin_sz: 10, Qmax_sz: 1000
+Verbose: True
+Policy distri training for all moves: True
+Reset move ranking after 5000 actions
+
+
+Python version: 3.6.6 |Anaconda, Inc.| (default, Jun 28 2018, 17:14:51) 
+[GCC 7.2.0]
+PyTorch version: 0.4.1.post2
+CUDA version 9.0.176
+Conda env: 
+additional_to_load : 
+eval_checkers_actor_white  :  (<elf.options.py_option_spec.PyOptionSpec object at 0x7f3e7955c9e8>, <function main.<locals>.<dictcomp>.<lambda> at 0x7f3e794f8620>)
+eval_checkers_actor_black  :  (<elf.options.py_option_spec.PyOptionSpec object at 0x7f3e7955c3b8>, <function main.<locals>.<dictcomp>.<lambda> at 0x7f3e794f86a8>)
+mi_checkers_actor_white  :  (<elf.options.py_option_spec.PyOptionSpec object at 0x7f3e7955ce08>, <class 'rlpytorch.model_interface.ModelInterface'>)
+mi_checkers_actor_black  :  (<elf.options.py_option_spec.PyOptionSpec object at 0x7f3e7955ce60>, <class 'rlpytorch.model_interface.ModelInterface'>)
+<module 'elfgames.go.game' from '/home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go/game.py'> elfgames.go.game
+<module 'elfgames.go.df_model_checkers' from '/home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go/df_model_checkers.py'> elfgames.go.df_model_checkers
+[1;31;40m|py|[0m[1;37;40m Loader:: get_option_spec
+[1;31;40m|py|[0m[1;37;40m Model_PolicyValue:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m GoResNet:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m Model_PolicyValue:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m GoResNet:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m Loader:: get_option_spec
+[1;31;40m|py|[0m[1;37;40m Loader:: __init__
+[1;31;40m|py|[0m[1;37;40m Model_PolicyValue:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m GoResNet:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m Model_PolicyValue:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m GoResNet:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m Model_PolicyValue:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m GoResNet:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m Model_PolicyValue:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m GoResNet:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m Model_PolicyValue:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m GoResNet:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m Model_PolicyValue:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m GoResNet:: get_option_spec
+[1;31;40m /home/ubuntu/arvi_dima/elf/elf_our_clean_version/src_py/elfgames/go  -  df_model_checkers.py [0m
+[1;31;40m|py|[0m[1;37;40m Evaluator:: __init__
+[1;31;40m|py|[0m[1;37;40m Evaluator:: __init__
+[1;31;40m|py|[0m[1;37;40m Loader:: initialize
+[1;31;40m|py|[0m[1;37;40m Loader:: _set_params
+self.options :  Namespace(T=1, actor_only=True, additional_labels=[], batchsize=32, batchsize2=-1, black_use_policy_network_only=False, cheat_eval_new_model_wins_half=False, cheat_selfplay_random_result=False, checkers_num_future_actions=1, client_max_delay_sec=1200, comment='', data_aug=-1, dump_record_prefix='', eval_model_pair='', eval_num_games=400, eval_old_model=-1, eval_winrate_thres=0.55, expected_num_clients=-1, gpu=0, keep_prev_selfplay=False, list_files=[], mcts_alpha=0.03, mcts_epsilon=0.25, mcts_persistent_tree=True, mcts_pick_method='most_visited', mcts_puct=0.85, mcts_rollout_per_batch=1, mcts_rollout_per_thread=16, mcts_root_unexplored_q_zero=False, mcts_threads=6, mcts_unexplored_q_zero=False, mcts_use_prior=True, mcts_verbose=False, mcts_verbose_time=False, mcts_virtual_loss=5, mode='selfplay', move_cutoff=-1, num_games=1, num_games_per_thread=-1, num_reader=50, num_reset_ranking=5000, parameter_print=True, policy_distri_cutoff=30, policy_distri_training_for_all=True, port=1234, print_result=False, q_max_size=1000, q_min_size=10, ratio_pre_moves=0, selfplay_async=False, selfplay_init_num=2000, selfplay_timeout_usec=10, selfplay_update_num=1000, server_addr='', server_id='myserver', start_ratio_pre_moves=0.5, suicide_after_n_games=2000, use_df_feature=False, use_mcts=True, use_mcts_ai2=True, verbose=True, white_mcts_rollout_per_batch=-1, white_mcts_rollout_per_thread=-1, white_puct=-1.0, white_use_policy_network_only=False)
+****************** Options ******************
+Seed: 0
+Time signature: 181215-173722
+Client max delay in sec: 1200
+#FutureActions: 1
+#GamePerThread: -1
+mode: selfplay
+Selfplay init min #games: 2000, update #games: 1000, async: False
+UseMCTS: True
+Data Aug: -1
+Start_ratio_pre_moves: 0.5
+ratio_pre_moves: 0
+MoveCutOff: -1
+Use DF feature: False
+PolicyDistriCutOff: 30
+Server_addr: [127.0.0.1], server_id: myserver, port: 1234
+#Reader: 50, Qmin_sz: 10, Qmax_sz: 1000
+Verbose: True
+Policy distri training for all moves: True
+Reset move ranking after 5000 actions
+
+
+*********************************************
+Version:  0193833198ce7b51d424f71aef7866f0ae29ae0b_unstaged
+*********************************************
+Mode:  selfplay
+checkers_num_action:  170
+game_end: {'batchsize': 1}
+SharedMem: "game_end", keys: []
+game_start: {'batchsize': 1, 'input': ['checkers_white_ver', 'checkers_black_ver'], 'reply': None}
+SharedMem: "game_start", keys: ['checkers_black_ver', 'checkers_white_ver']
+checkers_black_ver int64_t [32]
+checkers_white_ver int64_t [32]
+checkers_black_ver int64_t [32]
+checkers_white_ver int64_t [32]
+checkers_actor_white: {'input': ['checkers_s'], 'reply': ['pi', 'checkers_V', 'a', 'checkers_rv'], 'batchsize': 32, 'timeout_usec': 10}
+SharedMem: "checkers_actor_white", keys: ['checkers_rv', 'checkers_V', 'pi', 'a', 'checkers_s']
+checkers_rv int64_t [32]
+checkers_V float [32]
+pi float [32, 170]
+a int64_t [32]
+checkers_s float [32, 6, 8, 8]
+checkers_rv int64_t [32]
+checkers_V float [32]
+pi float [32, 170]
+a int64_t [32]
+checkers_s float [32, 6, 8, 8]
+checkers_actor_black: {'input': ['checkers_s'], 'reply': ['pi', 'checkers_V', 'a', 'checkers_rv'], 'batchsize': 32, 'timeout_usec': 10}
+SharedMem: "checkers_actor_black", keys: ['checkers_rv', 'checkers_V', 'pi', 'a', 'checkers_s']
+checkers_rv int64_t [32]
+checkers_V float [32]
+pi float [32, 170]
+a int64_t [32]
+checkers_s float [32, 6, 8, 8]
+checkers_rv int64_t [32]
+checkers_V float [32]
+pi float [32, 170]
+a int64_t [32]
+checkers_s float [32, 6, 8, 8]
+self.name2idx	 :  defaultdict(<function Allocator.spec2batches.<locals>.<lambda> at 0x7f3e795248c8>, {'game_end': [0, 1], 'game_start': [2, 3], 'checkers_actor_white': [4, 5], 'checkers_actor_black': [6, 7]})
+self.idx2name	 :  {0: 'game_end', 1: 'game_end', 2: 'game_start', 3: 'game_start', 4: 'checkers_actor_white', 5: 'checkers_actor_white', 6: 'checkers_actor_black', 7: 'checkers_actor_black'}
+self.batchdim	 :  0
+self.histdim	 :  None
+self.params	 :  {'checkers_board_size': 8, 'checkers_num_action': 170, 'checkers_num_future_actions': 1, 'checkers_num_planes': 6, 'num_group': 1, 'T': 1}[2018-12-15 17:37:24.587] [elfgames::go::common::GameBase-20] [info] [0] Seed: 96172810, thread_id: 14315703718264125949
+[2018-12-15 17:37:24.587] [elf::base::ThreadedDispatcherT-11] [info] All games [1] registered
+[2018-12-15 17:37:32.434] [elfgames::go::train::ThreadedWriterCtrl-13] [info] Sat Dec 15 17:37:32 2018 In reply func: Message got. since_last_sec=10, seq=0, {"request":{"client_ctrl":{"async":true,"client_type":1,"num_game_thread_used":-1,"player_swap":false},"vers":{"black_ver":0,"mcts_opt":{"alg_opt":{"c_puct":0.8500000238418579,"root_unexplored_q_zero":false,"unexplored_q_zero":false,"use_prior":true},"log_prefix":"","max_num_moves":0,"num_rollouts_per_batch":1,"num_rollouts_per_thread":16,"num_threads":16,"persistent_tree":true,"pick_method":"most_visited","root_alpha":0.029999999329447746,"root_epsilon":0.25,"seed":0,"verbose":false,"verbose_time":false,"virtual_loss":5},"white_ver":-1}},"seq":0}
+[2018-12-15 17:37:32.434] [elfgames::go::train::CheckersGuardedRecords19] [info] CheckersGuardedRecords::DumpAndClear[Sat Dec 15 17:37:32 2018], #records: 0, #states: 0[]  
+[2018-12-15 17:37:32.593] [elfgames::go::common::DispatcherCallback-12] [info] Sat Dec 15 17:37:32 2018, EvalCtrl received new request: [client=1]
+[async=1]
+[#th=-1]
+[selfplay=0][#th=16][rl=16][per=1][eps=0.25][alpha=0.03][prior=1][c_puct=0.85][uqz=0][r_uqz=0]
+[2018-12-15 17:37:32.593] [elfgames::go::GameSelfPlay-0-22] [info] Initializing actor checkers_actor_black; puct_override: -1; batch_override: -1; per_thread_override: -1
+[2018-12-15 17:37:32.595] [elfgames::go::common::DispatcherCallback-12] [info] Sat Dec 15 17:37:32 2018 Received actionable request: black_ver = 0, white_ver = -1, #addrs_to_reply: 1
+[2018-12-15 17:37:32.601] [rlpytorch.model_loader.ModelLoader-2-model_index1] [info] Loading model from ./myserver/save-0.bin
+[2018-12-15 17:37:32.601] [rlpytorch.model_loader.ModelLoader-2-model_index1] [info] replace_prefix for state dict: [['resnet.module', 'resnet'], ['init_conv.module', 'init_conv']]
+[2018-12-15 17:37:32.603] [rlpytorch.model_loader.ModelLoader-2-model_index1] [info] Finished loading model from ./myserver/save-0.bin
+[2018-12-15 17:37:32.605] [elfgames::go::train::CheckersGuardedRecords19] [info] CheckersGuardedRecords::updateState[Sat Dec 15 17:37:32 2018] #states: 1[0:2:0:0,]  0
+[2018-12-15 17:37:35.344] [elfgames::go::common::CheckersStateExt-21] [info] 
+ (0,0)E (1,0)E (2,0)E (3,0)E (4,0)E (5,0)E (6,0)E[6;32;40m (7,0)K[0m
+ (0,1)E (1,1)E (2,1)E (3,1)E (4,1)E (5,1)E (6,1)E (7,1)E
+ (0,2)E[6;32;40m (1,2)K[0m (2,2)E[6;32;40m (3,2)M[0m (4,2)E (5,2)E (6,2)E (7,2)E
+ (0,3)E (1,3)E (2,3)E (3,3)E (4,3)E (5,3)E (6,3)E (7,3)E
+ (0,4)E (1,4)E (2,4)E (3,4)E (4,4)E (5,4)E (6,4)E (7,4)E
+[6;32;40m (0,5)M[0m (1,5)E[6;32;40m (2,5)M[0m (3,5)E (4,5)E (5,5)E[6;32;40m (6,5)M[0m (7,5)E
+ (0,6)E (1,6)E (2,6)E (3,6)E (4,6)E[6;32;40m (5,6)M[0m (6,6)E (7,6)E
+ (0,7)E (1,7)E[6;32;40m (2,7)M[0m (3,7)E (4,7)E (5,7)E[6;32;40m (6,7)M[0m (7,7)E
+
+Last move	: 126
+CurrentPlayer	: [6;31;40mWhite[0m
+move num	: 40
+
+[2018-12-15 17:37:35.344] [elfgames::go::common::CheckersStateExt-21] [info] [0:2] Current request: [client=1]
+[async=1]
+[#th=-1]
+[selfplay=0][#th=16][rl=16][per=1][eps=0.25][alpha=0.03][prior=1][c_puct=0.85][uqz=0][r_uqz=0], used_model: 0, 
+[2018-12-15 17:37:35.344] [elfgames::go::common::CheckersStateExt-21] [info] [6;32;40mBlack[0m win at 40 move
+[2018-12-15 17:37:35.344] [elfgames::go::common::CheckersStateExt-21] [info] Value: 1
+
+

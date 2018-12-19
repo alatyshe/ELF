@@ -1,5 +1,8 @@
 #pragma once
 
+#include <random>
+#include <deque>
+#include <queue>
 #include <map>
 #include <vector>
 #include <sstream>
@@ -9,15 +12,12 @@
 #include <memory.h>
 #include <stdio.h>
 
-// elf
-// #include "elf/logging/IndexedLoggerFactory.h"
 
 // checkers
-
 #include "hash_all_moves.h"
 #include "elf/debug/debug.h"
-#include "../base/common.h"
-// #include "../base/board.h"
+
+#define M_INVALID 		171
 
 constexpr uint64_t CHECKERS_NUM_FEATURES = 6;
 constexpr uint64_t TOTAL_NUM_ACTIONS = 170;
@@ -26,16 +26,16 @@ constexpr uint64_t TOTAL_NUM_ACTIONS = 170;
 constexpr int TOTAL_MAX_MOVE = 700;
 
 // typedef int64_t Coord;
-// typedef unsigned char Stone;
+typedef unsigned short 	Coord;
 
-#define BLACK_PLAYER 0 
-#define WHITE_PLAYER 1
+#define BLACK_PLAYER 	0
+#define WHITE_PLAYER 	1
 
-#define BLACK_KING 2
-#define WHITE_KING 3
+#define BLACK_KING 		2
+#define WHITE_KING 		3
 
-#define UNUSED_BITS 0b100000000100000000100000000100000000
-#define MASK        0b111111111111111111111111111111111111
+#define UNUSED_BITS 	0b100000000100000000100000000100000000
+#define MASK        	0b111111111111111111111111111111111111
 
 # define BLACK_PLAYER 			0 
 # define WHITE_PLAYER 			1
@@ -44,7 +44,7 @@ constexpr int TOTAL_MAX_MOVE = 700;
 # define CHECKERS_BOARD_SIZE	8
 # define TOTAL_PLAYERS			2
 
-# define PLAYER_MAPPING (n) ((n) == 0 ? BLACK_PLAYER : WHITE_PLAYER)
+// # define PLAYER_MAPPING (n) ((n) == 0 ? BLACK_PLAYER : WHITE_PLAYER)
 
 typedef struct 
 {	
@@ -141,5 +141,5 @@ std::vector<int64_t>	_jumps_from(CheckersBoard board, int64_t piece);
 
 
 
-std::string				player2str(int player);
+// std::string				player2str(int player);
 

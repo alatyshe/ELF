@@ -162,9 +162,11 @@ struct EdgeInfo {
         child_node(InvalidNodeId),
         reward(0),
         num_visits(0),
-        virtual_loss(0),
-        logger_(
-            elf::logging::getLogger("elf::ai::tree_search::EdgeInfo-", "")) {
+        virtual_loss(0)
+        // ,
+        // logger_(
+        //     elf::logging::getLogger("elf::ai::tree_search::EdgeInfo-", "")) 
+        {
     display_debug_info("struct EdgeInfo", __FUNCTION__, GREEN_B);
   }
 
@@ -180,8 +182,8 @@ struct EdgeInfo {
 
     if (virtual_loss != 0) {
       // TODO: This should be a Google log (ssengupta@fb)
-      logger_->info(
-          "Virtual loss is not zero[{}]\n{}", virtual_loss, info(true));
+      // logger_->info(
+      //     "Virtual loss is not zero[{}]\n{}", virtual_loss, info(true));
       assert(virtual_loss == 0);
     }
   }

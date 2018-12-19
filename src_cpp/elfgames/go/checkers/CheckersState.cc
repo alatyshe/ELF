@@ -37,7 +37,7 @@ bool CheckersState::forward(const Coord& c) {
 // }
 
 bool CheckersState::checkMove(const Coord& c) const {
-  display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
+  // display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 
   return CheckersTryPlay(_board, c);
 //   GroupId4 ids;

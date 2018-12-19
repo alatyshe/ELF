@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2018-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 #pragma once
 
 #include <sstream>
@@ -16,7 +8,7 @@
 struct GameOptions {
   // Seed.
   unsigned int seed;
-  int num_future_actions = 3;
+  int   checkers_num_future_actions = 0;
 
   // For offline training,
   //    This means how many games to open simultaneously per thread?
@@ -24,7 +16,7 @@ struct GameOptions {
   //    correlations.
   // For selfplay setting.
   //    This means how many games are played sequentially in each thread.
-  int num_games_per_thread = -1;
+  int   num_games_per_thread = -1;
 
   // mode == "online": it will open the game in online mode.
   //    In this mode, the thread will not output the next k moves (since every
@@ -35,15 +27,15 @@ struct GameOptions {
   std::string mode;
 
   // Use mcts engine.
-  bool use_mcts = false;
-  bool use_mcts_ai2 = false;
+  bool  use_mcts = false;
+  bool  use_mcts_ai2 = false;
 
   // Specify which side uses policy network only.
-  bool black_use_policy_network_only = false;
-  bool white_use_policy_network_only = false;
+  bool  black_use_policy_network_only = false;
+  bool  white_use_policy_network_only = false;
 
   // -1 is random, 0-7 mean specific data aug.
-  int data_aug = -1;
+  int   data_aug = -1;
 
   // Before we use the data from the first recorded replay in each thread,
   // sample number of moves to fast-forward.
@@ -58,63 +50,58 @@ struct GameOptions {
   float ratio_pre_moves = 0.0;
 
   // Cutoff ply for each loaded game, and start a new one.
-  int move_cutoff = -1;
+  int   move_cutoff = -1;
 
   // Cutoff ply for mcts policy / best a
-  int policy_distri_cutoff = 20;
-  bool policy_distri_training_for_all = false;
+  int   policy_distri_cutoff = 20;
+  bool  policy_distri_training_for_all = false;
 
-  int num_reset_ranking = 5000;
+  int   num_reset_ranking = 5000;
 
   std::string preload_sgf;
-  int preload_sgf_move_to = -1;
+  int   preload_sgf_move_to = -1;
 
-  bool use_df_feature = false;
+  bool  use_df_feature = false;
 
-  int q_min_size = 10;
-  int q_max_size = 1000;
-  int num_reader = 50;
+  int   q_min_size = 10;
+  int   q_max_size = 1000;
+  int   num_reader = 50;
 
-  float komi = 7.5;
-  int ply_pass_enabled = 0;
 
   // Second puct used for ai2, if -1 then use the same puct.
   float white_puct = -1.0;
-  int white_mcts_rollout_per_batch = -1;
-  int white_mcts_rollout_per_thread = -1;
+  int   white_mcts_rollout_per_batch = -1;
+  int   white_mcts_rollout_per_thread = -1;
 
-  int eval_num_games = 400;
+  int   eval_num_games = 400;
   float eval_thres = 0.55;
 
   // Default it is 20 min. During intergration test we could make it shorter.
-  int client_max_delay_sec = 1200;
+  int   client_max_delay_sec = 1200;
 
   // Initial number of selfplay games for each model used for selfplay.
-  int selfplay_init_num = 5000;
+  int   selfplay_init_num = 5000;
   // Additive number of selfplay after the new model is updated.
-  int selfplay_update_num = 1000;
+  int   selfplay_update_num = 1000;
 
   // Whether we use async mode for selfplay.
-  bool selfplay_async = false;
+  bool  selfplay_async = false;
 
-  // When playing with human (or other programs), if human pass, we also pass.
-  bool following_pass = false;
+  bool  cheat_eval_new_model_wins_half = false;
+  bool  cheat_selfplay_random_result = false;
 
-  bool cheat_eval_new_model_wins_half = false;
-  bool cheat_selfplay_random_result = false;
+  bool  keep_prev_selfplay = false;
 
-  bool keep_prev_selfplay = false;
-
-  int eval_num_threads = 1;
-  int expected_num_clients = -1;
+  int   eval_num_threads = 1;
+  int   expected_num_clients = -1;
 
   // A list file containing the files to load.
   std::vector<std::string> list_files;
   std::string server_addr;
   std::string server_id;
-  int port;
-  bool verbose = false;
-  bool print_result = false;
+  int   port;
+  bool  verbose = false;
+  bool  print_result = false;
   std::string dump_record_prefix;
 
   std::string time_signature;
@@ -125,10 +112,12 @@ struct GameOptions {
 
   std::string info() const {
     std::stringstream ss;
+
+
     ss << "Seed: " << seed << std::endl;
     ss << "Time signature: " << time_signature << std::endl;
     ss << "Client max delay in sec: " << client_max_delay_sec << std::endl;
-    ss << "#FutureActions: " << num_future_actions << std::endl;
+    ss << "#FutureActions: " << checkers_num_future_actions << std::endl;
     ss << "#GamePerThread: " << num_games_per_thread << std::endl;
     ss << "mode: " << mode << std::endl;
     ss << "Selfplay init min #games: " << selfplay_init_num
@@ -162,14 +151,10 @@ struct GameOptions {
     ss << "Verbose: " << elf_utils::print_bool(verbose) << std::endl;
     ss << "Policy distri training for all moves: "
        << elf_utils::print_bool(verbose) << std::endl;
-    ss << "Min Ply from which pass is enabled: " << ply_pass_enabled
-       << std::endl;
     if (print_result)
       ss << "PrintResult: " << elf_utils::print_bool(print_result) << std::endl;
     if (!dump_record_prefix.empty())
       ss << "dumpRecord: " << dump_record_prefix << std::endl;
-    if (following_pass)
-      ss << "Following pass is true" << std::endl;
     ss << "Reset move ranking after " << num_reset_ranking << " actions"
        << std::endl;
 
@@ -193,7 +178,6 @@ struct GameOptions {
 
     ss << std::endl;
 
-    ss << "Komi: " << komi << std::endl;
     if (!preload_sgf.empty()) {
       ss << "Preload SGF:" << preload_sgf << ", move_to" << preload_sgf_move_to
          << std::endl;
@@ -208,7 +192,7 @@ struct GameOptions {
       start_ratio_pre_moves,
       ratio_pre_moves,
       move_cutoff,
-      num_future_actions,
+      checkers_num_future_actions,
       list_files,
       verbose,
       num_games_per_thread,
@@ -225,11 +209,8 @@ struct GameOptions {
       use_mcts_ai2,
       preload_sgf,
       preload_sgf_move_to,
-      komi,
       print_result,
       num_reset_ranking,
-      ply_pass_enabled,
-      following_pass,
       use_df_feature,
       policy_distri_training_for_all,
       black_use_policy_network_only,

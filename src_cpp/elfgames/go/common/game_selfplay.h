@@ -16,7 +16,7 @@
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
-#include "../mcts/mcts.h"
+#include "../mcts/MCTS.h"
 #include "../sgf/sgf.h"
 #include "game_base.h"
 #include "game_feature.h"
@@ -31,51 +31,60 @@
 class AIClientT;
 
 // Game interface for Go.
-class GoGameSelfPlay : public GameBase {
+class GameSelfPlay : public GameBase {
  public:
   using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
-  GoGameSelfPlay(
+  GameSelfPlay(
       int game_idx,
       elf::GameClient* client,
       const ContextOptions& context_options,
       const GameOptions& options,
       ThreadedDispatcher* dispatcher,
-      GameNotifierBase* notifier = nullptr,
       CheckersGameNotifierBase* checkers_notifier = nullptr);
 
   void act() override;
   bool OnReceive(const MsgRequest& request, RestartReply* reply);
 
   std::string showBoard() const {
-    display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+    display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
     // std::cout << _checkers_state_ext.state().showBoard() << std::endl << std::endl;
 
     return _checkers_state_ext.state().showBoard();
   }
 
   // std::string getNextPlayer() const {
-  //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
-  //   std::cout << player2str(_state_ext.state().nextPlayer()) << std::endl << std::endl;
+  //   display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
 
-  //   return player2str(_state_ext.state().nextPlayer());
+  //   if (_checkers_state_ext.state().nextPlayer() == BLACK_PLAYER)
+  //     return "Black";
+  //   return "White";
   // }
 
-  // std::string getLastMove() const {
-  //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
-  //   std::cout << coord2str2(_state_ext.lastMove()) << std::endl << std::endl;
 
-  //   return coord2str2(_state_ext.lastMove());
-  // }
+
+
+  std::string getLastMove() const {
+    display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+    
+    return std::to_string(_checkers_state_ext.lastMove());
+  }
 
   // float getScore() {
-  //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  //   display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
   //   std::cout << _state_ext.state().evaluate(_options.komi) << std::endl << std::endl;
 
   //   return _state_ext.state().evaluate(_options.komi);
   // }
 
-  float checkersGetScore() {
-    display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+
+  std::array<int, ALL_ACTIONS>    GetValidMoves() const {
+    return GetValidMovesBinary(_checkers_state_ext.state().board(), 
+      _checkers_state_ext.state().board().active);
+  }
+
+
+  float GetScore() {
+    display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
     // std::cout << _checkers_state_ext.state().evaluate() << std::endl << std::endl;
 
     return _checkers_state_ext.state().evaluate();
@@ -83,7 +92,7 @@ class GoGameSelfPlay : public GameBase {
 
 
   // float getLastScore() const {
-  //   display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
+  //   display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
   //   std::cout << _state_ext.getLastGameFinalValue() << std::endl << std::endl;
 
   //   return _state_ext.getLastGameFinalValue();
@@ -123,7 +132,7 @@ class GoGameSelfPlay : public GameBase {
   // Opponent ai (used for selfplay evaluation)
   std::unique_ptr<MCTSCheckersAI> checkers_ai2;
 
-  std::unique_ptr<AI> _human_player;
+  std::unique_ptr<CheckersAI> _human_player;
 
   std::shared_ptr<spdlog::logger> logger_;
 };

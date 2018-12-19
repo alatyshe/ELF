@@ -1,20 +1,11 @@
 #pragma once
 
-
-#include <deque>
-#include <queue>
-#include <sstream>
-#include <unordered_map>
-#include <vector>
-
+// ELF
 #include "elf/debug/debug.h"
 
-#include "../base/common.h"
+// Checkers
 #include "CheckersBoard.h"
 #include "CheckersFeature.h"
-
-// Two special moves.
-// Used when we want to skip and let the opponent play.
 
 
 class CheckersState {

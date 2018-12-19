@@ -35,7 +35,7 @@ def main():
             'greedy': True,
             'T': 1,
             'model': 'online',
-            'additional_labels': ['aug_code', 'move_idx'],
+            'additional_labels': ['checkers_aug_code', 'checkers_move_idx'],
         },
         additional_to_load=additional_to_load)
 
@@ -65,13 +65,13 @@ def main():
 
     evaluator.setup(sampler=env["sampler"], mi=mi)
 
-    GC.reg_callback_if_exists("actor_black", actor)
+    GC.reg_callback_if_exists("checkers_actor_black", actor)
     GC.reg_callback_if_exists("human_actor", human_actor)
     GC.reg_callback_if_exists("train", train)
 
     GC.start()
     GC.GC.getClient().setRequest(
-        mi["actor"].step, -1, env['game'].options.resign_thres, -1)
+        mi["actor"].step, -1, -1)
 
     evaluator.episode_start(0)
 

@@ -32,11 +32,13 @@ class Allocator(object):
 
     @staticmethod
     def _alloc(p, gpu, use_numpy=True):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Allocator::", inspect.currentframe().f_code.co_name)
+
         name = p.field().name()
         type_name = p.field().type_name()
         sz = p.field().sz().vec()
 
-        print(name, type_name, sz)
+        # print(name, type_name, sz)
 
         if not use_numpy:
             v = Allocator.torch_types[type_name](*sz)
@@ -60,6 +62,8 @@ class Allocator(object):
 
     @staticmethod
     def spec2batches(ctx, batchsize, spec, gpu, use_numpy=False, num_recv=1):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Allocator::", inspect.currentframe().f_code.co_name)
+
         batch_spec = []
         name2idx = defaultdict(lambda: list())
         idx2name = dict()
@@ -114,18 +118,41 @@ def tensor_slice(t, dim, b, e=None):
         raise ValueError("unsupported %d in tensor_slice" % dim)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Batch:
     def __init__(self, _GC=None, _batchdim=0, _histdim=None, **kwargs):
         '''Initialize `Batch` class.
 
         Pass in a dict and wrap it into ``self.batch``
         '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         self.GC = _GC
         self.batchdim = _batchdim
         self.histdim = _histdim
         self.batch = kwargs
 
     def empty_copy(self):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         batch = Batch()
         batch.GC = self.GC
         batch.batchdim = self.batchdim
@@ -133,6 +160,8 @@ class Batch:
         return batch
 
     def first_k(self, batchsize):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         batch = self.empty_copy()
         batch.batch = {
             k: tensor_slice(
@@ -168,6 +197,8 @@ class Batch:
         learning algorithm, e.g., hidden state collected from the
         previous iterations.
         '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         self.batch[key] = value
         return self
 
@@ -176,6 +207,8 @@ class Batch:
 
     def setzero(self):
         ''' Set all tensors in the batch to 0 '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         for _, v in self.batch.items():
             v[:] = 0
 
@@ -185,6 +218,8 @@ class Batch:
         Args:
             src(dict or `Batch`): batch data to be copied
         '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         this_src = src if isinstance(src, dict) else src.batch
         key_assigned = {k: False for k in self.batch.keys()}
 
@@ -227,6 +262,8 @@ class Batch:
             key(str): if None, return all key's history,
                       otherwise just return that key's history
         '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         if self.histdim is None:
             raise ValueError("No histdim information for the batch")
 
@@ -242,6 +279,8 @@ class Batch:
 
     def half(self):
         '''transfer batch data to fp16'''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         new_batch = self.empty_copy()
         new_batch.batch = {k: v.half()
                            for k, v in self.batch.items()}
@@ -250,6 +289,8 @@ class Batch:
     def cpu2gpu(self, gpu, non_blocking=True):
         ''' transfer batch data to gpu '''
         # For each time step
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         new_batch = self.empty_copy()
         new_batch.batch = {k: v.cuda(gpu, non_blocking=non_blocking)
                            for k, v in self.batch.items()}
@@ -258,6 +299,8 @@ class Batch:
     def cpu2cpu(self, gpu, non_blocking=True):
         ''' transfer batch data to gpu '''
         # For each time step
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         new_batch = self.empty_copy()
         new_batch.batch = {k: v.clone() for k, v in self.batch.items()}
         return new_batch
@@ -265,6 +308,8 @@ class Batch:
     def transfer_cpu2gpu(self, batch_gpu, non_blocking=True):
         ''' transfer batch data to gpu '''
         # For each time step
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         for k, v in self.batch.items():
             batch_gpu[k].copy_(v, non_blocking=non_blocking)
 
@@ -272,11 +317,15 @@ class Batch:
         ''' transfer batch data to cpu '''
 
         # For each time step
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         for k, v in self.batch.items():
             batch_dst[k].copy_(v)
 
     def pin_clone(self):
         ''' clone and pin memory for faster transportations to gpu '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         batch = self.empty_copy()
         batch.batch = {k: v.clone().pin_memory()
                        for k, v in self.batch.items()}
@@ -284,10 +333,31 @@ class Batch:
 
     def to_numpy(self):
         ''' convert batch data to numpy format '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Batch::", inspect.currentframe().f_code.co_name)
+
         return {
             k: (v.numpy() if not isinstance(v, np.ndarray) else v)
             for k, v in self.batch.items()
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class GCWrapper:
@@ -317,7 +387,7 @@ class GCWrapper:
             gpu(int): gpu to use.
             params(dict): additional parameters
         '''
-        print("\x1b[1;33;40mPython GCWrapper::init()\x1b[0m")
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
 
         # TODO Make a unified argument server and remove ``params``
         self.batches, self.name2idx, self.idx2name = Allocator.spec2batches(
@@ -330,18 +400,22 @@ class GCWrapper:
         self.GC = GC
         self._cb = {}
 
-        print("self.name2idx\t : ", self.name2idx)
-        print("self.idx2name\t : ", self.idx2name)
-        print("self.batchdim\t : ", self.batchdim)
-        print("self.histdim\t : ", self.histdim)
-        print("self.params\t : ", self.params)
-        print("self.GC\t : ", self.GC)
-        print("self._cb\t : ", self._cb)
+        # print("self.name2idx\t : ", self.name2idx)
+        # print("self.idx2name\t : ", self.idx2name)
+        # print("self.batchdim\t : ", self.batchdim)
+        # print("self.histdim\t : ", self.histdim)
+        # print("self.params\t : ", self.params)
+        # print("self.GC\t : ", self.GC)
+        # print("self._cb\t : ", self._cb)
 
     def reg_has_callback(self, key):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+
         return key in self.name2idx
 
     def reg_callback_if_exists(self, key, cb):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+
         if self.reg_has_callback(key):
             self.reg_callback(key, cb)
             return True
@@ -359,8 +433,8 @@ class GCWrapper:
               The callback function has the signature
               ``cb(input_batch, input_batch_gpu, reply_batch)``.
         '''
-        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
-        print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+        # print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
         
         if key not in self.name2idx:
             raise ValueError("Callback[%s] is not in the specification" % key)
@@ -373,6 +447,8 @@ class GCWrapper:
         return True
 
     def _makebatch(self, key_array):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+
         return Batch(
             _GC=self.GC,
             _batchdim=self.batchdim,
@@ -380,6 +456,8 @@ class GCWrapper:
             **key_array)
 
     def _call(self, smem, *args, **kwargs):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+
         idx = smem.getSharedMemOptions().idx()
         
         # print("\n\n\n")
@@ -437,7 +515,11 @@ class GCWrapper:
                     str(keys_missing))
 
     def _check_callbacks(self):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+
         # Check whether all callbacks are assigned properly.
+        # print("self.name2idx.items() : ", self.name2idx.items())
+        
         for key, indices in self.name2idx.items():
             for idx in indices:
                 if idx not in self._cb:
@@ -452,6 +534,7 @@ class GCWrapper:
         Samples in a returned batch are always from the same group,
         but the group key of the batch may be arbitrary.
         '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
 
         # print("\n\n\n\n\n")
         # print("======================================================================================")
@@ -467,6 +550,8 @@ class GCWrapper:
 
     def start(self):
         '''Start all game environments'''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+
         self._check_callbacks()
         self.GC.ctx().start()
 
@@ -476,9 +561,13 @@ class GCWrapper:
         :func:`start()` cannot be called again after :func:`stop()`
         has been called.
         '''
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+
         self.GC.ctx().stop()
 
     def reg_sig_int(self):
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GCWrapper::", inspect.currentframe().f_code.co_name)
+        
         import signal
 
         def signal_handler(s, frame):

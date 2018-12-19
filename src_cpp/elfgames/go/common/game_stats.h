@@ -18,19 +18,37 @@
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "game_utils.h"
 
+// отображается иногда на клиенте
+// Total count: 5582
+// [0]: 2464 (44.1419%)
+// [1]: 1624 (29.0935%)
+// [2]: 319 (5.7148%)
+// [3]: 252 (4.51451%)
+// [4]: 350 (6.27015%)
+// [5]: 324 (5.80437%)
+// [6]: 189 (3.38588%)
+// [7]: 42 (0.752418%)
+// [8]: 8 (0.143318%)
+// [9]: 5 (0.0895736%)
+// [10]: 4 (0.0716589%)
+// ??????????????????????????????????
+// ??????????????????????????????????
+// ??????????????????????????????????
+// ??????????????????????????????????
 class GameStats {
  public:
   GameStats()
       : _logger(
-            elf::logging::getLogger("elfgames::go::common::GameStats-", "")) {}
+            elf::logging::getIndexedLogger("elfgames::go::common::GameStats-", "")) {}
 
+  // ????????????
   void feedMoveRanking(int ranking) {
     display_debug_info("GameStats", __FUNCTION__, RED_B);
 
     std::lock_guard<std::mutex> lock(_mutex);
     _move_ranking.feed(ranking);
   }
-
+  // ????????????
   void resetRankingIfNeeded(int num_reset_ranking) {
     display_debug_info("GameStats", __FUNCTION__, RED_B);
 
@@ -41,6 +59,7 @@ class GameStats {
     }
   }
 
+
   void feedWinRate(float final_value) {
     display_debug_info("GameStats", __FUNCTION__, RED_B);
 
@@ -48,12 +67,12 @@ class GameStats {
     _win_rate_stats.feed(final_value);
   }
 
-  void feedSgf(const std::string& sgf) {
-    display_debug_info("GameStats", __FUNCTION__, RED_B);
+  // void feedSgf(const std::string& sgf) {
+  //   display_debug_info("GameStats", __FUNCTION__, RED_B);
 
-    std::lock_guard<std::mutex> lock(_mutex);
-    _sgfs.push_back(sgf);
-  }
+  //   std::lock_guard<std::mutex> lock(_mutex);
+  //   _sgfs.push_back(sgf);
+  // }
 
   // For sender.
   WinRateStats getWinRateStats() {
@@ -63,17 +82,17 @@ class GameStats {
     return _win_rate_stats;
   }
 
-  std::vector<std::string> getPlayedGames() {
-    display_debug_info("GameStats", __FUNCTION__, RED_B);
+  // std::vector<std::string> getPlayedGames() {
+  //   display_debug_info("GameStats", __FUNCTION__, RED_B);
     
-    std::lock_guard<std::mutex> lock(_mutex);
-    return _sgfs;
-  }
+  //   std::lock_guard<std::mutex> lock(_mutex);
+  //   return _sgfs;
+  // }
 
  private:
   std::mutex _mutex;
   Ranking _move_ranking;
   WinRateStats _win_rate_stats;
-  std::vector<std::string> _sgfs;
+  // std::vector<std::string> _sgfs;
   std::shared_ptr<spdlog::logger> _logger;
 };

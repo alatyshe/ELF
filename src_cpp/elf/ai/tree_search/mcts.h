@@ -42,8 +42,9 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
       const elf::ai::tree_search::TSOptions& options,
       std::function<Actor*(int)> gen)
       : options_(options),
-        logger_(
-            elf::logging::getLogger("elf::ai::tree_search::MCTSAI_T-", "")) {
+        logger_(elf::logging::getIndexedLogger(
+            "elf::ai::tree_search::MCTSAI_T-",
+            "")) {
     display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
     
     ts_.reset(new TreeSearch(options_, gen));
@@ -63,9 +64,6 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
 
   bool act(const State& s, Action* a) override {
     display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
-    std::cout << "action : " << *a << std::endl;
-    std::cout << "board : " << s.showBoard() << std::endl;
-
 
     align_state(s);
     if (options_.verbose_time) {

@@ -5,6 +5,10 @@
 # LICENSE file in the root directory of this source tree.
 
 # From https://code.activestate.com/recipes/577504/
+
+import inspect
+import os
+
 from __future__ import print_function
 from sys import getsizeof, stderr
 from itertools import chain

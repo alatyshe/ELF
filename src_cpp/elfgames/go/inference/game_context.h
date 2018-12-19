@@ -15,11 +15,10 @@
 #include <memory>
 #include <vector>
 
-#include "../base/board_feature.h"
 #include "../common/dispatcher_callback.h"
 #include "../common/game_selfplay.h"
 #include "../common/record.h"
-#include "../mcts/ai.h"
+#include "../mcts/AI.h"
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
@@ -31,7 +30,7 @@
 //   GameContext(const ContextOptions& contextOptions, const GameOptions& options)
 //       : contextOptions_(contextOptions),
 //         goFeature_(options),
-//         logger_(elf::logging::getLogger("GameContext-", "")) {
+//         logger_(elf::logging::getIndexedLogger("GameContext-", "")) {
 
 //     display_debug_info("GameContext", __FUNCTION__, RED_B);
 
