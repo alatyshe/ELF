@@ -23,8 +23,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'elf'))
 class Evaluator(object):
     @classmethod
     def get_option_spec(cls, name='eval'):
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         spec = PyOptionSpec()
         spec.addStrListOption(
@@ -53,8 +53,8 @@ class Evaluator(object):
             actor_name="actor"):
         """Initialization for Evaluator."""
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         import_options(self, option_map, self.get_option_spec(name))
 
@@ -77,8 +77,8 @@ class Evaluator(object):
             i(int): index in the minibatch
         '''
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.actor_count = 0
 
@@ -101,8 +101,8 @@ class Evaluator(object):
                 signatured by step
         """
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         if self.verbose:
             print("In Evaluator[%s]::actor" % self.name)
@@ -137,8 +137,8 @@ class Evaluator(object):
             i(int): index in the minibatch
         '''
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         print(
             "[%s] actor count: %d/%d" %
@@ -159,8 +159,8 @@ class Evaluator(object):
             sample(`Sampler`)
         '''
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.mi = mi
         self.sampler = sampler
@@ -214,8 +214,8 @@ class Trainer(object):
             'batch size',
             128)
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         spec.merge(Evaluator.get_option_spec('trainer'))
         spec.merge(ModelSaver.get_option_spec())
@@ -226,8 +226,8 @@ class Trainer(object):
     def __init__(self, option_map, verbose=False, actor_name="actor"):
         """Initialization for Trainer."""
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.timer = RLTimer()
         self.verbose = verbose
@@ -259,8 +259,8 @@ class Trainer(object):
                 `rv`: reply version, signatured by step
         """
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.counter.inc("actor")
         return self.evaluator.actor(batch)
@@ -273,8 +273,8 @@ class Trainer(object):
             batch(dict): batch data
         '''
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         mi = self.evaluator.mi
 
@@ -301,8 +301,8 @@ class Trainer(object):
     def episode_reset(self):
         ''' Reset stats '''
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.counter.reset()
         self.timer.restart()
@@ -314,8 +314,8 @@ class Trainer(object):
             i(int): index in the minibatch
         '''
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.evaluator.episode_start(i)
 
@@ -328,8 +328,8 @@ class Trainer(object):
             i(int): index in the minibatch
         """
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         prefix = "[%s][%d] Iter" % (
             str(datetime.now()), self.options.batchsize) + "[%d]: " % i
@@ -357,8 +357,8 @@ class Trainer(object):
             sample(`Sampler`)
         '''
 
-        print("\x1b[1;33;40m|py|", "Evaluator::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.rl_method = rl_method
         self.evaluator.setup(mi=mi, sampler=sampler)

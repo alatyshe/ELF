@@ -36,7 +36,7 @@ class GameContext {
 
   GameContext(const ContextOptions& contextOptions, const GameOptions& options)
       : goFeature_(options),
-        logger_(elf::logging::getLogger("elfgames::go::GameContext-", "")) {
+        logger_(elf::logging::getIndexedLogger("elfgames::go::GameContext-", "")) {
     display_debug_info("GameContext", __FUNCTION__, RED_B);
 
     context_.reset(new elf::Context);

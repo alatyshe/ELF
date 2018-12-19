@@ -27,8 +27,8 @@ class Stats(object):
         self.actor_count = 0
 
     def feed(self, batch):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.total_sel_batchsize += batch.batchsize
         self.total_batchsize += batch.max_batchsize
@@ -58,8 +58,8 @@ name_matcher = re.compile(r"save-(\d+)")
 
 
 def extract_ver(model_loader):
-    print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     name = os.path.basename(model_loader.options.load)
     m = name_matcher.match(name)
@@ -67,8 +67,8 @@ def extract_ver(model_loader):
 
 
 def reload_model(model_loader, params, mi, actor_name, args):
-    print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     model = model_loader.load_model(params)
 
@@ -80,8 +80,8 @@ def reload_model(model_loader, params, mi, actor_name, args):
 
 
 def reload(mi, model_loader, params, args, root, ver, actor_name):
-    print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     if model_loader.options.load is None or model_loader.options.load == "":
         print('No previous model loaded, loading from', root)
@@ -136,8 +136,8 @@ def main():
         e.setup(sampler=env["sampler"], mi=env["mi_" + actor_name])
 
         def actor(batch, e, stat):
-            print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
-            print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+            # print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
+            # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
             reply = e.actor(batch)
             stat.feed(batch)
@@ -152,8 +152,8 @@ def main():
     loop_end = False
 
     def game_start(batch):
-        print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
         print("In game start")
 
         vers = [int(batch["black_ver"][0]), int(batch["white_ver"][0])]
@@ -174,8 +174,8 @@ def main():
                         time.sleep(10)
 
     def game_end(batch):
-        print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|", "main selfplay.py::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
         print("batch : ", batch.batch)
 
         nonlocal loop_end

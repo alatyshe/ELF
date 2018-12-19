@@ -23,7 +23,7 @@ GoGameSelfPlay::GoGameSelfPlay(
       dispatcher_(dispatcher),
       notifier_(notifier),
       _state_ext(game_idx, options),
-      logger_(elf::logging::getLogger(
+      logger_(elf::logging::getIndexedLogger(
           "elfgames::go::GoGameSelfPlay-" + std::to_string(game_idx) + "-",
           "")) {
     display_debug_info("GoGameSelfPlay", __FUNCTION__, RED_B);
@@ -383,16 +383,13 @@ void GoGameSelfPlay::act() {
   MCTSGoAI* curr_ai =
       ((_ai2 != nullptr && player == S_WHITE) ? _ai2.get() : _ai.get());
 
-  // if (use_policy_network_only) {
+  if (use_policy_network_only) {
     // Then we only use policy network to move.
     curr_ai->actPolicyOnly(s, &c);
-  // } else {
-
-  //   std::cout << "curr_ai->act(s, &c);" << std::endl;
-    
-  //   curr_ai->act(s, &c);
-  //   c = mcts_make_diverse_move(curr_ai, c);
-  // }
+  } else {    
+    curr_ai->act(s, &c);
+    c = mcts_make_diverse_move(curr_ai, c);
+  }
 
 
 
@@ -401,10 +398,11 @@ void GoGameSelfPlay::act() {
 
   if (show_board) {
     logger_->info(
-        "Current board:\n{}\n[{}] Propose move {}\n",
+        "Current board:\n{}\n[{}] Propose move {} or {}\n",
         s.showBoard(),
         s.getPly(),
-        elf::ai::tree_search::ActionTrait<Coord>::to_string(c));
+        elf::ai::tree_search::ActionTrait<Coord>::to_string(c),
+        c);
   }
   if (!_state_ext.forward(c)) {
     logger_->error(

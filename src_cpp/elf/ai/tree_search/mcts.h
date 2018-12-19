@@ -43,7 +43,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
       std::function<Actor*(int)> gen)
       : options_(options),
         logger_(
-            elf::logging::getLogger("elf::ai::tree_search::MCTSAI_T-", "")) {
+            elf::logging::getIndexedLogger("elf::ai::tree_search::MCTSAI_T-", "")) {
     display_debug_info("MCTSAI_T", __FUNCTION__, GREEN_B);
     
     ts_.reset(new TreeSearch(options_, gen));

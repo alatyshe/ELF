@@ -103,7 +103,7 @@ class SegmentedRecv {
   SegmentedRecv(zmq::socket_t& socket)
       : socket_(socket),
         logger_(
-            elf::logging::getLogger("elf::distributed::SegmentedRecv-", "")) {
+            elf::logging::getIndexedLogger("elf::distributed::SegmentedRecv-", "")) {
     display_debug_info("SegmentedRecv", __FUNCTION__, GREEN_B);
   }
 
@@ -218,7 +218,7 @@ class SegmentedRecv {
 class SameThreadChecker {
  public:
   SameThreadChecker()
-      : logger_(elf::logging::getLogger(
+      : logger_(elf::logging::getIndexedLogger(
             "elf::distributed::SameThreadChecker-",
             "")) {
     display_debug_info("SameThreadChecker", __FUNCTION__, GREEN_B);
@@ -262,7 +262,7 @@ class ZMQReceiver : public SameThreadChecker {
  public:
   ZMQReceiver(int port, bool use_ipv6)
       : context_(1),
-        logger_(elf::logging::getLogger("elf::distributed::ZMQReceiver-", "")) {
+        logger_(elf::logging::getIndexedLogger("elf::distributed::ZMQReceiver-", "")) {
     display_debug_info("ZMQReceiver", __FUNCTION__, GREEN_B);
 
     broker_.reset(new zmq::socket_t(context_, ZMQ_ROUTER));
@@ -352,7 +352,7 @@ class ZMQSender : public SameThreadChecker {
       int port,
       bool use_ipv6)
       : context_(1),
-        logger_(elf::logging::getLogger("elf::distributed::ZMQSender-", "")) {
+        logger_(elf::logging::getIndexedLogger("elf::distributed::ZMQSender-", "")) {
     display_debug_info("ZMQSender", __FUNCTION__, GREEN_B);
 
     sender_.reset(new zmq::socket_t(context_, ZMQ_DEALER));

@@ -33,7 +33,7 @@ class SingleProcessRun(object):
             'toggle tqdm visualization',
             False)
 
-        print("\x1b[1;32;40mSingleProcessRun.get_option_spec    \x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
         return spec
 
@@ -41,8 +41,8 @@ class SingleProcessRun(object):
     def __init__(self, option_map):
         """Initialization for SingleProcessRun."""
 
-        print("\x1b[1;33;40m|py|", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         pass
 
@@ -58,8 +58,8 @@ class SingleProcessRun(object):
                                before the main loop.
         '''
 
-        print("\x1b[1;33;40m|py|", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.GC = GC
         self.episode_summary = episode_summary
@@ -81,8 +81,8 @@ class SingleProcessRun(object):
         In the end, print summary for game context and stop it.
         """
 
-        print("\x1b[1;33;40m|py|", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.GC.start()
         if self.after_start is not None:
@@ -133,15 +133,15 @@ class SingleProcessRun(object):
 
     def set_episode_counter(self, counter):
 
-        print("\x1b[1;33;40m|py|", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.episode_counter = counter
 
     def inc_episode_counter(self, delta):
 
-        print("\x1b[1;33;40m|py|", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.episode_counter += delta
 
@@ -149,12 +149,12 @@ class SingleProcessRun(object):
         ''' Start training in a multithreaded environment '''
 
 
-        print("\x1b[1;33;40m|py|", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         def train_thread():
-            print("\x1b[1;33;40m|py|", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-            print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+            print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+            # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
             for i in range(self.options.num_episode):
                 for k in range(self.options.num_minibatch):
@@ -172,8 +172,8 @@ class SingleProcessRun(object):
                 self.episode_summary(i)
 
         def actor_thread():
-            print("\x1b[1;33;40m|py|", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-            print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+            print("\x1b[1;33;40m|py|\x1b[0m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+            # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
             while True:
                 self.GC.runGroup("actor")

@@ -4,6 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
 import os
 
 import torch
@@ -287,6 +288,8 @@ class Model_PolicyValue(Model):
                   "(for cooldown = 50) in this case")
 
     def forward(self, x):
+        # print("FORWARD")
+        
         s = self._var(x["s"])
 
         s = self.init_conv(s)
@@ -304,6 +307,11 @@ class Model_PolicyValue(Model):
         V = self.value_linear2(V)
         V = self.tanh(V)
 
+        # print("x.shape : ", x["s"].shape)
+        # print("s : ", s.shape)
+        # print("V : ", V.shape)
+        # print("V : ", V)
+        # print()
         return dict(logpi=logpi, pi=pi, V=V)
 
 

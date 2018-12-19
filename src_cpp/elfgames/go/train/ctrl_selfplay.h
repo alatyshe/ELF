@@ -27,7 +27,7 @@ struct SelfPlayRecord {
   SelfPlayRecord(int ver, const GameOptions& options)
       : ver_(ver),
         options_(options),
-        logger_(elf::logging::getLogger(
+        logger_(elf::logging::getIndexedLogger(
             "elfgames::go::train::SelfPlayRecord-",
             "")) {
     display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
@@ -190,7 +190,7 @@ class SelfPlaySubCtrl {
       : options_(options),
         mcts_options_(mcts_options),
         curr_ver_(-1),
-        logger_(elf::logging::getLogger(
+        logger_(elf::logging::getIndexedLogger(
             "elfgames::go::train::SelfPlaySubCtrl-",
             "")) {
     display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);

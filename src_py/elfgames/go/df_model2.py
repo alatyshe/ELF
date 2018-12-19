@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 import torch.nn as nn
 
 from elf.options import auto_import_options, PyOptionSpec

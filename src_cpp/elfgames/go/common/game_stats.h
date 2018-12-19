@@ -22,7 +22,7 @@ class GameStats {
  public:
   GameStats()
       : _logger(
-            elf::logging::getLogger("elfgames::go::common::GameStats-", "")) {}
+            elf::logging::getIndexedLogger("elfgames::go::common::GameStats-", "")) {}
 
   void feedMoveRanking(int ranking) {
     display_debug_info("GameStats", __FUNCTION__, RED_B);

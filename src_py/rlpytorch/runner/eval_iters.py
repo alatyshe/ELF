@@ -30,14 +30,14 @@ class EvalItersBasic(object):
         self.count = 0
 
     def add_count(self):
-        print("\x1b[1;33;40m|py|", "EvalItersBasic::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "EvalItersBasic::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.count += 1
 
     def update_count(self, n):
-        print("\x1b[1;33;40m|py|", "EvalItersBasic::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "EvalItersBasic::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.count = n
 
@@ -47,8 +47,8 @@ class EvalItersBasic(object):
             if use ``tqdm``, also visualize the progress bar.
             Print stats summary in the end.
         '''
-        print("\x1b[1;33;40m|py|", "EvalItersBasic::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "EvalItersBasic::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         if self.options.tqdm:
             import tqdm
@@ -85,8 +85,8 @@ class EvalIters(object):
         self.eval_iter_basic = EvalItersBasic(option_map)
 
     def _on_get_args(self, _):
-        print("\x1b[1;33;40m|py|", "EvalIters::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "EvalIters::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.stats.reset()
 
@@ -96,8 +96,8 @@ class EvalIters(object):
             if use ``tqdm``, also visualize the progress bar.
             Print stats summary in the end.
         '''
-        print("\x1b[1;33;40m|py|", "EvalIters::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "EvalIters::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         if self.options.tqdm:
             import tqdm

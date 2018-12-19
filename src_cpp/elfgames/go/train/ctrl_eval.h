@@ -34,7 +34,7 @@ class ModelPerf {
       : options_(options),
         curr_pair_(p),
         logger_(
-            elf::logging::getLogger("elfgames::go::train::ModelPerf-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::train::ModelPerf-", "")) {
     display_debug_info("ModelPerf", __FUNCTION__, RED_B);
 
     const size_t cushion = 5;
@@ -274,7 +274,7 @@ class EvalSubCtrl {
   EvalSubCtrl(const GameOptions& options, const TSOptions& mcts_options)
       : options_(options),
         logger_(
-            elf::logging::getLogger("elfgames::go::train::EvalSubCtrl-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::train::EvalSubCtrl-", "")) {
     display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
 
     // [TODO]: A bit hacky, we need to have a better way for this.

@@ -20,8 +20,8 @@ def uniform_multinomial(batchsize, num_action, use_cuda=True):
         use_cuda(bool): indicates if tensor is put on cuda
     '''
     # [TODO] Make the type more friendly
-    print("\x1b[1;33;40m|py|", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|\x1b[0m", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     if use_cuda:
         uniform_p = torch.cuda.FloatTensor(num_action).fill_(1.0 / num_action)
@@ -39,8 +39,8 @@ def sample_with_check(probs, greedy=False):
         greedy(bool): if ``True``, pick the action with maximum probability,
         otherwise sample from it.
     """
-    print("\x1b[1;33;40m|py|", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|\x1b[0m", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     num_action = probs.size(1)
     if greedy:
@@ -78,8 +78,8 @@ def sample_eps_with_check(probs, epsilon, greedy=False):
         greedy(bool): if ``True``, pick the action with maximum probability,
                       otherwise sample from it.
     """
-    print("\x1b[1;33;40m|py|", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|\x1b[0m", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     # actions = self.sample_policy(state_curr[self.sample_node].data, args)
     actions = sample_with_check(probs, greedy=greedy)
@@ -115,8 +115,8 @@ def sample_multinomial(state_curr, args, node="pi", greedy=False):
     Returns:
         A list of actions using multinomial sampling.
     '''
-    print("\x1b[1;33;40m|py|", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|\x1b[0m", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     if isinstance(state_curr[node], list):
         # Action map
@@ -150,8 +150,8 @@ def epsilon_greedy(state_curr, args, node="pi"):
     Returns:
         A list of actions using epsilon greedy sampling.
     '''
-    print("\x1b[1;33;40m|py|", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|\x1b[0m", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     return sample_multinomial(state_curr, args, node=node, greedy=True)
 
@@ -167,8 +167,8 @@ def original_distribution(state_curr, args, node="pi"):
     Returns:
         A list of original probabilities.
     '''
-    print("\x1b[1;33;40m|py|", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
-    print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\x1b[1;33;40m|py|\x1b[0m", "sample_methods.py ::", inspect.currentframe().f_code.co_name)
+    # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
     probs = state_curr[node].data
     batchsize = probs.size(0)

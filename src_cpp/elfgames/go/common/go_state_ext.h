@@ -41,7 +41,7 @@ struct GoStateExt {
         _last_value(0.0),
         _options(options),
         _logger(
-            elf::logging::getLogger("elfgames::go::common::GoStateExt-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::common::GoStateExt-", "")) {
     display_debug_info("GoStateExt", __FUNCTION__, RED_B);
 
     restart();
@@ -143,13 +143,31 @@ struct GoStateExt {
     r.request = curr_request_;
 
     r.result.reward = _state.getFinalValue();
+
     r.result.content = coords2sgfstr(_state.getAllMoves());
+    std::vector<Coord> _moves = _state.getAllMoves();
+    
+
+
     r.result.using_models =
         std::vector<int64_t>(using_models_.begin(), using_models_.end());
     r.result.policies = _mcts_policies;
     r.result.num_move = _state.getPly() - 1;
     r.result.values = _predicted_values;
 
+
+    // std::cout << "GoStateExtOffline : switchBeforeMove!!!!!!!!!!!" << std::endl;
+    // std::cout << "dumpRecorddumpRecorddumpRecorddumpRecorddumpRecorddumpRecord" << std::endl;
+    // std::cout << "dumpRecorddumpRecorddumpRecorddumpRecorddumpRecorddumpRecord" << std::endl;
+    // std::cout << r.result.content << std::endl;
+    // std::cout << "movesmovesmovesmovesmovesmovesmovesmovesmovesmovesmovesmoves" << std::endl;
+    // for (const Coord& c : _moves) {
+    //   std::cout << "[" << c << "] ";
+    // }
+    // std::cout << std::endl;
+    // std::cout << r.info() << std::endl << std::endl;
+    // std::cout << "=======================================" << std::endl;
+    // std::cout << "=======================================" << std::endl;
     return r;
   }
 
@@ -164,6 +182,7 @@ struct GoStateExt {
     s.white = curr_request_.vers.white_ver;
     return s;
   }
+
   void saveCurrentTree(const std::string& tree_info) const {
     display_debug_info("GoStateExt", __FUNCTION__, RED_B);
 
@@ -293,6 +312,9 @@ struct GoStateExt {
 
 
 
+
+
+
 class GoStateExtOffline {
  public:
   friend class GoFeature;
@@ -301,7 +323,7 @@ class GoStateExtOffline {
       : _game_idx(game_idx),
         _bf(_state),
         _options(options),
-        _logger(elf::logging::getLogger(
+        _logger(elf::logging::getIndexedLogger(
             "elfgames::go::common::GoStateExtOffline-",
             "")) {
     display_debug_info("GoStateExtOffline", __FUNCTION__, RED_B);
@@ -318,6 +340,20 @@ class GoStateExtOffline {
     _seq = r.seq;
     _predicted_values = r.result.values;
     _state.reset();
+
+    // std::cout << "GoStateExtOffline : switchBeforeMove!!!!!!!!!!!" << std::endl;
+    // std::cout << r.result.content << std::endl;
+    // std::cout << "movesmovesmovesmovesmovesmovesmovesmovesmovesmovesmovesmoves" << std::endl;
+    // for (const Coord& c : _offline_all_moves) {
+    //   std::cout << "[" << c << "] ";
+    // }
+    // std::cout << std::endl;
+    // std::cout << "dumpRecorddumpRecorddumpRecorddumpRecorddumpRecorddumpRecord" << std::endl;
+    // std::cout << "dumpRecorddumpRecorddumpRecorddumpRecorddumpRecorddumpRecord" << std::endl;
+    // std::cout << r.info() << std::endl << std::endl;
+    // std::cout << "=======================================" << std::endl;
+    // std::cout << "=======================================" << std::endl;
+
   }
 
   bool switchRandomMove(std::mt19937* rng) {
@@ -348,6 +384,15 @@ class GoStateExtOffline {
     assert(move_to < _offline_all_moves.size());
 
     _state.reset();
+
+    // std::cout << "GoStateExtOffline : switchBeforeMove!!!!!!!!!!!" << std::endl;
+    // for (const Coord& c : _offline_all_moves) {
+    //   std::cout << "[" << c << "] ";
+    // }
+    // std::cout << std::endl;
+    // std::cout << "=======================================" << std::endl;
+    // std::cout << "=======================================" << std::endl;
+
     for (size_t i = 0; i < move_to; ++i) {
       _state.forward(_offline_all_moves[i]);
     }

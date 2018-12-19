@@ -25,7 +25,7 @@ class Server {
       elf::GameClient* client)
       : contextOptions_(contextOptions),
         options_(options),
-        logger_(elf::logging::getLogger("Server-", "")) {
+        logger_(elf::logging::getIndexedLogger("Server-", "")) {
     display_debug_info("Server", __FUNCTION__, RED_B);
 
     auto netOptions = getNetOptions(contextOptions_, options_);

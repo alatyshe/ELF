@@ -131,7 +131,7 @@ void GoStateExt::showFinishInfo(FinishReason reason) const {
       break;
   }
   _logger->info(
-      "Value: {}, Predicted: {}, ResCheck: {}",
+      "Value: {}, Predicted: {}", //ResCheck: {}",
       _state.getFinalValue(),
       getLastPredictedValue());
       // _resign_check.info());

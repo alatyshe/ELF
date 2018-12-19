@@ -86,7 +86,7 @@ class TreeSearchSingleThreadT {
   TreeSearchSingleThreadT(int thread_id, const TSOptions& options)
       : threadId_(thread_id),
         options_(options),
-        logger_(elf::logging::getLogger(
+        logger_(elf::logging::getIndexedLogger(
             "elf::ai::tree_search::TreeSearchSingleThreadT-",
             "")) {
     display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
@@ -398,7 +398,7 @@ class TreeSearchT {
       : options_(options),
         stopSearch_(false),
         logger_(
-            elf::logging::getLogger("elf::ai::tree_search::TreeSearchT-", "")) {
+            elf::logging::getIndexedLogger("elf::ai::tree_search::TreeSearchT-", "")) {
 
     display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
 

@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 from elf.options import auto_import_options, PyOptionSpec
 
 
@@ -24,8 +26,8 @@ class DiscountedReward(object):
 
     def setR(self, R, stats):
         """Set rewards and feed to stats."""
-        print("\x1b[1;33;40m|py|", "DiscountedReward::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "DiscountedReward::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.R = R
         stats["init_reward"].feed(R.mean())
@@ -41,8 +43,8 @@ class DiscountedReward(object):
 
         Feed to stats: immediate reward and accumulated reward
         """
-        print("\x1b[1;33;40m|py|", "DiscountedReward::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "DiscountedReward::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
         
         r = batch["r"]
         term = batch["terminal"]

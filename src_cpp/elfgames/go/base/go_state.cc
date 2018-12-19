@@ -127,6 +127,8 @@ void GoState::_add_board_hash(const Coord& c) {
     return;
 
   uint64_t key = _board._hash;
+  // std::cout << "_board._hash : " << _board._hash << std::endl;
+  
   auto& r = _board_hash[key];
   r.emplace_back();
   copyBits(r.back().bits, _board._bits);

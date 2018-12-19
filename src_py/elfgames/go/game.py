@@ -254,15 +254,15 @@ class Loader(object):
     @auto_import_options
     def __init__(self, option_map):
         
-        print("\x1b[1;32;40mLoader.init    \x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Loader::", inspect.currentframe().f_code.co_name)
 
         self.context_args = ContextArgs(option_map)
         self.more_labels = MoreLabels(option_map)
 
     def _set_params(self):
         
-        print("\x1b[1;33;40m|py|", "Loader::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Loader::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         co = go.ContextOptions()
         self.context_args.initialize(co)
@@ -349,8 +349,8 @@ class Loader(object):
 
     def initialize(self):
 
-        print("\x1b[1;33;40m|py|", "Loader::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Loader::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
         
         print("\t\x1b[1;33;40mself.options.mode == ", self.options.mode, "\x1b[0m\n\n")
 

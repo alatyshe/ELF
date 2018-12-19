@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <bitset>
 #include <deque>
 #include <queue>
 #include <sstream>
@@ -210,6 +211,8 @@ class GoState {
 
   uint64_t getHashCode() const {
     display_debug_info("GoState", __FUNCTION__, RED_B);
+    // std::cout << "board._hash\t\t: " << _board._hash << std::endl;
+    // std::cout << "board._hash binary\t: " << std::bitset<64>(_board._hash) << std::endl;
     return _board._hash;
   }
 

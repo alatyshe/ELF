@@ -73,8 +73,8 @@ class LSTMTrainer(object):
         pass
 
     def actor(self, batch):
-        print("\x1b[1;33;40m|py|", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.counter.inc("actor")
 
@@ -100,8 +100,8 @@ class LSTMTrainer(object):
         return reply_msg
 
     def train(self, batch):
-        print("\x1b[1;33;40m|py|", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.counter.inc("train")
         mi = self.mi
@@ -119,8 +119,8 @@ class LSTMTrainer(object):
             mi.update_model("actor", mi["model"])
 
     def episode_summary(self, i):
-        print("\x1b[1;33;40m|py|", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         prefix = "[%s][%d] Iter" % (
             str(datetime.now()), self.options.batchsize) + "[%d]: " % i
@@ -138,8 +138,8 @@ class LSTMTrainer(object):
             self.stats.reset()
 
     def setup(self, rl_method=None, mi=None, sampler=None):
-        print("\x1b[1;33;40m|py|", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "LSTMTrainer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.rl_method = rl_method
         self.mi = mi

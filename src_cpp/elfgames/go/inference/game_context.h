@@ -31,7 +31,7 @@
 //   GameContext(const ContextOptions& contextOptions, const GameOptions& options)
 //       : contextOptions_(contextOptions),
 //         goFeature_(options),
-//         logger_(elf::logging::getLogger("GameContext-", "")) {
+//         logger_(elf::logging::getIndexedLogger("GameContext-", "")) {
 
 //     display_debug_info("GameContext", __FUNCTION__, RED_B);
 

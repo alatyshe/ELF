@@ -260,7 +260,7 @@ class Context {
  public:
   using GameCallback = std::function<void(int game_idx, GameClient*)>;
 
-  Context() : logger_(elf::logging::getLogger("elf::base::Context-", "")) {
+  Context() : logger_(elf::logging::getIndexedLogger("elf::base::Context-", "")) {
 
     display_debug_info("Context", __FUNCTION__, GREEN_B);
 

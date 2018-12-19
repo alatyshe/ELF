@@ -14,16 +14,12 @@ from elf.options import auto_import_options, PyOptionSpec
 from rlpytorch.trainer.timer import RLTimer
 
 
-_logger_factory = logging.IndexedLoggerFactory(
-    lambda name: logging.stderr_color_mt(name))
-
-
 class MCTSPrediction(object):
     @classmethod
     def get_option_spec(cls):
         
-        print("\x1b[1;33;40m|py|", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         spec = PyOptionSpec()
         spec.addBoolOption(
@@ -35,20 +31,20 @@ class MCTSPrediction(object):
     @auto_import_options
     def __init__(self, option_map):
         
-        print("\x1b[1;33;40m|py|", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.policy_loss = nn.KLDivLoss().cuda()
         self.value_loss = nn.MSELoss().cuda()
-        self.logger = _logger_factory.makeLogger(
+        self.logger = logging.getIndexedLogger(
             'elfgames.go.MCTSPrediction-', '')
         self.timer = RLTimer()
 
     def update(self, mi, batch, stats, use_cooldown=False, cooldown_count=0):
         ''' Update given batch '''
         
-        print("\x1b[1;33;40m|py|", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.timer.restart()
         if use_cooldown:
@@ -82,7 +78,45 @@ class MCTSPrediction(object):
             batch["winner"].size(0))
 
         total_value_loss = None
+
+
+
+
+
+
+
+
+
+
+
+
+        # print("state_curr keys : ", state_curr.keys())
+        print("state_curr[V] : ", state_curr["V"])
+        print("batch[winner] : ", batch["winner"])
+        print("\n\n")
+        print("state_curr[V] : ", state_curr["V"].shape)
+        print("batch[winner] : ", batch["winner"].shape)
+        print("\n\n")
+        print("state_curr[V].squeeze() : ", state_curr["V"].squeeze())
+        print("Variable(batch[winner]) : ", Variable(batch["winner"]))
+        print("===================================================")
+        print("===================================================")
+
+
+
+
+
+
+
+
+
+
+
+
+
         if "V" in state_curr and "winner" in batch:
+            print("YESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYES")
+            print("YESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYESYES\n\n")
             total_value_loss = self.value_loss(
                 state_curr["V"].squeeze(), Variable(batch["winner"]))
 

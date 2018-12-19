@@ -10,15 +10,15 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-double __attribute__((noinline)) wallclock(void) {
-  struct timeval t;
-  gettimeofday(&t, NULL);
-  return (1.0e-6 * t.tv_usec + t.tv_sec);
-}
+// double __attribute__((noinline)) wallclock(void) {
+//   struct timeval t;
+//   gettimeofday(&t, NULL);
+//   return (1.0e-6 * t.tv_usec + t.tv_sec);
+// }
 
-uint64_t __attribute__((noinline)) wallclock64() {
-  return (uint64_t)(wallclock() * 1e6);
-}
+// uint64_t __attribute__((noinline)) wallclock64() {
+//   return (uint64_t)(wallclock() * 1e6);
+// }
 
 void dbg_printf(const char* format, ...) {
   (void)(format);

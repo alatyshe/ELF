@@ -4,6 +4,8 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import inspect
+import os
 import torch.nn as nn
 from torch.autograd import Variable
 
@@ -16,7 +18,7 @@ class MultiplePrediction:
     @classmethod
     def get_option_spec(cls):
 
-        print("\x1b[1;32;40mMultiplePrediction.get_option_spec    \x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "MultiplePrediction::", inspect.currentframe().f_code.co_name)
 
         spec = PyOptionSpec()
         spec.addBoolOption(
@@ -28,7 +30,7 @@ class MultiplePrediction:
     @auto_import_options
     def __init__(self, option_map):
         
-        print("\x1b[1;32;40mMultiplePrediction.init    \x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "MultiplePrediction::", inspect.currentframe().f_code.co_name)
 
         self.policy_loss = nn.NLLLoss().cuda()
         self.value_loss = nn.MSELoss().cuda()
@@ -37,12 +39,15 @@ class MultiplePrediction:
         ''' Update given batch '''
         # Current timestep.
         
-        print("\x1b[1;32;40mMultiplePrediction.update    \x1b[0m")
+        print("\x1b[1;33;40m|py|\x1b[0m", "MultiplePrediction::", inspect.currentframe().f_code.co_name)
 
         state_curr = mi["model"](batch)
         total_policy_loss = None
         eps = 1e-6
         targets = batch["offline_a"]
+
+        print("|PY| targets : ", targets)
+        
         if "pis" not in state_curr:
             state_curr["pis"] = [state_curr["pi"]]
 

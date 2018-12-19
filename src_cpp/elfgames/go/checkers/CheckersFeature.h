@@ -82,7 +82,7 @@ class CheckersFeature {
   CheckersFeature(const CheckersState& s) 
       : s_(s),
       logger_(
-          elf::logging::getLogger("elfgames::go::base::CheckersFeature-", ""))
+          elf::logging::getIndexedLogger("elfgames::go::base::CheckersFeature-", ""))
       {
     display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
   }

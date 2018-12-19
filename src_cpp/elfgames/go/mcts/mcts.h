@@ -60,7 +60,7 @@ class MCTSActor {
   MCTSActor(elf::GameClient* client, const MCTSActorParams& params)
       : params_(params),
         rng_(params.seed),
-        logger_(elf::logging::getLogger("elfgames::go::mcts::MCTSActor-", "")) {
+        logger_(elf::logging::getIndexedLogger("elfgames::go::mcts::MCTSActor-", "")) {
     display_debug_info("MCTSActor", __FUNCTION__, RED_B);
 
     ai_.reset(new AI(client, {params_.actor_name}));

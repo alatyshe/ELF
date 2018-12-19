@@ -27,7 +27,7 @@ class GoGameBase {
         _options(options),
         _context_options(context_options),
         _logger(
-            elf::logging::getLogger("elfgames::go::common::GoGameBase-", "")) {
+            elf::logging::getIndexedLogger("elfgames::go::common::GoGameBase-", "")) {
     display_debug_info("GoGameBase", __FUNCTION__, RED_B);
 
     if (options.seed == 0) {

@@ -49,8 +49,8 @@ class Sampler(object):
         """
         # TODO: This only handles epsilon_greedy and multinomial for now. Add
         # uniform and original_distribution?
-        print("\x1b[1;33;40m|py|", "Sampler::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Sampler::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         sampler = (epsilon_greedy
                    if self.options.store_greedy

@@ -6,6 +6,8 @@
 
 # From https://code.activestate.com/recipes/577504/
 from __future__ import print_function
+import inspect
+import os
 from sys import getsizeof, stderr
 from itertools import chain
 from collections import deque

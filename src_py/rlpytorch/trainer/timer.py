@@ -20,16 +20,16 @@ class RLTimer:
         self.restart()
 
     def restart(self):
-        print("\x1b[1;33;40m|py|", "RLTimer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RLTimer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.start_time = time.time()
         self.curr_time = datetime.now()
         self.durations = defaultdict(lambda: dict(duration=0, counter=0))
 
     def record(self, name):
-        print("\x1b[1;33;40m|py|", "RLTimer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RLTimer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         curr_time = datetime.now()
         self.durations[name]["duration"] += (curr_time -
@@ -39,8 +39,8 @@ class RLTimer:
         self.curr_time = curr_time
 
     def print(self, nstep):
-        print("\x1b[1;33;40m|py|", "RLTimer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RLTimer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         final_time = time.time()
         total_duration = (final_time - self.start_time) * 1000.0 / nstep
@@ -54,8 +54,8 @@ class RLTimer:
         return "Total: %.3f ms. " % total_duration + s
 
     def printInterval(self, name, nstep, callback):
-        print("\x1b[1;33;40m|py|", "RLTimer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RLTimer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         if self.checkPeriodicCondition(name, nstep):
             callback(self)
@@ -63,21 +63,21 @@ class RLTimer:
             self.updatePeriodicCondition(name)
 
     def checkPeriodicCondition(self, name, nstep):
-        print("\x1b[1;33;40m|py|", "RLTimer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RLTimer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         curr_count = self.overall_counts[name]
         last_count = self.last_overall_mark[name]
         return curr_count > last_count and curr_count % nstep == 0
 
     def updatePeriodicCondition(self, name):
-        print("\x1b[1;33;40m|py|", "RLTimer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RLTimer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.last_overall_mark[name] = self.overall_counts[name]
 
     def getPeriodicValue(self, name):
-        print("\x1b[1;33;40m|py|", "RLTimer::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RLTimer::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         return self.overall_counts[name]

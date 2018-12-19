@@ -354,7 +354,7 @@ class CommT : public CommInternalT<
         : CommInternal::Client(pp),
           pp_(pp),
           rng_(time(NULL)),
-          logger_(elf::logging::getLogger("elf::comm::Client-", "")) {
+          logger_(elf::logging::getIndexedLogger("elf::comm::Client-", "")) {
       display_debug_info("CommT->Client", __FUNCTION__, GREEN_B);
     }
 

@@ -20,8 +20,6 @@
 
 // Load the remaining part.
 inline Coord str2coord(const std::string& s) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
   if (s.size() < 2)
     return M_PASS;
   size_t i = 0;
@@ -47,8 +45,6 @@ inline Coord str2coord(const std::string& s) {
 }
 
 inline std::string coord2str(Coord c) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
   if (c == M_PASS)
     return "";
   int x = X(c);
@@ -60,8 +56,6 @@ inline std::string coord2str(Coord c) {
 }
 
 inline std::string player2str(Stone player) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
   switch (player) {
     case S_WHITE:
       return "W";
@@ -77,8 +71,6 @@ inline std::string player2str(Stone player) {
 }
 
 inline std::string coord2str2(Coord c) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
   if (c == M_PASS)
     return "PASS";
   int x = X(c);
@@ -91,8 +83,6 @@ inline std::string coord2str2(Coord c) {
 }
 
 inline std::string coords2sgfstr(const std::vector<Coord>& moves) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
   std::string sgf = "(";
   for (size_t i = 0; i < moves.size(); i++) {
     std::string color = i % 2 == 0 ? "B" : "W";
@@ -103,8 +93,6 @@ inline std::string coords2sgfstr(const std::vector<Coord>& moves) {
 }
 
 inline std::vector<Coord> sgfstr2coords(const std::string& sgf) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-  
   std::vector<Coord> moves;
   if (sgf.empty() || sgf[0] != '(')
     return moves;
@@ -132,3 +120,15 @@ inline std::vector<Coord> sgfstr2coords(const std::string& sgf) {
 
   return moves;
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -68,7 +68,7 @@ class Writer {
   Writer(const Options& opt)
       : rng_(time(NULL)),
         options_(opt),
-        logger_(elf::logging::getLogger("elf::distributed::Writer-", "")) {
+        logger_(elf::logging::getIndexedLogger("elf::distributed::Writer-", "")) {
     display_debug_info("Writer", __FUNCTION__, GREEN_B);
 
     identity_ = options_.identity + "-" + get_id(rng_);
@@ -184,7 +184,7 @@ class Reader {
         db_name_(filename),
         rng_(time(NULL)),
         done_(false),
-        logger_(elf::logging::getLogger("elf::distributed::Reader-", "")) {
+        logger_(elf::logging::getIndexedLogger("elf::distributed::Reader-", "")) {
     display_debug_info("Reader", __FUNCTION__, GREEN_B);
   }
 

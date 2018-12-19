@@ -219,7 +219,7 @@ class ReaderQueuesT {
       : min_size_satisfied_(false),
         parity_sizes_(2, 0),
         logger_(
-            elf::logging::getLogger("elf::distributed::ReaderQueuesT-", "")) {
+            elf::logging::getIndexedLogger("elf::distributed::ReaderQueuesT-", "")) {
 
     display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
     // Make sure this is an even number.

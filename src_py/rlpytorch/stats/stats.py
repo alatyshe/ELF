@@ -14,8 +14,8 @@ class EvalCount(object):
 
     def __init__(self):
         # All previous ids.
-        print("\x1b[1;33;40m|py|", "EvalCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "EvalCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.ids = {}
 
@@ -32,16 +32,16 @@ class EvalCount(object):
         pass
 
     def reset_on_new_model(self):
-        print("\x1b[1;33;40m|py|", "EvalCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "EvalCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.reset()
         self.ids_exclude.update(self.ids.keys())
         self.ids = dict()
 
     def feed(self, id, *args, **kwargs):
-        print("\x1b[1;33;40m|py|", "EvalCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "EvalCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         # Game is running, not reaching terminal yet.
         # Register a game id.
@@ -51,14 +51,14 @@ class EvalCount(object):
         self.ids[id] = self._on_game(id, self.ids[id], *args, **kwargs)
 
     def count_completed(self):
-        print("\x1b[1;33;40m|py|", "EvalCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "EvalCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         return self.num_terminal
 
     def terminal(self, id):
-        print("\x1b[1;33;40m|py|", "EvalCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "EvalCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         # If this game id ended and is in the exclude list, skip
         # It is not counted as the number of games completed.
@@ -78,8 +78,8 @@ class EvalCount(object):
         #    print("id=%s seq=%d, winner=%d" % (id, seq, winner))
 
     def summary(self):
-        print("\x1b[1;33;40m|py|", "EvalCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "EvalCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         ret = self._summary()
         self.reset()
@@ -88,16 +88,16 @@ class EvalCount(object):
         return ret
 
     def print_summary(self):
-        print("\x1b[1;33;40m|py|", "EvalCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "EvalCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         summary = self.summary()
         for k, v in summary.items():
             print("%s: %s" % (str(k), str(v)))
 
     def feed_batch(self, batch, hist_idx=0):
-        print("\x1b[1;33;40m|py|", "EvalCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "EvalCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         ids = batch["id"][hist_idx]
         last_terminals = batch["last_terminal"][hist_idx]
@@ -114,35 +114,35 @@ class RewardCount(EvalCount):
     ''' Class to accumulate rewards achieved'''
 
     def __init__(self):
-        print("\x1b[1;33;40m|py|", "RewardCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RewardCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         super(RewardCount, self).__init__()
         self.reset()
 
     def reset(self):
-        print("\x1b[1;33;40m|py|", "RewardCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RewardCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.n = 0
         self.sum_reward = 0
 
     def _on_terminal(self, id, record):
-        print("\x1b[1;33;40m|py|", "RewardCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RewardCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.sum_reward += record
         self.n += 1
 
     def _on_game(self, id, record, reward, seq=None):
-        print("\x1b[1;33;40m|py|", "RewardCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RewardCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         return record + reward
 
     def _summary(self):
-        print("\x1b[1;33;40m|py|", "RewardCount::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "RewardCount::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         str_reward = "[%d] Reward: %.2f/%d" % (
             self.summary_count,
@@ -156,8 +156,8 @@ class WinRate(EvalCount):
     ''' Class to accumulate game results to win rate'''
 
     def __init__(self):
-        print("\x1b[1;33;40m|py|", "WinRate::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "WinRate::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         super(WinRate, self).__init__()
         self.total_win_count = 0
@@ -167,15 +167,15 @@ class WinRate(EvalCount):
         self.highest_win_rate_idx = -1
 
     def reset(self):
-        print("\x1b[1;33;40m|py|", "WinRate::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "WinRate::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.win_count = 0
         self.lose_count = 0
 
     def _on_game(self, id, record, final_reward, seq=None):
-        print("\x1b[1;33;40m|py|", "WinRate::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "WinRate::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         if final_reward > 0.5:
             self.win_count += 1
@@ -185,8 +185,8 @@ class WinRate(EvalCount):
             self.total_lose_count += 1
 
     def _summary(self):
-        print("\x1b[1;33;40m|py|", "WinRate::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "WinRate::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         total = self.win_count + self.lose_count
         win_rate = self.win_count / (total + 1e-10)
@@ -230,8 +230,8 @@ class WinRate(EvalCount):
 class Stats(EvalCount):
     @classmethod
     def get_option_spec(cls, stats_name=''):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         spec = PyOptionSpec()
         spec.addStrOption(
@@ -259,55 +259,55 @@ class Stats(EvalCount):
             #     "Name " + str(self.stats_name) + " is not known!")
 
     def is_valid(self):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         return self.collector is not None
 
     def feed(self, id, *args, **kwargs):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.collector.feed(id, *args, **kwargs)
 
     def count_completed(self):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         return self.collector.count_completed()
 
     def reset_on_new_model(self):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.collector.reset_on_new_model()
 
     def terminal(self, id):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         return self.collector.terminal(id)
 
     def reset(self):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.collector.reset()
 
     def summary(self):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         return self.collector.summary()
 
     def print_summary(self):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         self.collector.print_summary()
 
     def feed_batch(self, batch, hist_idx=0):
-        print("\x1b[1;33;40m|py|", "Stats::", inspect.currentframe().f_code.co_name)
-        print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+        # print("\x1b[1;33;40m|py|\x1b[0m", "Stats::", inspect.currentframe().f_code.co_name)
+        # print("\t\x1b[1;33;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
         return self.collector.feed_batch(batch, hist_idx=hist_idx)

@@ -18,8 +18,8 @@
 extern "C" {
 #endif
 
-double __attribute__((noinline)) wallclock(void);
-uint64_t __attribute__((noinline)) wallclock64();
+// double __attribute__((noinline)) wallclock(void);
+// uint64_t __attribute__((noinline)) wallclock64();
 
 void dbg_printf(const char* format, ...);
 void error(const char* format, ...);

@@ -82,7 +82,7 @@ class BoardFeature {
   BoardFeature(const GoState& s) 
       : s_(s),
       logger_(
-          elf::logging::getLogger("elfgames::go::base::BoardFeature-", ""))
+          elf::logging::getIndexedLogger("elfgames::go::base::BoardFeature-", ""))
       {
     display_debug_info("BoardFeature", __FUNCTION__, RED_B);
   }
