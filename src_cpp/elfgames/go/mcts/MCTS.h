@@ -14,6 +14,15 @@
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elfgames/go/mcts/AI.h"
 
+
+// AlphaGo Zero uses Tromp-Taylor scoring 66 during MCTS simulations 
+// and self-play training. This is because human scores 
+// (Chinese, Japanese or Korean rules) are not well-defined
+// if the game terminates before territorial boundaries are resolved.
+// However, all tournament and evaluation games were scored
+// using Chinese rules.
+
+
 struct MCTSActorParams {
   std::string actor_name;
   int       ply_pass_enabled = 0;

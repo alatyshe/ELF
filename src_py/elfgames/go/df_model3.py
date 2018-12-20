@@ -78,6 +78,8 @@ class Block(Model):
 
         return nn.Sequential(*layers)
 
+
+
     def forward(self, s):
         s1 = self.conv_lower(s)
         s1 = self.conv_upper(s1)
@@ -197,7 +199,6 @@ class Model_PolicyValue(Model):
         self.tanh = nn.Tanh()
         self.resnet = GoResNet(option_map, params)
 
-        self.options.gpu = 0
         if torch.cuda.is_available() and self.options.gpu is not None:
             self.init_conv.cuda(self.options.gpu)
             self.resnet.cuda(self.options.gpu)
@@ -287,10 +288,6 @@ class Model_PolicyValue(Model):
                   "(for cooldown = 50) in this case")
 
     def forward(self, x):
-        print("X : ", x)
-        print(x["checkers_s"])
-        print("\n\n\n")
-        
         s = self._var(x["s"])
 
         s = self.init_conv(s)

@@ -192,20 +192,9 @@ class Model_PolicyValue(Model):
 		super().__init__(option_map, params)
 
 		self.board_size = params["checkers_board_size"]
-		self.num_future_actions = params["checkers_num_future_actions"]
 		self.num_planes = params["checkers_num_planes"]
 		self.checkers_num_action = params["checkers_num_action"]
 
-		# print("\n\n\n\n")
-		# print("params\t\t: ", params)
-		# print("self.board_size\t\t: ", self.board_size)
-		# print("self.num_future_actions\t: ", self.num_future_actions)
-		# print("self.num_planes\t\t: ", self.num_planes)
-		# print("self.options.dim\t: ", self.options.dim)
-		# print("\n\n\n\n")
-
-
-		# print("#future_action: " + str(self.num_future_actions))
 		# print("#num_planes: " + str(self.num_planes))
 
 		# Network structure of AlphaGo Zero
@@ -215,8 +204,7 @@ class Model_PolicyValue(Model):
 		self.relu = nn.LeakyReLU(0.1) if self.options.leaky_relu else nn.ReLU()
 		last_planes = self.num_planes
 
-		self.init_conv = self._conv_layer(
-			input_channel=last_planes)
+		self.init_conv = self._conv_layer(last_planes)
 
 		self.pi_final_conv = self._conv_layer(
 			input_channel=self.options.dim, 
@@ -238,21 +226,36 @@ class Model_PolicyValue(Model):
 		# Softmax as the final layer
 		self.logsoftmax = nn.LogSoftmax(dim=1)
 		self.tanh = nn.Tanh()
-		# self.resnet = GoResNet(option_map, params)
+		self.resnet = GoResNet(option_map, params)
 
 		self.options.gpu = 0
 		if torch.cuda.is_available() and self.options.gpu is not None:
 			self.init_conv.cuda(self.options.gpu)
-			# self.resnet.cuda(self.options.gpu)
+			self.resnet.cuda(self.options.gpu)
 
 		if self.options.use_data_parallel:
 			if self.options.gpu is not None:
 				self.init_conv = nn.DataParallel(
 					self.init_conv, output_device=self.options.gpu)
-				# self.resnet = nn.DataParallel(
-				#     self.resnet, output_device=self.options.gpu)
+				self.resnet = nn.DataParallel(
+					self.resnet, output_device=self.options.gpu)
 
 		self._check_and_init_distributed_model()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	def _check_and_init_distributed_model(self):
 		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
@@ -351,10 +354,10 @@ class Model_PolicyValue(Model):
 		# приводим в нормальный вид
 		s = self._var(x["checkers_s"])
 		s = self.init_conv(s)
-		# s = self.resnet(s)
+
+		s = self.resnet(s)
 
 		d = self.board_size ** 2
-
 		pi = self.pi_final_conv(s)
 		pi = self.pi_linear(pi.view(-1, d))
 		logpi = self.logsoftmax(pi)
@@ -362,9 +365,9 @@ class Model_PolicyValue(Model):
 
 		V = self.value_final_conv(s)
 		V = self.relu(self.value_linear1(V.view(-1, d)))
-		V = self.value_linear2(V)		
+		V = self.value_linear2(V)
 		V = self.tanh(V)
-		
+
 		return dict(logpi=logpi, pi=pi, checkers_V=V)
 
 
