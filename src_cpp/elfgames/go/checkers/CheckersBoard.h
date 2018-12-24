@@ -23,7 +23,7 @@ constexpr uint64_t CHECKERS_NUM_FEATURES = 6;
 constexpr uint64_t TOTAL_NUM_ACTIONS = 170;
 // максимальное Количество ходов за игру
 // (устанавливаем мы, чтобы нейронка не играла бесконечно)
-constexpr int TOTAL_MAX_MOVE = 700;
+constexpr int TOTAL_MAX_MOVE = 500;
 
 // typedef int64_t Coord;
 typedef unsigned short 	Coord;

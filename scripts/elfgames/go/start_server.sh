@@ -16,16 +16,16 @@ model=df_kl model_file=elfgames.go.df_model_checkers \
     --server_id myserver        --port 1234 \
     \
     --mode train \
-    --batchsize 2048            --num_minibatch 1000\
-    --num_games 2048            --keys_in_reply checkers_V \
+    --batchsize 256            --num_minibatch 128\
+    --num_games 128            --keys_in_reply checkers_V \
     --T 1 \
-    --dim 224                   --gpu 0 \
-    --num_block 5 \
+    --dim 128                   --gpu 0 \
+    --num_block 10 \
     \
     --use_mcts                  --use_mcts_ai2 \
     --mcts_epsilon 0.25         --mcts_persistent_tree \
-    --mcts_puct 0.85            --mcts_rollout_per_thread 100 \
-    --mcts_threads 16           --mcts_use_prior \
+    --mcts_puct 0.85            --mcts_use_prior \
+    --mcts_threads 16           --mcts_rollout_per_thread 50 \
     --mcts_virtual_loss 5       --mcts_alpha 0.03 \
     \
     --eval_winrate_thres 0.55 \
@@ -42,7 +42,7 @@ model=df_kl model_file=elfgames.go.df_model_checkers \
     \
     --selfplay_async \
     --selfplay_init_num 20 \
-    --q_min_size 100            --q_max_size 4000       --num_reader 2 \
+    --q_min_size 20            --q_max_size 4000       --num_reader 2 \
     --selfplay_update_num 100 \
     --eval_num_games 100 \
     \

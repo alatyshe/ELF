@@ -33,9 +33,9 @@ struct ModelPair {
     if (wait())
       ss << "[wait]";
     else if (is_selfplay())
-      ss << "[selfplay=" << black_ver << "]";
+      ss << "[selfplay_version=" << black_ver << "]";
     else
-      ss << "[b=" << black_ver << "][w=" << white_ver << "]";
+      ss << "[b_version=" << black_ver << "][w_version=" << white_ver << "]";
     ss << mcts_opt.info();
     return ss.str();
   }

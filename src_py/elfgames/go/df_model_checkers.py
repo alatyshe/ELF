@@ -293,8 +293,8 @@ class Model_PolicyValue(Model):
 		# self.resnet.cuda(master_gpu)
 		self.init_conv = nn.parallel.DistributedDataParallel(
 			self.init_conv)
-		# self.resnet = nn.parallel.DistributedDataParallel(
-		#     self.resnet)
+		self.resnet = nn.parallel.DistributedDataParallel(
+		    self.resnet)
 
 	def _conv_layer(
 			self,
@@ -353,9 +353,12 @@ class Model_PolicyValue(Model):
 		# print("FORWARD")
 		# приводим в нормальный вид
 		s = self._var(x["checkers_s"])
+		# print("s.shape\t\t: ", s.shape)
 		s = self.init_conv(s)
-
+		# print("init_conv\t: s.shape : ", s.shape)
 		s = self.resnet(s)
+		# print("resnet\t\t: s.shape : ", s.shape)
+		# print("\n\n")
 
 		d = self.board_size ** 2
 		pi = self.pi_final_conv(s)

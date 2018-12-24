@@ -44,8 +44,10 @@ class ModelPerf {
         compute_num_eval_machine(num_request, max_request_per_layer);
 
     games_.reset(new fair_pick::Pick(num_request, num_eval_machine_per_layer));
+    
     swap_games_.reset(
         new fair_pick::Pick(num_request, num_eval_machine_per_layer));
+
     record_.resetPrefix(
         eval_prefix() + "-" + std::to_string(p.black_ver) + "-" +
         std::to_string(p.white_ver));

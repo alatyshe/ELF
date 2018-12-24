@@ -148,7 +148,16 @@ Coord GameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) 
 
 void GameSelfPlay::finish_game(CheckersFinishReason reason) {
   display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+  
+  std::cout << "_state_ext.currRequest().vers.is_selfplay() : " 
+            << _checkers_state_ext.currRequest().vers.is_selfplay() 
+            << std::endl;
+            
+  std::cout << "_options.cheat_eval_new_model_wins_half : " 
+            << _options.cheat_eval_new_model_wins_half 
+            << std::endl;
 
+  std::cout << std::endl;
   // My code
   _checkers_state_ext.setFinalValue(reason, &_rng);
   // показывает борду
@@ -223,6 +232,8 @@ void GameSelfPlay::restart() {
           _checkers_state_ext.options().white_mcts_rollout_per_thread,
           checkers_async ? -1 : checkers_request.vers.white_ver));
     }
+    std::cout << "checkers_request.vers.is_selfplay()\t: " << checkers_request.vers.is_selfplay() << std::endl;
+    std::cout << "checkers_request.client_ctrl.player_swap\t: " << checkers_request.client_ctrl.player_swap << std::endl;
     if (!checkers_request.vers.is_selfplay() && checkers_request.client_ctrl.player_swap) {
       // Swap the two pointer.
       swap(checkers_ai1, checkers_ai2);

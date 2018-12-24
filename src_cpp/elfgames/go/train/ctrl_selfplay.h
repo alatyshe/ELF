@@ -158,10 +158,10 @@ struct SelfPlayRecord {
         << std::endl;
 
     ss  << "Game finished in N moves: " << std::endl
-        << "[0, 100)\t=" << move0_100 << std::endl
-        << "[100, 200)\t=" << move100_200 << std::endl
-        << "[200, 300)\t=" << move200_300 << std::endl
-        << "[300, up)\t=" << move300_up << std::endl;
+        << "[0, 100)\t="    << move0_100 << std::endl
+        << "[100, 200)\t="  << move100_200 << std::endl
+        << "[200, 300)\t="  << move200_300 << std::endl
+        << "[300, up)\t="   << move300_up << std::endl;
 
     ss << "=== End Record Stats ====" << std::endl;
 

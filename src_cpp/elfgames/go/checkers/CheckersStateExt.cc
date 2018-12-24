@@ -11,11 +11,13 @@ void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
   }
 
   _logger->info(
-      "[{}:{}] Current request: {}, used_model: {}",
+      "[{}:{}] Current request: {}, used_model: {}, Player_swap : {}",
       _game_idx,
       _seq,
       curr_request_.info(),
-      used_model);
+      used_model,
+      curr_request_.client_ctrl.player_swap);
+      
 
   switch (reason) {
     case CHECKERS_MAX_STEP:

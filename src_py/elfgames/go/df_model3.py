@@ -45,6 +45,7 @@ class Block(Model):
 
     @auto_import_options
     def __init__(self, option_map, params):
+        print(option_map, params)
         super().__init__(option_map, params)
         self.relu = nn.LeakyReLU(0.1) if self.options.leaky_relu else nn.ReLU()
         self.conv_lower = self._conv_layer()
