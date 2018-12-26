@@ -148,16 +148,7 @@ Coord GameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) 
 
 void GameSelfPlay::finish_game(CheckersFinishReason reason) {
   display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
-  
-  std::cout << "_state_ext.currRequest().vers.is_selfplay() : " 
-            << _checkers_state_ext.currRequest().vers.is_selfplay() 
-            << std::endl;
-            
-  std::cout << "_options.cheat_eval_new_model_wins_half : " 
-            << _options.cheat_eval_new_model_wins_half 
-            << std::endl;
 
-  std::cout << std::endl;
   // My code
   _checkers_state_ext.setFinalValue(reason, &_rng);
   // показывает борду
@@ -232,8 +223,6 @@ void GameSelfPlay::restart() {
           _checkers_state_ext.options().white_mcts_rollout_per_thread,
           checkers_async ? -1 : checkers_request.vers.white_ver));
     }
-    std::cout << "checkers_request.vers.is_selfplay()\t: " << checkers_request.vers.is_selfplay() << std::endl;
-    std::cout << "checkers_request.client_ctrl.player_swap\t: " << checkers_request.client_ctrl.player_swap << std::endl;
     if (!checkers_request.vers.is_selfplay() && checkers_request.client_ctrl.player_swap) {
       // Swap the two pointer.
       swap(checkers_ai1, checkers_ai2);
@@ -373,6 +362,10 @@ void GameSelfPlay::act() {
       CheckersReply   creply(cf);
       _human_player->act(cf, &creply);
 
+      // skip the current move, and ask the ai to move.
+      // 171 = pass move надо бы это убрать 
+      if (creply.c == 171)
+        break;
       // Otherwise we forward.
       if (_checkers_state_ext.forward(creply.c)) {
         return;
@@ -447,12 +440,11 @@ void GameSelfPlay::act() {
   if (!_checkers_state_ext.forward(move)) {
     logger_->error(
         "Something is wrong! Move {} cannot be applied\nCurrent board: "
-        "{}\n[{}] Propose move {}\nSGF: {}\n",
+        "{}\n[{}] Propose move {}\n",
         move,
         cs.showBoard(),
-        cs.getPly()
-        // elf::ai::tree_search::ActionTrait<Coord>::to_string(c),
-        // _state_ext.dumpSgf("")
+        cs.getPly(),
+        std::to_string(move)
         );
     return;
   }
@@ -467,10 +459,6 @@ void GameSelfPlay::act() {
     CheckersFinishReason reason = CHECKERS_MAX_STEP;
     finish_game(reason);
   }
-
-  // std::cout << cs.showBoard() << std::endl;
-  // 
-  // exit(0);
 }
 
 

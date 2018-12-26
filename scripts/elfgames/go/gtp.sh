@@ -8,7 +8,7 @@
 
 # ./gtp.sh
 
-MODEL=myserver/save-0.bin
+MODEL=myserver/latest0
 # shift
 
 game=elfgames.go.game model=df_pred model_file=elfgames.go.df_model_checkers python3 df_console.py \
@@ -18,6 +18,12 @@ game=elfgames.go.game model=df_pred model_file=elfgames.go.df_model_checkers pyt
     --replace_prefix resnet.module,resnet init_conv.module,init_conv \
     --no_check_loaded_options \
     --no_parameter_print \
-    "$@"
+    \
+    --verbose --gpu 0 \
+    --num_block 10 --dim 128 \
+    \
+    --mcts_puct 1.50 --batchsize 16 --mcts_rollout_per_batch 16 \
+    --mcts_threads 16 --mcts_rollout_per_thread 100 --mcts_virtual_loss 1
+    # "$@"
 
     # --replace_prefix resnet.module,resnet \

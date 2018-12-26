@@ -75,7 +75,25 @@ class CheckerMoves:
 
 class GoConsoleGTP:
 
-    def on_moves(self, batch, items, reply):
+    def on_genmove(self, batch, items, reply):
+        reply["a"] = int(items[1])
+        return True, reply
+
+    def on_call_ai(self, batch, items, reply):
+        reply["a"] = 171
+        return True, reply
+
+    def on_play(self, batch, items, reply):
+        ret, msg = self.check_player(batch, items[1][0])
+        if ret:
+            # reply["a"] = self.move2action(items[2])
+            return True, reply
+        else:
+            return False, msg
+
+    def on_board(self, batch, items, reply):
+        self.showboard(batch)
+
         valid = batch.GC.getGame(0).GetValidMoves()
 
         for idx in range(len(valid)):
@@ -90,29 +108,8 @@ class GoConsoleGTP:
                 x2, y2 = (6 - (buff2) % 4 * 2 + ((buff2) // 4) % 2, 7 - (buff2) // 4)
                 if not self.moves_for_human[idx][1]:
                     x1, y1, x2, y2 = x2, y2, x1, y1
-                print("", idx, " : ", (x1, y1), "=>", (x2, y2), "=>", "Forward" if  self.moves_for_human[idx][1] else "Backward")
-        return True, ""
+                print("", idx, "\t: ", (x1, y1), "=>", (x2, y2), "=>", "Forward" if  self.moves_for_human[idx][1] else "Backward")
 
-    def on_genmove(self, batch, items, reply):
-        reply["a"] = int(items[1])
-        return True, reply
-
-    def on_play(self, batch, items, reply):
-        print("ON PLAY")
-        print("batch : ", batch)
-        print("items : ", items)
-        print("reply : ", reply)
-        print("\n\n\n\n")
-
-        ret, msg = self.check_player(batch, items[1][0])
-        if ret:
-            # reply["a"] = self.move2action(items[2])
-            return True, reply
-        else:
-            return False, msg
-
-    def on_board(self, batch, items, reply):
-        self.showboard(batch)
         return True, None
 
     # def on_score(self, batch, items, reply):
@@ -140,10 +137,6 @@ class GoConsoleGTP:
         self.evaluator = evaluator
         self.last_cmd = ""
         self.moves_for_human = CheckerMoves.get_all_moves()
-
-        # self.actions = {
-        #     "invalid": GC.params["M_INVALID"],
-        # }
 
         self.commands = {
             key[3:]: func

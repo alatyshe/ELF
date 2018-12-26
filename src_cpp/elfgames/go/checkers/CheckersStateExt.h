@@ -35,7 +35,6 @@ struct CheckersStateExt {
         _logger(
             elf::logging::getIndexedLogger("elfgames::go::common::CheckersStateExt-", "")) 
         {
-    std::cout << options.info() << std::endl;
     display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
     restart();
@@ -138,7 +137,7 @@ struct CheckersStateExt {
     //   std::cout << "[" << c << "] ";
     // }
     // std::cout << std::endl;
-    // std::cout << r.info() << std::endl << std::endl;
+    std::cout << r.info() << std::endl << std::endl;
     // std::cout << "=======================================" << std::endl;
     // std::cout << "=======================================" << std::endl;
 
@@ -304,7 +303,7 @@ struct CheckersStateExt {
 
 
 
-
+// для тренировки нейросети, работает на стороне server
 class CheckersStateExtOffline {
  public:
   friend class GoFeature;

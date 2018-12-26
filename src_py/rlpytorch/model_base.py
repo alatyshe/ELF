@@ -157,7 +157,7 @@ class Model(nn.Module):
                         sd[dst + key[len(src):]] = sd[key]
                         del sd[key]
 
-            # self.load_state_dict(sd)
+            self.load_state_dict(sd)
         self.step = data.get("step", 0)
         self.filename = os.path.realpath(data.get("filename", filename))
 
