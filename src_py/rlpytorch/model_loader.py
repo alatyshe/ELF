@@ -19,15 +19,9 @@ from .model_interface import ModelInterface
 from .sampler import Sampler
 from .utils.fp16_utils import FP16Model
 
-
-# _logger_factory = logging.IndexedLoggerFactory(
-#     lambda name: logging.stderr_color_mt(name))
-
-
 def load_module(mod):
     """Load a python module."""
     module = importlib.import_module(mod)
-    print(module, mod)
     return module
 
 
@@ -97,7 +91,7 @@ class ModelLoader(object):
             self.logger = logger
         else:
             self.logger = logging.getIndexedLogger(
-                'rlpytorch.model_loader.ModelLoader-',
+                '\x1b[1;31;40m|py|\x1b[0mrlpytorch.model_loader.ModelLoader-',
                 f'-model_index{model_idx}')
 
         self.option_map_for_model = option_map.clone()
@@ -224,11 +218,16 @@ def load_env(
             ``method``: Learning method used
             ``model_loaders``: loaders for model
     """
-    logger = logging.getIndexedLogger('rlpytorch.model_loader.load_env', '')
+    logger = logging.getIndexedLogger('\x1b[1;31;40m|py|\x1b[0mrlpytorch.model_loader.load_env', '')
     logger.info('Loading env')
 
+ 
     game_loader_class = load_module(envs["game"]).Loader
+    logger.info(f'\x1b[1;32;40mModule successfully loaded :\x1b[0m {envs["game"]}')
+
     model_file = load_module(envs["model_file"])
+    logger.info(f'\x1b[1;32;40mModule successfully loaded :\x1b[0m {envs["model_file"]}')
+
     # TODO This is not good, need to fix.
     if len(model_file.Models[envs["model"]]) == 2:
         model_class, method_class = model_file.Models[envs["model"]]
@@ -263,9 +262,6 @@ def load_env(
     global_logger_configurator = logging.GlobalLoggingConfigurator(option_map)
     global_logger_configurator.configure()
 
-    pretty_option_str = pprint.pformat(option_map.getOptionDict(), width=50)
-    logger.info(f'Parsed options: {pretty_option_str}')
-
     game = game_loader_class(option_map)
     method = method_class(option_map)
     sampler = sampler_class(option_map)
@@ -289,6 +285,9 @@ def load_env(
         for name, (_, option_map_callable) in additional_to_load.items():
             env[name] = option_map_callable(option_map)
 
+
+    pretty_option_str = pprint.pformat(option_map.getOptionDict(), width=50)
+    logger.info(f'Parsed options:\n{pretty_option_str}')
     logger.info('Finished loading env')
 
     return env

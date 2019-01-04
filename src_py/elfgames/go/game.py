@@ -238,30 +238,22 @@ class Loader(object):
             'return after n games have finished, -1 means it never ends',
             -1)
 
-        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Loader::", inspect.currentframe().f_code.co_name)
-
         spec.merge(PyOptionSpec.fromClasses((ContextArgs, MoreLabels)))
         return spec
 
     @auto_import_options
     def __init__(self, option_map):
-        
-        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Loader::", inspect.currentframe().f_code.co_name)
-
         self.context_args = ContextArgs(option_map)
         self.more_labels = MoreLabels(option_map)
 
     def _set_params(self):
-        
-        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Loader::", inspect.currentframe().f_code.co_name)
-
         co = go.ContextOptions()
         self.context_args.initialize(co)
         co.job_id = os.environ.get("job_id", "local")
         if self.options.parameter_print:
             co.print()
 
-        opt = go.GameOptions()
+        opt = go.CheckersGameOptions()
 
         opt.seed = 0
         opt.list_files = self.options.list_files
@@ -329,9 +321,6 @@ class Loader(object):
 
         GC = go.GameContext(co, opt)
 
-
-        # print("self.options : ", self.options)
-
         if self.options.parameter_print:
             print("****************** Options ******************")
             print(opt.info())
@@ -342,9 +331,6 @@ class Loader(object):
         return co, GC, opt
 
     def initialize(self):
-
-        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Loader::", inspect.currentframe().f_code.co_name)
-
         co, GC, opt = self._set_params()
 
         params = GC.getParams()

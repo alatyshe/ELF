@@ -1,5 +1,5 @@
 .PHONY: all
-all: elf elfgames/go
+all: elf elfgames/checkers
 
 .PHONY: clean
 clean:
@@ -27,6 +27,6 @@ elf: build/Makefile
 test_cpp_elf:
 	(cd build/elf && GTEST_COLOR=1 ctest --output-on-failure)
 
-.PHONY: elfgames/go
-elfgames/go: build/Makefile
-	(cd build && cmake --build elfgames/go -- -j)
+.PHONY: elfgames/checkers
+elfgames/checkers: build/Makefile
+	(cd build && cmake --build elfgames/checkers -- -j)

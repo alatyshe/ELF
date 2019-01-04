@@ -103,12 +103,13 @@ namespace debug {
 void		display_debug_info(
 		std::string clss_name,
 		std::string mthd_name,
-		std::string color) 
+		std::string color,
+		bool display) 
 {
 	int 		depth;
 
-	if (debug::options_main.verbose == true
-	 && color != GREEN_B)
+	if ((debug::options_main.verbose || display))
+	 // && color != GREEN_B)
  	{
 		depth = depth_stacktrace();
 

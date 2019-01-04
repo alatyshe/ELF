@@ -263,17 +263,21 @@ def main():
         if args.eval_model_pair.find(",") >= 0:
             black, white = args.eval_model_pair.split(",")
         else:
-            checkers_black = extract_ver(env["model_loaders"][2])
-            checkers_white = extract_ver(env["model_loaders"][3])
+            black = extract_ver(env["model_loaders"][0])
+            white = extract_ver(env["model_loaders"][1])
 
+            print("black : ", black)
+            print("white : ", white)
             # Force them to reload in the future.
             for model_loader, actor_name in zip(env["model_loaders"], actors):
                 reload_model(model_loader, GC.params,
                              env["mi_" + actor_name], actor_name, args)
 
+        print("white : ", white)
+        print("black : ", black)
         # We just use one thread to do selfplay.
         GC.GC.getClient().setRequest(
-            int(black), int(white), int(checkers_white), int(checkers_black), 1)
+            int(black), int(white), 1)
 
     for actor_name in actors:
         env["eval_" + actor_name].episode_start(0)

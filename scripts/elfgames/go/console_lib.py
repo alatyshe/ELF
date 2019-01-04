@@ -94,7 +94,7 @@ class GoConsoleGTP:
     def on_board(self, batch, items, reply):
         self.showboard(batch)
 
-        valid = batch.GC.getGame(0).GetValidMoves()
+        valid = batch.GC.getGame(0).getValidMoves()
 
         for idx in range(len(valid)):
             if valid[idx]:

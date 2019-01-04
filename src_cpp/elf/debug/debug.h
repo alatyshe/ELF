@@ -39,4 +39,5 @@ void		decrase_indent();
 void		display_debug_info(
 		std::string clss_name,
 		std::string mthd_name = "",
-		std::string color = COLOR_END);
+		std::string color = COLOR_END,
+		bool display = false);
