@@ -8,7 +8,7 @@
 
 # ./gtp.sh
 
-MODEL=myserver/latest0
+MODEL=myserver/save-128.bin
 # shift
 
 game=elfgames.go.game model=df_pred model_file=elfgames.go.df_model_checkers python3 df_console.py \

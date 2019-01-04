@@ -11,7 +11,7 @@ void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 	}
 
 	_logger->info(
-			"[game_idx:{};game_num:{}] Used_model: {}",
+			"[game_id:{};seq:{}] Used_model: {}",
 			_game_idx,
 			_seq,
 			used_model);
