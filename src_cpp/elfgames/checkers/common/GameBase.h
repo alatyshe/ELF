@@ -15,11 +15,14 @@
 #include "elf/utils/utils.h"
 
 // Checkers
-#include "game_feature.h"
+#include "GameFeature.h"
 
-// От этого класса наследуется GameSelfplay и их создается необходимое
+// От этого класса наследуется ClientGameSelfplay и ServerGameTrain
+// и их создается необходимое
 // количество (параметр num_games) в классе GameContext.
 // запускается mainLoop
+// ==========================================================
+// ==========================================================
 class GameBase {
  public:
 	GameBase(
@@ -32,7 +35,10 @@ class GameBase {
 				_options(options),
 				_context_options(context_options),
 				_logger(
-						elf::logging::getIndexedLogger("elfgames::checkers::common::GameBase-", "")) {
+						elf::logging::getIndexedLogger(
+							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+							"GameBase-", 
+							"")) {
 		display_debug_info("GameBase", __FUNCTION__, RED_B);
 
 		if (options.seed == 0) {
@@ -56,7 +62,7 @@ class GameBase {
 					std::hash<std::thread::id>{}(std::this_thread::get_id()));
 		}
 		// Main loop of the game.
-		// Делаем бесконечный цикл, пока клиент не сообщит что надо остановиться
+		// Делаем бесконечный цикл, пока клиент/сервер не сообщит что надо остановиться
 		// параметр --suicide_after_n_games 1
 		while (!client_->DoStopGames()) {
 			act();

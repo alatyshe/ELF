@@ -15,6 +15,7 @@ import time
 
 import torch
 
+from elf import logging
 from rlpytorch import load_env, SingleProcessRun, Trainer
 
 
@@ -26,6 +27,10 @@ def main():
     print('PyTorch version:', torch.__version__)
     print('CUDA version', torch.version.cuda)
     print('Conda env:', os.environ.get("CONDA_DEFAULT_ENV", ""))
+
+    logger = logging.getIndexedLogger(
+        '\x1b[1;31;40m|py|\x1b[0melfgames.checkers.train-',
+        '')
 
     additional_to_load = {
         'trainer': (
@@ -72,10 +77,9 @@ def main():
     print(f'Keep prev_selfplay: {keep_prev_selfplay!s}')
 
     def train(batch, *args, **kwargs):
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "train.py::", inspect.currentframe().f_code.co_name)
-
+        # logger.info("train")
+        
         # Check whether the version match.
-
         if keep_prev_selfplay or \
                 (batch["selfplay_ver"] != selfplay_ver).sum() == 0:
             trainer.train(batch, *args, **kwargs)
@@ -85,7 +89,7 @@ def main():
             runner.inc_episode_counter(-1)
 
     def train_ctrl(batch, *args, **kwargs):
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "train.py::", inspect.currentframe().f_code.co_name)
+        logger.info("train_ctrl")
 
         nonlocal selfplay_ver
         old_selfplay_ver = selfplay_ver
@@ -97,7 +101,7 @@ def main():
         GC.GC.getServer().waitForSufficientSelfplay(selfplay_ver)
 
         # Reload old models.
-        print("MY SHIT train_ctrl python code im trin.py")
+        print("MY SHIT train_ctrl python code im train.py")
         real_path = os.path.join(root, "save-" + str(selfplay_ver) + ".bin")
         model_loader.options.load = real_path
 
@@ -126,15 +130,18 @@ def main():
             gpu_id=args.gpu)
         GC.reg_callback("actor", trainer.actor)
 
+    # +++++++++++++++++++++++++++++++++++++++++++++++
+    # +++++++++++++++++++++++++++++++++++++++++++++++
+    # +++++++++++++++++++++++++++++++++++++++++++++++
     trainer.setup(
         sampler=env["sampler"],
         mi=env["mi"],
         rl_method=env["method"])
 
     def episode_summary(i):
-        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "train.py::", inspect.currentframe().f_code.co_name)
-
         nonlocal selfplay_ver
+
+        logger.info("episode_summary")
         ver = trainer.episode_summary(i)
         # This might block (when evaluation does not catch up with training).
         GC.GC.getServer().notifyNewVersion(selfplay_ver, ver)
@@ -142,18 +149,19 @@ def main():
     offline_training = (env["game"].options.mode == "offline_train")
 
     def after_start():
-        print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "train.py::", inspect.currentframe().f_code.co_name)
-        
+        logger.info("after_start")
+
         nonlocal selfplay_ver
         if not offline_training:
-            print("About to wait for sufficient selfplay")
             GC.GC.getServer().waitForSufficientSelfplay(selfplay_ver)
 
-    runner.setup(GC, after_start=after_start,
-                 episode_summary=episode_summary,
-                 episode_start=trainer.episode_start)
+    # sys.exit(0)
 
-    runner.run()
+    runner.setup(GC, after_start=       after_start,
+                    episode_summary=    episode_summary,
+                    episode_start=      trainer.episode_start)
+
+    runner.run_singe_process()
 
 
 if __name__ == '__main__':

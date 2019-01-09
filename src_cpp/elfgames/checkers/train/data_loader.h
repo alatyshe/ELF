@@ -86,7 +86,8 @@ class DataOnlineLoader {
  public:
   DataOnlineLoader(const elf::shared::Options& net_options)
       : logger_(elf::logging::getIndexedLogger(
-            "elfgames::go::train::DataOnlineLoader-",
+            std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+            "DataOnlineLoader-",
             "")) {
     display_debug_info("DataOnlineLoader", __FUNCTION__, RED_B);
 

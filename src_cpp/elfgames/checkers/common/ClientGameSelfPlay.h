@@ -19,7 +19,7 @@
 #include "../mcts/MCTS.h"
 #include "../sgf/sgf.h"
 #include "GameBase.h"
-#include "game_feature.h"
+#include "GameFeature.h"
 #include "game_stats.h"
 #include "notifier.h"
 
@@ -29,11 +29,12 @@
 
 class AIClientT;
 
-// Game interface for game.
-class GameSelfPlay : public GameBase {
+// ==========================================================
+// ==========================================================
+class ClientGameSelfPlay : public GameBase {
  public:
 	using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
-	GameSelfPlay(
+	ClientGameSelfPlay(
 			int                         game_idx,
 			elf::GameClient*            client,
 			const ContextOptions&       context_options,
@@ -43,11 +44,11 @@ class GameSelfPlay : public GameBase {
 
 	bool 	OnReceive(const MsgRequest& request, RestartReply* reply);
 
-	void									act() override;
+	void											act() override;
 	std::string 							showBoard() const;
 	std::string 							getLastMove() const;
 	std::array<int, TOTAL_NUM_ACTIONS>		getValidMoves() const;
-	float 									getScore();
+	float 										getScore();
 
  private:
 	MCTSCheckersAI* init_checkers_ai(
@@ -58,18 +59,18 @@ class GameSelfPlay : public GameBase {
 			int second_mcts_rollout_per_thread,
 			int64_t model_ver);
 
-	void	restart();
-	void	setAsync();
-	Coord	mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c);
-	Coord	mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c);
-	void	finish_game(CheckersFinishReason reason);
+	void			restart();
+	void			setAsync();
+	Coord			mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c);
+	Coord			mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c);
+	void			finish_game(CheckersFinishReason reason);
 	
 	
 
  private:
-	ThreadedDispatcher*         dispatcher_ = nullptr;
-	CheckersGameNotifierBase*   checkers_notifier_ = nullptr;
-	CheckersStateExt            _checkers_state_ext;
+	ThreadedDispatcher*         		dispatcher_ = nullptr;
+	CheckersGameNotifierBase*   		checkers_notifier_ = nullptr;
+	CheckersStateExt            		_checkers_state_ext;
 
 
 	int _online_counter = 0;

@@ -22,54 +22,32 @@ enum CheckersFinishReason {
 };
 
 
-
-
+// Client Side
+// работает при запуске start_client.sh
+// нужен для генерации батчей(игры пройденной от начала до конца)
 struct CheckersStateExt {
  public:
 	// Ok
-	CheckersStateExt(int game_idx, const CheckersGameOptions& options)
-			: _game_idx(game_idx),
-				_last_move_for_the_game(M_INVALID),
-				_last_value(0.0),
-				_options(options),
-				_logger(
-						elf::logging::getIndexedLogger("CheckersStateExt-", "")) 
-				{
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
+	CheckersStateExt(int game_idx, const CheckersGameOptions& options);
 
-		restart();
-	}
+	void								setRequest(const MsgRequest& request);
+	void								addCurrentModel();
+	const MsgRequest&		currRequest() const;
+	Coord								lastMove() const;
+	void								restart();
+	ThreadState 				getThreadState() const;
+	float								getLastGameFinalValue() const;
+	void								showFinishInfo(CheckersFinishReason reason) const;
+	bool								forward(Coord c);
+	int									seq() const;
+	const CheckersState&	state() const;
+	const CheckersGameOptions& options() const;
 
-	// Ok
-	void   setRequest(const MsgRequest& request) {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		_curr_request = request;
-
-		const auto& ctrl = request.client_ctrl;
-	}
-
-	// Ok
-	void   addCurrentModel() {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		if (_curr_request.vers.black_ver >= 0)
-			using_models_.insert(_curr_request.vers.black_ver);
-		if (_curr_request.vers.white_ver >= 0)
-			using_models_.insert(_curr_request.vers.white_ver);
-	}
-
-	// Ok
-	const  MsgRequest& currRequest() const {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		return _curr_request;
-	}
 
 	// ??????????????????????????????????????????????
 	// ??????????????????????????????????????????????
 	// ??????????????????????????????????????????????
-	float  setFinalValue(CheckersFinishReason reason, std::mt19937* rng) {
+	float								setFinalValue(CheckersFinishReason reason, std::mt19937* rng) {
 		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
 		float final_value = 0.0;
@@ -79,37 +57,10 @@ struct CheckersStateExt {
 		return final_value;
 	}
 
-	// Ok
-	Coord  lastMove() const {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		if (_state.justStarted())
-			return _last_move_for_the_game;
-		else
-			return _state.lastMove();
-	}
-
-	// Ok
-	void   restart() {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		_last_value = _state.getFinalValue();
-		_state.reset();
-		_mcts_policies.clear();
-		_predicted_values.clear();
-
-		using_models_.clear();
-
-		_seq++;
-
-		addCurrentModel();
-	}
-
-
 	// ??????????????????????????????????????????????
 	// ??????????????????????????????????????????????
 	// ??????????????????????????????????????????????
-	CheckersRecord dumpRecord() const {
+	CheckersRecord 			dumpRecord() const {
 		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
 		CheckersRecord r;
@@ -119,11 +70,12 @@ struct CheckersStateExt {
 		r.seq = _seq;
 		r.request = _curr_request;
 
+		// пишем result
 		r.result.reward = _state.getFinalValue();
 		// записываем все хода в строку и отправляет json
 		r.result.content = coords2str(_state.getAllMoves());
 		r.result.using_models =
-				std::vector<int64_t>(using_models_.begin(), using_models_.end());
+				std::vector<int64_t>(_using_models.begin(), _using_models.end());
 		r.result.policies = _mcts_policies;
 		r.result.num_move = _state.getPly() - 1;
 		r.result.values = _predicted_values;
@@ -137,27 +89,13 @@ struct CheckersStateExt {
 		//   std::cout << "[" << c << "] ";
 		// }
 		// std::cout << std::endl;
-		std::cout << r.info() << std::endl << std::endl;
+		// std::cout << r.info() << std::endl << std::endl;
 		// std::cout << "=======================================" << std::endl;
 		// std::cout << "=======================================" << std::endl;
+		_logger->info("Dump Record:{}\n\n", r.info());
 
 		return r;
 	}
-
-
-	// Ok
-	ThreadState getThreadState() const {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		ThreadState s;
-		s.thread_id = _game_idx;
-		s.seq = _seq;
-		s.move_idx = _state.getPly() - 1;
-		s.black = _curr_request.vers.black_ver;
-		s.white = _curr_request.vers.white_ver;
-		return s;
-	}
-
 
 
 	// void   saveCurrentTree(const std::string& tree_info) const {
@@ -172,13 +110,6 @@ struct CheckersStateExt {
 	//   oo << tree_info;
 	// }
 
-
-	// Ok
-	float  getLastGameFinalValue() const {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		return _last_value;
-	}
 
 	// ??????????????????????????????????????????????
 	// ??????????????????????????????????????????????
@@ -227,61 +158,23 @@ struct CheckersStateExt {
 	//     return _predicted_values.back();
 	// }
 
-	// Ok
-	void   showFinishInfo(CheckersFinishReason reason) const;
-
-	// Ok
-	bool   forward(Coord c) {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		return _state.forward(c);
-	}
-
-	// Ok
-	const  CheckersState& state() const {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		return _state;
-	}
-
-	// Ok
-	int    seq() const {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		return _seq;
-	}
-
-	// bool   finished() const {
-	//   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-	//   return _options.num_games_per_thread > 0 &&
-	//       _seq >= _options.num_games_per_thread;
-	// }
-
-	// Ok
-	const  CheckersGameOptions& options() const {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
-		return _options;
-	}
-
 
  protected:
-	const int 	        _game_idx;
-	int			            _seq = 0;
+	const int							_game_idx;
+	int										_seq = 0;
 
-	CheckersState	      _state;
-	int 		            _last_move_for_the_game;
+	CheckersState					_state;
+	int										_last_move_for_the_game;
 
-	MsgRequest          _curr_request;
-	std::set<int64_t>   using_models_;
+	MsgRequest						_curr_request;
+	std::set<int64_t>			_using_models;
 
-	float               _last_value;
+	float									_last_value;
 	
-	CheckersGameOptions         _options;
+	CheckersGameOptions		_options;
 
 	std::vector<CheckersCoordRecord> _mcts_policies;
-	std::vector<float>  _predicted_values;
+	std::vector<float>		_predicted_values;
 
 	std::shared_ptr<spdlog::logger> _logger;
 };
@@ -306,13 +199,14 @@ struct CheckersStateExt {
 // для тренировки нейросети, работает на стороне server
 class CheckersStateExtOffline {
  public:
-	friend class GoFeature;
+	friend class GameFeature;
 
 	CheckersStateExtOffline(int game_idx, const CheckersGameOptions& options)
 			: _game_idx(game_idx),
 				_bf(_state),
 				_options(options),
 				_logger(elf::logging::getIndexedLogger(
+						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 						"CheckersStateExtOffline-",
 						"")) 
 				{

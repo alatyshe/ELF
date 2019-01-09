@@ -21,6 +21,7 @@
 #define SHIT_B		"\x1b[1;36;40m"
 #define WHITE_B		"\x1b[1;37;40m"
 
+
 #define COLOR_END	"\x1b[0m"
 
 

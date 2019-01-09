@@ -11,12 +11,13 @@ using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
 
 
 // Работает на стороне клиента
-// Используется в GameContext и 
+// Используется в GameContext 
 class DispatcherCallback {
  public:
 	DispatcherCallback(ThreadedDispatcher* dispatcher, elf::GameClient* client)
 			: client_(client),
 				logger_(elf::logging::getIndexedLogger(
+						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 						"DispatcherCallback-",
 						"")) {
 		display_debug_info("DispatcherCallback", __FUNCTION__, RED_B, false);
@@ -38,8 +39,7 @@ class DispatcherCallback {
 		if (thread_idx == 0) {
 			// Actionable request
 			logger_->info(
-					"{}, EvalCtrl received new request: {}",
-					elf_utils::now(),
+					"EvalCtrl received new request: {}",
 					request->info());
 		}
 
@@ -70,9 +70,8 @@ class DispatcherCallback {
 				case RestartReply::UPDATE_MODEL_ASYNC:
 					if (request != nullptr && *request != requests[i]) {
 						logger_->error(
-								"{} Request inconsistent. Existing request: {}, current "
+								"Request inconsistent. Existing request: {}, current "
 								"request: {}",
-								elf_utils::now(),
 								request->info(),
 								requests[i].info());
 						throw std::runtime_error("Request inconsistent!");
@@ -91,9 +90,8 @@ class DispatcherCallback {
 
 			// Once it is done, send to Python side.
 			logger_->info(
-					"{} Received actionable request: black_ver = {}, white_ver = {}, "
+					"Received actionable request: black_ver = {}, white_ver = {}, "
 					"#addrs_to_reply: {}",
-					elf_utils::now(),
 					request->vers.black_ver,
 					request->vers.white_ver,
 					n);

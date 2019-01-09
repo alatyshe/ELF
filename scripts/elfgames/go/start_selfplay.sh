@@ -7,7 +7,7 @@
 # LICENSE file in the root directory of this source tree.
 
 LOAD0=myserver/save-0.bin
-LOAD1=myserver/save-128.bin
+LOAD1=myserver/save-0.bin
 
 BATCHSIZE=128
 NUM_ROLLOUTS=100
@@ -30,15 +30,16 @@ model_file=elfgames.go.df_model_checkers python3 selfplay.py \
 	--keys_in_reply checkers_V checkers_rv\
 	\
 	--batchsize $BATCHSIZE		--mcts_rollout_per_batch $BATCHSIZE \
-	--mcts_threads 16			--mcts_rollout_per_thread $NUM_ROLLOUTS \
-	--mcts_virtual_loss 1		--mcts_epsilon 0.0 \
-	--mcts_alpha 0.00 \
-	--use_mcts					--use_mcts_ai2 \
-	--mcts_use_prior \
-	--mcts_persistent_tree		--mcts_puct 0.85 \
+	--mcts_rollout_per_thread $NUM_ROLLOUTS \
 	\
 	--batchsize2 $BATCHSIZE2	--white_mcts_rollout_per_batch $BATCHSIZE2 \
 	--white_mcts_rollout_per_thread $NUM_ROLLOUTS2 \
+	\
+	--use_mcts					--use_mcts_ai2 \
+	--mcts_virtual_loss 1		--mcts_epsilon 0.0 \
+	--mcts_alpha 0.00 			--mcts_threads 16\
+	--mcts_use_prior \
+	--mcts_persistent_tree		--mcts_puct 0.85 \
 	\
 	--eval_model_pair loaded \
 	--policy_distri_cutoff 0 \

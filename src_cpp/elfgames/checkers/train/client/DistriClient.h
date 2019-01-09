@@ -21,7 +21,8 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
       const CheckersGameOptions& options)
       : ThreadedCtrlBase(ctrl, 0),
         logger_(elf::logging::getIndexedLogger(
-            "elfgames::go::train::ThreadedWriterCtrl-",
+            std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+            "ThreadedWriterCtrl-",
             "")) {
     display_debug_info("ThreadedWriterCtrl", __FUNCTION__, RED_B);
 
@@ -189,7 +190,8 @@ struct CheckersGuardedRecords {
   CheckersGuardedRecords(const std::string& identity)
       : records_(identity),
         logger_(elf::logging::getIndexedLogger(
-            "elfgames::go::train::CheckersGuardedRecords",
+            std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+            "CheckersGuardedRecords",
             "")) {
     display_debug_info("struct CheckersGuardedRecords", __FUNCTION__, RED_B);        
   }
@@ -355,7 +357,10 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
       const std::string& identity,
       const CheckersGameOptions& options,
       elf::GameClient* client)
-      : ctrl_(ctrl), records_(identity), options_(options), client_(client) {
+      : ctrl_(ctrl), 
+        records_(identity), 
+        options_(options), 
+        client_(client) {
     display_debug_info("CheckersGameNotifier", __FUNCTION__, RED_B);
 
     using std::placeholders::_1;
@@ -485,16 +490,19 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
 
 
 
-class Client {
+class DistriClient {
  public:
-  Client(
+  DistriClient(
       const ContextOptions& contextOptions,
       const CheckersGameOptions& options,
       elf::GameClient* client)
       : contextOptions_(contextOptions),
         options_(options),
-        logger_(elf::logging::getIndexedLogger("Client-", "")) {
-    display_debug_info("Client", __FUNCTION__, RED_B);
+        logger_(elf::logging::getIndexedLogger(
+          std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+          "DistriClient-", 
+          "")) {
+    display_debug_info("DistriClient", __FUNCTION__, RED_B);
     
     dispatcher_.reset(new ThreadedDispatcher(ctrl_, contextOptions.num_games));
     dispatcher_callback_.reset(
@@ -512,9 +520,13 @@ class Client {
     } else {
       throw std::range_error("options.mode not recognized! " + options_.mode);
     }
+    logger_->info(
+      "{}DistriClient successfully created{}\n",
+      GREEN_B, 
+      COLOR_END);
   }
 
-  ~Client() {
+  ~DistriClient() {
     // game_notifier_.reset(nullptr);
     checkers_game_notifier_.reset(nullptr);
     dispatcher_.reset(nullptr);
@@ -522,19 +534,19 @@ class Client {
   }
 
   ThreadedDispatcher* getDispatcher() {
-    display_debug_info("Client", __FUNCTION__, RED_B);
+    display_debug_info("DistriClient", __FUNCTION__, RED_B);
 
     return dispatcher_.get();
   }
 
   CheckersGameNotifier* getCheckersNotifier() {
-    display_debug_info("Client", __FUNCTION__, RED_B);
+    display_debug_info("DistriClient", __FUNCTION__, RED_B);
 
     return checkers_game_notifier_.get();
   }
 
   const GameStats& getCheckersGameStats() const {
-    display_debug_info("Client", __FUNCTION__, RED_B);
+    display_debug_info("DistriClient", __FUNCTION__, RED_B);
 
     assert(checkers_game_notifier_ != nullptr);
     return checkers_game_notifier_->getGameStats();
@@ -546,7 +558,7 @@ class Client {
       int64_t white_ver,
       // float thres,
       int numThreads = -1) {
-    display_debug_info("Client", __FUNCTION__, RED_B);
+    display_debug_info("DistriClient", __FUNCTION__, RED_B);
     
     MsgRequest request;
     request.vers.black_ver = black_ver;

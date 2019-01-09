@@ -256,9 +256,9 @@ def main():
 
     GC.start()
 
-    print("model_loaders : ", env["model_loaders"])
-
-    print("GC.params : ", GC.params)
+    # print("model_loaders : ", env["model_loaders"])
+    # print("GC.params : ", GC.params)
+    
     if args.eval_model_pair:
         if args.eval_model_pair.find(",") >= 0:
             black, white = args.eval_model_pair.split(",")

@@ -14,12 +14,13 @@ model=df_kl model_file=elfgames.go.df_model_checkers \
 	stdbuf -o 0 -e 0 python -u ./train.py \
 	\
 	--server_id myserver		--port 1234 \
+	--gpu 0 \
 	\
 	--mode train \
 	--batchsize 256				--num_minibatch 128\
-	--num_games 128				--keys_in_reply checkers_V \
+	--num_games 8				--keys_in_reply checkers_V \
 	--T 1 \
-	--dim 128					--gpu 0 \
+	--dim 128 \
 	--num_block 10 \
 	\
 	--use_mcts					--use_mcts_ai2 \
@@ -28,34 +29,38 @@ model=df_kl model_file=elfgames.go.df_model_checkers \
 	--mcts_threads 16			--mcts_rollout_per_thread 20 \
 	--mcts_virtual_loss 5		--mcts_alpha 0.03 \
 	\
-	--eval_winrate_thres 0.55 \
 	--save_first \
 	\
 	--use_data_parallel \
 	\
-	--num_episode 1000000 \
+	--num_episode 3 \
 	--keep_prev_selfplay		--keep_prev_selfplay \
 	\
 	--weight_decay 0.0002		--opt_method sgd \
 	--bn_momentum=0				--num_cooldown=50 \
-	--expected_num_client 10 \
+	--expected_num_client 1 \
 	\
 	--selfplay_async \
 	--selfplay_init_num 2 \
-	--q_min_size 10				--q_max_size 4000		--num_reader 2 \
-	--selfplay_update_num 100 \
-	--eval_num_games 100 \
+	--q_min_size 2				--q_max_size 4		--num_reader 2 \
+	--selfplay_update_num 10 \
+	\
+	--eval_winrate_thres 0.55 \
+	--eval_num_games 20 \
 	\
 	--lr 0.01					--momentum 0.9 \
+	--verbose \
 
-	# --verbose
+	# --tqdm
 	# 1>> log.log 2>&1 &
 
-	# --selfplay_init_num 2 - после него начинает свою работу
+	# --batchsize 256 - прогон один раз через нейронку> берет этот батч и дает неронке для обучения.
+	# --num_minibatch 128 - количество раз которое нужно давать нейронке --batchsize то есть 128 раз по 256 states
+
+	# --selfplay_init_num 2 - проигрывает необходимое количество игр(для разрастания дерева) 
+	# после него начинает свою работу и начинает собирать батчи
 	#   |py| Trainer:: episode_start
 	#   |py| Evaluator:: episode_start
-	# и начинает собирать батчи
-	# 
 	# 
 	# Затем они ожидают пока заполниться CheckersGuardedRecords необходимое 
 	# количество игр, чтобы отправить этот батч серверу на тренировку:
@@ -64,5 +69,23 @@ model=df_kl model_file=elfgames.go.df_model_checkers \
 	# 
 	# --selfplay_update_num 5 \
 	# 
+	# --num_episode 5 - количество обновлений модели на сервере, после чего сервер
+	# 			посылает сигнал elf::base::Context-3 для остановки
+	# 				
 	# 
-	# --eval_num_games 2 \
+	# --eval_num_games 20 - после добавления модели ее можно сравнить с предидущей
+	# 		eval_winrate_thres по этому параметру(выбирается лучшая)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,6 +16,7 @@ inline elf::shared::Options getNetOptions(
     const ContextOptions& contextOptions,
     const CheckersGameOptions& options) {
   elf::shared::Options netOptions;
+  
   netOptions.addr =
       options.server_addr == "" ? "localhost" : options.server_addr;
   netOptions.port = options.port;

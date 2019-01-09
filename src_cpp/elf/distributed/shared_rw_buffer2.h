@@ -246,20 +246,20 @@ class Reader {
     while (!done_.load()) {
       if (!receiver_.recv_noblock(&identity, &title, &msg)) {
         logger_->info(
-            "Reader: {}no message{}, Stats: {}/{}/{}, wait for 10 sec ... ",
+            "Reader: {}no message{}, Stats: {}/{}/{}, wait for 15 sec ... ",
             ORANGE_C,
             COLOR_END,
             num_package_,
             num_failed_,
             num_skipped_);
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        std::this_thread::sleep_for(std::chrono::seconds(15));
         continue;
       }
 
       if (title == "ctrl") {
         client_size_++;
         logger_->info(
-            "Ctrl from {}[{}]: {}",
+            "Ctrl from {} client_size={}; msg={}",
             identity,
             client_size_,
             msg);
@@ -269,6 +269,13 @@ class Reader {
           logger_->warn("Msg processing error! from {}", identity);
           num_failed_++;
         } else {
+          // logger_->info("{}Msg recieved!{} title:{}; identity:{}", 
+          //   GREEN_B,
+          //   COLOR_END,
+          //   title,
+          //   identity
+          //   // msg
+          //   );
           num_package_++;
         }
       } else {

@@ -33,19 +33,6 @@ namespace elf {
 
 class Context;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 class GameClient {
  public:
   friend class Context;

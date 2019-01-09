@@ -25,7 +25,7 @@
 
 using TSOptions = elf::ai::tree_search::TSOptions;
 
-class ModelPerf {
+class ModelPerfomance {
  public:
 	enum EvalResult {
 		EVAL_INVALID,
@@ -34,19 +34,23 @@ class ModelPerf {
 		EVAL_BLACK_NOTPASS
 	};
 
-	ModelPerf(
-			const CheckersGameOptions& options,
+	ModelPerfomance(
+			const CheckersGameOptions& gameOptions,
 			const ClientManager& mgr,
 			const ModelPair& p)
-			: options_(options),
+			: gameOptions_(gameOptions),
 				curr_pair_(p),
 				logger_(
-						elf::logging::getIndexedLogger("elfgames::go::train::ModelPerf-", "")) {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+						elf::logging::getIndexedLogger(
+							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+							"ModelPerfomance-", 
+							"")) {
+
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		const size_t cushion = 5;
 		const size_t max_request_per_layer = mgr.getExpectedNumEval() / 2;
-		const size_t num_request = options.eval_num_games / 2 + cushion;
+		const size_t num_request = gameOptions.eval_num_games / 2 + cushion;
 		const size_t num_eval_machine_per_layer =
 				compute_num_eval_machine(num_request, max_request_per_layer);
 
@@ -58,30 +62,32 @@ class ModelPerf {
 		record_.resetPrefix(
 				eval_prefix() + "-" + std::to_string(p.black_ver) + "-" +
 				std::to_string(p.white_ver));
+
+		logger_->info("{}ModelPerfomance was created{}", GREEN_B, COLOR_END);
 	}
 
-	ModelPerf(ModelPerf&&) = default;
+	ModelPerfomance(ModelPerfomance&&) = default;
 
 	int n_done() const {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		return games_->win_count().n_done() + swap_games_->win_count().n_done();
 	}
 	int n_win() const {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		return games_->win_count().n_win() + swap_games_->win_count().n_win();
 	}
 
 	float winrate() const {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		const int num_games = n_done();
 		return num_games == 0 ? 0.0 : static_cast<float>(n_win()) / num_games;
 	}
 
 	EvalResult eval_result() const {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		return eval_result_;
 	}
@@ -95,7 +101,7 @@ class ModelPerf {
 	}
 
 	EvalResult updateState(const ClientManager& mgr) {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		if (sealed_)
 			return eval_result_;
@@ -106,7 +112,7 @@ class ModelPerf {
 		eval_result_ = eval_check();
 
 		if (n_done() > 0 && (sent_ % 100 == 0 || recv_ % 100 == 0)) {
-			logger_->info("EvalResult: [{}]{}", elf_utils::now(), info());
+			logger_->info("EvalResult: {}", info());
 		}
 
 		if (sealed_ || eval_result_ == EVAL_INCOMPLETE)
@@ -117,7 +123,7 @@ class ModelPerf {
 	}
 
 	void feed(const ClientInfo& c, const CheckersRecord& r) {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		if (r.request.client_ctrl.player_swap) {
 			swap_games_->add(c, -r.result.reward);
@@ -129,7 +135,7 @@ class ModelPerf {
 	}
 
 	void fillInRequest(const ClientInfo& c, MsgRequest* msg) {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		if (sealed_)
 			return;
@@ -148,8 +154,7 @@ class ModelPerf {
 				continue;
 			if (sent_ % 100 == 0) {
 				logger_->info(
-						"{} Sending evaluation request: {}, seng: {}",
-						elf_utils::now(),
+						"Sending evaluation request: {}, seng: {}",
 						curr_pair_.info(),
 						sent_);
 			}
@@ -159,26 +164,26 @@ class ModelPerf {
 			msg->vers = curr_pair_;
 			// Now treat player_swap as same as other quantities.
 			msg->client_ctrl.player_swap = g.second;
-			msg->client_ctrl.num_game_thread_used = options_.eval_num_threads;
+			msg->client_ctrl.num_game_thread_used = gameOptions_.eval_num_threads;
 			break;
 		}
 		sent_++;
 	}
 
 	bool IsSealed() const {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		return sealed_;
 	}
 
 	const ModelPair& Pair() const {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		return curr_pair_;
 	}
 
  private:
-	const CheckersGameOptions& options_;
+	const CheckersGameOptions& gameOptions_;
 	const ModelPair curr_pair_;
 
 	// For each machine + game_id, the list of rewards.
@@ -193,7 +198,7 @@ class ModelPerf {
 	std::shared_ptr<spdlog::logger> logger_;
 
 	static size_t compute_num_eval_machine(size_t n, size_t max_num_eval) {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		if (max_num_eval == 0)
 			return 1;
@@ -207,13 +212,13 @@ class ModelPerf {
 	}
 
 	std::string eval_prefix() const {
-		return "eval-" + options_.server_id + "-" + options_.time_signature;
+		return "eval-" + gameOptions_.server_id + "-" + gameOptions_.time_signature;
 	}
 
 	EvalResult eval_check() const {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
-		const int half_complete = options_.eval_num_games / 2;
+		const int half_complete = gameOptions_.eval_num_games / 2;
 		const float wr = winrate();
 
 		const auto& report = games_->win_count();
@@ -221,12 +226,12 @@ class ModelPerf {
 
 		if (report.n_done() >= half_complete &&
 				swap_report.n_done() >= half_complete) {
-			return wr >= options_.eval_thres ? EVAL_BLACK_PASS : EVAL_BLACK_NOTPASS;
+			return wr >= gameOptions_.eval_thres ? EVAL_BLACK_PASS : EVAL_BLACK_NOTPASS;
 		}
 		/*
-		auto res = report.CheckWinrateBound(half_complete, options_.eval_thres);
+		auto res = report.CheckWinrateBound(half_complete, gameOptions_.eval_thres);
 		auto swap_res = swap_report.CheckWinrateBound(half_complete,
-		options_.eval_thres);
+		gameOptions_.eval_thres);
 
 		if (res == fair_pick::LOSS && swap_res == fair_pick::LOSS) {
 			return EVAL_BLACK_NOTPASS;
@@ -240,14 +245,13 @@ class ModelPerf {
 	}
 
 	void set_sealed() {
-		display_debug_info("ModelPerf", __FUNCTION__, RED_B);
+		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
 
 		// Save all games.
 		sealed_ = true;
 		logger_->info(
-				"Sealed[pass={}][{}]{}, {}",
+				"Sealed[pass={}]{}, {}",
 				(eval_result_ == EVAL_BLACK_PASS),
-				elf_utils::now(),
 				info(),
 				record_.prefix_save_counter());
 		record_.saveCurrent();
@@ -280,10 +284,13 @@ class ModelPerf {
 
 class EvalSubCtrl {
  public:
-	EvalSubCtrl(const CheckersGameOptions& options, const TSOptions& mcts_options)
-			: options_(options),
+	EvalSubCtrl(const CheckersGameOptions& gameOptions, const TSOptions& mcts_options)
+			: gameOptions_(gameOptions),
 				logger_(
-						elf::logging::getIndexedLogger("elfgames::go::train::EvalSubCtrl-", "")) {
+						elf::logging::getIndexedLogger(
+							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+							"EvalSubCtrl-", 
+							"")) {
 		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
 
 		// [TODO]: A bit hacky, we need to have a better way for this.
@@ -303,20 +310,20 @@ class EvalSubCtrl {
 		auto models_to_eval = models_to_eval_;
 
 		for (const auto& ver : models_to_eval) {
-			ModelPerf& perf = find_or_create(mgr, get_key(ver));
+			ModelPerfomance& perf = find_or_create(mgr, get_key(ver));
 
 			auto res = perf.updateState(mgr);
 			switch (res) {
-				case ModelPerf::EVAL_INVALID:
+				case ModelPerfomance::EVAL_INVALID:
 					logger_->info("res cannot be EVAL_INVALID");
 					assert(false);
-				case ModelPerf::EVAL_INCOMPLETE:
+				case ModelPerfomance::EVAL_INCOMPLETE:
 					break;
-				case ModelPerf::EVAL_BLACK_PASS:
+				case ModelPerfomance::EVAL_BLACK_PASS:
 					// Check whether we need to make a conclusion.
 					// Update reference.
 					return perf.Pair().black_ver;
-				case ModelPerf::EVAL_BLACK_NOTPASS:
+				case ModelPerfomance::EVAL_BLACK_NOTPASS:
 					// In any case, pick the next model to evaluate.
 					remove_candidate_model(perf.Pair().black_ver);
 					break;
@@ -334,7 +341,7 @@ class EvalSubCtrl {
 
 		std::lock_guard<std::mutex> lock(mutex_);
 
-		ModelPerf* perf = find_or_null(r.request.vers);
+		ModelPerfomance* perf = find_or_null(r.request.vers);
 		if (perf == nullptr)
 			return NOT_REQUESTED;
 
@@ -359,7 +366,7 @@ class EvalSubCtrl {
 		// model first.
 		// Note that on_eval_status might change models_to_eval,
 		for (const auto& ver : models_to_eval_) {
-			ModelPerf& perf = find_or_create(info.getManager(), get_key(ver));
+			ModelPerfomance& perf = find_or_create(info.getManager(), get_key(ver));
 			perf.fillInRequest(info, msg);
 			if (!msg->vers.wait())
 				break;
@@ -385,15 +392,16 @@ class EvalSubCtrl {
 		if (selfplay_ver == best_baseline_model_) {
 			if (selfplay_ver < new_version) {
 				logger_->info(
-						"Add new version: {}, selfplay_ver: {}, baseline: {}{}",
+						"Add new model for evaluation: {}, selfplay_ver: {}, baseline_ver: {}, eval_num_games={}, mcts.info: {}",
 						new_version,
 						selfplay_ver,
 						best_baseline_model_,
+						gameOptions_.eval_num_games,
 						mcts_opt_.info());
 				add_candidate_model(new_version);
 			} else {
 				logger_->warn(
-						"New version: {} is the same or earlier than baseline: {}{}",
+						"New version: {} is the same or earlier than baseline: {}, mcts.info: {}",
 						new_version,
 						best_baseline_model_,
 						mcts_opt_.info());
@@ -411,13 +419,13 @@ class EvalSubCtrl {
  private:
 	mutable std::mutex mutex_;
 
-	CheckersGameOptions options_;
+	CheckersGameOptions gameOptions_;
 	TSOptions mcts_opt_;
 
 	int64_t best_baseline_model_ = -1;
 	std::vector<int64_t> models_to_eval_;
 
-	std::unordered_map<ModelPair, std::unique_ptr<ModelPerf>> perfs_;
+	std::unordered_map<ModelPair, std::unique_ptr<ModelPerfomance>> perfs_;
 
 	std::shared_ptr<spdlog::logger> logger_;
 
@@ -453,19 +461,19 @@ class EvalSubCtrl {
 		return false;
 	}
 
-	ModelPerf& find_or_create(const ClientManager& mgr, const ModelPair& mp) {
+	ModelPerfomance& find_or_create(const ClientManager& mgr, const ModelPair& mp) {
 		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
 
 		auto it = perfs_.find(mp);
 		if (it == perfs_.end()) {
 			auto& ptr = perfs_[mp];
-			ptr.reset(new ModelPerf(options_, mgr, mp));
+			ptr.reset(new ModelPerfomance(gameOptions_, mgr, mp));
 			return *ptr;
 		}
 		return *it->second;
 	}
 
-	ModelPerf* find_or_null(const ModelPair& mp) {
+	ModelPerfomance* find_or_null(const ModelPair& mp) {
 		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
 		
 		auto it = perfs_.find(mp);

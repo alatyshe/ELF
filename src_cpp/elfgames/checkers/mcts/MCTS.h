@@ -64,7 +64,10 @@ class CheckersMCTSActor {
   CheckersMCTSActor(elf::GameClient* client, const MCTSActorParams& params)
       : params_(params),
         rng_(params.seed),
-        logger_(elf::logging::getIndexedLogger("elfgames::go::mcts::CheckersMCTSActor-", "")) {
+        logger_(elf::logging::getIndexedLogger(
+          std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+          "CheckersMCTSActor-", 
+          "")) {
     display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
 
     ai_.reset(new CheckersAI(client, {params_.actor_name}));

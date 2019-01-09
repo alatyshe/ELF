@@ -24,8 +24,8 @@ struct ClientInfo {
 
 	struct State {
 		mutable std::mutex		mutex_;
-		ThreadState				last_state_;
-		uint64_t				last_state_update_ = 0;
+		ThreadState						last_state_;
+		uint64_t							last_state_update_ = 0;
 		const ClientManager&	mgr_;
 
 		State(const ClientManager& mgr);
@@ -150,11 +150,11 @@ struct ClientInfo {
 class ClientManager {
  public:
 	ClientManager(
-			int max_num_threads,
-			uint64_t max_client_delay_sec,
-			int num_expected_clients,
-			float selfplay_only_ratio = 0.6,
-			int max_num_eval = -1,
+			int 			max_num_threads,
+			uint64_t 	max_client_delay_sec,
+			int 			num_expected_clients,
+			float 		selfplay_only_ratio = 0.6,
+			int 			max_num_eval = -1,
 			std::function<uint64_t()> timer = elf_utils::sec_since_epoch_from_now)
 			: selfplay_only_ratio_(selfplay_only_ratio),
 				num_expected_clients_(num_expected_clients),
@@ -163,7 +163,8 @@ class ClientManager {
 				max_client_delay_sec_(max_client_delay_sec),
 				timer_(timer),
 				logger_(elf::logging::getIndexedLogger(
-						"elfgames::go::train::ClientManager-",
+						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						"ClientManager-",
 						"")) {
 		display_debug_info("ClientManager", __FUNCTION__, RED_B);
 
@@ -245,31 +246,34 @@ class ClientManager {
 	}
 
  private:
-	float selfplay_only_ratio_;
-	const int num_expected_clients_;
-	const int max_num_eval_;
-	const int max_num_threads_;
-	const uint64_t max_client_delay_sec_;
+	float						selfplay_only_ratio_;
+	const int				num_expected_clients_;
+	const int				max_num_eval_;
+	const int				max_num_threads_;
+	const uint64_t	max_client_delay_sec_;
 
 	std::function<uint64_t()> timer_ = nullptr;
 
 	mutable std::mutex mutex_;
 	std::unordered_map<std::string, std::unique_ptr<ClientInfo>> clients_;
-	int num_selfplay_only_ = 0;
-	int num_eval_then_selfplay_ = 0;
+	int							num_selfplay_only_ = 0;
+	int							num_eval_then_selfplay_ = 0;
 
 	std::shared_ptr<spdlog::logger> logger_;
 
 	std::string _info() const {
 		std::stringstream ss;
 		int n = num_selfplay_only_ + num_eval_then_selfplay_;
-		ss << "Clients[" << n << "][#max_eval=" << max_num_eval_ << "]"
+		ss << "Clients total[" << n << "==100%]" << std::endl
+			 << "SelfplayOnly clients[" << num_selfplay_only_ << "/"
+			 << 100 * static_cast<float>(num_selfplay_only_) / n << "%]"<< std::endl
+			 << "EvalThenSelfplay clients[" << num_eval_then_selfplay_ << "/"
+			 << 100 * static_cast<float>(num_eval_then_selfplay_) / n << "%]"<< std::endl
+			 << "[#expected_clients=" << num_expected_clients_ << "]"
+			 << "[#max_eval=" << max_num_eval_ << "]"
 			 << "[#max_th=" << max_num_threads_ << "]"
-			 << "[#client_delay=" << max_client_delay_sec_ << "]"
-			 << ", SelfplayOnly[" << num_selfplay_only_ << "/"
-			 << 100 * static_cast<float>(num_selfplay_only_) / n << "%], "
-			 << "EvalThenSelfplay[" << num_eval_then_selfplay_ << "/"
-			 << 100 * static_cast<float>(num_eval_then_selfplay_) / n << "%]";
+			 << "[#client_delay=" << max_client_delay_sec_ << "]";
+
 		return ss.str();
 	}
 

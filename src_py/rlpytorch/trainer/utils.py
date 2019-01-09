@@ -8,6 +8,7 @@ import os
 from collections import defaultdict, deque, Counter
 from datetime import datetime
 
+from elf import logging
 from elf.options import auto_import_options, PyOptionSpec
 
 
@@ -77,14 +78,19 @@ class ModelSaver(object):
                 self.options.save_dir,
                 self.options.latest_symlink))
 
+        self.logger = logging.getIndexedLogger(
+            '\x1b[1;31;40m|py|\x1b[0mrlpytorch.trainer.ModelSaver-',
+            '')
+
     def feed(self, model):
         basename = self.options.save_prefix + "-%d.bin" % model.step
-        print("Save to " + self.options.save_dir)
+        # print("Save to " + self.options.save_dir)
         filename = os.path.join(self.options.save_dir, basename)
-        print("Filename = " + filename)
+        # print("Filename = " + filename)
         model.save(filename)
         # Create a symlink
         self.symlinker.feed(basename)
+        self.logger.info(f"Saved new model: [{filename}]")
 
 
 class ValueStats(object):
@@ -108,9 +114,10 @@ class ValueStats(object):
         name = "" if self.name is None else self.name
         if self.counter > 0:
             try:
-                return "%s%s[%d]: avg: %.5f, min: %.5f[%d], max: %.5f[%d]" % (
-                    info, name, self.counter, self.summation / self.counter,
-                    self.min_value, self.min_idx, self.max_value, self.max_idx
+                return "[%d]: avg: %.5f,\tmin: %.5f[id:%3d],\tmax: %.5f[id:%3d]\t%s%s" % (
+                    self.counter, self.summation / self.counter,
+                    self.min_value, self.min_idx, self.max_value, self.max_idx,
+                    info, name
                 )
             except BaseException:
                 return "%s%s[Err]:" % (info, name)
@@ -149,10 +156,13 @@ class MultiCounter(object):
         self.counts = Counter()
         self.stats = defaultdict(lambda: ValueStats())
         self.total_count = 0
+        self.logger = logging.getIndexedLogger(
+            '\x1b[1;31;40m|py|\x1b[0mrlpytorch.trainer.utils.MultiCounter-',
+            '')
 
     def inc(self, key):
         if self.verbose:
-            print("[MultiCounter]: %s" % key)
+            self.logger.info(f"[MultiCounter]: {key}")
         self.counts[key] += 1
         self.total_count += 1
 
@@ -166,15 +176,18 @@ class MultiCounter(object):
 
     def summary(self, global_counter=None):
         this_time = datetime.now()
+        res = "\n"
+        res += f"[\x1b[1;32;40mepisode #{global_counter + 1} finished\x1b[0m] "
         if self.last_time is not None:
-            print(
-                "[%d] Time spent = %f ms" %
-                (global_counter,
-                 (this_time - self.last_time).total_seconds() * 1000))
+            res += f"Time spent = {(this_time - self.last_time).total_seconds() * 1000} ms, Stats:\n"
+        else:
+            res += "\n"
 
         for key, count in self.counts.items():
-            print("%s: %d/%d" % (key, count, self.total_count))
+            res += f"{key}: {count}/{self.total_count}(minibatch + cooldown passes)\n\n"
 
         for k in sorted(self.stats.keys()):
             v = self.stats[k]
-            print(v.summary(info=str(global_counter) + ":" + k))
+            res += v.summary(info=str(global_counter) + ":" + k) + "\n"
+
+        self.logger.info(res)

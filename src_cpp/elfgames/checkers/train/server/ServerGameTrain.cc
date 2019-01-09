@@ -6,24 +6,30 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "game_train.h"
+#include "ServerGameTrain.h"
 
-GameTrain::GameTrain(
+ServerGameTrain::ServerGameTrain(
     int game_idx,
     elf::GameClient* client,
     const ContextOptions& context_options,
     const CheckersGameOptions& options,
     elf::shared::ReaderQueuesT<CheckersRecord>* reader)
-    : GameBase(game_idx, client, context_options, options), reader_(reader) {
-  display_debug_info("GameTrain", __FUNCTION__, RED_B);
+      : GameBase(game_idx, client, context_options, options), 
+        reader_(reader),
+        logger_(elf::logging::getIndexedLogger(
+          std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+          "ServerGameTrain-" + std::to_string(game_idx) + "-",
+          "")) {
+  display_debug_info("ServerGameTrain", __FUNCTION__, RED_B);
 
   for (size_t i = 0; i < kNumState; ++i) {
     _checkers_state_ext.emplace_back(new CheckersStateExtOffline(game_idx, options));
   }
+  logger_->info("Was succefully created");
 }
 
-void GameTrain::act() {
-  display_debug_info("GameTrain", __FUNCTION__, RED_B);
+void ServerGameTrain::act() {
+  display_debug_info("ServerGameTrain", __FUNCTION__, RED_B);
   
   std::vector<elf::FuncsWithState> funcsToSend;
 

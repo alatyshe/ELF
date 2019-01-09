@@ -6,12 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "GameSelfPlay.h"
+#include "ClientGameSelfPlay.h"
 #include "../mcts/AI.h"
 #include "../mcts/MCTS.h"
 
 ////////////////// Game /////////////////////
-GameSelfPlay::GameSelfPlay(
+ClientGameSelfPlay::ClientGameSelfPlay(
 		int game_idx,
 		elf::GameClient* client,
 		const ContextOptions& context_options,
@@ -23,45 +23,46 @@ GameSelfPlay::GameSelfPlay(
 			checkers_notifier_(checkers_notifier),
 			_checkers_state_ext(game_idx, options),
 			logger_(elf::logging::getIndexedLogger(
-					"elfgames::go::GameSelfPlay-" + std::to_string(game_idx) + "-",
+					std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+					"ClientGameSelfPlay-" + std::to_string(game_idx) + "-",
 					"")) {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 }
 
-std::string		GameSelfPlay::showBoard() const {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+std::string		ClientGameSelfPlay::showBoard() const {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	return _checkers_state_ext.state().showBoard();
 }
 
-std::string		GameSelfPlay::getLastMove() const {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+std::string		ClientGameSelfPlay::getLastMove() const {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 	
 	return std::to_string(_checkers_state_ext.lastMove());
 }
 
-std::array<int, TOTAL_NUM_ACTIONS>		GameSelfPlay::getValidMoves() const {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+std::array<int, TOTAL_NUM_ACTIONS>		ClientGameSelfPlay::getValidMoves() const {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	return GetValidMovesBinary(_checkers_state_ext.state().board(), 
 		_checkers_state_ext.state().board().active);
 }
 
-float 			GameSelfPlay::getScore() {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+float 			ClientGameSelfPlay::getScore() {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	return _checkers_state_ext.state().evaluate();
 }
 
 
-MCTSCheckersAI* GameSelfPlay::init_checkers_ai(
+MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 		const std::string& actor_name,
 		const elf::ai::tree_search::TSOptions& mcts_options,
 		float puct_override,
 		int mcts_rollout_per_batch_override,
 		int mcts_rollout_per_thread_override,
 		int64_t model_ver) {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	logger_->info(
 			"Initializing actor {}; puct_override: {}; batch_override: {}; "
@@ -108,8 +109,8 @@ MCTSCheckersAI* GameSelfPlay::init_checkers_ai(
 
 
 
-Coord GameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	auto policy = mcts_checkers_ai->getMCTSPolicy();
 
@@ -135,8 +136,8 @@ Coord GameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coo
 
 
 
-Coord GameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	float predicted_value = mcts_checkers_ai->getValue();
 
@@ -170,8 +171,8 @@ Coord GameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) 
 
 
 
-void GameSelfPlay::finish_game(CheckersFinishReason reason) {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	// My code
 	_checkers_state_ext.setFinalValue(reason, &_rng);
@@ -187,7 +188,6 @@ void GameSelfPlay::finish_game(CheckersFinishReason reason) {
 	if (checkers_ai2 != nullptr) {
 		checkers_ai2->endGame(_checkers_state_ext.state());
 	}
-
 	// сообщает клиенту, что игры окончена
 	if (checkers_notifier_ != nullptr){
 		checkers_notifier_->OnGameEnd(_checkers_state_ext);
@@ -204,8 +204,8 @@ void GameSelfPlay::finish_game(CheckersFinishReason reason) {
 
 
 
-void GameSelfPlay::setAsync() {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+void ClientGameSelfPlay::setAsync() {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	checkers_ai1->setRequiredVersion(-1);
 	if (checkers_ai2 != nullptr)
@@ -222,8 +222,8 @@ void GameSelfPlay::setAsync() {
 
 
 
-void GameSelfPlay::restart() {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+void ClientGameSelfPlay::restart() {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	const MsgRequest& checkers_request = _checkers_state_ext.currRequest();
 	bool checkers_async = checkers_request.client_ctrl.async;
@@ -275,9 +275,9 @@ void GameSelfPlay::restart() {
 
 
 
-bool GameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
+bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
 	// при связи с сервером
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B);
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 
 	if (*reply == RestartReply::UPDATE_COMPLETE)
 		return false;
@@ -337,14 +337,14 @@ bool GameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
 
 
 
-void GameSelfPlay::act() {
-	display_debug_info("GameSelfPlay", __FUNCTION__, RED_B, false);
+void ClientGameSelfPlay::act() {
+	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B, false);
 	
 
 	if (_online_counter % 5 == 0) {
 		using std::placeholders::_1;
 		using std::placeholders::_2;
-		auto f = std::bind(&GameSelfPlay::OnReceive, this, _1, _2);
+		auto f = std::bind(&ClientGameSelfPlay::OnReceive, this, _1, _2);
 
 		do {
 			dispatcher_->checkMessage(_checkers_state_ext.currRequest().vers.wait(), f);
@@ -353,15 +353,15 @@ void GameSelfPlay::act() {
 		// Check request every 5 times.
 		// Update current state.
 		if (checkers_notifier_ != nullptr) {
-			// 
 			checkers_notifier_->OnStateUpdate(_checkers_state_ext.getThreadState());
 		}
 	}
 	_online_counter++;
 
 
+
 	const CheckersState& cs = _checkers_state_ext.state();
-	if (_human_player != nullptr) {
+	if (_human_player != nullptr && cs.nextPlayer() == WHITE_PLAYER) {
 		do {
 			if (cs.terminated()) {
 				finish_game(CHEKCERS_BLACK_WIN);

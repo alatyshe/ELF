@@ -25,12 +25,12 @@
 #include "elf/logging/IndexedLoggerFactory.h"
 
 // Checkers
-#include "data_loader.h"
-#include "control/ctrl_eval.h"
-#include "control/ctrl_selfplay.h"
+#include "../data_loader.h"
+#include "../control/ctrl_eval.h"
+#include "../control/ctrl_selfplay.h"
 
-#include "../common/game_stats.h"
-#include "../common/notifier.h"
+#include "../../common/game_stats.h"
+#include "../../common/notifier.h"
 
 using namespace std::chrono_literals;
 using ReplayBuffer = elf::shared::ReaderQueuesT<CheckersRecord>;
@@ -46,30 +46,29 @@ using Addr = elf::Addr;
 class ThreadedCtrl : public ThreadedCtrlBase {
  public:
 	ThreadedCtrl(
-			Ctrl& ctrl,
-			elf::GameClient* client,
-			ReplayBuffer* replay_buffer,
-			const CheckersGameOptions& options,
+			Ctrl& 						ctrl,
+			elf::GameClient* 			client,
+			ReplayBuffer* 				replay_buffer,
+			const CheckersGameOptions& 	gameOptions,
 			const elf::ai::tree_search::TSOptions& mcts_opt)
 			: ThreadedCtrlBase(ctrl, 10000),
 				replay_buffer_(replay_buffer),
-				options_(options),
+				gameOptions_(gameOptions),
 				client_(client),
 				rng_(time(NULL)),
-				logger_(
-						elf::logging::getIndexedLogger("ThreadedCtrl-", "")) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
+				logger_(elf::logging::getIndexedLogger(
+							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+							"ThreadedCtrl-", 
+							"")) {
 
-		selfplay_.reset(new SelfPlaySubCtrl(options, mcts_opt));
-		eval_.reset(new EvalSubCtrl(options, mcts_opt));
+		selfplay_.reset(new SelfPlaySubCtrl(gameOptions_, mcts_opt));
+		eval_.reset(new EvalSubCtrl(gameOptions_, mcts_opt));
 
 		ctrl_.reg();
 		ctrl_.addMailbox<_ModelUpdateStatus>();
 	}
 
 	void Start() {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
-
 		if (!ctrl_.isRegistered()) {
 			ctrl_.reg();
 		}
@@ -78,8 +77,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 	}
 
 	void waitForSufficientSelfplay(int64_t selfplay_ver) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
-
 		SelfPlaySubCtrl::CtrlResult res;
 		// каждые 30 секунд проверяем на заполненость batch
 		// для нашей модели
@@ -104,16 +101,12 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 	}
 
 	void updateModel(int64_t new_model) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
-
 		sendToThread(std::make_pair(ctrl_.getAddr(), new_model));
 		_ModelUpdateStatus dummy;
 		ctrl_.waitMail(&dummy);
 	}
 
 	bool checkNewModel(ClientManager* manager) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
-
 		int64_t new_model = eval_->updateState(*manager);
 
 		// If there is at least one true eval.
@@ -126,8 +119,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 	}
 
 	bool setInitialVersion(int64_t init_version) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
-
 		logger_->info("Setting init version: {}", init_version);
 		eval_->setBaselineModel(init_version);
 
@@ -137,23 +128,33 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 		return true;
 	}
 
+	// Добавляем новую модель для сравнения
+	// Если eval_num_games == 0, то просто апдейтим предыдущую
 	void addNewModelForEvaluation(int64_t selfplay_ver, int64_t new_version) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
+		if (gameOptions_.eval_num_games == 0) {
+			logger_->info("Update old model without evaluation; eval_num_games={}", gameOptions_.eval_num_games);
 
-		if (options_.eval_num_games == 0) {
 			// And send a message to start the process.
 			updateModel(new_version);
 		} else {
+			// logger_->info("Add model for evaluation; selfplay_ver={}, new_version={}, eval_num_games={}", 
+			// 	selfplay_ver,
+			// 	new_version,
+			// 	gameOptions_.eval_num_games);
+			// eval_ - std::unique_ptr<EvalSubCtrl>
 			eval_->addNewModelForEvaluation(selfplay_ver, new_version);
 			// For offline training, we don't need to wait..
-			if (options_.mode != "offline_train") {
+			// ожидаем очередной батч от клиента
+			// если это offline_train, то подразумевается, что тренируемся на 
+			// данных которые у нас уже заготовлены
+			// с лучае с шашками, мы ждем очередной заполненный батч для тренировки на нем
+			if (gameOptions_.mode != "offline_train") {
 				waitForSufficientSelfplay(selfplay_ver);
 			}
 		}
 	}
 
 	void setEvalMode(int64_t new_ver, int64_t old_ver) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
 		eval_->setBaselineModel(old_ver);
 		eval_->addNewModelForEvaluation(old_ver, new_ver);
@@ -162,7 +163,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
 	// Call by writer thread.
 	std::vector<FeedResult> onSelfplayGames(const std::vector<CheckersRecord>& records) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
 		// Receive selfplay/evaluation games.
 		std::vector<FeedResult> res(records.size());
@@ -177,7 +177,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 	std::vector<FeedResult> onEvalGames(
 			const ClientInfo& info,
 			const std::vector<CheckersRecord>& records) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
 		// Receive selfplay/evaluation games.
 		std::vector<FeedResult> res(records.size());
@@ -190,7 +189,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 	}
 
 	void fillInRequest(const ClientInfo& info, MsgRequest* request) {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
 		request->vers.set_wait();
 		request->client_ctrl.client_type = info.type();
@@ -222,7 +220,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
 	bool eval_mode_ = false;
 
-	const CheckersGameOptions options_;
+	const CheckersGameOptions gameOptions_;
 	elf::GameClient* client_ = nullptr;
 	std::mt19937 rng_;
 
@@ -232,7 +230,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 	std::shared_ptr<spdlog::logger> logger_;
 
 	void on_thread() override {
-		display_debug_info("ThreadedCtrl", __FUNCTION__, RED_B);
 
 		std::pair<Addr, int64_t> data;
 		if (!ctrl_.peekMail(&data, 0))
@@ -248,7 +245,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 		// will not enter the replay buffer
 		logger_->info("Updating .. old_ver: {}, new_ver: {}", old_ver, ver);
 		// A better model is found, clean up old games (or not?)
-		if (!options_.keep_prev_selfplay) {
+		if (!gameOptions_.keep_prev_selfplay) {
 			replay_buffer_->clear();
 		}
 
@@ -291,32 +288,36 @@ class TrainCtrl : public DataInterface {
 			Ctrl& ctrl,
 			int num_games,
 			elf::GameClient* client,
-			const CheckersGameOptions& options,
+			const CheckersGameOptions& gameOptions,
 			const elf::ai::tree_search::TSOptions& mcts_opt)
 			: ctrl_(ctrl),
 				rng_(time(NULL)),
 				selfplay_record_("tc_selfplay"),
 				logger_(
-						elf::logging::getIndexedLogger("TrainCtrl-", "")) {
-		display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
+						elf::logging::getIndexedLogger(
+							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+							"TrainCtrl-", 
+							"")) {
 
 		// Register sender for python thread.
 		elf::shared::RQCtrl rq_ctrl;
-		rq_ctrl.num_reader = options.num_reader;
-		rq_ctrl.ctrl.queue_min_size = options.q_min_size;
-		rq_ctrl.ctrl.queue_max_size = options.q_max_size;
+		rq_ctrl.num_reader = gameOptions.num_reader;
+		rq_ctrl.ctrl.queue_min_size = gameOptions.q_min_size;
+		rq_ctrl.ctrl.queue_max_size = gameOptions.q_max_size;
 
 		replay_buffer_.reset(new ReplayBuffer(rq_ctrl));
 		logger_->info(
 				"Finished initializing replay_buffer(ReplayBuffer) info : {}", replay_buffer_->info());
+		
 		threaded_ctrl_.reset(new ThreadedCtrl(
-				ctrl_, client, replay_buffer_.get(), options, mcts_opt));
+				ctrl_, client, replay_buffer_.get(), gameOptions, mcts_opt));
 		logger_->info(
 				"Finished initializing threaded_ctrl_(ThreadedCtrl)");
+
 		client_mgr_.reset(new ClientManager(
 				num_games,
-				options.client_max_delay_sec,
-				options.expected_num_clients,
+				gameOptions.client_max_delay_sec,
+				gameOptions.expected_num_clients,
 				0.5));
 		logger_->info(
 				"Finished initializing client_mgr_(ClientManager)", client_mgr_->info());
@@ -324,7 +325,6 @@ class TrainCtrl : public DataInterface {
 	}
 
 	void OnStart() override {
-		display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
 
 		// Call by shared_rw thread or any thread that will call OnReceive.
 		ctrl_.reg("train_ctrl");
@@ -333,19 +333,16 @@ class TrainCtrl : public DataInterface {
 	}
 
 	ReplayBuffer* getReplayBuffer() {
-		display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
 
 		return replay_buffer_.get();
 	}
 
 	ThreadedCtrl* getThreadedCtrl() {
-		display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
 
 		return threaded_ctrl_.get();
 	}
 
 	bool setEvalMode(int64_t new_ver, int64_t old_ver) {
-		display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
 
 		logger_->info("Setting eval mode: new: {}, old: {}", new_ver, old_ver);
 		client_mgr_->setSelfplayOnlyRatio(0.0);
@@ -353,9 +350,11 @@ class TrainCtrl : public DataInterface {
 		return true;
 	}
 
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	elf::shared::InsertInfo OnReceive(const std::string&, const std::string& s)
 			override {
-		display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
 
 		CheckersRecords rs = CheckersRecords::createFromJsonString(s);
 		const ClientInfo& info = client_mgr_->updateStates(rs.identity, rs.states);
@@ -389,7 +388,7 @@ class TrainCtrl : public DataInterface {
 		threaded_ctrl_->checkNewModel(client_mgr_.get());
 
 		recv_count_++;
-		if (recv_count_ % 1000 == 0) {
+		if (recv_count_ % 100 == 0) {
 			int valid_selfplay = 0, valid_eval = 0;
 			for (size_t i = 0; i < rs.records.size(); ++i) {
 				if (selfplay_res[i] == FeedResult::FEEDED)
@@ -412,12 +411,11 @@ class TrainCtrl : public DataInterface {
 	}
 
 	bool OnReply(const std::string& identity, std::string* msg) override {
-		display_debug_info("TrainCtrl", __FUNCTION__, RED_B);
 		
 		ClientInfo& info = client_mgr_->getClient(identity);
 
 		if (info.justAllocated()) {
-			logger_->info("New allocated: {}, {}", identity, client_mgr_->info());
+			logger_->info("New allocated: {}\n{}", identity, client_mgr_->info());
 		}
 
 		MsgRequestSeq request;

@@ -10,6 +10,7 @@
 
 class CheckersState {
  public:
+
 	CheckersState() {
 		reset();
 	}
@@ -79,11 +80,6 @@ class CheckersState {
 		return _board._last_move;
 	}
 
- //  Coord lastMove2() const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
- //    return _board._last_move2;
- //  }
-
 	int nextPlayer() const {
 		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		return _board.active;
@@ -102,11 +98,6 @@ class CheckersState {
 		*next_move_number = _moves.size();
 		return true;
 	}
-
- //  uint64_t getHashCode() const {
- //    display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
- //    return _board._hash;
- //  }
 
 	const std::vector<Coord>& getAllMoves() const {
 		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
@@ -163,8 +154,6 @@ class CheckersState {
 	std::vector<Coord> _moves;
 	float _final_value = 0.0;
 	bool _has_final_value = false;
-
- //  void _add_board_hash(const Coord& c);
 };
 
 

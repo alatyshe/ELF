@@ -16,70 +16,43 @@
 
 // enum SpecialActionType { SA_SKIP = -100, SA_PASS, SA_CLEAR };
 
-class GoFeature {
+class GameFeature {
  public:
-	GoFeature(const CheckersGameOptions& options) : options_(options) {
-		display_debug_info("GoFeature", __FUNCTION__, RED_B);
-
+	GameFeature(const CheckersGameOptions& options) : 
+			options_(options) {
 		_num_plane_checkers = CHECKERS_NUM_FEATURES;
 	}
-
 	// Inference part.
 	static void extractCheckersState(
 			const CheckersFeature& bf, 
 			float* f) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		bf.extract(f);
 	}
-
 
 	static void CheckersReplyValue(
 			CheckersReply& reply, 
 			const float* value) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		reply.value = *value;
 	}
 
 	static void CheckersReplyPolicy(
 			CheckersReply& reply, 
 			const float* pi) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		copy(pi, pi + reply.pi.size(), reply.pi.begin());
 	}
 
 	static void CheckersReplyAction(
 			CheckersReply& reply, 
 			const int64_t* action) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		reply.c = *action;
 	}
 
 	static void CheckersReplyVersion(
 			CheckersReply& reply, 
 			const int64_t* ver) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
 
 		reply.version = *ver;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
 
 
 	// /////////////
@@ -88,7 +61,6 @@ class GoFeature {
 	static void extractCheckersMoveIdx(
 			const CheckersStateExtOffline& s, 
 			int* move_idx) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
 
 		// просто текущий номер хода
 		// (при приходе доски он проигрывает игры согласно JSON)
@@ -102,8 +74,6 @@ class GoFeature {
 	static void extractCheckersNumMove(
 			const CheckersStateExtOffline& s, 
 			int* num_move) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		*num_move = s.getNumMoves();
 
 		// std::cout << "extractCheckersNumMove\t: " << *num_move << std::endl;
@@ -112,8 +82,6 @@ class GoFeature {
 	static void extractCheckersPredictedValue(
 			const CheckersStateExtOffline& s, 
 			float* predicted_value) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		*predicted_value = s.getPredictedValue(s._state.getPly() - 1);
 
 		// std::cout << "extractCheckersPredictedValue : " << *predicted_value << std::endl;
@@ -123,19 +91,16 @@ class GoFeature {
 	static void extractCheckersWinner(
 			const CheckersStateExtOffline& s, 
 			float* winner) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		*winner = s._offline_winner;
 
 		// std::cout << "extractCheckersWinner : " << *winner << std::endl;
 	}
 
 
-	// Посмотреть гду вызывается
+	// Посмотреть где вызывается
 	static void extractCheckersStateExt(
 			const CheckersStateExtOffline& s, 
 			float* f) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
 
 		// Then send the data to the server.
 		extractCheckersState(s._bf, f);
@@ -145,7 +110,6 @@ class GoFeature {
 	static void extractCheckersMCTSPi(
 			const CheckersStateExtOffline& s, 
 			float* mcts_scores) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
 
 		// std::cout << "extractMCTSPi : " << std::endl;
 
@@ -184,7 +148,6 @@ class GoFeature {
 	static void extractCheckersOfflineAction(
 			const CheckersStateExtOffline& s, 
 			int64_t* offline_a) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
 
 		const CheckersFeature& bf = s._bf;
 
@@ -199,8 +162,6 @@ class GoFeature {
 	static void extractCheckersStateSelfplayVersion(
 			const CheckersStateExtOffline& s, 
 			int64_t* ver) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		*ver = s._curr_request.vers.black_ver;
 
 		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
@@ -209,8 +170,6 @@ class GoFeature {
 	static void extractCheckersAIModelBlackVersion(
 			const ModelPair& msg, 
 			int64_t* ver) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		*ver = msg.black_ver;
 
 		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
@@ -219,8 +178,6 @@ class GoFeature {
 	static void extractCheckersAIModelWhiteVersion(
 			const ModelPair& msg, 
 			int64_t* ver) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		*ver = msg.white_ver;
 
 		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
@@ -229,8 +186,6 @@ class GoFeature {
 	static void extractCheckersSelfplayVersion(
 			const MsgVersion& msg, 
 			int64_t* ver) {
-		display_debug_info("CheckersFeature", __FUNCTION__, RED_B);
-
 		*ver = msg.model_ver;
 
 		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
@@ -238,27 +193,14 @@ class GoFeature {
 
 	// ================================================================
 	// ================================================================
-	// ================================================================
-	// ================================================================
-
-
-
-
-
-
-
-
-
-
 	void registerExtractor(int batchsize, elf::Extractor& e) {
-		display_debug_info("GoFeature", __FUNCTION__, RED_B);
+		display_debug_info("GameFeature", __FUNCTION__, RED_B);
 
-		// Checkers
-		// регаем ключ по которому мы будем доставать наш state и говорим, 
+		// регаем ключ по которому мы будем доставать наш state и сообщаем размерность, 
 		// что он будет такой размерности
 		auto& checkers_s = e.addField<float>("checkers_s").addExtents(
 			batchsize, {batchsize, _num_plane_checkers, CHECKERS_BOARD_SIZE, CHECKERS_BOARD_SIZE});
-		// добавляем к этому ключу вот такие методы для 
+		// добавляем к этому ключу вот методы для 
 		// тк нам нужно заполнить эту память и передать python
 		checkers_s.addFunction<CheckersFeature>(extractCheckersState)
 			.addFunction<CheckersStateExtOffline>(extractCheckersStateExt);
@@ -281,6 +223,7 @@ class GoFeature {
 				.addExtent(batchsize);
 
 
+
 		// привязываем к каждому полю свой метод для записи инфы в код ++
 		e.addClass<CheckersReply>()
 				.addFunction<int64_t>("a", CheckersReplyAction)
@@ -298,8 +241,6 @@ class GoFeature {
 				.addFunction<int64_t>("checkers_selfplay_ver", extractCheckersStateSelfplayVersion)
 				;
 
-
-
 		e.addClass<ModelPair>()
 				.addFunction<int64_t>("checkers_black_ver", extractCheckersAIModelBlackVersion)
 				.addFunction<int64_t>("checkers_white_ver", extractCheckersAIModelWhiteVersion);
@@ -310,14 +251,8 @@ class GoFeature {
 	}
 
 
-
-
-
-
-
-
 	std::map<std::string, int> getParams() const {
-		display_debug_info("GoFeature", __FUNCTION__, RED_B);
+		display_debug_info("GameFeature", __FUNCTION__, RED_B);
 		
 		return std::map<std::string, int>{
 				{"checkers_num_action", TOTAL_NUM_ACTIONS},
@@ -328,9 +263,10 @@ class GoFeature {
 	}
 
  private:
+ 	// Параметры игры
 	CheckersGameOptions options_;
-
-	int _num_plane_checkers;
+	// Количество фич доски
+	int 								_num_plane_checkers;
 };
 
 

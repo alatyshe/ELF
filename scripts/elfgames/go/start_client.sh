@@ -38,8 +38,9 @@ model=df_pred model_file=elfgames.go.df_model_checkers \
 	--selfplay_timeout_usec 10 \
 	\
 	--use_fp160					--use_fp161 \
-	--verbose
-	# --suicide_after_n_games 2000 \
+	--verbose \
+	--suicide_after_n_games 50 \
+
 	# \
 	# 1>> client.log 2>&1 &
 	# --parameter_print

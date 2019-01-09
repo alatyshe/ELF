@@ -4,15 +4,17 @@ project(elfgames_go)
 # Source files
 
 set(ELFGAMES_GO_SOURCES
-    common/GameSelfPlay.cc
+    common/ClientGameSelfPlay.cc
+    train/server/ServerGameTrain.cc
+
     train/client_manager.cc
-    train/game_train.cc
-    train/Pybind.cc
 
     checkers/CheckersState.cc
     checkers/CheckersBoard.cc
     checkers/CheckersFeature.cc
     checkers/CheckersStateExt.cc
+    
+    train/Pybind.cc
 )
 
 # Main Go library

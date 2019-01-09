@@ -5,6 +5,8 @@
 #include "record.h"
 #include "../checkers/Record.h"
 
+// ==========================================================
+// ==========================================================
 class CheckersGameNotifierBase {
  public:
   using MCTSResult = elf::ai::tree_search::MCTSResultT<Coord>;

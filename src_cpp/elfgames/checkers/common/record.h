@@ -13,17 +13,16 @@
 
 using json = nlohmann::json;
 
+// ==========================================================
+// ==========================================================
 enum    ClientType {
 	CLIENT_INVALID,
 	CLIENT_SELFPLAY_ONLY,
 	CLIENT_EVAL_THEN_SELFPLAY
 };
 
-
-
-
-
-
+// ==========================================================
+// ==========================================================
 struct  ClientCtrl {
 	ClientType client_type = CLIENT_SELFPLAY_ONLY;
 	// -1 means to use all the threads.
@@ -91,21 +90,16 @@ struct  ClientCtrl {
 	}
 };
 
-
-
-
-
-
+// ==========================================================
+// ==========================================================
 struct  MsgVersion {
 	int64_t model_ver;
+
 	MsgVersion(int ver = -1) : model_ver(ver) {}
 };
 
-
-
-
-
-
+// ==========================================================
+// ==========================================================
 enum    RestartReply {
 	NO_OP,
 	ONLY_WAIT,
@@ -115,27 +109,20 @@ enum    RestartReply {
 	UPDATE_COMPLETE,
 };
 
-
-
-
-
-
+// ==========================================================
+// ==========================================================
 struct  MsgRestart {
-	RestartReply result;
-	int game_idx;
+	RestartReply 	result;
+	int 					game_idx;
+
 	MsgRestart(RestartReply res = NO_OP, int game_idx = -1)
 			: result(res), game_idx(game_idx) {
 		display_debug_info("struct MsgRestart", __FUNCTION__, RED_B);
 	}
 };
 
-
-
-
-
-
-
-
+// ==========================================================
+// ==========================================================
 struct  MsgRequest {
 	ModelPair vers;
 	ClientCtrl client_ctrl;
@@ -181,12 +168,8 @@ struct  MsgRequest {
 	}
 };
 
-
-
-
-
-
-
+// ==========================================================
+// ==========================================================
 struct  MsgRequestSeq {
 	int64_t seq = -1;
 	MsgRequest request;
@@ -223,7 +206,8 @@ struct  MsgRequestSeq {
 	}
 };
 
-
+// ==========================================================
+// ==========================================================
 struct  ThreadState {
 	int thread_id = -1;
 	// Which game we have played.

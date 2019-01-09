@@ -32,7 +32,7 @@ constexpr uint64_t 	CHECKERS_NUM_FEATURES = 6;
 // Количество всех возможных actions(для американских шашек это 170)
 constexpr uint64_t 	TOTAL_NUM_ACTIONS = 170;
 // ограничение на количество ходов
-constexpr int 		TOTAL_MAX_MOVE = 500;
+constexpr int 		TOTAL_MAX_MOVE = 250;
 
 // индекс нашего action;
 typedef unsigned short 	Coord;

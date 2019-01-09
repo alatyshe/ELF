@@ -41,5 +41,10 @@ struct ContextOptions {
     _logger->info("{}", mcts_options.info());
   }
 
-  REGISTER_PYBIND_FIELDS(job_id, batchsize, num_games, T, mcts_options);
+  REGISTER_PYBIND_FIELDS(
+      job_id, 
+      batchsize, 
+      num_games, 
+      T, 
+      mcts_options);
 };

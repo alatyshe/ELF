@@ -10,7 +10,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include "game_context.h"
+#include "GameContext.h"
 
 namespace elfgames {
 namespace go {
@@ -28,16 +28,16 @@ void registerPy(pybind11::module& m) {
       .def("getServer", &GameContext::getServer, ref);
 
 
-  py::class_<Server>(m, "Server")
-      .def("waitForSufficientSelfplay", &Server::waitForSufficientSelfplay)
-      .def("notifyNewVersion", &Server::notifyNewVersion)
-      .def("setInitialVersion", &Server::setInitialVersion)
-      .def("setEvalMode", &Server::setEvalMode);
+  py::class_<DistriServer>(m, "DistriServer")
+      .def("waitForSufficientSelfplay", &DistriServer::waitForSufficientSelfplay)
+      .def("notifyNewVersion", &DistriServer::notifyNewVersion)
+      .def("setInitialVersion", &DistriServer::setInitialVersion)
+      .def("setEvalMode", &DistriServer::setEvalMode);
 
 
-  py::class_<Client>(m, "Client")
-      .def("setRequest", &Client::setRequest)
-      .def("getCheckersGameStats", &Client::getCheckersGameStats, ref);
+  py::class_<DistriClient>(m, "DistriClient")
+      .def("setRequest", &DistriClient::setRequest)
+      .def("getCheckersGameStats", &DistriClient::getCheckersGameStats, ref);
 
   // Also register other objects.
   PYCLASS_WITH_FIELDS(m, ContextOptions)
@@ -57,14 +57,11 @@ void registerPy(pybind11::module& m) {
       // .def("getPlayedGames", &GameStats::getPlayedGames);
 
 
-
-// закоментил за ненадобностью, чтобы перед глазами не маячило
-// (откоментить, нужно для игры в консоле)
-  py::class_<GameSelfPlay>(m, "GameSelfPlay")
-      .def("showBoard", &GameSelfPlay::showBoard)
+  py::class_<ClientGameSelfPlay>(m, "ClientGameSelfPlay")
+      .def("showBoard", &ClientGameSelfPlay::showBoard)
       // для игры в консоле
-      .def("getValidMoves", &GameSelfPlay::getValidMoves)
-      .def("getLastMove", &GameSelfPlay::getLastMove);
+      .def("getValidMoves", &ClientGameSelfPlay::getValidMoves)
+      .def("getLastMove", &ClientGameSelfPlay::getLastMove);
 }
 
 } // namespace go

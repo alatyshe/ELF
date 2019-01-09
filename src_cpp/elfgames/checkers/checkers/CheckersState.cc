@@ -2,8 +2,6 @@
 
 ///////////// CheckersState ////////////////////
 bool CheckersState::forward(const Coord& c) {
-  display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
   if (c == M_INVALID)
     throw std::range_error("CheckersState::forward(): move is M_INVALID");
   if (terminated())
@@ -11,10 +9,7 @@ bool CheckersState::forward(const Coord& c) {
   if (!CheckersTryPlay(_board, c))
     return false;
 
-  // _add_board_hash(c);
-
   CheckersPlay(&_board, c);
-
   _moves.push_back(c);
   // _history.emplace_back(_board);
   // if (_history.size() > MAX_CHECKERS_HISTORY)
@@ -22,30 +17,13 @@ bool CheckersState::forward(const Coord& c) {
   return true;
 }
 
-// void CheckersState::_add_board_hash(const Coord& c) {
-//   display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
-//   if (c == M_PASS)
-//     return;
-
-//   uint64_t key = _board._hash;
-//   auto& r = _board_hash[key];
-//   r.emplace_back();
-//   copyBits(r.back().bits, _board._bits);
-// }
-
 bool CheckersState::checkMove(const Coord& c) const {
-  // display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
   return CheckersTryPlay(_board, c);
 }
 
-void CheckersState::reset() {
-  display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-  
+void CheckersState::reset() {  
   ClearBoard(&_board);
   _moves.clear();
-  // _board_hash.clear();
   // _history.clear();
   _final_value = 0.0;
   _has_final_value = false;
