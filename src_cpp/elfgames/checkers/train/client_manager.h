@@ -18,6 +18,7 @@
 
 class ClientManager;
 
+// Онформация по 1-му клиенту с которым сервер имеет связь
 struct ClientInfo {
  public:
 	enum ClientChange { ALIVE2DEAD, DEAD2ALIVE, ALIVE, DEAD };
@@ -115,15 +116,15 @@ struct ClientInfo {
  private:
 	mutable std::mutex		mutex_;
 	const ClientManager&	mgr_;
-	const std::string		identity_;
-	ClientType				type_ = CLIENT_INVALID;
+	const std::string			identity_;
+	ClientType						type_ = CLIENT_INVALID;
 
-	uint64_t max_delay_sec_ = 300;
+	uint64_t							max_delay_sec_ = 300;
 
-	std::atomic<int64_t> seq_;
+	std::atomic<int64_t>	seq_;
 
-	bool active_ = true;
-	uint64_t last_update_ = 0;
+	bool									active_ = true;
+	uint64_t							last_update_ = 0;
 	std::vector<std::unique_ptr<State>> threads_;
 };
 
@@ -184,6 +185,8 @@ class ClientManager {
 		display_debug_info("ClientManager", __FUNCTION__, RED_B);
 
 		std::lock_guard<std::mutex> lock(mutex_);
+
+		// Достаем нашего клиента по названию, для обновления информации о нем
 		ClientInfo& info = _getClient(identity);
 
 		for (const auto& s : states) {

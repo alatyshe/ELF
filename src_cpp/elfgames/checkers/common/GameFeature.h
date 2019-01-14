@@ -50,7 +50,6 @@ class GameFeature {
 	static void CheckersReplyVersion(
 			CheckersReply& reply, 
 			const int64_t* ver) {
-
 		reply.version = *ver;
 	}
 
@@ -163,7 +162,7 @@ class GameFeature {
 			const CheckersStateExtOffline& s, 
 			int64_t* ver) {
 		*ver = s._curr_request.vers.black_ver;
-
+		
 		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
 	}
 

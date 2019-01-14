@@ -72,8 +72,8 @@ class Evaluator(object):
 		self.verbose = verbose
 		self.keys_in_reply = set(self.options.keys_in_reply)
 		self.logger = logging.getIndexedLogger(
-      '\x1b[1;31;40m|py|\x1b[0mrlpytorch.trainer.Evaluator-',
-      '')
+      		'\x1b[1;31;40m|py|\x1b[0mrlpytorch.trainer.Evaluator-',
+      		'')
 
 	def episode_start(self, i):
 		''' Called before each episode. Reset ``actor_count`` to 0.
@@ -149,7 +149,6 @@ class Evaluator(object):
 			reply_msg["checkers_rv"] = self.mi[self.actor_name].step
 
 		if "checkers_V" in self.keys_in_reply:
-			# reply_msg["checkers_V"] = state_curr["checkers_V"]
 			reply_msg["checkers_V"] = state_curr["checkers_V"].data
 
 		self.actor_count += 1
@@ -322,6 +321,7 @@ class Trainer(object):
 			mi.update_weights()
 
 		self.timer.record("compute_train")
+
 		if self.counter.counts["train"] % self.options.freq_update == 0:
 			# Update actor model
 			# print("Update actor model")
@@ -331,6 +331,7 @@ class Trainer(object):
 			self.just_updated = True
 
 		self.just_updated = False
+
 
 	def episode_reset(self):
 		''' Reset stats '''

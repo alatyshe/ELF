@@ -43,12 +43,15 @@ class DistriServer {
 				"Finished initializing trainCtrl_(TrainCtrl)");
 
 		if (gameOptions_.mode == "train") {
+			// создаем экземпляр для подгрузки батчей онлайн
+
 			onlineLoader_.reset(new DataOnlineLoader(netOptions));
 			logger_->info(
 				"Finished initializing onlineLoader_(DataOnlineLoader)");
 
 			onlineLoader_->start(trainCtrl_.get());
 		} else if (gameOptions_.mode == "offline_train") {
+			// подразумевается что данные у нас уже есть
 			;
 		} else {
 			throw std::range_error("options.mode not recognized! " + gameOptions_.mode);
@@ -65,7 +68,7 @@ class DistriServer {
 		return trainCtrl_->getReplayBuffer();
 	}
 
-	void waitForSufficientSelfplay(int64_t selfplay_ver) {
+	void ServerWaitForSufficientSelfplay(int64_t selfplay_ver) {
 		trainCtrl_->getThreadedCtrl()->waitForSufficientSelfplay(selfplay_ver);
 	}
 

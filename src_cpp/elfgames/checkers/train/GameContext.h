@@ -105,6 +105,15 @@ class GameContext {
 				});
 
 		if (server_ != nullptr) {
+			// Регаем метод который запускается при старте сервера
+			// суть его в том, чтобы он загрузил батчи из файла(если они указаны конечно),
+			// и тренировался на них.
+			// [this, gameOptions] - области видимости lambda функции
+			// () - параметры
+			// { server_->loadOfflineSelfplayData(); } - тело функции
+			
+			// logic = 
+			// GameContext => DistriServer => DataOnlineLoader =>
 			context_->setCBAfterGameStart(
 					[this, gameOptions]() { server_->loadOfflineSelfplayData(); });
 		}

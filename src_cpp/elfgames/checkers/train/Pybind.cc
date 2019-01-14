@@ -29,7 +29,7 @@ void registerPy(pybind11::module& m) {
 
 
   py::class_<DistriServer>(m, "DistriServer")
-      .def("waitForSufficientSelfplay", &DistriServer::waitForSufficientSelfplay)
+      .def("ServerWaitForSufficientSelfplay", &DistriServer::ServerWaitForSufficientSelfplay)
       .def("notifyNewVersion", &DistriServer::notifyNewVersion)
       .def("setInitialVersion", &DistriServer::setInitialVersion)
       .def("setEvalMode", &DistriServer::setEvalMode);

@@ -47,6 +47,8 @@
 #include <atomic>
 #include <functional>
 #include <string>
+#include <sstream>
+#include <iomanip>
 #include <utility>
 
 #include <spdlog/spdlog.h>

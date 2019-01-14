@@ -41,18 +41,19 @@ model=df_kl model_file=elfgames.go.df_model_checkers \
 	--expected_num_client 1 \
 	\
 	--selfplay_async \
-	--selfplay_init_num 2 \
 	--q_min_size 2				--q_max_size 4		--num_reader 2 \
-	--selfplay_update_num 10 \
 	\
 	--eval_winrate_thres 0.55 \
-	--eval_num_games 20 \
+	--selfplay_init_num 4 \
+	--selfplay_update_num 0 \
+	--eval_num_games 0 \
 	\
 	--lr 0.01					--momentum 0.9 \
 	--verbose \
-
-	# --tqdm
+	
 	# 1>> log.log 2>&1 &
+	# --tqdm
+	
 
 	# --batchsize 256 - прогон один раз через нейронку> берет этот батч и дает неронке для обучения.
 	# --num_minibatch 128 - количество раз которое нужно давать нейронке --batchsize то есть 128 раз по 256 states

@@ -149,13 +149,13 @@ class SingleProcessRun(object):
 
 	def set_episode_counter(self, counter):
 
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
 		self.episode_counter = counter
 
 	def inc_episode_counter(self, delta):
 
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
 		self.episode_counter += delta
 
@@ -163,7 +163,7 @@ class SingleProcessRun(object):
 		''' Start training in a multithreaded environment '''
 
 
-		print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
 		def train_thread():
 			print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
@@ -184,7 +184,7 @@ class SingleProcessRun(object):
 				self.episode_summary(i)
 
 		def actor_thread():
-			print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
+			# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 			while True:
 				self.GC.runGroup("actor")
 

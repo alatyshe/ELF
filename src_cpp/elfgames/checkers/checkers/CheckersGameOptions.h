@@ -29,8 +29,8 @@ struct CheckersGameOptions {
 	std::string	mode;
 
 	// Use mcts engine.
-	bool 				use_mcts 			= false;
-	bool 				use_mcts_ai2	= false;
+	bool				use_mcts 			= false;
+	bool				use_mcts_ai2	= false;
 
 	// Specify which side uses policy network only.
 	bool				black_use_policy_network_only = false;
@@ -49,61 +49,61 @@ struct CheckersGameOptions {
 	// (except for the first one).
 	// This will introduce bias in the dataset.
 	// Useful when you want that (or when you want to visualize the data).
-	float       ratio_pre_moves = 0.0;
+	float				ratio_pre_moves = 0.0;
 
 	// Cutoff ply for each loaded game, and start a new one.
-	int         move_cutoff = -1;
+	int					move_cutoff = -1;
 
 	// Cutoff ply for mcts policy / best a
-	int         policy_distri_cutoff = 20;
-	bool        policy_distri_training_for_all = false;
+	int					policy_distri_cutoff = 20;
+	bool				policy_distri_training_for_all = false;
 
-	int         num_reset_ranking = 5000;
+	int					num_reset_ranking = 5000;
 
 	std::string preload_sgf;
-	int         preload_sgf_move_to = -1;
+	int					preload_sgf_move_to = -1;
 
 	bool        use_df_feature = false;
 
-	int         q_min_size = 10;
-	int         q_max_size = 1000;
-	int         num_reader = 50;
+	int					q_min_size = 10;
+	int					q_max_size = 1000;
+	int					num_reader = 50;
 
 
 	// Second puct used for ai2, if -1 then use the same puct.
-	float       white_puct = -1.0;
-	int         white_mcts_rollout_per_batch = -1;
-	int         white_mcts_rollout_per_thread = -1;
+	float				white_puct = -1.0;
+	int					white_mcts_rollout_per_batch = -1;
+	int					white_mcts_rollout_per_thread = -1;
 
-	int         eval_num_games = 400;
-	float       eval_thres = 0.55;
+	int					eval_num_games = 400;
+	float				eval_thres = 0.55;
 
 	// Default it is 20 min. During intergration test we could make it shorter.
-	int         client_max_delay_sec = 1200;
+	int					client_max_delay_sec = 1200;
 
 	// Initial number of selfplay games for each model used for selfplay.
-	int         selfplay_init_num = 5000;
+	int					selfplay_init_num = 5000;
 	// Additive number of selfplay after the new model is updated.
-	int         selfplay_update_num = 1000;
+	int					selfplay_update_num = 1000;
 
 	// Whether we use async mode for selfplay.
-	bool        selfplay_async = false;
+	bool				selfplay_async = false;
 
-	bool        cheat_eval_new_model_wins_half = false;
-	bool        cheat_selfplay_random_result = false;
+	bool				cheat_eval_new_model_wins_half = false;
+	bool				cheat_selfplay_random_result = false;
 
-	bool        keep_prev_selfplay = false;
+	bool				keep_prev_selfplay = false;
 
-	int         eval_num_threads = 1;
-	int         expected_num_clients = -1;
+	int					eval_num_threads = 1;
+	int					expected_num_clients = -1;
 
 	// A list file containing the files to load.
 	std::vector<std::string> list_files;
 	std::string server_addr;
 	std::string server_id;
-	int         port;
-	bool        verbose = false;
-	bool        print_result = false;
+	int					port;
+	bool				verbose = false;
+	bool				print_result = false;
 	std::string dump_record_prefix;
 
 	std::string time_signature;

@@ -58,6 +58,8 @@ struct SelfPlayRecord {
 			white_win_++;
 		}
 		counter_++;
+
+		// records_ = RecordBuffer
 		records_.feed(record);
 
 		if (r.num_move < 100)
@@ -227,22 +229,24 @@ class SelfPlaySubCtrl {
 		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
 
 		std::lock_guard<std::mutex> lock(mutex_);
-
+		// Проверка есть ли второй игрок white(чекаем нашу инфу полученную от клиента)
+		// если игрок есть, то это не selfplay
 		if (!r.request.vers.is_selfplay())
 			return NOT_SELFPLAY;
 		if (curr_ver_ != r.request.vers.black_ver)
 			return VERSION_MISMATCH;
 
-		auto* perf = find_or_null(r.request.vers.black_ver);
+		SelfPlayRecord* perf = find_or_null(r.request.vers.black_ver);
 		if (perf == nullptr)
 			return NOT_REQUESTED;
 
 		perf->feed(r);
 		total_selfplay_++;
-		if (total_selfplay_ % 500 == 0) {
+		if (total_selfplay_ % 100 == 0) {
 			logger_->info(
-					"SelfPlaySubCtrl: # total selfplays processed by feed(): {}, {}",
-					total_selfplay_);
+					"SelfPlaySubCtrl: # total selfplays processed by feed(): {}, curr_version_model: {}",
+					total_selfplay_,
+					curr_ver_);
 		}
 		perf->checkAndSave();
 		return FEEDED;

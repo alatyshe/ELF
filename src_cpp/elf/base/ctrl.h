@@ -549,6 +549,7 @@ class ThreadedCtrlBaseT {
     display_debug_info("ThreadedCtrlBaseT", __FUNCTION__, GREEN_B);
   }
 
+
   template <typename... Ts>
   void start(std::string label = "") {
     display_debug_info("ThreadedCtrlBaseT", __FUNCTION__, GREEN_B);

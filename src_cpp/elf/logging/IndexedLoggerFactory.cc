@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -30,9 +31,11 @@ std::shared_ptr<spdlog::logger> IndexedLoggerFactory::makeLogger(
     const std::string& prefix,
     const std::string& suffix) {
   size_t curCount = counter_++;
-  std::string loggerName = prefix + std::to_string(curCount) + suffix;
 
-  return creator_(loggerName);
+  std::stringstream loggerName;
+  loggerName <<  prefix << std::setw(3) << std::left << curCount << suffix;
+
+  return creator_(loggerName.str());
 }
 
 std::shared_ptr<spdlog::logger> getIndexedLogger(

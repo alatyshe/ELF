@@ -43,6 +43,8 @@ using Addr = elf::Addr;
 // С помощью этого класса сервер постоянно слушает клиентов
 // и ожидает от них получения batch(состояний игры и reward за игру)
 // выполняет это - метод waitForSufficientSelfplay
+// + он контролит выбор лучшей модели, через передачу питону
+// по ключу train_ctrl
 class ThreadedCtrl : public ThreadedCtrlBase {
  public:
 	ThreadedCtrl(
@@ -156,6 +158,8 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
 	void setEvalMode(int64_t new_ver, int64_t old_ver) {
 
+		logger_->info("setEvalMode old_ver:{}, new_ver:{}\n", old_ver, new_ver);
+
 		eval_->setBaselineModel(old_ver);
 		eval_->addNewModelForEvaluation(old_ver, new_ver);
 		eval_mode_ = true;
@@ -163,21 +167,21 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
 	// Call by writer thread.
 	std::vector<FeedResult> onSelfplayGames(const std::vector<CheckersRecord>& records) {
-
 		// Receive selfplay/evaluation games.
 		std::vector<FeedResult> res(records.size());
 
+		// selfplay_ = SelfPlaySubCtrl
 		for (size_t i = 0; i < records.size(); ++i) {
 			res[i] = selfplay_->feed(records[i]);
 		}
 
+		// std::cout << "onSelfplayGames len : " << res.size() << std::endl;
 		return res;
 	}
 
 	std::vector<FeedResult> onEvalGames(
 			const ClientInfo& info,
 			const std::vector<CheckersRecord>& records) {
-
 		// Receive selfplay/evaluation games.
 		std::vector<FeedResult> res(records.size());
 
@@ -185,11 +189,11 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 			res[i] = eval_->feed(info, records[i]);
 		}
 
+		// std::cout << "onEvalGames len : " << res.size() << std::endl;
 		return res;
 	}
 
 	void fillInRequest(const ClientInfo& info, MsgRequest* request) {
-
 		request->vers.set_wait();
 		request->client_ctrl.client_type = info.type();
 
@@ -214,7 +218,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
  protected:
 	enum _ModelUpdateStatus { MODEL_UPDATED };
 
-	ReplayBuffer* replay_buffer_ = nullptr;
+	ReplayBuffer* 	replay_buffer_ = nullptr;
 	std::unique_ptr<SelfPlaySubCtrl> selfplay_;
 	std::unique_ptr<EvalSubCtrl> eval_;
 
@@ -229,11 +233,25 @@ class ThreadedCtrl : public ThreadedCtrlBase {
  private:
 	std::shared_ptr<spdlog::logger> logger_;
 
+	// Сообщает о новой лучшей модели
 	void on_thread() override {
+		// std::cout << "ThreadedCtrl::on_thread" << std::endl;
 
 		std::pair<Addr, int64_t> data;
-		if (!ctrl_.peekMail(&data, 0))
+		// ctrl_ = CtrlT<Queue>;
+		if (!ctrl_.peekMail(&data, 0)){
+			// std::cout << "num : " << data.second << std::endl;
+			// std::cout << "id  : " << data.first.id << std::endl;
+			// std::cout << "label : " << data.first.label << std::endl;
 			return;
+		}
+
+		// std::cout << "num : " << data.second << std::endl;
+		// std::cout << "id  : " << data.first.id << std::endl;
+		// std::cout << "label : " << data.first.label << std::endl;
+
+		// ОНО СЮДА ДАЖЕ НЕ ДОХОДИТ
+		std::cout << "\x1b[1;32;40mYES YES YES YES YES YES YES YES YES YES YES YES\x1b[0m" << std::endl;
 
 		int64_t ver = data.second;
 
@@ -285,10 +303,10 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 class TrainCtrl : public DataInterface {
  public:
 	TrainCtrl(
-			Ctrl& ctrl,
-			int num_games,
-			elf::GameClient* client,
-			const CheckersGameOptions& gameOptions,
+			Ctrl& 											ctrl,
+			int 												num_games,
+			elf::GameClient* 						client,
+			const CheckersGameOptions& 	gameOptions,
 			const elf::ai::tree_search::TSOptions& mcts_opt)
 			: ctrl_(ctrl),
 				rng_(time(NULL)),
@@ -325,7 +343,6 @@ class TrainCtrl : public DataInterface {
 	}
 
 	void OnStart() override {
-
 		// Call by shared_rw thread or any thread that will call OnReceive.
 		ctrl_.reg("train_ctrl");
 		ctrl_.addMailbox<int>();
@@ -333,17 +350,14 @@ class TrainCtrl : public DataInterface {
 	}
 
 	ReplayBuffer* getReplayBuffer() {
-
 		return replay_buffer_.get();
 	}
 
 	ThreadedCtrl* getThreadedCtrl() {
-
 		return threaded_ctrl_.get();
 	}
 
 	bool setEvalMode(int64_t new_ver, int64_t old_ver) {
-
 		logger_->info("Setting eval mode: new: {}, old: {}", new_ver, old_ver);
 		client_mgr_->setSelfplayOnlyRatio(0.0);
 		threaded_ctrl_->setEvalMode(new_ver, old_ver);
@@ -353,12 +367,22 @@ class TrainCtrl : public DataInterface {
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// метод для обработки полученных сообщений(батчей) от клиента
+	// инициализируется в DataOnlineLoader::start()
+	// вызывается из Reader::threaded_receive_msg()
 	elf::shared::InsertInfo OnReceive(const std::string&, const std::string& s)
 			override {
 
+		// std::cout << "s : " << s << std::endl << std::endl << std::endl;
+		// Заполняем нашу структуру
 		CheckersRecords rs = CheckersRecords::createFromJsonString(s);
+
+		// rs.identity  - имя клиента от которого мы получили батч
+		// rs.states 		- краткая инфа по батчу(thread_id, seq, move_idx, black/white ver)
 		const ClientInfo& info = client_mgr_->updateStates(rs.identity, rs.states);
 
+
+		// если непонятно откуда пришла инфа, видимо из файла
 		if (rs.identity.size() == 0) {
 			// No identity -> offline data.
 			for (auto& r : rs.records) {
@@ -382,12 +406,16 @@ class TrainCtrl : public DataInterface {
 				selfplay_record_.saveAndClean(1000);
 			}
 		}
+		// threaded_ctrl_ = std::unique_ptr<ThreadedCtrl>
 
 		std::vector<FeedResult> eval_res =
 				threaded_ctrl_->onEvalGames(info, rs.records);
+
 		threaded_ctrl_->checkNewModel(client_mgr_.get());
 
 		recv_count_++;
+
+
 		if (recv_count_ % 100 == 0) {
 			int valid_selfplay = 0, valid_eval = 0;
 			for (size_t i = 0; i < rs.records.size(); ++i) {
@@ -407,21 +435,29 @@ class TrainCtrl : public DataInterface {
 					valid_selfplay,
 					valid_eval);
 		}
+
 		return insert_info;
 	}
 
 	bool OnReply(const std::string& identity, std::string* msg) override {
 		
+
 		ClientInfo& info = client_mgr_->getClient(identity);
 
+		// отправляет клиенту что ему делать, какую модель использовать
+		// какие параметры mcts использовать
+		// какого игрока инициализировать и пр.
 		if (info.justAllocated()) {
-			logger_->info("New allocated: {}\n{}", identity, client_mgr_->info());
+			logger_->info("New client allocated: {}\n{}", identity, client_mgr_->info());
 		}
 
 		MsgRequestSeq request;
+
 		threaded_ctrl_->fillInRequest(info, &request.request);
 		request.seq = info.seq();
+
 		*msg = request.dumpJsonString();
+
 		info.incSeq();
 		return true;
 	}

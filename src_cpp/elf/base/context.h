@@ -43,29 +43,33 @@ class GameClient {
         n_(0),
         stop_games_(false),
         prepareToStop_(false) {
-
     display_debug_info("GameClient", __FUNCTION__, GREEN_B);
+
   }
 
   // For Game side.
   void start() {
     display_debug_info("GameClient", __FUNCTION__, GREEN_B);
+
     n_++;
   }
 
   void End() {
     display_debug_info("GameClient", __FUNCTION__, GREEN_B);
+
     numStoppedCounter_.increment();
   }
 
   bool DoStopGames() {
     display_debug_info("GameClient", __FUNCTION__, GREEN_B);
+
     return stop_games_.load();
   }
 
   // TODO: This function should go away (ssengupta@fb)
   bool checkPrepareToStop() {
     display_debug_info("GameClient", __FUNCTION__, GREEN_B);
+
     return prepareToStop_.load();
   }
 
@@ -82,8 +86,8 @@ class GameClient {
   comm::ReplyStatus sendWait(
       const std::vector<std::string>& targets,
       FuncsWithState* funcs) {
-
     display_debug_info("GameClient", __FUNCTION__, GREEN_B);
+
     return client_->sendWait(funcs, targets);
   }
 
@@ -91,6 +95,7 @@ class GameClient {
       const std::vector<std::string>& targets,
       const std::vector<FuncsWithState*>& funcs) {
     display_debug_info("GameClient", __FUNCTION__, GREEN_B);
+
     return client_->sendBatchWait(funcs, targets);
   }
 
@@ -248,8 +253,7 @@ class Context {
   using GameCallback = std::function<void(int game_idx, GameClient*)>;
 
   Context()
-    : logger_(elf::logging::getIndexedLogger("elf::base::Context-", "")) {
-
+      : logger_(elf::logging::getIndexedLogger("elf::base::Context-", "")) {
     display_debug_info("Context", __FUNCTION__, GREEN_B);
 
     // Wait for the derived class to add entries to extractor_.
@@ -338,6 +342,7 @@ class Context {
   void start() {
     display_debug_info("Context", __FUNCTION__, GREEN_B);
 
+    logger_->info("Prepare context to start");
     for (auto& r : collectors_) {
       r->start();
     }

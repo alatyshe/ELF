@@ -12,51 +12,43 @@
 #include "elf/distributed/shared_reader.h"
 #include "elf/distributed/shared_rw_buffer2.h"
 
-struct Stats {
-  std::atomic<int> client_size;
-  std::atomic<int> buffer_size;
-  std::atomic<int> failed_count;
-  std::atomic<int> msg_count;
-  std::atomic<uint64_t> total_msg_size;
+struct DataStats {
+	std::atomic<int>			client_size;
+	std::atomic<int>			buffer_size;
+	std::atomic<int>			failed_count;
+	std::atomic<int>			msg_count;
+	std::atomic<uint64_t>	total_msg_size;
 
-  Stats()
-      : client_size(0),
-        buffer_size(0),
-        failed_count(0),
-        msg_count(0),
-        total_msg_size(0) {
-    display_debug_info("struct Stats", __FUNCTION__, RED_B);
-  }
+	DataStats()
+			: client_size(0),
+				buffer_size(0),
+				failed_count(0),
+				msg_count(0),
+				total_msg_size(0) {
+		display_debug_info("struct DataStats", __FUNCTION__, RED_B);
+	}
 
-  std::string info() const {
-    std::stringstream ss;
-    ss << "#msg: " << buffer_size << " #client: " << client_size << ", ";
-    ss << "Msg count: " << msg_count
-       << ", avg msg size: " << (float)(total_msg_size) / msg_count
-       << ", failed count: " << failed_count;
-    return ss.str();
-  }
+	std::string info() const {
+		std::stringstream ss;
+		ss << "#msg: " << buffer_size << " #client: " << client_size << ", ";
+		ss << "Msg count: " << msg_count
+			 << ", avg msg size: " << (float)(total_msg_size) / msg_count
+			 << ", failed count: " << failed_count;
+		return ss.str();
+	}
 
-  void feed(const elf::shared::InsertInfo& insert_info) {
-    display_debug_info("struct Stats", __FUNCTION__, RED_B);
+	void feed(const elf::shared::InsertInfo& insert_info) {
+		display_debug_info("struct DataStats", __FUNCTION__, RED_B);
 
-    if (!insert_info.success) {
-      failed_count++;
-    } else {
-      buffer_size += insert_info.delta;
-      msg_count++;
-      total_msg_size += insert_info.msg_size;
-    }
-  }
+		if (!insert_info.success) {
+			failed_count++;
+		} else {
+			buffer_size += insert_info.delta;
+			msg_count++;
+			total_msg_size += insert_info.msg_size;
+		}
+	}
 };
-
-
-
-
-
-
-
-
 
 
 
@@ -64,93 +56,104 @@ struct Stats {
 
 class DataInterface {
  public:
-  virtual void OnStart() {}
-  virtual elf::shared::InsertInfo OnReceive(
-      const std::string& identity,
-      const std::string& msg) = 0;
-  virtual bool OnReply(const std::string& identity, std::string* msg) = 0;
+	virtual void OnStart() {}
+	virtual elf::shared::InsertInfo OnReceive(
+			const std::string& identity,
+			const std::string& msg) = 0;
+	virtual bool OnReply(const std::string& identity, std::string* msg) = 0;
 };
 
 
 
 
 
-
-
-
-
-
-
-
+// logic = 
+// GameContext => DistriServer => DataOnlineLoader => DataInterface => TrainCtrl
 class DataOnlineLoader {
  public:
-  DataOnlineLoader(const elf::shared::Options& net_options)
-      : logger_(elf::logging::getIndexedLogger(
-            std::string("\x1b[1;35;40m|++|\x1b[0m") + 
-            "DataOnlineLoader-",
-            "")) {
-    display_debug_info("DataOnlineLoader", __FUNCTION__, RED_B);
+	DataOnlineLoader(const elf::shared::Options& net_options)
+			: logger_(elf::logging::getIndexedLogger(
+						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						"DataOnlineLoader-",
+						"")) {
+		display_debug_info("DataOnlineLoader", __FUNCTION__, RED_B);
 
-    auto curr_timestamp = time(NULL);
-    const std::string database_name =
-        "data-" + std::to_string(curr_timestamp) + ".db";
-    reader_.reset(new elf::shared::Reader(database_name, net_options));
-    logger_->info(reader_->info());
-  }
+		auto curr_timestamp = time(NULL);
+		const std::string database_name =
+				"data-" + std::to_string(curr_timestamp) + ".db";
+		reader_.reset(new elf::shared::Reader(database_name, net_options));
+		logger_->info(reader_->info());
+	}
 
-  void start(DataInterface* interface) {
-    display_debug_info("DataOnlineLoader", __FUNCTION__, RED_B);
-    
-    auto proc_func = [&, interface](
-                         elf::shared::Reader* reader,
-                         const std::string& identity,
-                         const std::string& msg) -> bool {
-      (void)reader;
+	// DataInterface* interface = TrainCtrl
+	void start(DataInterface* interface) {
+		display_debug_info("DataOnlineLoader", __FUNCTION__, RED_B);
+		
+		// регаем методы для прослушки и ответа клиенту
+		// они будут вызываться в elf::shared::Reader
+		auto proc_func = [&, interface](
+												 elf::shared::Reader* reader,
+												 const std::string& identity,
+												 const std::string& msg) -> bool {
+			(void)reader;
 
-      try {
-        auto info = interface->OnReceive(identity, msg);
-        stats_.feed(info);
-        if (stats_.msg_count % 1000 == 0) {
-          logger_->info(
-              "{}, last_identity: {}, {}",
-              elf_utils::now(),
-              identity,
-              stats_.info());
-        }
-        return info.success;
-      } catch (...) {
-        logger_->error("Data malformed! String is {}", msg);
-        return false;
-      }
-    };
+			try {
+				// получаем инфу от клиента и делаем необходимые действия на сервере
+				// interface = TrainCtrl
+				auto info = interface->OnReceive(identity, msg);
+				// stats_ = DataStats
+				// info = elf::shared::InsertInfo
 
-    auto replier_func = [&, interface](
-                            elf::shared::Reader* reader,
-                            const std::string& identity,
-                            std::string* msg) -> bool {
-      (void)reader;
+				// после поучучения инфы, заполняем нашу стату
+				// принятым сообщениям
+				stats_.feed(info);
+				if (stats_.msg_count % 100 == 0) {
+					logger_->info(
+							"last_identity: {}, {}",
+							identity,
+							stats_.info());
+				}
+				// возвращаем результат сообщения true/false
+				return info.success;
+			} catch (...) {
+				logger_->error("Data malformed! String is {}", msg);
+				return false;
+			}
+		};
+		// function
+		// DataInterface* interface = TrainCtrl
+		auto replier_func = [&, interface](
+														elf::shared::Reader* reader,
+														const std::string& identity,
+														std::string* msg) -> bool {
+			(void)reader;
 
-      interface->OnReply(identity, msg);
+			interface->OnReply(identity, msg);
 
-      if (logger_->should_log(spdlog::level::level_enum::debug)) {
-        logger_->debug(
-            "Replier: about to send: recipient {}; msg {}; reader {}",
-            identity,
-            *msg,
-            reader_->info());
-      }
-      return true;
-    };
+			// logger_->info(
+			// 		"Replier: {}about to send recipient{} {}; {}msg{} {}; {}reader{} {}",
+			// 		GREEN_B,
+			// 		COLOR_END,
+			// 		identity,
+			// 		ORANGE_B,
+			// 		COLOR_END,
+			// 		*msg,
+			// 		ORANGE_B,
+			// 		COLOR_END,
+			// 		reader_->info());
+			return true;
+		};
 
-    reader_->startReceiving(
-        proc_func, replier_func, [interface]() { interface->OnStart(); });
-  }
 
-  ~DataOnlineLoader() {}
+		reader_->startReceiving(
+				proc_func, replier_func, [interface]() { interface->OnStart(); });
+	}
+
+	~DataOnlineLoader() {}
 
  private:
-  std::unique_ptr<elf::shared::Reader> reader_;
-  Stats stats_;
+	std::unique_ptr<elf::shared::Reader>	reader_;
+	DataStats 														stats_;
 
-  std::shared_ptr<spdlog::logger> logger_;
+	std::shared_ptr<spdlog::logger>				logger_;
 };

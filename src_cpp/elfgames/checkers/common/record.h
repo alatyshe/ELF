@@ -124,8 +124,8 @@ struct  MsgRestart {
 // ==========================================================
 // ==========================================================
 struct  MsgRequest {
-	ModelPair vers;
-	ClientCtrl client_ctrl;
+	ModelPair 	vers;
+	ClientCtrl 	client_ctrl;
 
 	void setJsonFields(json& j) const {
 		display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);

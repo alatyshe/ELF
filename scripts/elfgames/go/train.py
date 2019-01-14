@@ -57,6 +57,8 @@ def main():
 
     keep_prev_selfplay = env["game"].options.keep_prev_selfplay
     model_ver = 0
+
+    # Грузим модель, если указана
     model_filename = model_loader.options.load
     if isinstance(model_filename, str) and model_filename != "":
         realpath = os.path.realpath(model_filename)
@@ -66,43 +68,42 @@ def main():
 
     eval_old_model = env["game"].options.eval_old_model
 
+    # 
     if eval_old_model >= 0:
         GC.GC.getServer().setEvalMode(model_ver, eval_old_model)
     else:
         GC.GC.getServer().setInitialVersion(model_ver)
 
-    selfplay_ver = model_ver
+    checkers_selfplay_ver = model_ver
     root = os.environ["save"]
-    print(f'Root: "{root}"')
-    print(f'Keep prev_selfplay: {keep_prev_selfplay!s}')
+    print(f'Save models in\t\t: "{root}"')
+    print(f'Keep prev_selfplay\t: {keep_prev_selfplay!s}')
+    # print(f'Model version\t\t: {selfplay_ver}')
 
     def train(batch, *args, **kwargs):
         # logger.info("train")
-        
         # Check whether the version match.
         if keep_prev_selfplay or \
-                (batch["selfplay_ver"] != selfplay_ver).sum() == 0:
+                (batch["checkers_selfplay_ver"] != checkers_selfplay_ver).sum() == 0:
             trainer.train(batch, *args, **kwargs)
         else:
             print(f'Get batch whose selfplay ver is different from '
-                  f'{selfplay_ver}, skipping')
+                  f'{checkers_selfplay_ver}, skipping')
             runner.inc_episode_counter(-1)
 
     def train_ctrl(batch, *args, **kwargs):
-        logger.info("train_ctrl")
-
-        nonlocal selfplay_ver
-        old_selfplay_ver = selfplay_ver
-        selfplay_ver = int(batch["selfplay_ver"][0])
-        print(
-            f'Train ctrl: selfplay_ver: {old_selfplay_ver} -> {selfplay_ver}')
+        nonlocal checkers_selfplay_ver
+        
+        old_selfplay_ver = checkers_selfplay_ver
+        checkers_selfplay_ver = int(batch["checkers_selfplay_ver"][0])
+        logger.info(
+            f'Train ctrl: checkers_selfplay_ver: {old_selfplay_ver} -> {checkers_selfplay_ver}')
         
         # ожидаем нормально запоненого батча от клиентов
-        GC.GC.getServer().waitForSufficientSelfplay(selfplay_ver)
+        GC.GC.getServer().ServerWaitForSufficientSelfplay(checkers_selfplay_ver)
 
         # Reload old models.
-        print("MY SHIT train_ctrl python code im train.py")
-        real_path = os.path.join(root, "save-" + str(selfplay_ver) + ".bin")
+        real_path = os.path.join(root, "save-" + str(checkers_selfplay_ver) + ".bin")
         model_loader.options.load = real_path
 
         while True:
@@ -139,21 +140,21 @@ def main():
         rl_method=env["method"])
 
     def episode_summary(i):
-        nonlocal selfplay_ver
+        nonlocal checkers_selfplay_ver
 
-        logger.info("episode_summary")
+        logger.info("Episode_summary")
         ver = trainer.episode_summary(i)
         # This might block (when evaluation does not catch up with training).
-        GC.GC.getServer().notifyNewVersion(selfplay_ver, ver)
+        GC.GC.getServer().notifyNewVersion(checkers_selfplay_ver, ver)
 
     offline_training = (env["game"].options.mode == "offline_train")
 
     def after_start():
         logger.info("after_start")
 
-        nonlocal selfplay_ver
+        nonlocal checkers_selfplay_ver
         if not offline_training:
-            GC.GC.getServer().waitForSufficientSelfplay(selfplay_ver)
+            GC.GC.getServer().ServerWaitForSufficientSelfplay(checkers_selfplay_ver)
 
     # sys.exit(0)
 

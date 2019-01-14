@@ -240,7 +240,7 @@ class MCTSPrediction(object):
     def update(self, mi, batch, stats, use_cooldown=False, cooldown_count=0):
         ''' Update given batch '''
 
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "MCTSPrediction::", inspect.currentframe().f_code.co_name)
+        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "MCTSPrediction::\x1b[0m", inspect.currentframe().f_code.co_name)
 
         self.timer.restart()
         if use_cooldown:
@@ -312,6 +312,7 @@ class MCTSPrediction(object):
 
 
         # print("state_curr keys : ", state_curr.keys())
+        # print("batch keys : ", batch.batch.keys())
         # print("state_curr[V] : ", state_curr["checkers_V"])
         # print("batch[winner] : ", batch["checkers_winner"])
         # print("\n\n")

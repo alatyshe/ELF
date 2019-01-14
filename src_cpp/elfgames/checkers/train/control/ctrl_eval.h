@@ -25,6 +25,7 @@
 
 using TSOptions = elf::ai::tree_search::TSOptions;
 
+// Класс для сравнения и выбора лучшей из 2-х моделей
 class ModelPerfomance {
  public:
 	enum EvalResult {
@@ -291,8 +292,6 @@ class EvalSubCtrl {
 							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 							"EvalSubCtrl-", 
 							"")) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		// [TODO]: A bit hacky, we need to have a better way for this.
 		mcts_opt_ = mcts_options;
 		mcts_opt_.alg_opt.unexplored_q_zero = false;
@@ -304,8 +303,6 @@ class EvalSubCtrl {
 	int64_t updateState(const ClientManager& mgr) {
 		// Note that models_to_eval_ might change during the loop.
 		// So we need to make a copy.
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 		auto models_to_eval = models_to_eval_;
 
@@ -334,8 +331,6 @@ class EvalSubCtrl {
 	}
 
 	FeedResult feed(const ClientInfo& info, const CheckersRecord& r) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		if (r.request.vers.is_selfplay())
 			return NOT_EVAL;
 
@@ -350,15 +345,11 @@ class EvalSubCtrl {
 	}
 
 	int64_t getBestModel() const {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 		return best_baseline_model_;
 	}
 
 	void fillInRequest(const ClientInfo& info, MsgRequest* msg) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 
 		// Go through all current models
@@ -381,7 +372,6 @@ class EvalSubCtrl {
 		models_to_eval_.clear();
 		// All perfs need to go away as well.
 		// perfs_.clear();
-		logger_->info("Set new baseline model, ver: {}", ver);
 	}
 
 	void addNewModelForEvaluation(int64_t selfplay_ver, int64_t new_version) {
@@ -417,18 +407,19 @@ class EvalSubCtrl {
 	}
 
  private:
-	mutable std::mutex mutex_;
+	mutable std::mutex		mutex_;
 
-	CheckersGameOptions gameOptions_;
-	TSOptions mcts_opt_;
+	CheckersGameOptions 	gameOptions_;
+	TSOptions							mcts_opt_;
 
-	int64_t best_baseline_model_ = -1;
-	std::vector<int64_t> models_to_eval_;
+	int64_t								best_baseline_model_ = -1;
+	std::vector<int64_t>	models_to_eval_;
 
 	std::unordered_map<ModelPair, std::unique_ptr<ModelPerfomance>> perfs_;
 
 	std::shared_ptr<spdlog::logger> logger_;
 
+	// 
 	ModelPair get_key(int ver) {
 		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
 
@@ -439,9 +430,11 @@ class EvalSubCtrl {
 		return p;
 	}
 
+	// добавляем модель для оценки
 	bool add_candidate_model(int ver) {
 		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
 
+		// проверяем, не создавали ли мы до этого класс для сравнения этих моделей
 		auto it = perfs_.find(get_key(ver));
 		if (it == perfs_.end())
 			models_to_eval_.push_back(ver);

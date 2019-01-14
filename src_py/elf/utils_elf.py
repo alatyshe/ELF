@@ -69,7 +69,7 @@ class Allocator(object):
         idx2name = dict()
 
         for name, v in spec.items():
-            print("%s: %s" % (name, v))
+            print("SharedMem => %20s: %s" % (name, v))
             # TODO this might not good since it changes the input.
             if "input" not in v or v["input"] is None:
                 v["input"] = []
@@ -80,7 +80,7 @@ class Allocator(object):
             this_batchsize = v.get("batchsize", batchsize)
 
             keys = list(set(v["input"] + v["reply"]))
-            print("SharedMem: \"%s\", keys: %s" % (name, str(keys)))
+            # print("SharedMem: \"%s\", keys: %s" % (name, str(keys)))
 
             smem_opts = ctx.createSharedMemOptions(name, this_batchsize)
             smem_opts.setTimeout(v.get("timeout_usec", 0))
@@ -442,7 +442,7 @@ class GCWrapper:
             print("Warning: Callback[%s] is registered to None" % key)
 
         for idx in self.name2idx[key]:
-            print("Register " + str(cb) + " at idx: %d" % idx)
+            # print("Register " + str(cb) + " at idx: %d" % idx)
             self._cb[idx] = cb
         return True
 
