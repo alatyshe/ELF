@@ -26,31 +26,22 @@ ClientGameSelfPlay::ClientGameSelfPlay(
 					std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 					"ClientGameSelfPlay-" + std::to_string(game_idx) + "-",
 					"")) {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
 }
 
 std::string		ClientGameSelfPlay::showBoard() const {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	return _checkers_state_ext.state().showBoard();
 }
 
 std::string		ClientGameSelfPlay::getLastMove() const {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-	
 	return std::to_string(_checkers_state_ext.lastMove());
 }
 
 std::array<int, TOTAL_NUM_ACTIONS>		ClientGameSelfPlay::getValidMoves() const {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	return GetValidMovesBinary(_checkers_state_ext.state().board(), 
 		_checkers_state_ext.state().board().active);
 }
 
 float 			ClientGameSelfPlay::getScore() {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	return _checkers_state_ext.state().evaluate();
 }
 
@@ -62,8 +53,6 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 		int mcts_rollout_per_batch_override,
 		int mcts_rollout_per_thread_override,
 		int64_t model_ver) {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	logger_->info(
 			"Initializing actor {}; puct_override: {}; batch_override: {}; "
 			"per_thread_override: {}",
@@ -110,8 +99,6 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 
 
 Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	auto policy = mcts_checkers_ai->getMCTSPolicy();
 
 	bool diverse_policy =
@@ -137,8 +124,6 @@ Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_a
 
 
 Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	float predicted_value = mcts_checkers_ai->getValue();
 
 	_checkers_state_ext.addPredictedValue(predicted_value);
@@ -146,15 +131,6 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 	// if (!_options.dump_record_prefix.empty()) {
 	//   _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
 	// }
-
-	bool we_are_good = _checkers_state_ext.state().nextPlayer() == BLACK_PLAYER
-			? ((this->getScore() > 0) && (predicted_value > 0.9))
-			: ((this->getScore() < 0) && (predicted_value < -0.9));
-	
-	// If the opponent wants pass, and we are in good, we follow.
-	// if (_human_player != nullptr && we_are_good &&
-	//     _checkers_state_ext.state().lastMove() == M_PASS && _options.following_pass)
-	//   c = M_PASS;
 
 	// Check the ranking of selected move.
 	if (checkers_notifier_ != nullptr) {
@@ -172,10 +148,8 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 
 
 void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	// My code
-	_checkers_state_ext.setFinalValue(reason, &_rng);
+	_checkers_state_ext.setFinalValue(reason);
 	// показывает борду
 	_checkers_state_ext.showFinishInfo(reason);
 
@@ -205,8 +179,6 @@ void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
 
 
 void ClientGameSelfPlay::setAsync() {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	checkers_ai1->setRequiredVersion(-1);
 	if (checkers_ai2 != nullptr)
 		checkers_ai2->setRequiredVersion(-1);
@@ -223,8 +195,6 @@ void ClientGameSelfPlay::setAsync() {
 
 
 void ClientGameSelfPlay::restart() {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	const MsgRequest& checkers_request = _checkers_state_ext.currRequest();
 	bool checkers_async = checkers_request.client_ctrl.async;
 
@@ -277,8 +247,6 @@ void ClientGameSelfPlay::restart() {
 
 bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
 	// при связи с сервером
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B);
-
 	if (*reply == RestartReply::UPDATE_COMPLETE)
 		return false;
 
@@ -338,9 +306,6 @@ bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* repl
 
 
 void ClientGameSelfPlay::act() {
-	display_debug_info("ClientGameSelfPlay", __FUNCTION__, RED_B, false);
-	
-
 	if (_online_counter % 5 == 0) {
 		using std::placeholders::_1;
 		using std::placeholders::_2;
@@ -357,8 +322,6 @@ void ClientGameSelfPlay::act() {
 		}
 	}
 	_online_counter++;
-
-
 
 	const CheckersState& cs = _checkers_state_ext.state();
 	if (_human_player != nullptr && cs.nextPlayer() == WHITE_PLAYER) {
@@ -427,17 +390,12 @@ void ClientGameSelfPlay::act() {
 	MCTSCheckersAI* curr_ai =
 		((checkers_ai2 != nullptr && current_player == WHITE_PLAYER) 
 			? checkers_ai2.get() : checkers_ai1.get());
-
-	// std::cout << "(checkers_ai2 != nullptr && current_player == WHITE_PLAYER) = "
-	//           << (checkers_ai2 != nullptr && current_player == WHITE_PLAYER) 
-	//           << std::endl;
 	
 
 	if (use_policy_network_only) {
 		// Then we only use policy network to move.
 		curr_ai->actPolicyOnly(cs, &move);
 	} else {
-		// std::cout << "USE MCTS" << std::endl;
 		curr_ai->act(cs, &move);
 		move = mcts_make_diverse_move(curr_ai, move);
 	}

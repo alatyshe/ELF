@@ -10,35 +10,33 @@ CheckersStateExt::CheckersStateExt(int game_idx, const CheckersGameOptions& opti
 						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 						"CheckersStateExt-", 
 						"")) {
-
 	restart();
 }
 
 
-void								CheckersStateExt::setRequest(const MsgRequest& request) {
+void									CheckersStateExt::setRequest(const MsgRequest& request) {
 	_curr_request = request;
-	const auto& ctrl = request.client_ctrl;
 }
 
-void								CheckersStateExt::addCurrentModel() {
+void									CheckersStateExt::addCurrentModel() {
 	if (_curr_request.vers.black_ver >= 0)
 		_using_models.insert(_curr_request.vers.black_ver);
 	if (_curr_request.vers.white_ver >= 0)
 		_using_models.insert(_curr_request.vers.white_ver);
 }
 
-const MsgRequest&		CheckersStateExt::currRequest() const {
+const MsgRequest&			CheckersStateExt::currRequest() const {
 	return _curr_request;
 }
 
-Coord								CheckersStateExt::lastMove() const {
+Coord									CheckersStateExt::lastMove() const {
 	if (_state.justStarted())
 		return _last_move_for_the_game;
 	else
 		return _state.lastMove();
 }
 
-void								CheckersStateExt::restart() {
+void									CheckersStateExt::restart() {
 	_last_value = _state.getFinalValue();
 	_state.reset();
 	_mcts_policies.clear();
@@ -49,9 +47,9 @@ void								CheckersStateExt::restart() {
 	addCurrentModel();
 }
 
-ThreadState					CheckersStateExt::getThreadState() const {
-
+ThreadState						CheckersStateExt::getThreadState() const {
 	ThreadState s;
+
 	s.thread_id = _game_idx;
 	s.seq = _seq;
 	s.move_idx = _state.getPly() - 1;
@@ -61,16 +59,16 @@ ThreadState					CheckersStateExt::getThreadState() const {
 }
 
 // Reward за последнюю сыгранную игру.
-float								CheckersStateExt::getLastGameFinalValue() const {
+float									CheckersStateExt::getLastGameFinalValue() const {
 	return _last_value;
 }
 
 // Передаем индекс нашего шага и делаем шаг вперед для нашей доски
-bool								CheckersStateExt::forward(Coord c) {
+bool									CheckersStateExt::forward(Coord c) {
 	return _state.forward(c);
 }
 
-int									CheckersStateExt::seq() const {
+int										CheckersStateExt::seq() const {
 	return _seq;
 }
 

@@ -19,9 +19,7 @@ class DispatcherCallback {
 				logger_(elf::logging::getIndexedLogger(
 						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 						"DispatcherCallback-",
-						"")) {
-		display_debug_info("DispatcherCallback", __FUNCTION__, RED_B, false);
-		
+						"")) {		
 		using std::placeholders::_1;
 		using std::placeholders::_2;
 
@@ -33,9 +31,8 @@ class DispatcherCallback {
 
 
 	void OnFirstSend(const Addr& addr, MsgRequest* request) {
-		display_debug_info("DispatcherCallback", __FUNCTION__, RED_B, false);
-
 		const size_t thread_idx = stoi(addr.label.substr(5));
+		
 		if (thread_idx == 0) {
 			// Actionable request
 			logger_->info(
@@ -56,9 +53,7 @@ class DispatcherCallback {
 
 	std::vector<bool> OnReply(
 			const std::vector<MsgRequest>& requests,
-			std::vector<RestartReply>* p_replies) {
-		display_debug_info("DispatcherCallback", __FUNCTION__, RED_B, false);
-		
+			std::vector<RestartReply>* p_replies) {		
 		auto& replies = *p_replies;
 
 		const MsgRequest* request = nullptr;

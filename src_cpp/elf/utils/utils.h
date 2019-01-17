@@ -26,22 +26,16 @@
 namespace elf_utils {
 
 inline std::string print_bool(bool b) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   return b ? "True" : "False";
 }
 
 inline std::string now() {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   time_t t = time(nullptr);
   std::string time_str = asctime(localtime(&t));
   return time_str.substr(0, time_str.size() - 1);
 }
 
 inline std::string time_signature() {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   time_t t = std::time(nullptr);
   char mbstr[100];
   std::strftime(mbstr, sizeof(mbstr), "%y%m%d-%H%M%S", std::localtime(&t));
@@ -49,7 +43,6 @@ inline std::string time_signature() {
 }
 
 inline uint64_t sec_since_epoch_from_now() {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
 
   auto now = std::chrono::system_clock::now();
   return std::chrono::duration_cast<std::chrono::seconds>(
@@ -58,8 +51,6 @@ inline uint64_t sec_since_epoch_from_now() {
 }
 
 inline uint64_t get_seed(int game_idx) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   // [TODO] Definitely not the right way, but working.
   auto now = std::chrono::system_clock::now();
   auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
@@ -70,8 +61,6 @@ inline uint64_t get_seed(int game_idx) {
 
 // Input a sorted list.
 inline std::string get_gap_list(const std::vector<int>& l) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   if (l.empty())
     return "";
   int last = l[0];
@@ -93,19 +82,16 @@ inline std::string get_gap_list(const std::vector<int>& l) {
 }
 
 inline std::string trim(std::string& str) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   str.erase(0, str.find_first_not_of(' ')); // prefixing spaces
   str.erase(str.find_last_not_of(' ') + 1); // surfixing spaces
   return str;
 }
 
 inline std::vector<std::string> split(const std::string& s, char delim) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   std::stringstream ss(s);
   std::string item;
   std::vector<std::string> elems;
+
   while (getline(ss, item, delim)) {
     elems.push_back(move(item));
   }
@@ -153,9 +139,8 @@ template <typename Map>
 std::pair<typename Map::const_iterator, bool> map_get(
     const Map& m,
     const typename Map::key_type& k) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   auto it = m.find(k);
+
   if (it == m.end()) {
     return std::make_pair(m.end(), false);
   } else {
@@ -167,9 +152,8 @@ template <typename Map>
 std::pair<typename Map::iterator, bool> map_get(
     Map& m,
     const typename Map::key_type& k) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   auto it = m.find(k);
+
   if (it == m.end()) {
     return std::make_pair(m.end(), false);
   } else {
@@ -181,11 +165,9 @@ template <typename A>
 size_t sample_multinomial(
     const std::vector<std::pair<A, float>>& v,
     std::mt19937* gen) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   std::vector<float> accu(v.size() + 1);
-
   float Z = 0.0;
+
   for (const auto& vv : v) {
     Z += vv.second;
   }
@@ -214,11 +196,9 @@ class MyClock {
 
  public:
   MyClock() {
-    display_debug_info("MyClock", __FUNCTION__, PURPLE_B);
   }
-  void restart() {
-    display_debug_info("MyClock", __FUNCTION__, PURPLE_B);
 
+  void restart() {
     for (auto it = _durations.begin(); it != _durations.end(); ++it) {
       it->second.first = std::chrono::duration<double>::zero();
       it->second.second = 0;
@@ -227,16 +207,13 @@ class MyClock {
   }
 
   void setStartPoint() {
-    display_debug_info("MyClock", __FUNCTION__, PURPLE_B);
-
     _time_start = std::chrono::system_clock::now();
   }
 
   std::string summary() const {
-    display_debug_info("MyClock", __FUNCTION__, PURPLE_B);
-
     std::stringstream ss;
     double total_time = 0;
+
     for (auto it = _durations.begin(); it != _durations.end(); ++it) {
       if (it->second.second > 0) {
         double v = it->second.first.count() * 1000 / it->second.second;
@@ -249,9 +226,8 @@ class MyClock {
   }
 
   inline bool record(const std::string& item) {
-    display_debug_info("MyClock", __FUNCTION__, PURPLE_B);
-    
     auto it = _durations.find(item);
+    
     if (it == _durations.end()) {
       it = _durations
                .insert(std::make_pair(

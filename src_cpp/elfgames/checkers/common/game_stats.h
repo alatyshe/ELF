@@ -40,23 +40,18 @@
 class GameStats {
  public:
 	GameStats()
-			: _logger(
-						elf::logging::getIndexedLogger(
-							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
-							"GameStats-", 
-							"")) {}
+			: _logger(elf::logging::getIndexedLogger(
+						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						"GameStats-", 
+						"")) {}
 
 	// ????????????
 	void feedMoveRanking(int ranking) {
-		display_debug_info("GameStats", __FUNCTION__, RED_B, false);
-
 		std::lock_guard<std::mutex> lock(_mutex);
 		_move_ranking.feed(ranking);
 	}
 	// ????????????
 	void resetRankingIfNeeded(int num_reset_ranking) {
-		display_debug_info("GameStats", __FUNCTION__, RED_B, false);
-
 		std::lock_guard<std::mutex> lock(_mutex);
 		if (_move_ranking.total_count > (uint64_t)num_reset_ranking) {
 			_logger->info("\n{}", _move_ranking.info());
@@ -66,30 +61,22 @@ class GameStats {
 
 
 	void feedWinRate(float final_value) {
-		display_debug_info("GameStats", __FUNCTION__, RED_B, false);
-
 		std::lock_guard<std::mutex> lock(_mutex);
 		_win_rate_stats.feed(final_value);
 	}
 
 	// void feedSgf(const std::string& sgf) {
-	//   display_debug_info("GameStats", __FUNCTION__, RED_B, false);
-
 	//   std::lock_guard<std::mutex> lock(_mutex);
 	//   _sgfs.push_back(sgf);
 	// }
 
 	// For sender.
 	WinRateStats getWinRateStats() {
-		display_debug_info("GameStats", __FUNCTION__, RED_B, false);
-
 		std::lock_guard<std::mutex> lock(_mutex);
 		return _win_rate_stats;
 	}
 
-	// std::vector<std::string> getPlayedGames() {
-	//   display_debug_info("GameStats", __FUNCTION__, RED_B, false);
-		
+	// std::vector<std::string> getPlayedGames() {		
 	//   std::lock_guard<std::mutex> lock(_mutex);
 	//   return _sgfs;
 	// }

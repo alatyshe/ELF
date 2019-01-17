@@ -53,48 +53,36 @@ class OptionMap {
   static void registerPy(pybind11::module& m);
 
   OptionMap(OptionSpec spec) : spec_(std::move(spec)), data_(json::object()) {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
   }
 
   void loadJSON(const json& data);
 
   void loadJSONString(const std::string& dataString) {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     loadJSON(json::parse(dataString));
   }
 
   const json& getJSON() const {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     return data_;
   }
 
   std::string getJSONString() const {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     return getJSON().dump();
   }
 
   void setAsJSON(const std::string& optionName, const json& data) {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     data_[optionName] = data;
   }
 
   void setAsJSONString(
       const std::string& optionName,
       const std::string& dataString) {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     setAsJSON(optionName, json::parse(dataString));
   }
 
   template <typename T>
   void set(const std::string& optionName, T value) {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     const auto& optionInfo = spec_.getOptionInfo(optionName);
+
     optionInfo.checkType<T>();
     data_[optionName] = value;
   }
@@ -102,22 +90,16 @@ class OptionMap {
   const json& getAsJSON(const std::string& optionName) const;
 
   std::string getAsJSONString(const std::string& optionName) const {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     return getAsJSON(optionName).dump();
   }
 
   template <typename T>
   T get(const std::string& optionName) const {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     const auto& optionInfo = spec_.getOptionInfo(optionName);
     return optionInfo.fromJSON<T>(getAsJSON(optionName));
   }
 
   const OptionSpec& getOptionSpec() const {
-    display_debug_info("OptionMap", __FUNCTION__, GREEN_B);
-
     return spec_;
   }
 

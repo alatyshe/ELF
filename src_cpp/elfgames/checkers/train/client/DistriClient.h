@@ -24,8 +24,6 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
             std::string("\x1b[1;35;40m|++|\x1b[0m") + 
             "ThreadedWriterCtrl-",
             "")) {
-    display_debug_info("ThreadedWriterCtrl", __FUNCTION__, RED_B);
-
     elf::shared::Options netOptions = getNetOptions(contextOptions, options);
     writer_.reset(new elf::shared::Writer(netOptions));
     auto currTimestamp = time(NULL);
@@ -39,7 +37,6 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
   }
 
   std::string identity() const {
-    display_debug_info("ThreadedWriterCtrl", __FUNCTION__, RED_B);
 
     return writer_->identity();
   }
@@ -57,8 +54,6 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
 
 
   void on_thread() {
-    display_debug_info("ThreadedWriterCtrl", __FUNCTION__, RED_B);
-
     std::string smsg;
 
     uint64_t now = elf_utils::sec_since_epoch_from_now();
@@ -110,7 +105,6 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
 
 
   void getContentAndSend(int64_t msg_seq, bool iswait) {
-    display_debug_info("ThreadedWriterCtrl", __FUNCTION__, RED_B);
 
     if (msg_seq != seq_) {
       logger_->info(
@@ -118,7 +112,6 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
           msg_seq,
           seq_);
     }
-
     std::pair<int, std::string> content;
     ctrl_.call(content);
 
@@ -193,11 +186,9 @@ struct CheckersGuardedRecords {
             std::string("\x1b[1;35;40m|++|\x1b[0m") + 
             "CheckersGuardedRecords",
             "")) {
-    display_debug_info("struct CheckersGuardedRecords", __FUNCTION__, RED_B);        
   }
 
   void feed(const CheckersStateExt& s) {
-    display_debug_info("struct CheckersGuardedRecords", __FUNCTION__, RED_B);
 
     std::lock_guard<std::mutex> lock(mutex_);
     records_.addRecord(s.dumpRecord());
@@ -208,9 +199,6 @@ struct CheckersGuardedRecords {
     // Разобрать!!!!!!!!!!!!!!!!!!!!!!!
     // Разобрать!!!!!!!!!!!!!!!!!!!!!!!
     // Разобрать!!!!!!!!!!!!!!!!!!!!!!!
-
-    display_debug_info("struct CheckersGuardedRecords", __FUNCTION__, RED_B);
-
     std::lock_guard<std::mutex> lock(mutex_);
 
     auto now = elf_utils::sec_since_epoch_from_now();
@@ -256,15 +244,11 @@ struct CheckersGuardedRecords {
   }
 
   size_t size() {
-    display_debug_info("struct CheckersGuardedRecords", __FUNCTION__, RED_B);
-
     std::lock_guard<std::mutex> lock(mutex_);
     return records_.records.size();
   }
 
   std::string dumpAndClear() {
-    display_debug_info("struct CheckersGuardedRecords", __FUNCTION__, RED_B);
-
     // send data.
     std::lock_guard<std::mutex> lock(mutex_);
     logger_->info(
@@ -289,9 +273,7 @@ struct CheckersGuardedRecords {
   static std::string visStates(
       const std::unordered_map<int, ThreadState>& states,
       const std::unordered_map<int, uint64_t>* timestamps = nullptr) {
-    display_debug_info("struct CheckersGuardedRecords", __FUNCTION__, RED_B);
-    
-    // добавляем инфу по текущей игре стата храниться в 
+    // добавляем инфу по текущей игре. Статистика храниться в 
     // ThreadState
     // thread_id   - index
     // seq         - Which game we have played
@@ -361,8 +343,6 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
         records_(identity), 
         options_(options), 
         client_(client) {
-    display_debug_info("CheckersGameNotifier", __FUNCTION__, RED_B);
-
     using std::placeholders::_1;
     using std::placeholders::_2;
 
@@ -371,8 +351,6 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   }
 
   void OnGameEnd(const CheckersStateExt& s) override {
-    display_debug_info("CheckersGameNotifier", __FUNCTION__, RED_B);
-
     // tell python / remote
     records_.feed(s);
 
@@ -387,16 +365,12 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   }
 
   void OnStateUpdate(const ThreadState& state) override {
-    display_debug_info("CheckersGameNotifier", __FUNCTION__, RED_B);
-
     // Update current state.
     records_.updateState(state);
   }
 
   void OnMCTSResult(Coord c, const CheckersGameNotifierBase::MCTSResult& result)
       override {
-    display_debug_info("CheckersGameNotifier", __FUNCTION__, RED_B);
-
     // Check the ranking of selected move.
     auto move_rank =
         result.getRank(c, elf::ai::tree_search::MCTSResultT<Coord>::PRIOR);
@@ -404,8 +378,6 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   }
 
   GameStats& getGameStats() {
-    display_debug_info("CheckersGameNotifier", __FUNCTION__, RED_B);
-
     return game_stats_;
   }
 
@@ -418,8 +390,6 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   const std::string         end_target_ = "game_end";
 
   bool dump_records(const Addr&, std::pair<int, std::string>& data) {
-    display_debug_info("CheckersGameNotifier", __FUNCTION__, RED_B);
-
     data.first = records_.size();
     data.second = records_.dumpAndClear();
     return true;
@@ -502,8 +472,6 @@ class DistriClient {
           std::string("\x1b[1;35;40m|++|\x1b[0m") + 
           "DistriClient-", 
           "")) {
-    display_debug_info("DistriClient", __FUNCTION__, RED_B);
-    
     dispatcher_.reset(new ThreadedDispatcher(ctrl_, contextOptions.num_games));
     dispatcher_callback_.reset(
         new DispatcherCallback(dispatcher_.get(), client));
@@ -534,20 +502,14 @@ class DistriClient {
   }
 
   ThreadedDispatcher* getDispatcher() {
-    display_debug_info("DistriClient", __FUNCTION__, RED_B);
-
     return dispatcher_.get();
   }
 
   CheckersGameNotifier* getCheckersNotifier() {
-    display_debug_info("DistriClient", __FUNCTION__, RED_B);
-
     return checkers_game_notifier_.get();
   }
 
   const GameStats& getCheckersGameStats() const {
-    display_debug_info("DistriClient", __FUNCTION__, RED_B);
-
     assert(checkers_game_notifier_ != nullptr);
     return checkers_game_notifier_->getGameStats();
   }
@@ -558,8 +520,6 @@ class DistriClient {
       int64_t white_ver,
       // float thres,
       int numThreads = -1) {
-    display_debug_info("DistriClient", __FUNCTION__, RED_B);
-    
     MsgRequest request;
     request.vers.black_ver = black_ver;
     request.vers.white_ver = white_ver;

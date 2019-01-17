@@ -60,10 +60,8 @@ struct CheckersGameOptions {
 
 	int					num_reset_ranking = 5000;
 
-	std::string preload_sgf;
+	std::string 		preload_sgf;
 	int					preload_sgf_move_to = -1;
-
-	bool        use_df_feature = false;
 
 	int					q_min_size = 10;
 	int					q_max_size = 1000;
@@ -115,7 +113,6 @@ struct CheckersGameOptions {
 	std::string info() const {
 		std::stringstream ss;
 
-
 		ss << "Seed: " << seed << std::endl;
 		ss << "Time signature: " << time_signature << std::endl;
 		ss << "Client max delay in sec: " << client_max_delay_sec << std::endl;
@@ -130,8 +127,6 @@ struct CheckersGameOptions {
 		ss << "Start_ratio_pre_moves: " << start_ratio_pre_moves << std::endl;
 		ss << "ratio_pre_moves: " << ratio_pre_moves << std::endl;
 		ss << "MoveCutOff: " << move_cutoff << std::endl;
-		ss << "Use DF feature: " << elf_utils::print_bool(use_df_feature)
-			 << std::endl;
 		ss << "PolicyDistriCutOff: " << policy_distri_cutoff << std::endl;
 
 		if (expected_num_clients > 0) {
@@ -213,7 +208,6 @@ struct CheckersGameOptions {
 			preload_sgf_move_to,
 			print_result,
 			num_reset_ranking,
-			use_df_feature,
 			policy_distri_training_for_all,
 			black_use_policy_network_only,
 			white_use_policy_network_only,

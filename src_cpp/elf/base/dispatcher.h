@@ -25,12 +25,9 @@ class ThreadedDispatcherT : public ThreadedCtrlBase {
         logger_(elf::logging::getIndexedLogger(
           "elf::base::ThreadedDispatcherT-",
           "")) {
-    display_debug_info("ThreadedDispatcherT", __FUNCTION__, GREEN_B);
   }
 
   void Start(ServerReply replier, ServerFirstSend first_send = nullptr) {
-    display_debug_info("ThreadedDispatcherT", __FUNCTION__, GREEN_B);
-
     server_replier_ = replier;
     server_first_send_ = first_send;
     start<S, std::pair<Addr, R>>("dispatcher");
@@ -38,17 +35,14 @@ class ThreadedDispatcherT : public ThreadedCtrlBase {
 
   // Called by game threads
   void RegGame(int game_idx) {
-    display_debug_info("ThreadedDispatcherT", __FUNCTION__, GREEN_B);
-
     ctrl_.reg("game_" + std::to_string(game_idx));
     ctrl_.addMailbox<S, R>();
     game_counter_.increment();
   }
 
   void checkMessage(bool block_wait, ThreadRecv on_receive) {
-    display_debug_info("ThreadedDispatcherT", __FUNCTION__, GREEN_B);
-
     S s;
+
     if (!block_wait) {
       if (!ctrl_.peekMail(&s, 0)) {
         return;
@@ -84,8 +78,6 @@ class ThreadedDispatcherT : public ThreadedCtrlBase {
   std::shared_ptr<spdlog::logger> logger_;
 
   void before_loop() override {
-    display_debug_info("ThreadedDispatcherT", __FUNCTION__, GREEN_B);
-
     // Wait for all games + this processing thread.
     logger_->info("Wait all games[{}] to register their mailbox", num_games_);
     game_counter_.waitUntilCount(num_games_);
@@ -101,9 +93,8 @@ class ThreadedDispatcherT : public ThreadedCtrlBase {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   void on_thread() override {
-    display_debug_info("ThreadedDispatcherT", __FUNCTION__, GREEN_B);
-
     S msg;
+
     if (ctrl_.peekMail(&msg, 0)) {
       if (just_started_ || msg != last_msg_) {
         process_request(msg);
@@ -114,8 +105,6 @@ class ThreadedDispatcherT : public ThreadedCtrlBase {
   }
 
   void process_request(const S& s) {
-    display_debug_info("ThreadedDispatcherT", __FUNCTION__, GREEN_B);
-
     size_t n = addrs_.size();
 
     std::vector<S> requests(n, s);

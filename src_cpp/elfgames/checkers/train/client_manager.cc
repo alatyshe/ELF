@@ -9,21 +9,15 @@
 #include "client_manager.h"
 
 ClientInfo::State::State(const ClientManager& mgr) : mgr_(mgr) {
-  display_debug_info("ClientInfo", __FUNCTION__, RED_B, false);
-
   last_state_update_ = mgr_.getCurrTimeStamp();
 }
 
 bool ClientInfo::State::CompareGame(const ModelPair& p) const {
-  display_debug_info("ClientInfo", __FUNCTION__, RED_B, false);
-
   std::lock_guard<std::mutex> lock(mutex_);
   return last_state_.black == p.black_ver && last_state_.white == p.white_ver;
 }
 
 bool ClientInfo::State::StateUpdate(const ThreadState& ts) {
-  display_debug_info("ClientInfo", __FUNCTION__, RED_B, false);
-
   std::lock_guard<std::mutex> lock(mutex_);
   if (last_state_ != ts) {
     last_state_ = ts;
@@ -40,8 +34,6 @@ ClientInfo::ClientInfo(
     int num_threads,
     int max_delay_sec)
     : mgr_(mgr), identity_(id), max_delay_sec_(max_delay_sec), seq_(0) {
-  display_debug_info("ClientInfo", __FUNCTION__, RED_B, false);
-
   for (int i = 0; i < num_threads; ++i) {
     threads_.emplace_back(new State(mgr_));
   }
@@ -49,8 +41,6 @@ ClientInfo::ClientInfo(
 }
 
 void ClientInfo::stateUpdate(const ThreadState& ts) {
-  display_debug_info("ClientInfo", __FUNCTION__, RED_B, false);
-
   std::lock_guard<std::mutex> lock(mutex_);
   assert(ts.thread_id >= 0 && ts.thread_id < (int)threads_.size());
   if (threads_[ts.thread_id]->StateUpdate(ts)) {
@@ -58,9 +48,7 @@ void ClientInfo::stateUpdate(const ThreadState& ts) {
   }
 }
 
-ClientInfo::ClientChange ClientInfo::updateActive() {
-  display_debug_info("ClientInfo", __FUNCTION__, RED_B, false);
-  
+ClientInfo::ClientChange ClientInfo::updateActive() {  
   std::lock_guard<std::mutex> lock(mutex_);
   bool curr_active = (mgr_.getCurrTimeStamp() - last_update_ < max_delay_sec_);
 

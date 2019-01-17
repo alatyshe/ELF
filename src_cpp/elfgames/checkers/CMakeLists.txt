@@ -1,9 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
-project(elfgames_go)
+project(elfgames_checkers)
 
 # Source files
 
-set(ELFGAMES_GO_SOURCES
+set(ELFGAMES_CHECKERS_SOURCES
     common/ClientGameSelfPlay.cc
     train/server/ServerGameTrain.cc
 
@@ -17,31 +17,17 @@ set(ELFGAMES_GO_SOURCES
     train/Pybind.cc
 )
 
-# Main Go library
-
-add_library(elfgames_go ${ELFGAMES_GO_SOURCES})
-if(${BOARD9x9})
-    message("Use 9x9 board")
-    target_compile_definitions(elfgames_go PUBLIC BOARD9x9)
-endif()
-target_link_libraries(elfgames_go PUBLIC
-    cppzmq
-    elf
-)
-
-# For unit-test purpose, build 9x9 library
-add_library(elfgames_go9 ${ELFGAMES_GO_SOURCES})
-target_compile_definitions(elfgames_go9 PUBLIC BOARD9x9)
-target_link_libraries(elfgames_go9 PUBLIC
+# Main Checkers library
+add_library(elfgames_checkers ${ELFGAMES_CHECKERS_SOURCES})
+target_link_libraries(elfgames_checkers PUBLIC
     cppzmq
     elf
 )
 
 # Python bindings
-
-pybind11_add_module(_elfgames_go train/pybind_module.cc)
-target_link_libraries(_elfgames_go PRIVATE
-    elfgames_go
+pybind11_add_module(_elfgames_checkers train/pybind_module.cc)
+target_link_libraries(_elfgames_checkers PRIVATE
+    elfgames_checkers
     zmq
 )
 

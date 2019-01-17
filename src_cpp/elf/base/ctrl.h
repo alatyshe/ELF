@@ -32,7 +32,6 @@ struct Addr {
   std::string label;
 
   bool matchPrefix(const std::string& prefix) const {
-    display_debug_info("struct Addr", __FUNCTION__, GREEN_B);
     if (label.size() < prefix.size()) {
       return false;
     }
@@ -63,9 +62,8 @@ class CtrlFuncs {
   // For processor
   template <typename T>
   void RegCallback(RecvCB_T<T> cb) {
-    display_debug_info("CtrlFuncs", __FUNCTION__, GREEN_B);
-
     typename FuncMap::accessor elem;
+
     bool uninitialized = funcMap_.insert(elem, std::type_index(typeid(T)));
     if (uninitialized) {
       elem->second.reset(new _CallbackT<T>(cb));
@@ -74,10 +72,9 @@ class CtrlFuncs {
 
   template <typename T>
   RecvCB_T<T> getCallback() const {
-    display_debug_info("CtrlFuncs", __FUNCTION__, GREEN_B);
-
     // Readonly, no lock.
     const _CallbackBase* p;
+
     {
       typename FuncMap::const_accessor elem;
       bool found = funcMap_.find(elem, std::type_index(typeid(T)));
@@ -102,7 +99,6 @@ class CtrlFuncs {
    public:
     RecvCB_T<T> func;
     _CallbackT(RecvCB_T<T> func) : func(func) {
-      display_debug_info("struct CtrlFuncs->_CallbackT", __FUNCTION__, GREEN_B);
     }
   };
 
@@ -179,8 +175,6 @@ struct _ThreadInfoT {
   using Id = std::thread::id;
 
   const Addr& reg(Id id, const std::string& label) {
-    display_debug_info("struct _ThreadInfoT", __FUNCTION__, GREEN_B);
-
     addr_.id = id;
     addr_.label = label;
     return addr_;
@@ -188,24 +182,19 @@ struct _ThreadInfoT {
 
   template <typename... RecvTs>
   void addMailbox() {
-    display_debug_info("struct _ThreadInfoT", __FUNCTION__, GREEN_B);
-
     // Make sure reg is called.
     assert(addr_.id != std::thread::id());
     add_mailbox<Queue<RecvTs>...>(mailbox_);
   }
 
   const Addr& info() const {
-    display_debug_info("struct _ThreadInfoT", __FUNCTION__, GREEN_B);
-
     return addr_;
   }
 
   template <typename R>
   Queue<R>* getMailboxQueue() {
-    display_debug_info("struct _ThreadInfoT", __FUNCTION__, GREEN_B);
-
     auto it = mailbox_.find(std::type_index(typeid(R)));
+
     if (it == mailbox_.end())
       return nullptr;
 
@@ -237,9 +226,8 @@ class ThreadInfosT {
   using _ThreadInfo = _ThreadInfoT<Queue>;
 
   const Addr& reg(Id id, std::string label = "") {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     typename ThreadInfoMap::accessor elem;
+
     bool uninitialized = threadInfoMap_.insert(elem, id);
     if (uninitialized) {
       elem->second.reset(new _ThreadInfo());
@@ -257,35 +245,25 @@ class ThreadInfosT {
 
   template <typename... MailboxTs>
   void addMailbox(Id id) {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     _th_info(id).template addMailbox<MailboxTs...>();
   }
 
   bool isRegistered(Id id) const {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     typename ThreadInfoMap::const_accessor elem;
     return threadInfoMap_.find(elem, id);
   }
 
   bool isRegistered(const std::string label) const {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     typename ThreadStrMap::const_accessor elem;
     return threadStrMap_.find(elem, label);
   }
 
   const Addr& getAddr(Id id) const {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     return _th_info(id).info();
   }
 
   template <typename R>
   void waitMail(Id id, R* r) {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     Queue<R>* q = _th_info(id).template getMailboxQueue<R>();
     assert(q != nullptr);
     q->pop(r);
@@ -293,8 +271,6 @@ class ThreadInfosT {
 
   template <typename R>
   bool peekMail(Id id, R* r, int timeout_usec) {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     Queue<R>* q = _th_info(id).template getMailboxQueue<R>();
     assert(q != nullptr);
     return q->pop(r, std::chrono::microseconds(timeout_usec));
@@ -302,8 +278,6 @@ class ThreadInfosT {
 
   template <typename R>
   void sendMail(Id id, const R& r) {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     Queue<R>* q = _th_info(id).template getMailboxQueue<R>();
     assert(q != nullptr);
     q->push(r);
@@ -311,15 +285,12 @@ class ThreadInfosT {
 
   template <typename R>
   void sendMail(const std::string& label, const R& r) {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     sendMail<R>(_th_label2id(label), r);
   }
 
   std::vector<Addr> filterPrefix(const std::string& prefix) {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     std::vector<Addr> senders;
+
     for (auto& elem : threadInfoMap_.range()) {
       auto& threadInfo = *(elem.second);
       if (threadInfo.info().matchPrefix(prefix)) {
@@ -331,10 +302,9 @@ class ThreadInfosT {
 
  private:
   _ThreadInfo* _th_info_impl(Id id) const {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     typename ThreadInfoMap::accessor elem;
     bool found = threadInfoMap_.find(elem, id);
+
     assert(found);
     _ThreadInfo* res = elem->second.get();
     assert(res != nullptr);
@@ -342,23 +312,18 @@ class ThreadInfosT {
   }
 
   std::thread::id _th_label2id(const std::string& label) const {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     typename ThreadStrMap::accessor elem;
     bool found = threadStrMap_.find(elem, label);
+
     assert(found);
     return elem->second;
   }
 
   _ThreadInfo& _th_info(Id id) {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     return *_th_info_impl(id);
   }
 
   const _ThreadInfo& _th_info(Id id) const {
-    display_debug_info("ThreadInfosT", __FUNCTION__, GREEN_B);
-
     return *_th_info_impl(id);
   }
 
@@ -393,43 +358,32 @@ class CtrlT {
 
   // Sender side.
   const Addr& reg(std::string label = "") {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     return threads_.reg(std::this_thread::get_id(), label);
   }
 
   bool isRegistered() const {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     return threads_.isRegistered(std::this_thread::get_id());
   }
 
   bool isRegistered(std::string label) const {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     return threads_.isRegistered(label);
   }
 
   template <typename... RecvTs>
   void addMailbox() {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     return threads_.template addMailbox<RecvTs...>(std::this_thread::get_id());
   }
 
   // Only works if the id is registered.
   const Addr& getAddr() const {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     return threads_.getAddr(std::this_thread::get_id());
   }
 
   // Call the registered function via the same thread/another thread.
   template <typename T>
   bool call(T& msg) {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     auto cb = callbacks_.template getCallback<T>();
+
     assert(cb != nullptr);
     const auto& addr = threads_.getAddr(std::this_thread::get_id());
     return cb(addr, msg);
@@ -437,51 +391,39 @@ class CtrlT {
 
   template <typename R>
   void waitMail(R* r) {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     auto id = std::this_thread::get_id();
+
     threads_.template waitMail<R>(id, r);
   }
 
   template <typename R>
   bool peekMail(R* r, int timeout_usec) {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     auto id = std::this_thread::get_id();
+
     return threads_.template peekMail<R>(id, r, timeout_usec);
   }
 
   void waitRegs(int num_senders) {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     threads_.waitRegs(num_senders);
   }
 
   //
   template <typename T>
   void RegCallback(CtrlFuncs::RecvCB_T<T> cb) {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     callbacks_.template RegCallback<T>(cb);
   }
 
   template <typename R>
   void sendMail(const Addr& addr, const R& r) {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     threads_.template sendMail<R>(addr.id, r);
   }
 
   template <typename R>
   void sendMail(const std::string& label, const R& r) {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     threads_.template sendMail<R>(label, r);
   }
 
   std::vector<Addr> filterPrefix(const std::string& prefix) {
-    display_debug_info("CtrlT", __FUNCTION__, GREEN_B);
-
     return threads_.template filterPrefix(prefix);
   }
 
@@ -512,14 +454,10 @@ class ThreadedCtrlBaseT {
 
   ThreadedCtrlBaseT(Ctrl& ctrl, int time_millisec)
       : ctrl_(ctrl), time_millisec_(time_millisec), done_(false) {
-    display_debug_info("ThreadedCtrlBaseT", __FUNCTION__, GREEN_B);
-
   }
 
   template <typename T>
   void sendToThread(const T& msg) {
-    display_debug_info("ThreadedCtrlBaseT", __FUNCTION__, GREEN_B);
-
     ctrl_.sendMail(addr_, msg);
   }
 
@@ -546,15 +484,13 @@ class ThreadedCtrlBaseT {
   //  ctrl_.waitMail/peekMail.
   virtual void on_thread() = 0;
   virtual void before_loop() {
-    display_debug_info("ThreadedCtrlBaseT", __FUNCTION__, GREEN_B);
   }
 
 
   template <typename... Ts>
   void start(std::string label = "") {
-    display_debug_info("ThreadedCtrlBaseT", __FUNCTION__, GREEN_B);
-
     done_ = false;
+
     thread_.reset(new std::thread([this, label]() {
       addr_ = ctrl_.reg(label);
       ctrl_.template addMailbox<Ts...>();

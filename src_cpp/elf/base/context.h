@@ -43,33 +43,24 @@ class GameClient {
         n_(0),
         stop_games_(false),
         prepareToStop_(false) {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
 
   }
 
   // For Game side.
   void start() {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
     n_++;
   }
 
   void End() {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
     numStoppedCounter_.increment();
   }
 
   bool DoStopGames() {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
     return stop_games_.load();
   }
 
   // TODO: This function should go away (ssengupta@fb)
   bool checkPrepareToStop() {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
     return prepareToStop_.load();
   }
 
@@ -86,16 +77,12 @@ class GameClient {
   comm::ReplyStatus sendWait(
       const std::vector<std::string>& targets,
       FuncsWithState* funcs) {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
     return client_->sendWait(funcs, targets);
   }
 
   comm::ReplyStatus sendBatchWait(
       const std::vector<std::string>& targets,
       const std::vector<FuncsWithState*>& funcs) {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
     return client_->sendBatchWait(funcs, targets);
   }
 
@@ -110,14 +97,10 @@ class GameClient {
   concurrency::Counter<int> numStoppedCounter_;
 
   void prepareToStop() {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
     prepareToStop_ = true;
   }
 
   void stopGames() {
-    display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
     stop_games_ = true;
     numStoppedCounter_.waitUntilCount(n_);
   }
@@ -156,20 +139,15 @@ class Context {
         BatchClient* batchClient,
         std::unique_ptr<SharedMem>&& smem)
         : server_(server), batchClient_(batchClient), smem_(std::move(smem)) {
-      display_debug_info("Context->GameStateCollector", __FUNCTION__, GREEN_B);
       
       assert(smem_.get() != nullptr);
     }
 
     SharedMem& smem() {
-      display_debug_info("Context->GameStateCollector", __FUNCTION__, GREEN_B);
-      
       return *smem_;
     }
 
     void start() {
-      display_debug_info("Context->GameStateCollector", __FUNCTION__, GREEN_B);
-
       th_.reset(new std::thread([&]() {
         // assert(nice(10) == 10);
         collectAndSendBatch();
@@ -177,8 +155,6 @@ class Context {
     }
 
     void prepareToStop() {
-      display_debug_info("Context->GameStateCollector", __FUNCTION__, GREEN_B);
-
       msgQueue_.push(PREPARE_TO_STOP);
       completedSwitch_.waitUntilTrue();
       completedSwitch_.reset();
@@ -186,8 +162,6 @@ class Context {
     }
 
     void stop() {
-      display_debug_info("Context->GameStateCollector", __FUNCTION__, GREEN_B);
-
       msgQueue_.push(STOP);
       completedSwitch_.waitUntilTrue();
       completedSwitch_.reset();
@@ -209,8 +183,6 @@ class Context {
     // Collect game states into batch
     // Send batch to batch_server (through batchClient_)
     void collectAndSendBatch() {
-      display_debug_info("Context->GameStateCollector", __FUNCTION__, GREEN_B);
-
       std::vector<Message> batch;
 
       // Initialize collector. For now just use 1.
@@ -254,8 +226,6 @@ class Context {
 
   Context()
       : logger_(elf::logging::getIndexedLogger("elf::base::Context-", "")) {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     // Wait for the derived class to add entries to extractor_.
     server_ = comm_.getServer();
     client_.reset(new GameClient(&comm_, this));
@@ -266,33 +236,23 @@ class Context {
 
   // For C side use only.
   Extractor& getExtractor() {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     return extractor_;
   }
 
   const Extractor& getExtractor() const {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     return extractor_;
   }
 
   GameClient* getClient() {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     return client_.get();
   }
 
   void setStartCallback(int num_games, GameCallback cb) {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     num_games_ = num_games;
     game_cb_ = cb;
   }
 
   void setCBAfterGameStart(std::function<void()> cb) {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     cb_after_game_start_ = cb;
   }
 
@@ -300,8 +260,6 @@ class Context {
   SharedMemOptions createSharedMemOptions(
       const std::string& name,
       int batchsize) {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     return SharedMemOptions(name, batchsize);
   }
 
@@ -313,8 +271,6 @@ class Context {
     // for (const string &key : keys) {
     //    LOG(INFO) << key << " ";
     // }
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     smem2keys_[options.getRecvOptions().label] = keys;
     auto anyps = extractor_.getAnyP(keys);
 
@@ -328,7 +284,6 @@ class Context {
 
   const std::vector<std::string>* getSMemKeys(
       const std::string& smem_name) const {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
 
     auto it = smem2keys_.find(smem_name);
 
@@ -340,8 +295,6 @@ class Context {
   }
 
   void start() {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     logger_->info("Prepare context to start");
     for (auto& r : collectors_) {
       r->start();
@@ -369,7 +322,6 @@ class Context {
 
   std::string version() const {
 
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
 
 #ifdef GIT_COMMIT_HASH
 #define STRINGIFY(x) #x
@@ -383,9 +335,6 @@ class Context {
   }
 
   const SharedMem* wait(int time_usec = 0) {
-
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     batch_server_->waitBatch(comm::RecvOptions("", 1, time_usec), &smem_batch_);
     if (smem_batch_.empty() || smem_batch_[0].data.empty()) {
       return nullptr;
@@ -395,8 +344,6 @@ class Context {
   }
 
   void step(comm::ReplyStatus success = comm::SUCCESS) {
-
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
     // Finally we release the batch.
     // LOG(INFO) << "smem_batch_.size() = "
     //           << smem_batch_.size() << std::endl;
@@ -407,8 +354,6 @@ class Context {
   }
 
   void stop() {
-    display_debug_info("Context", __FUNCTION__, GREEN_B);
-
     // We need to stop everything.
     // Assuming that all games will be constantly sending states.
     std::atomic<bool> tmp_thread_done(false);
@@ -489,9 +434,6 @@ class Context {
 
 template <typename S>
 inline FuncsWithState GameClient::BindStateToFunctions(const std::vector<std::string>& smem_names, S* s) {
-
-  display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
   const Extractor& extractor = context_->getExtractor();
   FuncsWithState funcsWithState;
 
@@ -534,9 +476,6 @@ inline FuncsWithState GameClient::BindStateToFunctions(const std::vector<std::st
 
 template <typename S>
 inline std::vector<FuncsWithState> GameClient::BindStateToFunctions(const std::vector<std::string>& smem_names, const std::vector<S*>& batch_s) {
-
-  display_debug_info("GameClient", __FUNCTION__, GREEN_B);
-
   const Extractor& extractor = context_->getExtractor();
   std::vector<FuncsWithState> batchFuncsWithState(batch_s.size());
 

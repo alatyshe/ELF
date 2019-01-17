@@ -32,8 +32,6 @@ struct  ClientCtrl {
 	bool async = false;
 
 	void setJsonFields(json& j) const {
-		display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
-
 		JSON_SAVE(j, client_type);
 		JSON_SAVE(j, num_game_thread_used);
 		JSON_SAVE(j, player_swap);
@@ -42,9 +40,8 @@ struct  ClientCtrl {
 	static ClientCtrl createFromJson(
 			const json& j,
 			bool player_swap_optional = false) {
-		display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
-
 		ClientCtrl ctrl;
+
 		JSON_LOAD(ctrl, j, client_type);
 		JSON_LOAD(ctrl, j, num_game_thread_used);
 		// For backward compatibility.
@@ -58,8 +55,6 @@ struct  ClientCtrl {
 	}
 
 	std::string info() const {
-		display_debug_info("struct ClientCtrl", __FUNCTION__, RED_B);
-
 		std::stringstream ss;
 		ss  << "\nClientCtrl::info()\t\t[client=";
 
@@ -113,47 +108,37 @@ enum    RestartReply {
 // ==========================================================
 struct  MsgRestart {
 	RestartReply 	result;
-	int 					game_idx;
+	int						game_idx;
 
 	MsgRestart(RestartReply res = NO_OP, int game_idx = -1)
-			: result(res), game_idx(game_idx) {
-		display_debug_info("struct MsgRestart", __FUNCTION__, RED_B);
-	}
+			: result(res), game_idx(game_idx) {	}
 };
 
 // ==========================================================
 // ==========================================================
 struct  MsgRequest {
-	ModelPair 	vers;
-	ClientCtrl 	client_ctrl;
+	ModelPair		vers;
+	ClientCtrl	client_ctrl;
 
 	void setJsonFields(json& j) const {
-		display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
-
 		JSON_SAVE_OBJ(j, vers);
 		JSON_SAVE_OBJ(j, client_ctrl);
 	}
 
 	static MsgRequest createFromJson(const json& j) {
-		display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
-
-		MsgRequest request;
+		MsgRequest	request;
 		JSON_LOAD_OBJ(request, j, vers);
 		JSON_LOAD_OBJ_ARGS(request, j, client_ctrl, request.vers.is_selfplay());
 		return request;
 	}
 
 	std::string setJsonFields() const {
-		display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
-
-		json j;
+		json			j;
 		setJsonFields(j);
 		return j.dump();
 	}
 
 	std::string info() const {
-		display_debug_info("struct MsgRequest", __FUNCTION__, RED_B);
-
 		std::stringstream ss;
 		ss << client_ctrl.info() << vers.info();
 		return ss.str();
@@ -175,32 +160,26 @@ struct  MsgRequestSeq {
 	MsgRequest request;
 
 	void setJsonFields(json& j) const {
-		display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
-
 		JSON_SAVE_OBJ(j, request);
 		JSON_SAVE(j, seq);
 	}
 
 	static MsgRequestSeq createFromJson(const json& j) {
-		display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
-
 		MsgRequestSeq s;
+
 		JSON_LOAD_OBJ(s, j, request);
 		JSON_LOAD(s, j, seq);
 		return s;
 	}
 	std::string dumpJsonString() const {
-		display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
-
 		json j;
 		setJsonFields(j);
 		return j.dump();
 	}
 
 	std::string info() const {
-		display_debug_info("struct MsgRequestSeq", __FUNCTION__, RED_B);
-
 		std::stringstream ss;
+		
 		ss << "[seq=" << seq << "]" << request.info();
 		return ss.str();
 	}
@@ -219,8 +198,6 @@ struct  ThreadState {
 	int64_t white = -1;
 
 	void setJsonFields(json& j) const {
-		display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
-
 		JSON_SAVE(j, thread_id);
 		JSON_SAVE(j, seq);
 		JSON_SAVE(j, move_idx);
@@ -229,8 +206,6 @@ struct  ThreadState {
 	}
 
 	static ThreadState createFromJson(const json& j) {
-		display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
-
 		ThreadState state;
 		JSON_LOAD(state, j, thread_id);
 		JSON_LOAD(state, j, seq);
@@ -251,8 +226,6 @@ struct  ThreadState {
 	}
 
 	std::string info() const {
-		display_debug_info("struct ThreadState", __FUNCTION__, RED_B);
-
 		std::stringstream ss;
 		ss  << "ThreadState::info()\t\t[th_id=" << thread_id << "]"
 				<< "[seq=" << seq << "]"

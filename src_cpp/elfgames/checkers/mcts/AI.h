@@ -13,7 +13,6 @@
 
 #include "../checkers/CheckersState.h"
 
-// using AI = elf::ai::AIClientT<BoardFeature, GoReply>;
 using CheckersAI = elf::ai::AIClientT<CheckersFeature, CheckersReply>;
 
 namespace elf {
@@ -24,13 +23,10 @@ template <>
 struct ActionTrait<Coord> {
  public:
   static std::string to_string(const Coord& c) {
-    // display_debug_info("ai.h ActionTrait", __FUNCTION__, RED_B);
-
     return "[" + std::to_string(c) + "]";
   }
-  static Coord default_value() {
-    display_debug_info("ai.h ActionTrait", __FUNCTION__, RED_B);
 
+  static Coord default_value() {
     return M_INVALID;
   }
 };
@@ -40,13 +36,9 @@ template <>
 struct StateTrait<CheckersState, Coord> {
  public:
   static std::string to_string(const CheckersState& s) {
-    display_debug_info("ai.h StateTrait", __FUNCTION__, RED_B);
-
     return "Score : " + std::to_string(s.evaluate());
   }
   static bool equals(const CheckersState& s1, const CheckersState& s2) {
-    display_debug_info("ai.h StateTrait", __FUNCTION__, RED_B);
-
     CheckersBoard b1 = s1.board();
     CheckersBoard b2 = s2.board();
 
@@ -73,13 +65,6 @@ struct StateTrait<CheckersState, Coord> {
       const CheckersState& s,
       size_t* next_move_number,
       std::vector<Coord>* moves) {
-    display_debug_info("ai.h StateTrait", __FUNCTION__, RED_B);
-    
-
-    // std::cout << "next_move_number\t: " << *next_move_number << std::endl;
-    // std::cout << "move_since\t\t: " << std::endl;
-    
-
     return s.moves_since(next_move_number, moves);
   }
 };

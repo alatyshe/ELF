@@ -56,14 +56,10 @@ template <typename S, typename A>
 struct StateTrait {
  public:
   static std::string to_string(const S&) {
-    display_debug_info("struct StateTrait", __FUNCTION__, GREEN_B);
-    
     return "";
   }
 
   static bool equals(const S& s1, const S& s2) {
-    display_debug_info("struct StateTrait", __FUNCTION__, GREEN_B);
-
     return s1 == s2;
   }
 
@@ -71,8 +67,6 @@ struct StateTrait {
       const S& /*s*/,
       size_t* /*next_move_number*/,
       std::vector<A>* /*moves*/) {
-    display_debug_info("struct StateTrait", __FUNCTION__, GREEN_B);
-
     // By default it is not provided.
     return false;
   }
@@ -95,15 +89,11 @@ template <typename Action>
 struct ActionTrait {
  public:
   static std::string to_string(const Action& action) {
-    display_debug_info("struct ActionTrait", __FUNCTION__, GREEN_B);
-
     return std::to_string(action);
   }
 
   // We expect static A default_value().
   static Action default_value() {
-    display_debug_info("struct ActionTrait", __FUNCTION__, GREEN_B);
-
     return Action();
   }
 };
@@ -167,19 +157,14 @@ struct EdgeInfo {
         // logger_(
         //     elf::logging::getLogger("elf::ai::tree_search::EdgeInfo-", "")) 
         {
-    display_debug_info("struct EdgeInfo", __FUNCTION__, GREEN_B);
   }
 
   float getQSA() const {
-    display_debug_info("struct EdgeInfo", __FUNCTION__, GREEN_B);
-
     return reward / num_visits;
   }
 
   // TODO: What is this function doing (ssengupta@fb.com)
   void checkValid() const {
-    display_debug_info("struct EdgeInfo", __FUNCTION__, GREEN_B);
-
     if (virtual_loss != 0) {
       // TODO: This should be a Google log (ssengupta@fb)
       // logger_->info(
@@ -192,9 +177,8 @@ struct EdgeInfo {
       bool flip_q_sign,
       int total_parent_visits,
       float unsigned_default_q) const {
-    display_debug_info("struct EdgeInfo", __FUNCTION__, GREEN_B);
-
     float r = reward;
+
     if (flip_q_sign) {
       r = -r;
     }
@@ -218,8 +202,6 @@ struct EdgeInfo {
   }
 
   std::string info(bool verbose = false) const {
-    display_debug_info("struct EdgeInfo", __FUNCTION__, GREEN_B);
-
     std::stringstream ss;
 
     if (verbose == false) {
@@ -252,9 +234,8 @@ struct MCTSPolicy {
   std::vector<std::pair<Action, float>> policy;
 
   std::string info() const {
-    display_debug_info("struct MCTSPolicy", __FUNCTION__, GREEN_B);
-
     std::stringstream ss;
+
     ss << "Printing out scores for each action." << std::endl;
     for (size_t i = 0; i < policy.size(); i++) {
       const auto& entry = policy[i];
@@ -264,16 +245,13 @@ struct MCTSPolicy {
   }
 
   void addAction(const Action& action, float score) {
-    display_debug_info("struct MCTSPolicy", __FUNCTION__, GREEN_B);
-
     policy.push_back(std::make_pair(action, score));
   }
 
   // AlphaGo use t=1 for first 30 moves.
   void normalize(float t = 1) {
-    display_debug_info("struct MCTSPolicy", __FUNCTION__, GREEN_B);
-
     float exp_sum = 0;
+
     for (auto& entry : policy) {
       float e = std::pow(entry.second, 1.0 / t);
       entry.second = e;
@@ -286,9 +264,8 @@ struct MCTSPolicy {
 
   // Sample from the distribution.
   Action sampleAction(std::mt19937* gen) const {
-    display_debug_info("struct MCTSPolicy", __FUNCTION__, GREEN_B);
-
     size_t i = elf_utils::sample_multinomial(policy, gen);
+
     return policy[i].first;
   }
 };
@@ -327,14 +304,11 @@ struct MCTSResultT {
         best_edge_info(0),
         total_visits(0),
         action_rank_method(MOST_VISITED) {
-    display_debug_info("struct MCTSResultT", __FUNCTION__, GREEN_B);
   }
 
   // TODO: This function should be private and called from the constructor
   //       ssengupta@fb.com
   void addActions(const std::unordered_map<Action, EdgeInfo>& action_edges) {
-    display_debug_info("struct MCTSResultT", __FUNCTION__, GREEN_B);
-
     static std::mt19937 rng(time(NULL));
     int random_idx = 0;
 
@@ -411,8 +385,6 @@ struct MCTSResultT {
 
   std::pair<int, EdgeInfo> getRank(const Action& action, RankCriterion rc)
       const {
-    display_debug_info("struct MCTSResultT", __FUNCTION__, GREEN_B);
-
     // [TODO] not efficient if you want to get rank for multiple actions.
     // TODO: This assignment is a bit odd (ssengupta@fb.com)
     auto ae_pairs = action_edge_pairs;

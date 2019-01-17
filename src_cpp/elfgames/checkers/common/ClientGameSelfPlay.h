@@ -35,12 +35,12 @@ class ClientGameSelfPlay : public GameBase {
  public:
 	using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
 	ClientGameSelfPlay(
-			int                         game_idx,
-			elf::GameClient*            client,
-			const ContextOptions&       context_options,
-			const CheckersGameOptions&  options,
-			ThreadedDispatcher*         dispatcher,
-			CheckersGameNotifierBase*   checkers_notifier = nullptr);
+			int													game_idx,
+			elf::GameClient*						client,
+			const ContextOptions&				context_options,
+			const CheckersGameOptions&	options,
+			ThreadedDispatcher*					dispatcher,
+			CheckersGameNotifierBase*		checkers_notifier = nullptr);
 
 	bool 	OnReceive(const MsgRequest& request, RestartReply* reply);
 

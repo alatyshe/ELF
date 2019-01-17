@@ -26,19 +26,16 @@
 
 struct MCTSActorParams {
   std::string actor_name;
-  int       ply_pass_enabled = 0;
   uint64_t  seed = 0;
   // Required model version.
   // If -1, then there is no requirement on model version (any model response
   // can be used).
   int64_t   required_version = -1;
-  bool      remove_pass_if_dangerous = true;
 
   std::string info() const {
     std::stringstream ss;
-    ss << "[name=" << actor_name << "][ply_pass_enabled=" << ply_pass_enabled
-       << "][seed=" << seed << "][requred_ver=" << required_version
-       << "][remove_pass_if_dangerous=" << remove_pass_if_dangerous << "]";
+    ss  << "[name=" << actor_name << "][seed=" 
+        << seed << "][requred_ver=" << required_version << "]";
     return ss.str();
   }
 };
@@ -68,32 +65,22 @@ class CheckersMCTSActor {
           std::string("\x1b[1;35;40m|++|\x1b[0m") + 
           "CheckersMCTSActor-", 
           "")) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     ai_.reset(new CheckersAI(client, {params_.actor_name}));
   }
 
   std::string info() const {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     return params_.info();
   }
 
   void set_ostream(std::ostream* oo) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     oo_ = oo;
   }
 
   void setRequiredVersion(int64_t ver) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     params_.required_version = ver;
   }
 
   std::mt19937* rng() {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     return &rng_;
   }
 
@@ -101,8 +88,6 @@ class CheckersMCTSActor {
   void evaluate(
       const std::vector<const CheckersState*>& states,
       std::vector<NodeResponse>* p_resps) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     if (states.empty())
       return;
 
@@ -151,8 +136,6 @@ class CheckersMCTSActor {
   }
 
   void evaluate(const CheckersState& s, NodeResponse* resp) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     if (oo_ != nullptr)
       *oo_ << "Evaluating state at " << std::hex << &s << std::dec << std::endl;
 
@@ -184,20 +167,14 @@ class CheckersMCTSActor {
   }
 
   bool forward(CheckersState& s, Coord a) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     return s.forward(a);
   }
 
   void setID(int id) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     ai_->setID(id);
   }
 
   float reward(const CheckersState& /*s*/, float value) const {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     return value;
   }
 
@@ -211,14 +188,10 @@ class CheckersMCTSActor {
   std::shared_ptr<spdlog::logger> logger_;
 
   CheckersFeature get_extractor(const CheckersState& s) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     return CheckersFeature(s);
   }
 
   PreEvalResult pre_evaluate(const CheckersState& s, NodeResponse* resp) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     resp->q_flip = s.nextPlayer() == WHITE_PLAYER;
 
     if (s.terminated()) {
@@ -243,8 +216,6 @@ class CheckersMCTSActor {
   }
 
   void post_nn_result(const CheckersReply& reply, NodeResponse* resp) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     if (params_.required_version >= 0 &&
         reply.version != params_.required_version) {
       const std::string msg = "model version " + std::to_string(reply.version) +
@@ -259,19 +230,13 @@ class CheckersMCTSActor {
     resp->value = reply.value;
 
     const CheckersState& s = reply.bf.state();
-
-    bool pass_enabled = s.getPly() >= params_.ply_pass_enabled;
-    // if (params_.remove_pass_if_dangerous) {
-    //   remove_pass_if_dangerous(s, &pass_enabled);
-    // }
-    pi2response(reply.bf, reply.pi, pass_enabled, &resp->pi, oo_);
+    pi2response(reply.bf, reply.pi, &resp->pi, oo_);
   }
 
   static void normalize(std::vector<std::pair<Coord, float>>* output_pi) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     assert(output_pi != nullptr);
     float total_prob = 1e-10;
+
     for (const auto& p : *output_pi) {
       total_prob += p.second;
     }
@@ -284,11 +249,8 @@ class CheckersMCTSActor {
   static void pi2response(
       const CheckersFeature& bf,
       const std::vector<float>& pi,
-      bool pass_enabled,
       std::vector<std::pair<Coord, float>>* output_pi,
       std::ostream* oo = nullptr) {
-    display_debug_info("CheckersMCTSActor", __FUNCTION__, RED_B);
-
     const CheckersState& s = bf.state();
 
     if (oo != nullptr) {
@@ -352,10 +314,6 @@ class CheckersMCTSActor {
       }
       i++;
     }
-    // if (tmp.empty() && !pass_enabled) {
-    //   // Add pass if there is no valid move.
-    //   tmp.push_back(std::make_pair(M_PASS, 1.0));
-    // }
     *output_pi = tmp;
     normalize(output_pi);
     if (oo != nullptr)
@@ -409,14 +367,12 @@ class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> 
       const elf::ai::tree_search::TSOptions& options,
       std::function<CheckersMCTSActor*(int)> gen)
       : elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor>(options, gen) {
-    display_debug_info("MCTSCheckersAI", __FUNCTION__, RED_B);
   }
 
   float getValue() const {
-    display_debug_info("MCTSCheckersAI", __FUNCTION__, RED_B);
-
     // Check if we need to resign.
     const auto& result = getLastResult();
+
     if (result.total_visits == 0)
       return result.root_value;
     else
@@ -424,19 +380,17 @@ class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> 
   }
 
   elf::ai::tree_search::MCTSPolicy<Coord> getMCTSPolicy() const {
-    display_debug_info("MCTSCheckersAI", __FUNCTION__, RED_B);
-
     const auto& result = getLastResult();
     auto policy = result.mcts_policy;
+
     policy.normalize();
     return policy;
   }
 
   void setRequiredVersion(int64_t ver) {
-    display_debug_info("MCTSCheckersAI", __FUNCTION__, RED_B);
-    
     auto* engine = getEngine();
     assert(engine != nullptr);
+
     for (size_t i = 0; i < engine->getNumActors(); ++i) {
       engine->getActor(i).setRequiredVersion(ver);
     }

@@ -21,8 +21,6 @@ class CheckersState {
 				_moves(s._moves),
 				_final_value(s._final_value),
 				_has_final_value(s._has_final_value) {
-
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		CheckersCopyBoard(&_board, &s._board);
 	}
 
@@ -30,63 +28,46 @@ class CheckersState {
 	bool checkMove(const Coord& c) const;
 
 	void setFinalValue(float final_value) {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
 		_final_value = final_value;
 		_has_final_value = true;
 	}
 
 	float getFinalValue() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
 		return _final_value;
 	}
 
 	bool HasFinalValue() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
 		return _has_final_value;
 	}
 
 	void reset();
 
 	const CheckersBoard& board() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
 		return _board;
 	}
 
 	// Note that ply started from 1.
 	bool justStarted() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
 		return _board._ply == 1;
 	}
 
 	int getPly() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-		
 		return _board._ply;
 	}
 
 	bool terminated() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
-
 		return is_over(_board) || getPly() >= TOTAL_MAX_MOVE ;
 	}
 
 	int lastMove() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		return _board._last_move;
 	}
 
 	int nextPlayer() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		return _board.active;
 	}
 
 	bool moves_since(size_t* next_move_number, std::vector<Coord>* moves) const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		if (*next_move_number > _moves.size()) {
 			// The move number is not right.
 			return false;
@@ -100,12 +81,10 @@ class CheckersState {
 	}
 
 	const std::vector<Coord>& getAllMoves() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		return _moves;
 	}
 
 	std::string getAllMovesString() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		std::stringstream ss;
 		for (const Coord& c : _moves) {
 			ss << "[" << c << "] ";
@@ -114,7 +93,6 @@ class CheckersState {
 	}
 
 	std::string showBoard() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		std::string   res;
 
 		res = get_true_state_str(_board);
@@ -125,7 +103,6 @@ class CheckersState {
 	}
 
 	float evaluate() const {
-		display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 		float final_score = 0.0;
 		if (getPly() >= TOTAL_MAX_MOVE)
 			final_score = -1;
@@ -137,7 +114,6 @@ class CheckersState {
 
 	// TODO: not a good design..
 	// const std::deque<BoardHistory>& getHistory() const {
-	//   display_debug_info("CheckersState", __FUNCTION__, "\x1b[1;36;40m");
 	//   return _history;
 	// }
 

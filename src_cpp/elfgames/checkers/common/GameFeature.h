@@ -66,24 +66,18 @@ class GameFeature {
 		// и итерирует move_idx
 
 		*move_idx = s._state.getPly() - 1;
-
-		// std::cout << "extractCheckersMoveIdx\t: " << *move_idx << std::endl;
 	}
 
 	static void extractCheckersNumMove(
 			const CheckersStateExtOffline& s, 
 			int* num_move) {
 		*num_move = s.getNumMoves();
-
-		// std::cout << "extractCheckersNumMove\t: " << *num_move << std::endl;
 	}
 
 	static void extractCheckersPredictedValue(
 			const CheckersStateExtOffline& s, 
 			float* predicted_value) {
 		*predicted_value = s.getPredictedValue(s._state.getPly() - 1);
-
-		// std::cout << "extractCheckersPredictedValue : " << *predicted_value << std::endl;
 	}
 
 
@@ -91,8 +85,6 @@ class GameFeature {
 			const CheckersStateExtOffline& s, 
 			float* winner) {
 		*winner = s._offline_winner;
-
-		// std::cout << "extractCheckersWinner : " << *winner << std::endl;
 	}
 
 
@@ -100,7 +92,6 @@ class GameFeature {
 	static void extractCheckersStateExt(
 			const CheckersStateExtOffline& s, 
 			float* f) {
-
 		// Then send the data to the server.
 		extractCheckersState(s._bf, f);
 	}
@@ -110,9 +101,6 @@ class GameFeature {
 			const CheckersStateExtOffline& s, 
 			float* mcts_scores) {
 
-		// std::cout << "extractMCTSPi : " << std::endl;
-
-		const CheckersFeature& bf = s._bf;
 		const size_t move_to = s._state.getPly() - 1;
 
 		// std::cout << "move_to : " << move_to << std::endl;
@@ -121,25 +109,17 @@ class GameFeature {
 
 		std::fill(mcts_scores, mcts_scores + TOTAL_NUM_ACTIONS, 0.0);
 		if (move_to < s._mcts_policies.size()) {
-			// std::cout << "IF1" << std::endl;
-
 			const auto& policy = s._mcts_policies[move_to].prob;
 			float sum_v = 0.0;
 			for (size_t i = 0; i < TOTAL_NUM_ACTIONS; ++i) {
-				// mcts_scores[i] = policy[bf.action2Coord(i)];
 				mcts_scores[i] = policy[i];
-
-				// std::cout << "mcts_scores[" << i << "] : " << mcts_scores[i] << std::endl;
 				sum_v += mcts_scores[i];
 			}
-
-			// std::cout << "sum_v : " << sum_v << std::endl;
 			// Then we normalize.
 			for (size_t i = 0; i < TOTAL_NUM_ACTIONS; ++i) {
 				mcts_scores[i] /= sum_v;
 			}
 		} else {
-			// mcts_scores[bf.coord2Action(s._offline_all_moves[move_to])] = 1.0;
 			mcts_scores[s._offline_all_moves[move_to]] = 1.0;
 		}
 	}
@@ -147,7 +127,6 @@ class GameFeature {
 	static void extractCheckersOfflineAction(
 			const CheckersStateExtOffline& s, 
 			int64_t* offline_a) {
-
 		const CheckersFeature& bf = s._bf;
 
 		std::fill(offline_a, offline_a + s._options.checkers_num_future_actions, 0);
@@ -162,32 +141,24 @@ class GameFeature {
 			const CheckersStateExtOffline& s, 
 			int64_t* ver) {
 		*ver = s._curr_request.vers.black_ver;
-		
-		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
 	}
 
 	static void extractCheckersAIModelBlackVersion(
 			const ModelPair& msg, 
 			int64_t* ver) {
 		*ver = msg.black_ver;
-
-		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
 	}
 
 	static void extractCheckersAIModelWhiteVersion(
 			const ModelPair& msg, 
 			int64_t* ver) {
 		*ver = msg.white_ver;
-
-		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
 	}
 
 	static void extractCheckersSelfplayVersion(
 			const MsgVersion& msg, 
 			int64_t* ver) {
 		*ver = msg.model_ver;
-
-		// std::cout << "extractAIModelBlackVersion : " << *ver << std::endl;
 	}
 
 	// ================================================================

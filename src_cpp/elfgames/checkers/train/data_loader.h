@@ -25,7 +25,6 @@ struct DataStats {
 				failed_count(0),
 				msg_count(0),
 				total_msg_size(0) {
-		display_debug_info("struct DataStats", __FUNCTION__, RED_B);
 	}
 
 	std::string info() const {
@@ -38,8 +37,6 @@ struct DataStats {
 	}
 
 	void feed(const elf::shared::InsertInfo& insert_info) {
-		display_debug_info("struct DataStats", __FUNCTION__, RED_B);
-
 		if (!insert_info.success) {
 			failed_count++;
 		} else {
@@ -76,8 +73,6 @@ class DataOnlineLoader {
 						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 						"DataOnlineLoader-",
 						"")) {
-		display_debug_info("DataOnlineLoader", __FUNCTION__, RED_B);
-
 		auto curr_timestamp = time(NULL);
 		const std::string database_name =
 				"data-" + std::to_string(curr_timestamp) + ".db";
@@ -86,9 +81,7 @@ class DataOnlineLoader {
 	}
 
 	// DataInterface* interface = TrainCtrl
-	void start(DataInterface* interface) {
-		display_debug_info("DataOnlineLoader", __FUNCTION__, RED_B);
-		
+	void start(DataInterface* interface) {		
 		// регаем методы для прослушки и ответа клиенту
 		// они будут вызываться в elf::shared::Reader
 		auto proc_func = [&, interface](

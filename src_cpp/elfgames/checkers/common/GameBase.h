@@ -34,13 +34,10 @@ class GameBase {
 				_game_idx(game_idx),
 				_options(options),
 				_context_options(context_options),
-				_logger(
-						elf::logging::getIndexedLogger(
+				_logger(elf::logging::getIndexedLogger(
 							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 							"GameBase-", 
 							"")) {
-		display_debug_info("GameBase", __FUNCTION__, RED_B);
-
 		if (options.seed == 0) {
 			_seed = elf_utils::get_seed(
 					game_idx ^ std::hash<std::string>{}(context_options.job_id));
@@ -52,8 +49,6 @@ class GameBase {
 
 	// 
 	void mainLoop() {
-		display_debug_info("GameBase", __FUNCTION__, RED_B);
-
 		if (_options.verbose) {
 			_logger->info(
 					"mainLoop was started [{}] Seed: {}, thread_id: {}",
@@ -85,29 +80,6 @@ class GameBase {
  private:
 	std::shared_ptr<spdlog::logger> _logger;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

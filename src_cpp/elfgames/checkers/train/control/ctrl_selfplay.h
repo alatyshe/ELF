@@ -38,8 +38,6 @@ struct SelfPlayRecord {
 						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 						"SelfPlayRecord-",
 						"")) {
-		display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
-
 		std::string selfplay_prefix =
 				"selfplay-" + options_.server_id + "-" + options_.time_signature;
 		records_.resetPrefix(selfplay_prefix + "-" + std::to_string(ver_));
@@ -47,8 +45,6 @@ struct SelfPlayRecord {
 
 	// Получает новый батч и обновляет инфу 
 	void feed(const CheckersRecord& record) {
-		display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
-
 		const CheckersMsgResult& r = record.result;
 
 		const bool didBlackWin = r.reward > 0;
@@ -79,14 +75,10 @@ struct SelfPlayRecord {
 	}
 
 	int n() const {
-		display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
-
 		return counter_;
 	}
 
 	bool is_check_point() const {
-		display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
-
 		if (options_.selfplay_init_num > 0 && options_.selfplay_update_num > 0) {
 			return (
 					counter_ == options_.selfplay_init_num ||
@@ -101,8 +93,6 @@ struct SelfPlayRecord {
 	}
 
 	bool checkAndSave() {
-		display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
-
 		if (is_check_point()) {
 			records_.saveCurrent();
 			records_.clear();
@@ -114,8 +104,6 @@ struct SelfPlayRecord {
 
 	// true если надо подождать для больше времени для батча
 	bool needWaitForMoreSample() const {
-		display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
-
 		if (options_.selfplay_init_num <= 0){
 			return false;
 		}
@@ -136,14 +124,10 @@ struct SelfPlayRecord {
 	}
 
 	void notifyWeightUpdate() {
-		display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
-
 		num_weight_update_++;
 	}
 
 	void fillInRequest(const ClientInfo&, MsgRequest* msg) const {
-		display_debug_info("SelfPlayRecord", __FUNCTION__, RED_B);
-
 		msg->client_ctrl.async = options_.selfplay_async;
 	}
 
@@ -222,12 +206,9 @@ class SelfPlaySubCtrl {
 						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 						"SelfPlaySubCtrl-",
 						"")) {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
 	}
 
 	FeedResult feed(const CheckersRecord& r) {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 		// Проверка есть ли второй игрок white(чекаем нашу инфу полученную от клиента)
 		// если игрок есть, то это не selfplay
@@ -253,15 +234,11 @@ class SelfPlaySubCtrl {
 	}
 
 	int64_t getCurrModel() const {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 		return curr_ver_;
 	}
 
 	bool setCurrModel(int64_t ver) {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 		if (ver != curr_ver_) {
 			logger_->info("SelfPlay: {} -> {}", curr_ver_, ver);
@@ -273,9 +250,8 @@ class SelfPlaySubCtrl {
 	}
 
 	CtrlResult needWaitForMoreSample(int64_t selfplay_ver) const {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
+
 		if (selfplay_ver < curr_ver_)
 			return VERSION_OLD;
 
@@ -286,8 +262,6 @@ class SelfPlaySubCtrl {
 	}
 
 	void notifyCurrentWeightUpdate() {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 
 		auto* perf = find_or_null(curr_ver_);
@@ -296,9 +270,8 @@ class SelfPlaySubCtrl {
 	}
 
 	int getNumSelfplayCurrModel() {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
+
 		auto* perf = find_or_null(curr_ver_);
 		if (perf != nullptr)
 			return perf->n();
@@ -307,8 +280,6 @@ class SelfPlaySubCtrl {
 	}
 
 	void fillInRequest(const ClientInfo& info, MsgRequest* msg) {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 
 		if (curr_ver_ < 0) {
@@ -336,9 +307,8 @@ class SelfPlaySubCtrl {
 	std::shared_ptr<spdlog::logger> logger_;
 
 	SelfPlayRecord& find_or_create(int64_t ver) {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		auto it = perfs_.find(ver);
+
 		if (it != perfs_.end()) {
 			return *it->second;
 		}
@@ -348,9 +318,8 @@ class SelfPlaySubCtrl {
 	}
 
 	SelfPlayRecord* find_or_null(int64_t ver) {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-
 		auto it = perfs_.find(ver);
+
 		if (it == perfs_.end()) {
 			logger_->info("The version {} was not sent before!", std::to_string(ver));
 			return nullptr;
@@ -359,9 +328,8 @@ class SelfPlaySubCtrl {
 	}
 
 	const SelfPlayRecord* find_or_null(int64_t ver) const {
-		display_debug_info("SelfPlaySubCtrl", __FUNCTION__, RED_B);
-		
 		auto it = perfs_.find(ver);
+
 		if (it == perfs_.end()) {
 			logger_->info("The version {} was not sent before!", std::to_string(ver));
 			return nullptr;

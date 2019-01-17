@@ -49,18 +49,14 @@ class ReaderQueueT {
    public:
     explicit Sampler(ReaderQ* r, std::mt19937* rng)
         : r_(r), lock_(r->rwMutex_), rng_(rng) {
-      display_debug_info("ReaderQueueT->Sampler", __FUNCTION__, GREEN_B);
       released_ = false;
     }
     Sampler(const Sampler&) = delete;
     Sampler(Sampler&& sampler)
         : r_(sampler.r_), released_(sampler.released_), rng_(sampler.rng_) {
-      display_debug_info("ReaderQueueT->Sampler", __FUNCTION__, GREEN_B);
     }
 
     const T* sample(int timeout_millisec = 100) {
-      display_debug_info("ReaderQueueT->Sampler", __FUNCTION__, GREEN_B);
-
       const auto& buf = r_->buffer_;
 
       if (buf.size() < r_->ctrl_.queue_min_size) {
@@ -82,8 +78,6 @@ class ReaderQueueT {
 
    private:
     void release() {
-      display_debug_info("ReaderQueueT->Sampler", __FUNCTION__, GREEN_B);
-
       if (!released_) {
         lock_.unlock();
         released_ = true;
@@ -104,20 +98,16 @@ class ReaderQueueT {
 
 
   ReaderQueueT(const ReaderCtrl& ctrl) : ctrl_(ctrl) {
-    display_debug_info("ReaderQueueT", __FUNCTION__, GREEN_B);
   }
 
   Sampler getSampler(std::mt19937* rng) {
-    display_debug_info("ReaderQueueT", __FUNCTION__, GREEN_B);
-
     return Sampler(this, rng);
   }
 
   // Return delta buffer size.
   int Insert(T&& v) {
-    display_debug_info("ReaderQueueT", __FUNCTION__, GREEN_B);
-
     int delta = 0;
+
     {
       std::unique_lock<std::shared_mutex> lock(rwMutex_);
       buffer_.push_back(v);
@@ -131,16 +121,13 @@ class ReaderQueueT {
   }
 
   void clear() {
-    display_debug_info("ReaderQueueT", __FUNCTION__, GREEN_B);
-
     std::unique_lock<std::shared_mutex> lock(rwMutex_);
     buffer_.clear();
   }
 
   std::vector<T> Dump() const {
-    display_debug_info("ReaderQueueT", __FUNCTION__, GREEN_B);
-
     std::vector<T> vec;
+
     {
       std::shared_lock<std::shared_mutex> lock(rwMutex_);
       vec.insert(vec.end(), buffer_.begin(), buffer_.end());
@@ -149,13 +136,12 @@ class ReaderQueueT {
   }
 
   size_t size() const {
-    display_debug_info("ReaderQueueT", __FUNCTION__, GREEN_B);
-
     return buffer_.size();
   }
 
   std::string info() const {
     std::stringstream ss;
+
     ss << "ReaderQueue: " << ctrl_.info();
     return ss.str();
   }
@@ -220,8 +206,6 @@ class ReaderQueuesT {
         parity_sizes_(2, 0),
         logger_(
             elf::logging::getIndexedLogger("elf::distributed::ReaderQueuesT-", "")) {
-
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
     // Make sure this is an even number.
     assert(reader_ctrl.num_reader % 2 == 0);
     min_size_per_queue_ = reader_ctrl.ctrl.queue_min_size;
@@ -232,8 +216,6 @@ class ReaderQueuesT {
   }
 
   InsertInfo Insert(std::vector<T>&& vs, std::function<int()> g) {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     InsertInfo info;
 
     int delta = 0;
@@ -250,8 +232,6 @@ class ReaderQueuesT {
   }
 
   InsertInfo Insert(T&& v, std::function<int()> g) {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     InsertInfo info;
 
     int delta = insert_impl(g(), std::move(v));
@@ -265,15 +245,11 @@ class ReaderQueuesT {
   }
 
   InsertInfo Insert(T&& v, std::mt19937* rng) {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     return Insert(
         std::move(v), [rng, this]() -> int { return (*rng)() % qs_.size(); });
   }
 
   InsertInfo InsertWithParity(T&& v, std::mt19937* rng, bool parity) {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     return Insert(std::move(v), [rng, this, parity]() -> int {
       // When parity == true, only insert to odd entry.
       // When parity == false, only insert to even entry.
@@ -283,8 +259,6 @@ class ReaderQueuesT {
   }
 
   void clear() {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     min_size_satisfied_ = false;
     for (auto& q : qs_) {
       q->clear();
@@ -292,9 +266,8 @@ class ReaderQueuesT {
   }
 
   std::vector<T> dumpAll() const {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     std::vector<T> res;
+
     for (auto& q : qs_) {
       std::vector<T> this_res = q->Dump();
       res.insert(res.end(), this_res.begin(), this_res.end());
@@ -303,8 +276,6 @@ class ReaderQueuesT {
   }
 
   size_t nqueue() const {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     return qs_.size();
   }
 
@@ -313,8 +284,6 @@ class ReaderQueuesT {
   }
 
   typename ReaderQueue::Sampler getSampler(int idx, std::mt19937* rng) {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     wait_for_sufficient_data();
     return qs_[idx]->getSampler(rng);
   }
@@ -322,8 +291,6 @@ class ReaderQueuesT {
   typename ReaderQueue::Sampler getSamplerWithParity(
       std::mt19937* rng,
       int* p_idx = nullptr) {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     wait_for_sufficient_data();
 
     const float kSafeMargin = 0.45;
@@ -347,8 +314,6 @@ class ReaderQueuesT {
   }
 
   std::string info() const {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     if (qs_.empty())
       return std::string();
     std::stringstream ss;
@@ -378,9 +343,8 @@ class ReaderQueuesT {
   std::shared_ptr<spdlog::logger> logger_;
 
   int insert_impl(int idx, T&& v) {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     int delta = qs_[idx]->Insert(std::move(v));
+
     total_insertion_++;
     parity_sizes_[idx % 2] += delta;
 
@@ -398,8 +362,6 @@ class ReaderQueuesT {
   }
 
   bool sufficient_per_queue_size() const {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     for (const auto& q : qs_) {
       if (q->size() < min_size_per_queue_)
         return false;
@@ -408,8 +370,6 @@ class ReaderQueuesT {
   }
 
   void wait_for_sufficient_data() {
-    display_debug_info("ReaderQueuesT", __FUNCTION__, GREEN_B);
-
     if (!min_size_satisfied_.load()) {
       // Busy wait.
       while (!sufficient_per_queue_size()) {

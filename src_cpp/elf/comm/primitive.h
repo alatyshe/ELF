@@ -22,36 +22,25 @@
 class Notif {
  public:
   Notif() : _flag(false) {
-    display_debug_info("Notif", __FUNCTION__, GREEN_B);
   }
 
   const std::atomic_bool& flag() const {
-    display_debug_info("Notif", __FUNCTION__, GREEN_B);
-
     return _flag;
   }
 
   bool get() const {
-    display_debug_info("Notif", __FUNCTION__, GREEN_B);
-
     return _flag.load();
   }
 
   void notify() {
-    display_debug_info("Notif", __FUNCTION__, GREEN_B);
-
     _counter.increment();
   }
 
   void set() {
-    display_debug_info("Notif", __FUNCTION__, GREEN_B);
-
     _flag = true;
   }
 
   void wait(int n, std::function<void()> f = nullptr) {
-    display_debug_info("Notif", __FUNCTION__, GREEN_B);
-
     _flag = true;
 
     if (f == nullptr) {
@@ -72,8 +61,6 @@ class Notif {
   }
 
   void reset() {
-    display_debug_info("Notif", __FUNCTION__, GREEN_B);
-
     _counter.reset();
     _flag = false;
   }

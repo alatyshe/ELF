@@ -1,0 +1,22 @@
+large_objects.o: \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbbmalloc/large_objects.cpp \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbbmalloc/tbbmalloc_internal.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbbmalloc/TypeDefinitions.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbbmalloc/Customize.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/tbb_stddef.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/tbb_config.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/tbb_machine.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/machine/linux_intel64.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/machine/gcc_ia32_common.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/machine/gcc_itsx.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/machine/macos_common.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbb/itt_notify.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbb/tools_api/ittnotify.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbb/tools_api/legacy/ittnotify.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbbmalloc/proxy.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/internal/_aggregator_impl.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/internal/../atomic.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbbmalloc/shared_utils.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./include/tbb/scalable_allocator.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbbmalloc/tbbmalloc_internal_api.h \
+  /Users/alatyshe/servak_dima/arvi_dima/elf/elf_our_clean_version/third_party/tbb/./src/tbbmalloc/Statistics.h

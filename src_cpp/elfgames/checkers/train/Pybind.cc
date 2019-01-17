@@ -13,7 +13,7 @@
 #include "GameContext.h"
 
 namespace elfgames {
-namespace go {
+namespace checkers {
 
 void registerPy(pybind11::module& m) {
   namespace py = pybind11;

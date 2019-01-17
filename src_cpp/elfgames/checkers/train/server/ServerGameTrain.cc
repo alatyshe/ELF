@@ -20,17 +20,13 @@ ServerGameTrain::ServerGameTrain(
           std::string("\x1b[1;35;40m|++|\x1b[0m") + 
           "ServerGameTrain-" + std::to_string(game_idx) + "-",
           "")) {
-  display_debug_info("ServerGameTrain", __FUNCTION__, RED_B);
-
   for (size_t i = 0; i < kNumState; ++i) {
     _checkers_state_ext.emplace_back(new CheckersStateExtOffline(game_idx, options));
   }
   logger_->info("Was succefully created");
 }
 
-void ServerGameTrain::act() {
-  display_debug_info("ServerGameTrain", __FUNCTION__, RED_B);
-  
+void ServerGameTrain::act() {  
   std::vector<elf::FuncsWithState> funcsToSend;
 
   for (size_t i = 0; i < kNumState; ++i) {

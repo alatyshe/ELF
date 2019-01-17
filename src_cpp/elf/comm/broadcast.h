@@ -41,16 +41,13 @@ struct MsgT {
 
   MsgT(ClientToServer* from, ServerToClient* to, const std::vector<Data>& in)
       : from(from), to(to), data(in) {
-    display_debug_info("struct MsgT", __FUNCTION__, GREEN_B);
   }
 
   MsgT(ClientToServer* from, ServerToClient* to, Data in) : from(from), to(to) {
-    display_debug_info("struct MsgT", __FUNCTION__, GREEN_B);
     data.push_back(in);
   }
 
   MsgT() {
-    display_debug_info("struct MsgT", __FUNCTION__, GREEN_B);
   }
 };
 
@@ -73,7 +70,6 @@ struct WaitOptions {
       : batchsize(batchsize),
         timeout_usec(timeout_usec),
         min_batchsize(min_batchsize) {
-    display_debug_info("struct WaitOptions", __FUNCTION__, GREEN_B);
   }
 
   std::string info() const {
@@ -104,8 +100,6 @@ class NodeT {
   using RecvMsg = MsgT<Reply, Data, PartnerQueue, MyQueue>;
 
   bool startSession(const std::vector<SendMsg>& targets) {
-    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
-
     if (n_ > 0) {
       return false;
     }
@@ -119,8 +113,6 @@ class NodeT {
   }
 
   void waitSessionEnd(int timeout_usec = 0) {
-    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
-
     (void)timeout_usec;
     replyCount_.waitUntilCount(n_);
     n_ = 0;
@@ -130,8 +122,6 @@ class NodeT {
   bool waitSessionInvite(
       const WaitOptions& opt,
       std::vector<RecvMsg>* messages) {
-    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
-
     assert(opt.batchsize > 0);
 
     messages->clear();
@@ -168,14 +158,10 @@ class NodeT {
   }
 
   void notifySessionInvite() {
-    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
-
     replyCount_.increment();
   }
 
   void EnqueueMessage(RecvMsg&& msg) {
-    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
-
     q_.push(msg);
   }
 
@@ -189,15 +175,11 @@ class NodeT {
   elf::concurrency::Counter<int> replyCount_;
 
   void unpop_msg(const RecvMsg& msg) {
-    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
-
     assert(unprocessed_msg_.data.empty());
     unprocessed_msg_ = msg;
   }
 
   bool get_msg(const WaitOptions& opt, bool use_timeout, RecvMsg* msg) {
-    display_debug_info("NodeT", __FUNCTION__, GREEN_B);
-
     if (!unprocessed_msg_.data.empty()) {
       *msg = unprocessed_msg_;
       unprocessed_msg_.data.clear();

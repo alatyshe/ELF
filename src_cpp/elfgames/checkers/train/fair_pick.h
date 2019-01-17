@@ -17,8 +17,6 @@ struct Info {
   Status status = WAIT;
 
   bool Add(float rr) {
-    display_debug_info("struct Info", __FUNCTION__, RED_B);
-
     if (status == SETTLED)
       return false;
     r = rr;
@@ -32,53 +30,37 @@ enum WinCountEstimate { WIN, LOSS, INCOMPLETE };
 struct WinCount {
  public:
   void Add(float r) {
-    display_debug_info("struct WinCount", __FUNCTION__, RED_B);
-
     if (r > 0)
       n_win_++;
     n_done_++;
   }
 
   void SetNumStuck(int n_stuck) {
-    display_debug_info("struct WinCount", __FUNCTION__, RED_B);
-
     n_stuck_ = n_stuck;
   }
 
   // Getters.
   bool IsDone(int n_request) const {
-    display_debug_info("struct WinCount", __FUNCTION__, RED_B);
-
     return n_stuck_ + n_done_ == n_request;
   }
 
   int n_done() const {
-    display_debug_info("struct WinCount", __FUNCTION__, RED_B);
-
     return n_done_;
   }
 
   int n_win() const {
-    display_debug_info("struct WinCount", __FUNCTION__, RED_B);
-
     return n_win_;
   }
 
   int n_stuck() const {
-    display_debug_info("struct WinCount", __FUNCTION__, RED_B);
-
     return n_stuck_;
   }
 
   float winrate() const {
-    display_debug_info("struct WinCount", __FUNCTION__, RED_B);
-
     return n_done_ > 0 ? static_cast<float>(n_win_) / n_done_ : 0.0;
   }
 
   WinCountEstimate CheckWinrateBound(int n_request, float wr_thres) const {
-    display_debug_info("struct WinCount", __FUNCTION__, RED_B);
-
     int n_done_max = n_request - n_stuck_;
     int n_uncertain = n_done_max - n_done_;
     float upper = static_cast<float>(n_uncertain + n_win_) / n_done_max;
@@ -151,14 +133,10 @@ enum RegisterResult {
 enum AddResult { NOT_REGISTERED, NEWLY_ADDED, OVERFLOW_NOT_ADDED };
 
 inline bool need_request(RegisterResult r) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
   return r == NEWLY_REGISTERED || r == REGISTERED_WAITING;
 }
 
 inline bool release_request(RegisterResult r) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
   return !need_request(r);
 }
 
@@ -182,13 +160,11 @@ class BatchRequest {
   using Key = std::string;
 
   BatchRequest(size_t max_num_request) : max_num_request_(max_num_request) {
-    display_debug_info("BatchRequest", __FUNCTION__, RED_B);
   }
 
   RegisterResult Reg(const ClientInfo& c) {
-    display_debug_info("BatchRequest", __FUNCTION__, RED_B);
-
     auto it = requests_.find(c.id());
+
     if (it == requests_.end()) {
       if (requests_.size() >= max_num_request_) {
         // We are at capacity and won't register anymore.
@@ -207,9 +183,8 @@ class BatchRequest {
   }
 
   AddResult Add(const ClientInfo& c, float r) {
-    display_debug_info("BatchRequest", __FUNCTION__, RED_B);
-
     auto it = requests_.find(c.id());
+
     if (it == requests_.end()) {
       return NOT_REGISTERED;
     }
@@ -223,8 +198,6 @@ class BatchRequest {
   }
 
   void CheckStuck(const ClientManager& mgr) {
-    display_debug_info("BatchRequest", __FUNCTION__, RED_B);
-
     auto curr_timestamp = mgr.getCurrTimeStamp();
 
     stucks_.clear();
@@ -247,20 +220,14 @@ class BatchRequest {
   }
 
   const WinCount& win_count() const {
-    display_debug_info("BatchRequest", __FUNCTION__, RED_B);
-
     return win_count_;
   }
 
   size_t n_reg() const {
-    display_debug_info("BatchRequest", __FUNCTION__, RED_B);
-
     return requests_.size();
   }
 
   bool IsDone() const {
-    display_debug_info("BatchRequest", __FUNCTION__, RED_B);
-
     // At least one request.
     if (requests_.empty())
       return false;
@@ -269,6 +236,7 @@ class BatchRequest {
 
   std::string stuck_info() const {
     std::stringstream ss;
+
     if (stucks_.size() > 0) {
       ss << "#st: " << stucks_.size() << ", " << stucks_[0];
     }
@@ -282,6 +250,7 @@ class BatchRequest {
 
   std::string stuck_detail_info() const {
     std::stringstream ss;
+
     ss << std::hex << "BatchRequest Addr: " << this << std::dec << "** ";
     if (stucks_.size() > 0) {
       ss << "#st: " << stucks_.size() << "[";
@@ -335,14 +304,10 @@ class Pick {
       : num_request_(num_request),
         max_request_per_layer_(max_request_per_layer),
         remaining_request_((int)num_request) {
-    display_debug_info("Pick", __FUNCTION__, RED_B);
-
     set_new_request();
   }
 
   RegisterResult reg(const ClientInfo& c) {
-    display_debug_info("Pick", __FUNCTION__, RED_B);
-
     return request_->Reg(c);
   }
 
@@ -350,14 +315,10 @@ class Pick {
   // Any results without registration will be discarded. This is because
   // these results may have potential bias.
   AddResult add(const ClientInfo& c, float r) {
-    display_debug_info("Pick", __FUNCTION__, RED_B);
-
     return request_->Add(c, r);
   }
 
   void checkStuck(const ClientManager& cm) {
-    display_debug_info("Pick", __FUNCTION__, RED_B);
-
     request_->CheckStuck(cm);
 
     // Check whether the layers are done.
@@ -370,25 +331,20 @@ class Pick {
   }
 
   int numFinishedLayer() const {
-    display_debug_info("Pick", __FUNCTION__, RED_B);
-
     return num_finished_layer_;
   }
 
   const WinCount& win_count() const {
-    display_debug_info("Pick", __FUNCTION__, RED_B);
-
     return win_count_;
   }
 
   int n_reg_to_go() const {
-    display_debug_info("Pick", __FUNCTION__, RED_B);
-
     return remaining_request_ - request_->n_reg();
   }
 
   std::string info() const {
     std::stringstream ss;
+
     ss << "l_finished:" << num_finished_layer_
        << ",req: done:" << (num_request_ - remaining_request_)
        << "/tot:" << num_request_ << "/lmax:" << max_request_per_layer_;
@@ -400,15 +356,13 @@ class Pick {
 
  private:
   const size_t num_request_, max_request_per_layer_;
-  int remaining_request_;
+  int   remaining_request_;
 
   std::unique_ptr<BatchRequest> request_;
   WinCount win_count_;
   int num_finished_layer_ = 0;
 
   void set_new_request() {
-    display_debug_info("Pick", __FUNCTION__, RED_B);
-    
     size_t new_request = remaining_request_ > 0
         ? std::min(max_request_per_layer_, (size_t)remaining_request_)
         : 0;

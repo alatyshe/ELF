@@ -69,31 +69,24 @@ class Writer {
 			: rng_(time(NULL)),
 				options_(opt),
 				logger_(elf::logging::getIndexedLogger("elf::distributed::Writer-", "")) {
-		display_debug_info("Writer", __FUNCTION__, GREEN_B);
-
 		identity_ = options_.identity + "-" + get_id(rng_);
 		sender_.reset(new elf::distri::ZMQSender(
 				identity_, options_.addr, options_.port, options_.use_ipv6));
 	}
 
 	const std::string& identity() const {
-		display_debug_info("Writer", __FUNCTION__, GREEN_B);
-
 		return identity_;
 	}
 
 	std::string info() const {
-		display_debug_info("Writer", __FUNCTION__, GREEN_B);
-
 		std::stringstream ss;
+
 		ss << "ZMQVer: " << elf::distri::s_version() << " Writer[" << identity_
 			 << "]. " << options_.info();
 		return ss.str();
 	}
 
 	bool Insert(const std::string& s) {
-		display_debug_info("Writer", __FUNCTION__, GREEN_B);
-
 		write_mutex_.lock();
 		sender_->send("content", s);
 		write_mutex_.unlock();
@@ -101,16 +94,14 @@ class Writer {
 	}
 
 	bool Ctrl(const std::string& msg) {
-		display_debug_info("Writer", __FUNCTION__, GREEN_B);
-
 		sender_->send("ctrl", msg);
+
 		return true;
 	}
 
 	bool getReplyNoblock(std::string* msg) {
-		display_debug_info("Writer", __FUNCTION__, GREEN_B);
-
 		std::string title;
+
 		bool received = sender_->recv_noblock(&title, msg);
 		if (!received)
 			return false;
@@ -143,9 +134,8 @@ class Writer {
 	std::shared_ptr<spdlog::logger> logger_;
 
 	static std::string get_id(std::mt19937& rng) {
-		display_debug_info("Writer", __FUNCTION__, GREEN_B);
-
 		long host_name_max = sysconf(_SC_HOST_NAME_MAX);
+
 		if (host_name_max <= 0)
 			host_name_max = _POSIX_HOST_NAME_MAX;
 
@@ -201,7 +191,6 @@ class Reader {
 				rng_(time(NULL)),
 				done_(false),
 				logger_(elf::logging::getIndexedLogger("elf::distributed::Reader-", "")) {
-		display_debug_info("Reader", __FUNCTION__, GREEN_B);
 	}
 
 	// тут передаем наши функции и сразу запускаем нашу StartFunc start_func
@@ -211,8 +200,6 @@ class Reader {
 			ProcessFunc proc_func,
 			ReplyFunc replier = nullptr,
 			StartFunc start_func = nullptr) {
-		display_debug_info("Reader", __FUNCTION__, GREEN_B);
-
 		receiver_thread_.reset(new std::thread(
 				[=](Reader* reader) {
 					if (start_func != nullptr)
@@ -224,6 +211,7 @@ class Reader {
 
 	std::string info() const {
 		std::stringstream ss;
+
 		ss << "ZMQVer: " << elf::distri::s_version() << " Reader[db=" << db_name_
 			 << "] " << options_.info();
 		return ss.str();
@@ -253,9 +241,8 @@ class Reader {
 	void threaded_receive_msg(
 			ProcessFunc proc_func,
 			ReplyFunc replier = nullptr) {
-		display_debug_info("Reader", __FUNCTION__, GREEN_B);
-		
 		std::string identity, title, msg;
+
 		while (!done_.load()) {
 			if (!receiver_.recv_noblock(&identity, &title, &msg)) {
 				logger_->info(

@@ -19,15 +19,12 @@ struct RecordBufferSimple {
 	RecordBufferSimple(const std::string& prefix) : prefix_(prefix) {}
 
 	void feed(const CheckersRecord& r) {
-		display_debug_info("struct RecordBufferSimple", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
+
 		records_.push_back(r);
 	}
 
 	bool saveAndClean(size_t num_record_threshold = 1000) {
-		display_debug_info("struct RecordBufferSimple", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 
 		if (records_.size() < num_record_threshold)
@@ -75,9 +72,8 @@ struct RecordBuffer {
 	RecordBuffer(RecordBuffer&&) = default;
 
 	void resetPrefix(const std::string& prefix) {
-		display_debug_info("struct RecordBuffer", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
+
 		if (!records_.empty()) {
 			saveCurrent();
 			clear();
@@ -87,21 +83,16 @@ struct RecordBuffer {
 	}
 
 	const std::string& prefix() const {
-		display_debug_info("struct RecordBuffer", __FUNCTION__, RED_B);
-
 		return prefix_;
 	}
 
 	std::string prefix_save_counter() const {
-		display_debug_info("struct RecordBuffer", __FUNCTION__, RED_B);
-
 		return prefix_ + "-" + std::to_string(num_file_saved_);
 	}
 
 	void feed(const CheckersRecord& r) {
-		display_debug_info("struct RecordBuffer", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
+
 		if (r.offline)
 			offline_records_.push_back(r);
 		else
@@ -109,8 +100,6 @@ struct RecordBuffer {
 	}
 
 	void saveCurrent(size_t num_record_per_segment = 1000) {
-		display_debug_info("struct RecordBuffer", __FUNCTION__, RED_B);
-
 		auto it = records_.begin();
 		auto it_end = records_.end();
 		int counter = 0;
@@ -134,8 +123,6 @@ struct RecordBuffer {
 	}
 
 	void clear() {
-		display_debug_info("struct RecordBuffer", __FUNCTION__, RED_B);
-		
 		records_.clear();
 		offline_records_.clear();
 	}

@@ -1,0 +1,2 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libelf.a  CMakeFiles/elf.dir/Pybind.cc.o CMakeFiles/elf.dir/concurrency/Counter.cc.o CMakeFiles/elf.dir/logging/IndexedLoggerFactory.cc.o CMakeFiles/elf.dir/logging/Levels.cc.o CMakeFiles/elf.dir/logging/Pybind.cc.o CMakeFiles/elf.dir/options/OptionMap.cc.o CMakeFiles/elf.dir/options/OptionSpec.cc.o CMakeFiles/elf.dir/options/Pybind.cc.o CMakeFiles/elf.dir/debug/debug.cc.o
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libelf.a

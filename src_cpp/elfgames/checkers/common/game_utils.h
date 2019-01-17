@@ -26,23 +26,17 @@ struct Ranking {
 	Ranking(int max_rank = 10) : counts(max_rank + 1), total_count(0) {}
 
 	void feed(int r) {
-		display_debug_info("struct Ranking", __FUNCTION__, RED_B);
-
 		if (r < (int)counts.size())
 			counts[r]++;
 		total_count++;
 	}
 
 	void reset() {
-		display_debug_info("struct Ranking", __FUNCTION__, RED_B);
-
 		std::fill(counts.begin(), counts.end(), 0);
 		total_count = 0;
 	}
 
-	std::string info() const {
-		display_debug_info("struct Ranking", __FUNCTION__, RED_B);
-		
+	std::string info() const {		
 		std::stringstream ss;
 
 		ss << "Total count: " << total_count << std::endl;

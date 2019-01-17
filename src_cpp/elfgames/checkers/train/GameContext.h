@@ -44,8 +44,6 @@ class GameContext {
 					std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 					"GameContext-", 
 					"")) {
-
-
 		context_.reset(new elf::Context);
 
 		int numGames = contextOptions.num_games;

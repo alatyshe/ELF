@@ -10,6 +10,6 @@
 
 #include "Pybind.h"
 
-PYBIND11_MODULE(_elfgames_go, m) {
-  elfgames::go::registerPy(m);
+PYBIND11_MODULE(_elfgames_checkers, m) {
+  elfgames::checkers::registerPy(m);
 }

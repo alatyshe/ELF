@@ -56,13 +56,9 @@ struct RunContext {
 
   RunContext(int run_id, int idx, int num_rollout)
       : run_id(run_id), idx(idx), num_rollout(num_rollout), depth(0) {
-    display_debug_info("struct RunContext", __FUNCTION__, GREEN_B);
-
   }
 
   void incDepth() {
-    display_debug_info("struct RunContext", __FUNCTION__, GREEN_B);
-
     depth++;
   }
 };
@@ -89,8 +85,6 @@ class TreeSearchSingleThreadT {
         logger_(elf::logging::getIndexedLogger(
             "elf::ai::tree_search::TreeSearchSingleThreadT-",
             "")) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     if (options_.verbose) {
       std::string log_file =
           options_.log_prefix + std::to_string(thread_id) + ".txt";
@@ -99,8 +93,6 @@ class TreeSearchSingleThreadT {
   }
 
   void notifyReady(int num_rollout) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     runInfoWhenStateReady_.push(num_rollout);
   }
 
@@ -110,8 +102,6 @@ class TreeSearchSingleThreadT {
       const std::atomic_bool* stop_search,
       Actor& actor,
       SearchTree& search_tree) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     int num_rollout;
     runInfoWhenStateReady_.pop(&num_rollout);
 
@@ -166,8 +156,6 @@ class TreeSearchSingleThreadT {
       typename Actor,
       std::enable_if_t<has_func_reward<Actor>::value>* U = nullptr>
   float get_reward(const Actor& actor, const Node* node) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     return actor.reward(*node->getStatePtr(), node->getValue());
   }
 
@@ -176,8 +164,6 @@ class TreeSearchSingleThreadT {
       typename std::enable_if<!has_func_reward<Actor>::value>::type* U =
           nullptr>
   float get_reward(const Actor& actor, const Node* node) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     (void)actor;
     return node->getValue();
   }
@@ -188,8 +174,6 @@ class TreeSearchSingleThreadT {
       typename std::enable_if<has_func_set_ostream<Actor>::value>::type* U =
           nullptr>
   void _set_ostream(Actor& actor) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     actor.set_ostream(output_.get());
   }
 
@@ -197,9 +181,7 @@ class TreeSearchSingleThreadT {
       typename Actor,
       typename std::enable_if<!has_func_set_ostream<Actor>::value>::type* U =
           nullptr>
-  void _set_ostream(Actor&) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-  }
+  void _set_ostream(Actor&) {  }
 
   template <typename Actor>
   bool allocateState(
@@ -208,11 +190,7 @@ class TreeSearchSingleThreadT {
       Actor& actor,
       Node* next_node) {
 
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
-    auto func = [&]() -> State* {
-      display_debug_info("lambda func defined in TreeSearchSingleThreadT::", "allocateState", GREEN_B);
-      State* state = new State(*node->getStatePtr());
+    auto func = [&]() -> State* {      State* state = new State(*node->getStatePtr());
       if (!actor.forward(*state, action)) {
         delete state;
         return nullptr;
@@ -224,8 +202,6 @@ class TreeSearchSingleThreadT {
   }
 
   void printHelper(const RunContext& ctx, std::string str) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     if (output_ != nullptr) {
       *output_ << "[run=" << ctx.run_id << "][iter=" << ctx.idx << "/"
                << ctx.num_rollout << "][depth=" << ctx.depth << "] " << str
@@ -239,8 +215,6 @@ class TreeSearchSingleThreadT {
       Node* root,
       Actor& actor,
       SearchTree& search_tree) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     // Start from the root and run one path
     std::vector<Traj> trajs;
     for (int j = 0; j < options_.num_rollouts_per_batch; ++j) {
@@ -305,8 +279,6 @@ class TreeSearchSingleThreadT {
       Node* root,
       Actor& actor,
       SearchTree& search_tree) {
-    display_debug_info("TreeSearchSingleThreadT", __FUNCTION__, GREEN_B);
-
     Node* node = root;
 
     Traj traj;
@@ -400,10 +372,6 @@ class TreeSearchT {
         logger_(elf::logging::getIndexedLogger(
             "elf::ai::tree_search::TreeSearchT-",
             "")) {
-
-
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     for (int i = 0; i < options.num_threads; ++i) {
       treeSearches_.emplace_back(new TreeSearchSingleThread(i, options_));
       actors_.emplace_back(actor_gen(i));
@@ -436,32 +404,22 @@ class TreeSearchT {
   }
 
   Actor& getActor(int i) {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     return *actors_[i];
   }
 
   const Actor& getActor(int i) const {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     return *actors_[i];
   }
 
   size_t getNumActors() const {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     return actors_.size();
   }
 
   std::string printTree() const {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     return searchTree_.printTree();
   }
 
   MCTSResult runPolicyOnly(const State& root_state) {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     if (actors_.empty() || treeSearches_.empty()) {
       throw std::range_error(
           "TreeSearch::runPolicyOnly works when there is at least one thread");
@@ -485,8 +443,6 @@ class TreeSearchT {
   }
 
   MCTSResult run(const State& root_state) {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     setRootNodeState(root_state);
 
     if (options_.root_epsilon > 0.0) {
@@ -506,20 +462,14 @@ class TreeSearchT {
   }
 
   void treeAdvance(const Action& action) {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     searchTree_.treeAdvance(action);
   }
 
   void clear() {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     searchTree_.clear();
   }
 
   void stop() {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     stopSearch_ = true;
 
     notifySearches(0);
@@ -556,16 +506,12 @@ class TreeSearchT {
   std::shared_ptr<spdlog::logger> logger_;
 
   void notifySearches(int num_rollout) {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     for (size_t i = 0; i < treeSearches_.size(); ++i) {
       treeSearches_[i]->notifyReady(num_rollout);
     }
   }
 
   void setRootNodeState(const State& root_state) {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-
     Node* root = searchTree_.getRootNode();
 
     if (root == nullptr) {
@@ -582,9 +528,7 @@ class TreeSearchT {
     }
   }
 
-  MCTSResult chooseAction() const {
-    display_debug_info("TreeSearchT", __FUNCTION__, GREEN_B);
-    
+  MCTSResult chooseAction() const {    
     const Node* root = searchTree_.getRootNode();
     if (root == nullptr) {
       throw std::range_error("TreeSearch::root cannot be null!");

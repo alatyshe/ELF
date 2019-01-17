@@ -47,9 +47,7 @@ struct CheckersStateExt {
 	// ??????????????????????????????????????????????
 	// ??????????????????????????????????????????????
 	// ??????????????????????????????????????????????
-	float								setFinalValue(CheckersFinishReason reason, std::mt19937* rng) {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
+	float								setFinalValue(CheckersFinishReason reason) {
 		float final_value = 0.0;
 
 		final_value = _state.evaluate();
@@ -61,8 +59,6 @@ struct CheckersStateExt {
 	// ??????????????????????????????????????????????
 	// ??????????????????????????????????????????????
 	CheckersRecord 			dumpRecord() const {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
 		CheckersRecord r;
 
 		r.timestamp = elf_utils::sec_since_epoch_from_now();
@@ -99,7 +95,6 @@ struct CheckersStateExt {
 
 
 	// void   saveCurrentTree(const std::string& tree_info) const {
-	//   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
 	//   // Dump the tree as well.
 	//   std::string filename = _options.dump_record_prefix + "_" +
@@ -117,8 +112,6 @@ struct CheckersStateExt {
 	// ПЕРЕПРОВЕРЬ ЭТУ ШТУКУ 300 раз!!!!!!!!!!!
 	void   addMCTSPolicy(
 			const elf::ai::tree_search::MCTSPolicy<Coord>& mcts_policy) {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
 		const auto& policy = mcts_policy.policy;
 
 		// First find the max value
@@ -143,14 +136,11 @@ struct CheckersStateExt {
 
 	// Ok
 	void   addPredictedValue(float predicted_value) {
-		display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
-
 		_predicted_values.push_back(predicted_value);
 	}
 
 
 	// float  getLastPredictedValue() const {
-	//   display_debug_info("CheckersStateExt", __FUNCTION__, "\x1b[1;36;40m");
 
 	//   if (_predicted_values.empty())
 	//     return 0.0;
@@ -210,12 +200,9 @@ class CheckersStateExtOffline {
 						"CheckersStateExtOffline-",
 						"")) 
 				{
-		display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
 	}
 
 	void   fromRecord(const CheckersRecord& r) {
-		display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-		
 		_offline_all_moves = str2coords(r.result.content);
 		_offline_winner = r.result.reward > 0 ? 1.0 : -1.0;
 
@@ -239,8 +226,6 @@ class CheckersStateExtOffline {
 	}
 
 	bool   switchRandomMove(std::mt19937* rng) {
-		display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-
 		// Random sample one move
 		if ((int)_offline_all_moves.size() <= _options.checkers_num_future_actions - 1) {
 			_logger->warn(
@@ -258,8 +243,6 @@ class CheckersStateExtOffline {
 	}
 
 	void   switchBeforeMove(size_t move_to) {
-		display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-
 		assert(move_to < _offline_all_moves.size());
 
 		_state.reset();
@@ -269,14 +252,10 @@ class CheckersStateExtOffline {
 	}
 
 	int  getNumMoves() const {
-		display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-
 		return _offline_all_moves.size();
 	}
 
-	float getPredictedValue(int move_idx) const {
-		display_debug_info("CheckersStateExtOffline", __FUNCTION__, "\x1b[1;36;40m");
-		
+	float getPredictedValue(int move_idx) const {		
 		return _predicted_values[move_idx];
 	}
 

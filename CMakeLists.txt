@@ -72,13 +72,11 @@ endfunction(add_cpp_tests)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src_cpp/)
 
 # Main ELF library
-
 add_subdirectory(
     src_cpp/elf
     ${CMAKE_CURRENT_BINARY_DIR}/elf)
 
 # ELF games
-
 add_subdirectory(
     src_cpp/elfgames/checkers
     ${CMAKE_CURRENT_BINARY_DIR}/elfgames/checkers)

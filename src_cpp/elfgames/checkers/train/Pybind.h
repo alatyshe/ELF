@@ -11,7 +11,7 @@
 #include <pybind11/pybind11.h>
 
 namespace elfgames {
-namespace go {
+namespace checkers {
 
 void registerPy(pybind11::module& m);
 

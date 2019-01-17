@@ -18,27 +18,22 @@ class SharedReplayBuffer {
   using GenFunc = std::function<std::unique_ptr<Record>(const Key&)>;
 
   SharedReplayBuffer(GenFunc gen) : _gen(gen) {
-    display_debug_info("SharedReplayBuffer", __FUNCTION__, GREEN_B);
   }
 
   void InitRecords(const std::vector<Key>& keys) {
-    display_debug_info("SharedReplayBuffer", __FUNCTION__, GREEN_B);
-
     std::lock_guard<std::mutex> lock(_mutex);
+
     for (const auto& key : keys)
       add_record_no_lock(key);
   }
 
   bool HasKey(const Key& key) const {
-    display_debug_info("SharedReplayBuffer", __FUNCTION__, GREEN_B);
-
     return _buffer.find(key) != _buffer.end();
   }
 
   const Record& Get(const Key& key) {
-    display_debug_info("SharedReplayBuffer", __FUNCTION__, GREEN_B);
-
     typename BufferType::const_iterator it = _buffer.find(key);
+
     if (it == _buffer.end()) {
       std::lock_guard<std::mutex> lock(_mutex);
       // Check again.
@@ -57,8 +52,6 @@ class SharedReplayBuffer {
   GenFunc _gen;
 
   typename BufferType::const_iterator add_record_no_lock(const Key& key) {
-    display_debug_info("SharedReplayBuffer", __FUNCTION__, GREEN_B);
-    
     assert(_gen != nullptr);
     return _buffer.emplace(make_pair(key, _gen(key))).first;
   }

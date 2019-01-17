@@ -62,7 +62,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 							"ThreadedCtrl-", 
 							"")) {
-
 		selfplay_.reset(new SelfPlaySubCtrl(gameOptions_, mcts_opt));
 		eval_.reset(new EvalSubCtrl(gameOptions_, mcts_opt));
 

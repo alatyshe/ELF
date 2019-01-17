@@ -41,14 +41,13 @@ class ModelPerfomance {
 			const ModelPair& p)
 			: gameOptions_(gameOptions),
 				curr_pair_(p),
-				logger_(
-						elf::logging::getIndexedLogger(
+				logger_(elf::logging::getIndexedLogger(
 							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
 							"ModelPerfomance-", 
 							"")) {
-
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		const size_t cushion = 5;
 		const size_t max_request_per_layer = mgr.getExpectedNumEval() / 2;
 		const size_t num_request = gameOptions.eval_num_games / 2 + cushion;
@@ -70,26 +69,18 @@ class ModelPerfomance {
 	ModelPerfomance(ModelPerfomance&&) = default;
 
 	int n_done() const {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		return games_->win_count().n_done() + swap_games_->win_count().n_done();
 	}
 	int n_win() const {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		return games_->win_count().n_win() + swap_games_->win_count().n_win();
 	}
 
 	float winrate() const {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		const int num_games = n_done();
 		return num_games == 0 ? 0.0 : static_cast<float>(n_win()) / num_games;
 	}
 
 	EvalResult eval_result() const {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		return eval_result_;
 	}
 
@@ -102,8 +93,6 @@ class ModelPerfomance {
 	}
 
 	EvalResult updateState(const ClientManager& mgr) {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		if (sealed_)
 			return eval_result_;
 
@@ -124,8 +113,6 @@ class ModelPerfomance {
 	}
 
 	void feed(const ClientInfo& c, const CheckersRecord& r) {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		if (r.request.client_ctrl.player_swap) {
 			swap_games_->add(c, -r.result.reward);
 		} else {
@@ -136,8 +123,6 @@ class ModelPerfomance {
 	}
 
 	void fillInRequest(const ClientInfo& c, MsgRequest* msg) {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		if (sealed_)
 			return;
 
@@ -172,14 +157,10 @@ class ModelPerfomance {
 	}
 
 	bool IsSealed() const {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		return sealed_;
 	}
 
 	const ModelPair& Pair() const {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		return curr_pair_;
 	}
 
@@ -199,8 +180,6 @@ class ModelPerfomance {
 	std::shared_ptr<spdlog::logger> logger_;
 
 	static size_t compute_num_eval_machine(size_t n, size_t max_num_eval) {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		if (max_num_eval == 0)
 			return 1;
 
@@ -217,8 +196,6 @@ class ModelPerfomance {
 	}
 
 	EvalResult eval_check() const {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		const int half_complete = gameOptions_.eval_num_games / 2;
 		const float wr = winrate();
 
@@ -246,8 +223,6 @@ class ModelPerfomance {
 	}
 
 	void set_sealed() {
-		display_debug_info("ModelPerfomance", __FUNCTION__, RED_B);
-
 		// Save all games.
 		sealed_ = true;
 		logger_->info(
@@ -365,9 +340,8 @@ class EvalSubCtrl {
 	}
 
 	void setBaselineModel(int64_t ver) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
+
 		best_baseline_model_ = ver;
 		models_to_eval_.clear();
 		// All perfs need to go away as well.
@@ -375,8 +349,6 @@ class EvalSubCtrl {
 	}
 
 	void addNewModelForEvaluation(int64_t selfplay_ver, int64_t new_version) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		std::lock_guard<std::mutex> lock(mutex_);
 
 		if (selfplay_ver == best_baseline_model_) {
@@ -421,8 +393,6 @@ class EvalSubCtrl {
 
 	// 
 	ModelPair get_key(int ver) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		ModelPair p;
 		p.black_ver = ver;
 		p.white_ver = best_baseline_model_;
@@ -432,8 +402,6 @@ class EvalSubCtrl {
 
 	// добавляем модель для оценки
 	bool add_candidate_model(int ver) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		// проверяем, не создавали ли мы до этого класс для сравнения этих моделей
 		auto it = perfs_.find(get_key(ver));
 		if (it == perfs_.end())
@@ -442,8 +410,6 @@ class EvalSubCtrl {
 	}
 
 	bool remove_candidate_model(int ver) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		for (auto it = models_to_eval_.begin(); it != models_to_eval_.end(); ++it) {
 			if (*it == ver) {
 				models_to_eval_.erase(it);
@@ -455,9 +421,8 @@ class EvalSubCtrl {
 	}
 
 	ModelPerfomance& find_or_create(const ClientManager& mgr, const ModelPair& mp) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-
 		auto it = perfs_.find(mp);
+		
 		if (it == perfs_.end()) {
 			auto& ptr = perfs_[mp];
 			ptr.reset(new ModelPerfomance(gameOptions_, mgr, mp));
@@ -467,9 +432,8 @@ class EvalSubCtrl {
 	}
 
 	ModelPerfomance* find_or_null(const ModelPair& mp) {
-		display_debug_info("EvalSubCtrl", __FUNCTION__, RED_B);
-		
 		auto it = perfs_.find(mp);
+
 		if (it == perfs_.end()) {
 			logger_->info("The pair {} was not sent before!", mp.info());
 			return nullptr;

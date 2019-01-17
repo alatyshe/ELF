@@ -105,30 +105,22 @@ class OptionBase {
  public:
   OptionBase(std::string name, const std::type_index& typeIndex)
       : name_(std::move(name)), typeIndex_(typeIndex) {
-    display_debug_info("OptionBase", __FUNCTION__, GREEN_B);
-
   }
 
   virtual ~OptionBase() {}
 
   const std::string& getName() const {
-    display_debug_info("OptionBase", __FUNCTION__, GREEN_B);
-
     return name_;
   }
 
   void addPrefixSuffixToName(
       const std::string& prefix,
       const std::string& suffix) {
-    display_debug_info("OptionBase", __FUNCTION__, GREEN_B);
-
     name_ = prefix + name_ + suffix;
   }
 
   template <typename T>
   void checkType() const {
-    display_debug_info("OptionBase", __FUNCTION__, GREEN_B);
-
     if (std::type_index(typeid(T)) != typeIndex_) {
       // TODO: Should we be throwing an exception (ssengupta@fb)
       throw std::runtime_error(
@@ -138,8 +130,6 @@ class OptionBase {
 
   template <typename T>
   T fromJSON(const json& j) const {
-    display_debug_info("OptionBase", __FUNCTION__, GREEN_B);
-
     checkType<T>();
     return j;
   }
@@ -171,7 +161,6 @@ class OptionBaseTyped : public OptionBase {
         help_(std::move(help)),
         hasDefaultValue_(false),
         defaultValue_() {
-    display_debug_info("OptionBaseTyped", __FUNCTION__, GREEN_B);
   }
 
   OptionBaseTyped(std::string name, std::string help, T defaultValue)
@@ -179,12 +168,9 @@ class OptionBaseTyped : public OptionBase {
         help_(std::move(help)),
         hasDefaultValue_(true),
         defaultValue_(std::move(defaultValue)) {
-    display_debug_info("OptionBaseTyped", __FUNCTION__, GREEN_B);        
   }
 
   json getPythonArgparseOptionsAsJSON() const override {
-    display_debug_info("OptionBaseTyped", __FUNCTION__, GREEN_B);
-
     json args = {"--" + getName()};
     json kwargs = {{"type", PythonTypename<T>::value()},
                    {"help", help_},
@@ -270,8 +256,6 @@ class Option<std::vector<ItemT>> : public OptionBaseTyped<std::vector<ItemT>> {
   Option(Args&&... args) : OptionBaseTyped<T>(std::forward<Args>(args)...) {}
 
   virtual json getPythonArgparseOptionsAsJSON() const override {
-    display_debug_info("Option", __FUNCTION__, GREEN_B);
-
     json ret = OptionBaseTyped<T>::getPythonArgparseOptionsAsJSON();
     ret["kwargs"]["nargs"] = "*";
     return ret;
@@ -301,8 +285,6 @@ class OptionSpec {
 
   template <typename T>
   bool addOption(std::string optionName, std::string help) {
-    display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
-
     std::shared_ptr<option_spec_detail::OptionBase> option(
         new option_spec_detail::Option<T>(optionName, std::move(help)));
     return optionSpecMap_.emplace(std::move(optionName), std::move(option))
@@ -311,8 +293,6 @@ class OptionSpec {
 
   template <typename T>
   bool addOption(std::string optionName, std::string help, T defaultValue) {
-    display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
-
     std::shared_ptr<option_spec_detail::OptionBase> option(
         new option_spec_detail::Option<T>(
             optionName, std::move(help), std::move(defaultValue)));
@@ -321,9 +301,8 @@ class OptionSpec {
   }
 
   std::vector<std::string> getOptionNames() const {
-    display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
-
     std::vector<std::string> names;
+
     for (const auto& elem : optionSpecMap_) {
       names.emplace_back(elem.first);
     }
@@ -331,9 +310,8 @@ class OptionSpec {
   }
 
   json getPythonArgparseOptionsAsJSON() const {
-    display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
-
     json arr = json::array();
+
     for (const auto& item : optionSpecMap_) {
       arr.emplace_back(item.second->getPythonArgparseOptionsAsJSON());
     }
@@ -341,14 +319,10 @@ class OptionSpec {
   }
 
   std::string getPythonArgparseOptionsAsJSONString() const {
-    display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
-
     return getPythonArgparseOptionsAsJSON().dump();
   }
 
   void merge(const OptionSpec& other) {
-    display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
-
     optionSpecMap_.insert(
         other.optionSpecMap_.begin(), other.optionSpecMap_.end());
   }
@@ -356,9 +330,8 @@ class OptionSpec {
   void addPrefixSuffixToOptionNames(
       const std::string& prefix,
       const std::string& suffix) {
-    display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
-
     auto newOptionSpecMap_ = decltype(optionSpecMap_)();
+
     for (const auto& elem : optionSpecMap_) {
       elem.second->addPrefixSuffixToName(prefix, suffix);
       newOptionSpecMap_.emplace(prefix + elem.first + suffix, elem.second);
@@ -369,9 +342,8 @@ class OptionSpec {
  private:
   const option_spec_detail::OptionBase& getOptionInfo(
       const std::string& optionName) const {
-    display_debug_info("OptionSpec", __FUNCTION__, GREEN_B);
-
     auto it = optionSpecMap_.find(optionName);
+
     if (it == optionSpecMap_.end()) {
       throw std::runtime_error("No option with name " + optionName + "!");
     }

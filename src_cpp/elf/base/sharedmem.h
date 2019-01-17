@@ -36,80 +36,57 @@ class SharedMemOptions {
   enum TransferType { SERVER = 0, CLIENT };
 
   SharedMemOptions(const std::string& label, int batchsize)
-      : options_(label, batchsize, 0, 1) {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-  }
+      : options_(label, batchsize, 0, 1) { 
+        ;
+    }
 
   void setIdx(int idx) {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     idx_ = idx;
   }
 
   void setTimeout(int timeout_usec) {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     options_.wait_opt.timeout_usec = timeout_usec;
   }
 
   void setMinBatchSize(int minbatchsize) {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     options_.wait_opt.min_batchsize = minbatchsize;
   }
 
   void setTransferType(TransferType type) {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     type_ = type;
   }
 
   int getIdx() const {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     return idx_;
   }
 
   const comm::RecvOptions& getRecvOptions() const {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     return options_;
   }
 
   comm::WaitOptions& getWaitOptions() {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     return options_.wait_opt;
   }
 
   const std::string& getLabel() const {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     return options_.label;
   }
 
   int getBatchSize() const {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     return options_.wait_opt.batchsize;
   }
 
   int getMinBatchSize() const {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     return options_.wait_opt.min_batchsize;
   }
 
   TransferType getTransferType() const {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     return type_;
   }
 
   std::string info() const {
-    display_debug_info("SharedMemOptions", __FUNCTION__, GREEN_B);
-
     std::stringstream ss;
+
     ss << "SMem[" << options_.label << "], idx: " << idx_
        << ", batchsize: " << options_.wait_opt.batchsize;
 
@@ -132,11 +109,10 @@ class SharedMemOptions {
 
 class SharedMem;
 
-inline void state2mem(const Message& msg, SharedMem& mem) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-  // LOG(INFO) << "BatchIdx: " << msg_idx << ", msg addr: "
+inline void state2mem(const Message& msg, SharedMem& mem) {  // LOG(INFO) << "BatchIdx: " << msg_idx << ", msg addr: "
   //           << std::hex << &msg << std::dec << std::endl;
   int idx = msg.base_idx;
+
   for (const auto* datum : msg.data) {
     assert(datum != nullptr);
     datum->state_to_mem_funcs.transfer(idx, mem);
@@ -145,9 +121,8 @@ inline void state2mem(const Message& msg, SharedMem& mem) {
 }
 
 inline void mem2state(const SharedMem& mem, Message& msg) {
-  display_debug_info("", __FUNCTION__, PURPLE_B);
-
   int idx = msg.base_idx;
+
   for (const auto* datum : msg.data) {
     assert(datum != nullptr);
     datum->mem_to_state_funcs.transfer(idx, mem);
@@ -164,14 +139,10 @@ class SharedMem {
       : opts_(smem_opts),
         mem_(mem),
         logger_(elf::logging::getIndexedLogger("elf::base::SharedMem-", "")) {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     opts_.setIdx(idx);
   }
 
   void waitBatchFillMem(Server* server) {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     server->waitBatch(opts_.getRecvOptions(), &msgs_from_client_);
     active_batch_size_ = 0;
     for (const Message& m : msgs_from_client_) {
@@ -201,8 +172,6 @@ class SharedMem {
   }
 
   void waitReplyReleaseBatch(Server* server, comm::ReplyStatus batch_status) {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     if (opts_.getTransferType() == SharedMemOptions::SERVER) {
       local_mem2state();
     } else {
@@ -216,33 +185,24 @@ class SharedMem {
   }
 
   const SharedMemOptions& getSharedMemOptions() const {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     return opts_;
   }
 
   size_t getEffectiveBatchSize() const {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     return active_batch_size_;
   }
 
   void setTimeout(int timeout_usec) {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     opts_.setTimeout(timeout_usec);
   }
 
   void setMinBatchSize(int minbatchsize) {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     opts_.setMinBatchSize(minbatchsize);
   }
 
   std::string info() const {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     std::stringstream ss;
+
     ss << opts_.info() << std::endl;
     for (const auto& p : mem_) {
       ss << "[" << p.first << "]: " << p.second.info() << std::endl;
@@ -262,13 +222,12 @@ class SharedMem {
 
   // [TODO] For python to use.
   AnyP* get(const std::string& key) {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     return (*this)[key];
   }
 
   const AnyP* operator[](const std::string& key) const {
     auto it = mem_.find(key);
+
     if (it != mem_.end()) {
       return &it->second;
     } else {
@@ -289,8 +248,6 @@ class SharedMem {
   std::shared_ptr<spdlog::logger> logger_;
 
   void local_state2mem() {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     // Send the state to shared memory.
     for (const Message& m : msgs_from_client_) {
       state2mem(m, *this);
@@ -298,8 +255,6 @@ class SharedMem {
   }
 
   void client_state2mem(Server* server) {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     // Send the state to shared memory.
     std::vector<typename Comm::ReplyFunction> msgs;
     for (const Message& m : msgs_from_client_) {
@@ -316,8 +271,6 @@ class SharedMem {
   }
 
   void local_mem2state() {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     // Send the state to shared memory.
     for (Message& m : msgs_from_client_) {
       mem2state(*this, m);
@@ -325,10 +278,9 @@ class SharedMem {
   }
 
   void client_mem2state(Server* server) {
-    display_debug_info("SharedMem", __FUNCTION__, GREEN_B);
-
     // Send the state to shared memory.
     std::vector<typename Comm::ReplyFunction> msgs;
+    
     for (Message& m : msgs_from_client_) {
       // LOG(INFO) << "mem2state: Batch " << i << " ptr: " << std::hex
       //           << msgs_from_client_[i].m << dec << std::endl;

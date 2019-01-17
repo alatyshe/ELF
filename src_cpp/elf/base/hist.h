@@ -24,23 +24,17 @@ class HistT {
 
   HistT(size_t q_size, size_t vec_size, MemOrder order)
       : vec_size_(vec_size), order_(order) {
-    display_debug_info("HistT", __FUNCTION__, GREEN_B);
-    
     q_ = std::vector<std::vector<T>>(q_size, std::vector<T>(vec_size_));
     assert(q_.size() > 0);
     assert(q_[0].size() == vec_size_);
   }
 
   T* prepare() {
-    display_debug_info("HistT", __FUNCTION__, GREEN_B);
-
     q_idx_ = (q_idx_ + 1) % q_.size();
     return &q_[q_idx_][0];
   }
 
   void extract(T* s, int batchsize, int batch_idx) const {
-    display_debug_info("HistT", __FUNCTION__, GREEN_B);
-
     switch (order_) {
       case BATCH_HIST:
         ext_batch_hist(s, batch_idx);
@@ -60,10 +54,9 @@ class HistT {
   MemOrder order_;
 
   void ext_batch_hist(T* s, int batch_idx) const {
-    display_debug_info("HistT", __FUNCTION__, GREEN_B);
-
     // one sample = dim per feature * time length
     T* start = s + batch_idx * vec_size_ * q_.size();
+    
     for (const auto& v : boost::adaptors::reverse(q_)) {
       assert(v.size() == vec_size_);
       copy(v.begin(), v.end(), start);
@@ -72,10 +65,9 @@ class HistT {
   }
 
   void ext_hist_batch(T* s, int batchsize, int batch_idx) const {
-    display_debug_info("HistT", __FUNCTION__, GREEN_B);
-    
     T* start = s + batch_idx * vec_size_;
     int stride = batchsize * vec_size_;
+
     for (const auto& v : boost::adaptors::reverse(q_)) {
       assert(v.size() == vec_size_);
       copy(v.begin(), v.end(), s);
