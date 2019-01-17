@@ -11,7 +11,8 @@
 #include <bitset>
 #include <memory.h>
 #include <stdio.h>
-
+#include <iomanip>
+#include <utility>
 
 // checkers
 #include "hash_all_moves.h"

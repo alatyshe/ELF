@@ -38,13 +38,13 @@ bool				CheckersPlay(CheckersBoard *board, int64_t action_index) {
 		A legal move is represented by an integer with exactly two
 		bits turned on: the old position and the new position.
 	*/
-	int64_t 				move;
-	int64_t 				active;
-	int64_t 				passive;
-	int64_t 				taken_piece;
-	int64_t 				destination;
-	int 					buffer;
-	uint64_t 				buff;
+	int64_t					move;
+	int64_t					active;
+	int64_t					passive;
+	int64_t					taken_piece;
+	int64_t					destination;
+	int							buffer;
+	uint64_t				buff;
 
 	auto index = moves::i_to_m.find(action_index);
 	move = index->second[0];
@@ -339,30 +339,27 @@ std::array<std::array<int, 8>, 8>	get_true_state(CheckersBoard board) {
 std::string							get_true_state_str(const CheckersBoard board) {
 	std::array<std::array<int, 8>, 8> observation = get_true_state(board);
 	std::string str = "";
-	std::string id;
-	std::string man;
-	std::string king;
+	std::string buff = "";
 
+	std::stringstream coords;
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {
-            id = " (" + std::to_string(x) + "," + std::to_string(y) + ")E";
-            man = " (" + std::to_string(x) + "," + std::to_string(y) + ")M";
-            king = " (" + std::to_string(x) + "," + std::to_string(y) + ")K";
-            
-           	// id = " (" + std::to_string(y * 8 + x) + ")E";
-            // man = " (" + std::to_string(y * 8 + x) + ")M";
-            // king = " (" + std::to_string(y * 8 + x) + ")K";
+            coords << std::setw(2) << std::right << std::to_string(y * 8 + x);
 
             if (observation[y][x] == -1) {
-                id = "\x1b[6;31;40m" + man + "\x1b[0m";
+                buff = "\x1b[6;31;40m (" + coords.str() + ")M\x1b[0m";
             } else if (observation[y][x] == -3) {
-                id = "\x1b[6;31;40m" + king + "\x1b[0m";
+                buff = "\x1b[6;31;40m (" + coords.str() + ")K\x1b[0m";
             } else if (observation[y][x] == 1) {
-                id = "\x1b[6;32;40m" + man + "\x1b[0m";
+                buff = "\x1b[6;32;40m (" + coords.str() + ")M\x1b[0m";
             } else if (observation[y][x] == 3) {
-                id = "\x1b[6;32;40m" + king + "\x1b[0m";
+                buff = "\x1b[6;32;40m (" + coords.str() + ")K\x1b[0m";
             }
-            str = str + id;
+            else {
+            	buff = " (" + coords.str() + ")E";
+            }
+            coords.str("");
+            str = str + buff;
         }
         str = str + "\n";
     }

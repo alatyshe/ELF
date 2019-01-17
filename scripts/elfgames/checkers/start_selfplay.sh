@@ -22,7 +22,7 @@ NUM_BLOCK=10
 
 game=elfgames.checkers.game \
 model=df_pred \
-model_file=elfgames.checkers.df_model_checkers python3 selfplay.py \
+model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	\
 	--server_id myserver		--port 2341 \
 	--mode selfplay \

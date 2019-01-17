@@ -11,14 +11,14 @@
 save=./myserver \
 game=elfgames.checkers.game \
 model=df_kl model_file=elfgames.checkers.df_model_checkers \
-	stdbuf -o 0 -e 0 python -u ./train.py \
+	stdbuf -o 0 -e 0 python -u ./py/train.py \
 	\
 	--server_id myserver		--port 1234 \
 	--gpu 0 \
 	\
 	--mode train \
-	--batchsize 256				--num_minibatch 128\
-	--num_games 8				--keys_in_reply checkers_V \
+	--batchsize 256				--num_minibatch 1024\
+	--num_games 16				--keys_in_reply checkers_V \
 	--T 1 \
 	--dim 128 \
 	--num_block 10 \
@@ -26,14 +26,14 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--use_mcts					--use_mcts_ai2 \
 	--mcts_epsilon 0.25			--mcts_persistent_tree \
 	--mcts_puct 0.85			--mcts_use_prior \
-	--mcts_threads 16			--mcts_rollout_per_thread 20 \
+	--mcts_threads 16			--mcts_rollout_per_thread 100 \
 	--mcts_virtual_loss 5		--mcts_alpha 0.03 \
 	\
 	--save_first \
 	\
 	--use_data_parallel \
 	\
-	--num_episode 3 \
+	--num_episode 10000 \
 	--keep_prev_selfplay		--keep_prev_selfplay \
 	\
 	--weight_decay 0.0002		--opt_method sgd \
@@ -41,16 +41,18 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--expected_num_client 1 \
 	\
 	--selfplay_async \
-	--q_min_size 2				--q_max_size 4		--num_reader 2 \
+	--q_min_size 10				--q_max_size 1000		--num_reader 16 \
 	\
-	--selfplay_init_num 4 \
-	--selfplay_update_num 0 \
+	--selfplay_init_num 100 \
+	--selfplay_update_num 100 \
 	\
 	--eval_winrate_thres 0.55 \
 	--eval_num_games 0 \
 	\
 	--lr 0.01					--momentum 0.9 \
 	--verbose \
+	\
+	--load myserver/save-15.bin
 	
 	# 1>> log.log 2>&1 &
 	# --tqdm

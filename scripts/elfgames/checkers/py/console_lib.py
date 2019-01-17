@@ -79,9 +79,9 @@ class GoConsoleGTP:
         reply["a"] = int(items[1])
         return True, reply
 
-    def on_call_ai(self, batch, items, reply):
-        reply["a"] = 171
-        return True, reply
+    # def on_call_ai(self, batch, items, reply):
+    #     reply["a"] = 171
+    #     return True, reply
 
     def on_play(self, batch, items, reply):
         ret, msg = self.check_player(batch, items[1][0])
@@ -108,19 +108,10 @@ class GoConsoleGTP:
                 x2, y2 = (6 - (buff2) % 4 * 2 + ((buff2) // 4) % 2, 7 - (buff2) // 4)
                 if not self.moves_for_human[idx][1]:
                     x1, y1, x2, y2 = x2, y2, x1, y1
-                print("", idx, "\t: ", (x1, y1), "=>", (x2, y2), "=>", "Forward" if  self.moves_for_human[idx][1] else "Backward")
+                print("", idx, "\t: ", (x1 + y1 * 8), "=>", (x2 + y2 * 8))
+                # , "=>", "Forward" if self.moves_for_human[idx][1] else "Backward")
 
         return True, None
-
-    # def on_score(self, batch, items, reply):
-    #     print("ON SCORE")
-    #     print("\n\n\n\n")
-
-    #     final_score = self.get_final_score(batch)
-    #     if final_score > 0:
-    #         return True, "B+%.1f" % final_score
-    #     else:
-    #         return True, "W+%.1f" % (-final_score)
 
     def on_quit(self, batch, items, reply):
 
@@ -175,6 +166,7 @@ class GoConsoleGTP:
 
         self.last_cmd = ""
 
+        self.on_board(batch, [], [])
         while True:
 
 
@@ -199,6 +191,8 @@ class GoConsoleGTP:
                         print(msg)
                     else:
                         print("")
+
+                self.on_board(batch, items, reply)
 
             except Exception:
                 ret, msg = self.list_commands(batch, items, reply)
