@@ -46,23 +46,23 @@ class GameStats {
 						"")) {}
 
 	// ????????????
-	void feedMoveRanking(int ranking) {
-		std::lock_guard<std::mutex> lock(_mutex);
-		_move_ranking.feed(ranking);
-	}
-	// ????????????
-	void resetRankingIfNeeded(int num_reset_ranking) {
-		std::lock_guard<std::mutex> lock(_mutex);
-		if (_move_ranking.total_count > (uint64_t)num_reset_ranking) {
-			_logger->info("\n{}", _move_ranking.info());
-			_move_ranking.reset();
-		}
-	}
+	// void feedMoveRanking(int ranking) {
+	// 	std::lock_guard<std::mutex> lock(_mutex);
+	// 	_move_ranking.feed(ranking);
+	// }
+	// // ????????????
+	// void resetRankingIfNeeded(int num_reset_ranking) {
+	// 	std::lock_guard<std::mutex> lock(_mutex);
+	// 	if (_move_ranking.total_count > (uint64_t)num_reset_ranking) {
+	// 		_logger->info("\n{}", _move_ranking.info());
+	// 		_move_ranking.reset();
+	// 	}
+	// }
 
 
-	void feedWinRate(float final_value) {
+	void feedWinRate(CheckersFinishReason reason, float final_value) {
 		std::lock_guard<std::mutex> lock(_mutex);
-		_win_rate_stats.feed(final_value);
+		_win_rate_stats.feed(reason, final_value);
 	}
 
 	// void feedSgf(const std::string& sgf) {
@@ -83,7 +83,7 @@ class GameStats {
 
  private:
 	std::mutex		_mutex;
-	Ranking				_move_ranking;
+	// Ranking				_move_ranking;
 	WinRateStats	_win_rate_stats;
 	// std::vector<std::string> _sgfs;
 	std::shared_ptr<spdlog::logger> _logger;

@@ -202,7 +202,7 @@ class CheckersMCTSActor {
              << "]: " << s.getAllMovesString() << std::endl;
         *oo_ << s.showBoard() << std::endl;
       }
-      float final_value = s.evaluate();
+      float final_value = s.evaluateGame();
       if (oo_ != nullptr)
         *oo_ << "Terminal state. Get raw score (no komi): " << final_value
              << std::endl;

@@ -24,50 +24,50 @@ class CheckersState {
 		CheckersCopyBoard(&_board, &s._board);
 	}
 
-	bool forward(const Coord& c);
-	bool checkMove(const Coord& c) const;
+	bool	forward(const Coord& c);
+	bool	checkMove(const Coord& c) const;
 
-	void setFinalValue(float final_value) {
+	void	setFinalValue(float final_value) {
 		_final_value = final_value;
 		_has_final_value = true;
 	}
 
-	float getFinalValue() const {
+	float	getFinalValue() const {
 		return _final_value;
 	}
 
-	bool HasFinalValue() const {
+	bool	HasFinalValue() const {
 		return _has_final_value;
 	}
 
-	void reset();
+	void	reset();
 
 	const CheckersBoard& board() const {
 		return _board;
 	}
 
 	// Note that ply started from 1.
-	bool justStarted() const {
+	bool	justStarted() const {
 		return _board._ply == 1;
 	}
 
-	int getPly() const {
+	int		getPly() const {
 		return _board._ply;
 	}
 
-	bool terminated() const {
+	bool	terminated() const {
 		return is_over(_board) || getPly() >= TOTAL_MAX_MOVE ;
 	}
 
-	int lastMove() const {
+	int		lastMove() const {
 		return _board._last_move;
 	}
 
-	int nextPlayer() const {
+	int		nextPlayer() const {
 		return _board.active;
 	}
 
-	bool moves_since(size_t* next_move_number, std::vector<Coord>* moves) const {
+	bool	moves_since(size_t* next_move_number, std::vector<Coord>* moves) const {
 		if (*next_move_number > _moves.size()) {
 			// The move number is not right.
 			return false;
@@ -102,7 +102,7 @@ class CheckersState {
 				"\x1b[0m\nmove num\t: " + std::to_string(_board._ply) + "\n";
 	}
 
-	float evaluate() const {
+	float	evaluateGame() const {
 		float final_score = 0.0;
 		if (getPly() >= TOTAL_MAX_MOVE)
 			final_score = -1;

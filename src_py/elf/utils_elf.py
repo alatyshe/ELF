@@ -539,13 +539,10 @@ class GCWrapper:
         # print("\n\n\n\n\n")
         # print("======================================================================================")
         # print("======================================================================================")
-        # print("\n\n\x1b[6;30;42m\tbefore wait\x1b[0m")
         smem = self.GC.ctx().wait()
 
-        # print("\n\n\x1b[6;30;42m\tbefore calling\x1b[0m")
         self._call(smem, *args, **kwargs)
 
-        # print("\n\n\x1b[6;30;42m\tbefore_step\x1b[0m")
         self.GC.ctx().step()
 
     def start(self):

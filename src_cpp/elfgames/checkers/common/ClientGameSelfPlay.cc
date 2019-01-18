@@ -42,7 +42,7 @@ std::array<int, TOTAL_NUM_ACTIONS>		ClientGameSelfPlay::getValidMoves() const {
 }
 
 float 			ClientGameSelfPlay::getScore() {
-	return _checkers_state_ext.state().evaluate();
+	return _checkers_state_ext.state().evaluateGame();
 }
 
 
@@ -133,9 +133,9 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 	// }
 
 	// Check the ranking of selected move.
-	if (checkers_notifier_ != nullptr) {
-		checkers_notifier_->OnMCTSResult(c, mcts_checkers_ai->getLastResult());
-	}
+	// if (checkers_notifier_ != nullptr) {
+	// 	checkers_notifier_->OnMCTSResult(c, mcts_checkers_ai->getLastResult());
+	// }
 	return c;
 }
 

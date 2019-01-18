@@ -17,8 +17,8 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--gpu 0 \
 	\
 	--mode selfplay \
-	--batchsize 128 \
-	--num_games 8				--keys_in_reply checkers_V checkers_rv \
+	--batchsize 512 \
+	--num_games 16				--keys_in_reply checkers_V checkers_rv \
 	--T 1 \
 	--dim0 128					--dim1 128 \
 	--num_block0 10				--num_block1 10 \
@@ -26,7 +26,7 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--use_mcts					--use_mcts_ai2 \
 	--mcts_epsilon 0.25			--mcts_persistent_tree \
 	--mcts_puct 0.85			--mcts_use_prior \
-	--mcts_threads 16			--mcts_rollout_per_thread 50 \
+	--mcts_threads 16			--mcts_rollout_per_thread 10 \
 	--mcts_virtual_loss 5		--mcts_alpha 0.03 \
 	\
 	--policy_distri_cutoff 30	--policy_distri_training_for_all \
@@ -40,9 +40,9 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--use_fp160					--use_fp161 \
 	--verbose \
 	\
-	--load0 myserver/save-15.bin
 
-	# --suicide_after_n_games 50 \
+	# --suicide_after_n_games 50
+	
 
 	# \
 	# 1>> client.log 2>&1 &

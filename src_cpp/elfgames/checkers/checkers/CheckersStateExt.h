@@ -50,7 +50,7 @@ struct CheckersStateExt {
 	float								setFinalValue(CheckersFinishReason reason) {
 		float final_value = 0.0;
 
-		final_value = _state.evaluate();
+		final_value = _state.evaluateGame();
 		_state.setFinalValue(final_value);
 		return final_value;
 	}

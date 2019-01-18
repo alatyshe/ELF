@@ -15,15 +15,22 @@ from datetime import datetime
 
 import torch
 
+from elf import logging
 from rlpytorch import \
 	Evaluator, load_env, ModelInterface
 
+logger = logging.getIndexedLogger(
+    '\x1b[1;31;40m|py|\x1b[0melfgames.checkers.selfplay-',
+    '')
 
 class Stats(object):
 	def __init__(self):
 		self.total_batchsize = 0
 		self.total_sel_batchsize = 0
 		self.actor_count = 0
+		logger = logging.getIndexedLogger(
+    		'\x1b[1;31;40m|py|\x1b[0melfgames.checkers.Stats-',
+    		'')
 
 	def feed(self, batch):
 		self.total_sel_batchsize += batch.batchsize
@@ -31,26 +38,27 @@ class Stats(object):
 		self.actor_count += 1
 
 		if self.total_sel_batchsize >= 500000:
-			print("\x1b[1;31;40m|py|\x1b[0m", end="")
-			print(datetime.now(), "[selfplay.py=>Stats::feed]")
+			logger.info("")
 
 			batch_usage = self.total_sel_batchsize / self.total_batchsize
-			print(f'\tBatch usage: '
+			# wr = batch.GC.getClient().getCheckersGameStats().getWinRateStats()
+			# win_rate = (100.0 * wr.black_wins / (wr.black_wins + wr.white_wins)
+			# 			if (wr.black_wins + wr.white_wins) > 0
+			# 			else 0.0)
+
+			print(f'\tBatch usage:'
 				  f'\t{self.total_sel_batchsize}/{self.total_batchsize} '
 				  f'\t({100.0 * batch_usage:.2f}%)')
 
-			wr = batch.GC.getClient().getCheckersGameStats().getWinRateStats()
-			win_rate = (100.0 * wr.black_wins / wr.total_games
-						if wr.total_games > 0
-						else 0.0)
-			print(f'\tB/W: {wr.black_wins}/{wr.white_wins}. '
-				  f'\tBlack winrate: {win_rate:.2f}, Total games:{wr.total_games}')
+
+			# print(f'\tB/W: {wr.black_wins}/{wr.white_wins}, ', end="")
+			# print(f'Both Lost: {wr.both_lost}, ', end="")
+			# print(f'Black winrate: {win_rate:.2f}, ', end="")
+			# print(f'Total Games:{wr.total_games}')
 
 			self.total_sel_batchsize = 0
 			self.total_batchsize = 0
-			print('\tActor count:', self.actor_count)
-
-
+			print('\tActor count:\t', self.actor_count)
 
 
 
@@ -81,11 +89,12 @@ def reload_model(model_loader, params, mi, actor_name, args):
 
 def reload(mi, model_loader, params, args, root, ver, actor_name):
 	if model_loader.options.load is None or model_loader.options.load == "":
-		print('\x1b[1;31;40m|py|\x1b[0m\x1b[0;33;40mNo previous model loaded, loading from\x1b[0m', root)
 		real_path = os.path.join(root, "save-" + str(ver) + ".bin")
+		print(f'\x1b[1;31;40m|py|\x1b[0m\x1b[0;33;40mModel for {actor_name} is loading from {real_path}\x1b[0m')
 	else:
 		this_root = os.path.dirname(model_loader.options.load)
 		real_path = os.path.join(this_root, "save-" + str(ver) + ".bin")
+		print(f'\x1b[1;31;40m|py|\x1b[0m\x1b[0;33;40mLoad model for {actor_name}: {real_path}\x1b[0m')
 
 	if model_loader.options.load != real_path:
 		model_loader.options.load = real_path
@@ -217,7 +226,6 @@ def main():
 				int(batch["checkers_black_ver"][0])
 				]
 
-
 		# Use the version number to load models.
 		for model_loader, ver, actor_name in zip(
 				env["model_loaders"], vers, actors):
@@ -236,12 +244,13 @@ def main():
 	def game_end(batch):
 		nonlocal loop_end
 		wr = batch.GC.getClient().getCheckersGameStats().getWinRateStats()
-		win_rate = (100.0 * wr.black_wins / wr.total_games
-					if wr.total_games > 0 else 0.0)
+		win_rate = (100.0 * wr.black_wins / (wr.black_wins + wr.white_wins)
+					if (wr.black_wins + wr.white_wins) > 0 else 0.0)
 
 		print("\x1b[1;31;40m|py|\x1b[0m", end="")
 		print(f'[{datetime.now()!s}][selfplay.py=>main::game_end]', end="")
 		print(f'\tB/W: {wr.black_wins}/{wr.white_wins}, ', end="")
+		print(f'Both Lost: {wr.both_lost}, ', end="")
 		print(f'Black winrate: {win_rate:.2f}, ', end="")
 		print(f'Total Games:{wr.total_games}')
 

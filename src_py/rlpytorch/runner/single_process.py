@@ -84,6 +84,8 @@ class SingleProcessRun(object):
 
 		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
+		if self.options.tqdm:
+			import tqdm
 		print("")
 		self.GC.start()
 		if self.after_start is not None:
@@ -92,20 +94,15 @@ class SingleProcessRun(object):
 			# она ждет нормального батча от клиента
 			self.after_start()
 
-		print("")
+		tq = None
 		for k in range(self.options.num_episode):
 			self.logger.info(f'\x1b[1;36;40m{k + 1} episode of {self.options.num_episode} started\x1b[0m, minibatch={self.options.num_minibatch}')
 
 			if self.episode_start is not None:
 				self.episode_start(k)
-			if self.options.tqdm:
-				import tqdm
-				tq = tqdm.tqdm(total=self.options.num_minibatch, ncols=100)
-			else:
-				tq = None
+			# else:
 
 			self.episode_counter = 0
-
 			while self.episode_counter < self.options.num_minibatch:
 				old_counter = self.episode_counter
 				# Make sure if the callback function in GC.run() change the
@@ -113,17 +110,21 @@ class SingleProcessRun(object):
 				self.GC.run()
 				self.episode_counter += 1
 				diff = self.episode_counter - old_counter
-				if tq is not None:
-					if diff < 0:
-						self.logger.info(f'Diff negative: {old_counter} -> '
-							  f'{self.episode_counter}')
-						tq = tqdm.tqdm(
-							total=self.options.num_minibatch, ncols=50)
+				if self.options.tqdm:
+					if tq is None:
+						tq = tqdm.tqdm(total=self.options.num_minibatch, ncols=100, leave=True)
+						# self.logger.info(f'Diff negative: {old_counter} -> '
+						# 	  f'{self.episode_counter}')
+						# tq = tqdm.tqdm(
+						# 	total=self.options.num_minibatch, ncols=100, leave=False)
 						tq.update(self.episode_counter)
 					else:
 						tq.update(diff)
 
+
 			if self.options.tqdm:
+				tq.close()
+				tq = None
 				print("")
 
 			if self.options.num_cooldown > 0:

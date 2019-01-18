@@ -354,8 +354,12 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
     // tell python / remote
     records_.feed(s);
 
-    game_stats_.resetRankingIfNeeded(options_.num_reset_ranking);
-    game_stats_.feedWinRate(s.state().getFinalValue());
+    // game_stats_.resetRankingIfNeeded(options_.num_reset_ranking);
+
+    CheckersFinishReason reason = s.state().getPly() >= TOTAL_MAX_MOVE ? CHECKERS_MAX_STEP : 
+    (s.state().nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
+
+    game_stats_.feedWinRate(reason, s.state().getFinalValue());
     // game_stats_.feedSgf(s.dumpSgf(""));
 
     // Report winrate (so that Python side could know).
@@ -369,13 +373,13 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
     records_.updateState(state);
   }
 
-  void OnMCTSResult(Coord c, const CheckersGameNotifierBase::MCTSResult& result)
-      override {
-    // Check the ranking of selected move.
-    auto move_rank =
-        result.getRank(c, elf::ai::tree_search::MCTSResultT<Coord>::PRIOR);
-    game_stats_.feedMoveRanking(move_rank.first);
-  }
+  // void OnMCTSResult(Coord c, const CheckersGameNotifierBase::MCTSResult& result)
+  //     override {
+  //   // Check the ranking of selected move.
+  //   auto move_rank =
+  //       result.getRank(c, elf::ai::tree_search::MCTSResultT<Coord>::PRIOR);
+  //   // game_stats_.feedMoveRanking(move_rank.first);
+  // }
 
   GameStats& getGameStats() {
     return game_stats_;

@@ -104,6 +104,15 @@ struct SelfPlayRecord {
 
 	// true если надо подождать для больше времени для батча
 	bool needWaitForMoreSample() const {
+		logger_->info("Need: {}; Counter: {}; Selfplay_init_num: {}; Selfplay_update_num: {}; Num_weight_update: {}; ",
+			options_.selfplay_init_num +
+				options_.selfplay_update_num * num_weight_update_,
+			counter_,
+			options_.selfplay_init_num,
+			options_.selfplay_update_num,
+			num_weight_update_
+			);
+		
 		if (options_.selfplay_init_num <= 0){
 			return false;
 		}

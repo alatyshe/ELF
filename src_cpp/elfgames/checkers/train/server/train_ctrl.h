@@ -79,16 +79,16 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
 	void waitForSufficientSelfplay(int64_t selfplay_ver) {
 		SelfPlaySubCtrl::CtrlResult res;
-		// каждые 30 секунд проверяем на заполненость batch
+		// каждые 60 секунд проверяем на заполненость batch
 		// для нашей модели
 		while ((res = selfplay_->needWaitForMoreSample(selfplay_ver)) ==
 					 SelfPlaySubCtrl::CtrlResult::INSUFFICIENT_SAMPLE) {
 			logger_->info(
-					"{}Insufficient sample{} for model {}... waiting 30s",
+					"{}Insufficient sample{} for model {}... waiting 60s",
 					WHITE_B,
 					COLOR_END,
 					selfplay_ver);
-			std::this_thread::sleep_for(30s);
+			std::this_thread::sleep_for(60s);
 		}
 
 		if (res == SelfPlaySubCtrl::CtrlResult::SUFFICIENT_SAMPLE) {

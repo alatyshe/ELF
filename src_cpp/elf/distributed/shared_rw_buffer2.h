@@ -245,14 +245,14 @@ class Reader {
 
 		while (!done_.load()) {
 			if (!receiver_.recv_noblock(&identity, &title, &msg)) {
-				logger_->info(
-						"Reader: {}no message{}, Stats: {}/{}/{}, wait for 15 sec ... ",
-						ORANGE_C,
-						COLOR_END,
-						num_package_,
-						num_failed_,
-						num_skipped_);
-				std::this_thread::sleep_for(std::chrono::seconds(15));
+				// logger_->info(
+				// 		"Reader: {}no message{}, Stats: {}/{}/{}, wait for 10 sec ... ",
+				// 		ORANGE_C,
+				// 		COLOR_END,
+				// 		num_package_,
+				// 		num_failed_,
+				// 		num_skipped_);
+				std::this_thread::sleep_for(std::chrono::seconds(10));
 				continue;
 			}
 
