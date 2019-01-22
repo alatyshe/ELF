@@ -20,8 +20,8 @@ from rlpytorch import \
 	Evaluator, load_env, ModelInterface
 
 logger = logging.getIndexedLogger(
-    '\x1b[1;31;40m|py|\x1b[0melfgames.checkers.selfplay-',
-    '')
+	'\x1b[1;31;40m|py|\x1b[0melfgames.checkers.selfplay-',
+	'')
 
 class Stats(object):
 	def __init__(self):
@@ -29,8 +29,9 @@ class Stats(object):
 		self.total_sel_batchsize = 0
 		self.actor_count = 0
 		logger = logging.getIndexedLogger(
-    		'\x1b[1;31;40m|py|\x1b[0melfgames.checkers.Stats-',
-    		'')
+			'\x1b[1;31;40m|py|\x1b[0melfgames.checkers.Stats-',
+			'')
+
 
 	def feed(self, batch):
 		self.total_sel_batchsize += batch.batchsize
@@ -68,8 +69,8 @@ class Stats(object):
 
 
 
-name_matcher = re.compile(r"save-(\d+)")
 
+name_matcher = re.compile(r"save-(\d+)")
 
 def extract_ver(model_loader):
 	name = os.path.basename(model_loader.options.load)
@@ -153,10 +154,6 @@ def main():
 	# for i in additional_to_load:
 	#     print(i, " : ", additional_to_load[i])
 
-	# sys.exit(0)
-
-
-
 	env = load_env(
 		os.environ, num_models=2, overrides={'actor_only': True},
 		additional_to_load=additional_to_load)
@@ -217,10 +214,11 @@ def main():
 	loop_end = False
 
 	def game_start(batch):
-		print("In game start")
-		print("batch['checkers_white_ver'] : ", batch["checkers_white_ver"])
-		print("batch['checkers_black_ver'] : ", batch["checkers_black_ver"])
+		info = "game_start() load/reload models\n"
+		info += f"\twhite_ver: {batch['checkers_white_ver']}\n"
+		info += f"\tblack_ver: {batch['checkers_black_ver']}"
 
+		logger.info(info)
 		vers = [
 				int(batch["checkers_white_ver"][0]),
 				int(batch["checkers_black_ver"][0])
@@ -247,17 +245,19 @@ def main():
 		win_rate = (100.0 * wr.black_wins / (wr.black_wins + wr.white_wins)
 					if (wr.black_wins + wr.white_wins) > 0 else 0.0)
 
-		print("\x1b[1;31;40m|py|\x1b[0m", end="")
-		print(f'[{datetime.now()!s}][selfplay.py=>main::game_end]', end="")
-		print(f'\tB/W: {wr.black_wins}/{wr.white_wins}, ', end="")
-		print(f'Both Lost: {wr.both_lost}, ', end="")
-		print(f'Black winrate: {win_rate:.2f}, ', end="")
-		print(f'Total Games:{wr.total_games}')
+		info = f'game_end()\tB/W: {wr.black_wins}/{wr.white_wins}, '
+		info += f'Draw: {wr.both_lost}, '
+		info += f'Black winrate: {win_rate:.2f}, '
+		info += f'Total Games: {wr.total_games}'
+
+		logger.info(info)
 
 		if args.suicide_after_n_games > 0 and \
 				wr.total_games >= args.suicide_after_n_games:
-			print(f'\t#suicide_after_n_games: {args.suicide_after_n_games}, ')
-			print(f'\ttotal_games: {wr.total_games}')
+			info = f'game_end()\tTotal Games: {wr.total_games}, '
+			info += f'#suicide_after_n_games: {args.suicide_after_n_games}'
+
+			logger.info(info)
 			loop_end = True
 
 	GC.reg_callback_if_exists("game_start", game_start)

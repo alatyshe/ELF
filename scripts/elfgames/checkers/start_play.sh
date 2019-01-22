@@ -11,7 +11,8 @@ MODEL=myserver/save-128.bin
 
 game=elfgames.checkers.game \
 model=df_pred \
-model_file=elfgames.checkers.df_model_checkers python3 ./py/play_console.py \
+model_file=elfgames.checkers.df_model_checkers \
+	python3 ./py/play_console.py \
 	--server_addr localhost --port 1234 \
 	\
 	--mode online --keys_in_reply checkers_V checkers_rv \

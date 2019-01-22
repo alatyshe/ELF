@@ -44,15 +44,14 @@ class Block(Model):
 			128)
 		return spec
 
+
 	@auto_import_options
 	def __init__(self, option_map, params):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-
 		super().__init__(option_map, params)
 		self.relu = nn.LeakyReLU(0.1) if self.options.leaky_relu else nn.ReLU()
 		self.conv_lower = self._conv_layer()
 		self.conv_upper = self._conv_layer(relu=False)
+
 
 	def _conv_layer(
 			self,
@@ -60,9 +59,6 @@ class Block(Model):
 			output_channel=None,
 			kernel=3,
 			relu=True):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-
 		if input_channel is None:
 			input_channel = self.options.dim
 		if output_channel is None:
@@ -85,10 +81,8 @@ class Block(Model):
 
 		return nn.Sequential(*layers)
 
+
 	def forward(self, s):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Block::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-		
 		s1 = self.conv_lower(s)
 		s1 = self.conv_upper(s1)
 		s1 = s1 + s
@@ -96,11 +90,18 @@ class Block(Model):
 		return s
 
 
+
+
+
+
+
+
+
+
+
 class GoResNet(Model):
 	@classmethod
 	def get_option_spec(cls):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 		spec = PyOptionSpec()
 		spec.addIntOption(
 			'num_block',
@@ -110,22 +111,27 @@ class GoResNet(Model):
 
 		return spec
 
+
 	@auto_import_options
 	def __init__(self, option_map, params):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-
 		super().__init__(option_map, params)
 		self.blocks = []
 		for _ in range(self.options.num_block):
 			self.blocks.append(Block(option_map, params))
 		self.resnet = nn.Sequential(*self.blocks)
 
-	def forward(self, s):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "GoResNet::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
 
+	def forward(self, s):
 		return self.resnet(s)
+
+
+
+
+
+
+
+
+
 
 
 class Model_PolicyValue(Model):
@@ -177,18 +183,12 @@ class Model_PolicyValue(Model):
 			'which gpu to use',
 			-1)
 
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-
 		spec.merge(GoResNet.get_option_spec())
-
 		return spec
+
 
 	@auto_import_options
 	def __init__(self, option_map, params):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-
 		super().__init__(option_map, params)
 
 		self.board_size = params["checkers_board_size"]
@@ -243,24 +243,7 @@ class Model_PolicyValue(Model):
 		self._check_and_init_distributed_model()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	def _check_and_init_distributed_model(self):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-
 		if not self.options.use_data_parallel_distributed:
 			return
 
@@ -296,16 +279,13 @@ class Model_PolicyValue(Model):
 		self.resnet = nn.parallel.DistributedDataParallel(
 		    self.resnet)
 
+
 	def _conv_layer(
 			self,
 			input_channel=None,
 			output_channel=None,
 			kernel=3,
 			relu=True):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-
-
 		if input_channel is None:
 			input_channel = self.options.dim
 		if output_channel is None:
@@ -319,10 +299,6 @@ class Model_PolicyValue(Model):
 			padding=(kernel // 2)
 		))
 
-		# print("input_channel\t: ", input_channel)
-		# print("output_channel\t: ", output_channel)
-		# print("kernel\t\t: ", kernel)
-
 		if self.options.bn:
 			layers.append(
 				nn.BatchNorm2d(output_channel,
@@ -333,9 +309,8 @@ class Model_PolicyValue(Model):
 
 		return nn.Sequential(*layers)
 
+	
 	def prepare_cooldown(self):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		
 		try:
 			for module in self.modules():
 				if module.__class__.__name__.startswith('BatchNorm'):
@@ -346,19 +321,14 @@ class Model_PolicyValue(Model):
 				  "skipping. Please set bn_momentum to 0.1"
 				  "(for cooldown = 50) in this case")
 
+	
 	def forward(self, x):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model_PolicyValue::", inspect.currentframe().f_code.co_name)
-		# print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
-		
 		# print("FORWARD")
 		# приводим в нормальный вид
 		s = self._var(x["checkers_s"])
-		# print("s.shape\t\t: ", s.shape)
 		s = self.init_conv(s)
-		# print("init_conv\t: s.shape : ", s.shape)
+
 		s = self.resnet(s)
-		# print("resnet\t\t: s.shape : ", s.shape)
-		# print("\n\n")
 
 		d = self.board_size ** 2
 		pi = self.pi_final_conv(s)

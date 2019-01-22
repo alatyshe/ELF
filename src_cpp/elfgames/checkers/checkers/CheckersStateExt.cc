@@ -99,7 +99,7 @@ void	CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 	switch (reason) {
 		case CHECKERS_MAX_STEP:
 			_logger->info(
-					"Ply: {} exceeds thread_state. Restarting the game", _state.getPly());
+					"Ply: {} exceeds thread_state. Restarting the game(Draw++)", _state.getPly());
 			break;
 		case CHEKCERS_BLACK_WIN:
 			_logger->info("\x1b[6;32;40mBlack\x1b[0m win at {} move", _state.getPly());
@@ -110,7 +110,7 @@ void	CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 	}
 
 	_logger->info(
-		"Value: {}",
+		"Reward: {}",
 		_state.getFinalValue());
 
 }

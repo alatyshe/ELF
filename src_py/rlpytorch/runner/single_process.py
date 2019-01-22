@@ -33,21 +33,17 @@ class SingleProcessRun(object):
 			'tqdm',
 			'toggle tqdm visualization',
 			False)
-
-		print("\x1b[1;32;40mSingleProcessRun.get_option_spec    \x1b[0m")
-
 		return spec
+
 
 	@auto_import_options
 	def __init__(self, option_map):
 		"""Initialization for SingleProcessRun."""
-
 		self.logger = logging.getIndexedLogger(
 			'\x1b[1;31;40m|py|\x1b[0mrlpytorch.runner.SingleProcessRun-',
 			'')
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-
 		pass
+
 
 	def setup(self, GC, episode_start=None, episode_summary=None,
 			  after_start=None, before_stop=None):
@@ -60,12 +56,12 @@ class SingleProcessRun(object):
 			after_start(func): operations called after GC.start() but
 							   before the main loop.
 		'''
-
 		self.GC = GC
 		self.episode_summary = episode_summary
 		self.episode_start = episode_start
 		self.after_start = after_start
 		self.before_stop = before_stop
+
 
 	def run_singe_process(self):
 		"""Main training loop. Initialize Game Context and looping the
@@ -81,11 +77,6 @@ class SingleProcessRun(object):
 		In the end, print summary for game context and stop it.
 		"""
 
-
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-
-		if self.options.tqdm:
-			import tqdm
 		print("")
 		self.GC.start()
 		if self.after_start is not None:
@@ -94,15 +85,19 @@ class SingleProcessRun(object):
 			# она ждет нормального батча от клиента
 			self.after_start()
 
-		tq = None
 		for k in range(self.options.num_episode):
 			self.logger.info(f'\x1b[1;36;40m{k + 1} episode of {self.options.num_episode} started\x1b[0m, minibatch={self.options.num_minibatch}')
 
 			if self.episode_start is not None:
 				self.episode_start(k)
-			# else:
+			if self.options.tqdm:
+				import tqdm
+				tq = tqdm.tqdm(total=self.options.num_minibatch, ncols=100, leave=False)
+			else:
+				tq = None
 
 			self.episode_counter = 0
+
 			while self.episode_counter < self.options.num_minibatch:
 				old_counter = self.episode_counter
 				# Make sure if the callback function in GC.run() change the
@@ -110,21 +105,16 @@ class SingleProcessRun(object):
 				self.GC.run()
 				self.episode_counter += 1
 				diff = self.episode_counter - old_counter
-				if self.options.tqdm:
-					if tq is None:
-						tq = tqdm.tqdm(total=self.options.num_minibatch, ncols=100, leave=True)
-						# self.logger.info(f'Diff negative: {old_counter} -> '
-						# 	  f'{self.episode_counter}')
-						# tq = tqdm.tqdm(
-						# 	total=self.options.num_minibatch, ncols=100, leave=False)
+				if tq is not None:
+					if diff < 0:
+						tq = tqdm.tqdm(
+							total=self.options.num_minibatch, ncols=100, leave=False)
 						tq.update(self.episode_counter)
 					else:
 						tq.update(diff)
 
-
 			if self.options.tqdm:
 				tq.close()
-				tq = None
 				print("")
 
 			if self.options.num_cooldown > 0:
@@ -142,32 +132,23 @@ class SingleProcessRun(object):
 				self.episode_summary(k)
 
 			print("")
-			
 
 		if self.before_stop is not None:
 			self.before_stop()
 		self.GC.stop()
 
+
 	def set_episode_counter(self, counter):
-
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-
 		self.episode_counter = counter
 
+
 	def inc_episode_counter(self, delta):
-
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-
 		self.episode_counter += delta
+
 
 	def run_multithread(self):
 		''' Start training in a multithreaded environment '''
-
-
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
-
 		def train_thread():
-			print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 
 			for i in range(self.options.num_episode):
 				for k in range(self.options.num_minibatch):
@@ -185,7 +166,6 @@ class SingleProcessRun(object):
 				self.episode_summary(i)
 
 		def actor_thread():
-			# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "SingleProcessRun::", inspect.currentframe().f_code.co_name)
 			while True:
 				self.GC.runGroup("actor")
 

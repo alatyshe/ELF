@@ -145,7 +145,7 @@ struct SelfPlayRecord {
 		const float black_win_rate = static_cast<float>(black_win_) / (n + 1e-10);
 
 		std::stringstream ss;
-		ss  << "=== Record Stats (" << ver_ << ") ====" << std::endl;
+		ss  << "FIX IT(need more info like draw) === Record Stats (" << ver_ << ") ====" << std::endl;
 		
 		ss  << "B_win/W_win/total: " << black_win_ << "/" << white_win_ << "/" << n 
 				<< std::endl 

@@ -237,10 +237,12 @@ class Loader(object):
 		spec.merge(PyOptionSpec.fromClasses((ContextArgs, MoreLabels)))
 		return spec
 
+
 	@auto_import_options
 	def __init__(self, option_map):
 		self.context_args = ContextArgs(option_map)
 		self.more_labels = MoreLabels(option_map)
+
 
 	def _set_params(self):
 		co = checkers.ContextOptions()
@@ -324,6 +326,7 @@ class Loader(object):
 			print("*********************************************")
 
 		return co, GC, opt
+
 
 	def initialize(self):
 		co, GC, opt = self._set_params()

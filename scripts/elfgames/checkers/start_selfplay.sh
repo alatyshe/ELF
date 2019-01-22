@@ -6,13 +6,16 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-LOAD0=myserver/save-0.bin
-LOAD1=myserver/save-0.bin
+# LOAD0=myserver/save-3072.bin
+# LOAD1=myserver/save-143360.bin
 
-BATCHSIZE=128
+LOAD1=myserver/save-3072.bin
+LOAD0=myserver/save-143360.bin
+
+BATCHSIZE=64
 NUM_ROLLOUTS=100
 
-BATCHSIZE2=128
+BATCHSIZE2=64
 NUM_ROLLOUTS2=100
 
 GPU=0
@@ -24,9 +27,12 @@ game=elfgames.checkers.game \
 model=df_pred \
 model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	\
+	--T 1 \
 	--server_id myserver		--port 2341 \
+	--gpu $GPU \
+	\
 	--mode selfplay \
-	--num_games 4 \
+	--num_games 1 \
 	--keys_in_reply checkers_V checkers_rv\
 	\
 	--batchsize $BATCHSIZE		--mcts_rollout_per_batch $BATCHSIZE \
@@ -48,11 +54,9 @@ model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	--no_check_loaded_options0 \
 	--no_check_loaded_options1 \
 	--verbose \
-	--gpu $GPU \
 	--load0 $LOAD0 \
 	--load1 $LOAD1 \
 	--use_fp160					--use_fp161 \
-	--gpu $GPU \
 	--replace_prefix0 resnet.module,resnet init_conv.module,init_conv\
 	--replace_prefix1 resnet.module,resnet init_conv.module,init_conv\
 	--selfplay_timeout_usec 10 \
