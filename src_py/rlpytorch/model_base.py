@@ -29,7 +29,7 @@ class Model(nn.Module):
         ``volatile`` indicates that the Variable should be used in
         inference mode, i.e. don't save the history.
         """
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
 
         super(Model, self).__init__()
         self.option_map = option_map
@@ -48,7 +48,7 @@ class Model(nn.Module):
         Returns:
             Cloned model
         """
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
 
         model = type(self)(self.option_map, self.params)
         model.load_state_dict(deepcopy(self.state_dict()))
@@ -64,7 +64,7 @@ class Model(nn.Module):
             volatile(bool): indicating that the Variable should be used in
                             inference mode, i.e. don't save the history.
         """
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
 
         self.volatile = volatile
 
@@ -74,7 +74,7 @@ class Model(nn.Module):
         Returns:
             Variable for x
         '''
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
 
         if not isinstance(x, Variable):
             return Variable(x, volatile=self.volatile)
@@ -96,7 +96,7 @@ class Model(nn.Module):
             filename(str): filename to be saved.
             num_trial(int): maximum number of retries to save a model.
         """
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
 
         # Avoid calling the constructor by doing self.clone()
         # deepcopy should do it
@@ -132,7 +132,7 @@ class Model(nn.Module):
                              We should omit them;
                              otherwise loading will not work.
         '''
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
 
         data = torch.load(filename)
 
@@ -182,7 +182,7 @@ class Model(nn.Module):
         ''' Load from an existing model. State is not deep copied.
         To deep copy the model, uss ``clone``.
         '''
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
 
         if hasattr(model, 'option_map'):
             self.option_map = model.option_map
@@ -196,7 +196,7 @@ class Model(nn.Module):
     def inc_step(self):
         ''' increment the step.
         ``step`` records the number of times the weight has been updated.'''
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
 
         self.step += 1
 
@@ -206,7 +206,7 @@ class Model(nn.Module):
         Returns:
             the model's signature string, specified by step.
         '''
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Model::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Model::", inspect.currentframe().f_code.co_name)
         
         return "Model[%d]" % self.step
 

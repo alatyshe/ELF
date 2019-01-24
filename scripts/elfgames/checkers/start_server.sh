@@ -33,7 +33,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	\
 	--use_data_parallel \
 	\
-	--num_episode 10000 \
+	--num_episode 10 \
 	--keep_prev_selfplay \
 	\
 	--weight_decay 0.0002		--opt_method sgd \
@@ -53,7 +53,8 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--verbose \
 	\
 	--tqdm \
-
+	
+	# 1>> server_log.log 2>&1 &
 	# --load myserver/save-15.bin \
 	# 1>> log.log 2>&1 &
 	

@@ -10,8 +10,6 @@ static float* board_plane(float* features, int idx) {
 
 
 void CheckersFeature::getKings(int player, float* data) const {
-  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
-
   std::array<std::array<int, 8>, 8>   observation;
   observation = get_observation(s_.board(), player);
   
@@ -25,8 +23,6 @@ void CheckersFeature::getKings(int player, float* data) const {
 
 
 void CheckersFeature::getPawns(int player, float* data) const {
-  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
-
   std::array<std::array<int, 8>, 8>   observation;
   observation = get_observation(s_.board(), player);
   
@@ -76,15 +72,11 @@ void CheckersFeature::getPawns(int player, float* data) const {
 // если фич несколько(на нашем примере их 6)
 // то получаем массив вида 6x91, который переводим в одномерный массив размером 546
 void CheckersFeature::extract(std::vector<float>* features) const {
-  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
-
   features->resize(CHECKERS_NUM_FEATURES * kBoardRegion);
   extract(&(*features)[0]);
 }
 
 void CheckersFeature::extract(float* features) const {
-  display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
-
   const CheckersBoard* _board = &s_.board();
   // берем активного игрока
   int active_player = _board->active;

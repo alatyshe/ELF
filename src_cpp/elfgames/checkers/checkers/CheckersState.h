@@ -98,8 +98,8 @@ class CheckersState {
 		res = get_true_state_str(_board);
 		return std::string(res) + "\nLast move\t: " + std::to_string(lastMove()) +
 				"\nCurrentPlayer\t: " + (this->nextPlayer() == BLACK_PLAYER ? 
-					"\x1b[6;32;40mBlack" : "\x1b[6;31;40mWhite") + 
-				"\x1b[0m\nmove num\t: " + std::to_string(_board._ply) + "\n";
+					"\u001b[32mBlack" : "\u001b[31mWhite") + 
+				"\u001b[0m\nmove num\t: " + std::to_string(_board._ply) + "\n";
 	}
 
 	float	evaluateGame() const {

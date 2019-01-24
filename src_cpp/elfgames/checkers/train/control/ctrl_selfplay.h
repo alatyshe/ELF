@@ -35,7 +35,7 @@ struct SelfPlayRecord {
 			: ver_(ver),
 				options_(options),
 				logger_(elf::logging::getIndexedLogger(
-						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"SelfPlayRecord-",
 						"")) {
 		std::string selfplay_prefix =
@@ -153,10 +153,10 @@ struct SelfPlayRecord {
 				<< std::endl;
 
 		ss  << "Game finished in N moves: " << std::endl
-				<< "[0, 100)\t="    << move0_100 << std::endl
+				<< "[  0, 100)\t="    << move0_100 << std::endl
 				<< "[100, 200)\t="  << move100_200 << std::endl
-				<< "[200, 300)\t="  << move200_300 << std::endl
-				<< "[300, up)\t="   << move300_up << std::endl;
+				<< "[200, 300)\t="  << move200_300 << std::endl;
+				// << "[300,  up)\t="   << move300_up << std::endl;
 
 		ss << "=== End Record Stats ====" << std::endl;
 
@@ -212,7 +212,7 @@ class SelfPlaySubCtrl {
 				mcts_options_(mcts_options),
 				curr_ver_(-1),
 				logger_(elf::logging::getIndexedLogger(
-						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"SelfPlaySubCtrl-",
 						"")) {
 	}

@@ -17,7 +17,7 @@ class DispatcherCallback {
 	DispatcherCallback(ThreadedDispatcher* dispatcher, elf::GameClient* client)
 			: client_(client),
 				logger_(elf::logging::getIndexedLogger(
-						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"DispatcherCallback-",
 						"")) {		
 		using std::placeholders::_1;

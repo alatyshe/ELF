@@ -62,7 +62,7 @@ class CheckersMCTSActor {
 			: params_(params),
 				rng_(params.seed),
 				logger_(elf::logging::getIndexedLogger(
-					std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+					MAGENTA_B + std::string("|++|") + COLOR_END + 
 					"CheckersMCTSActor-", 
 					"")) {
 		ai_.reset(new CheckersAI(client, {params_.actor_name}));

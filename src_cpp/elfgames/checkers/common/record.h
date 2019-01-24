@@ -61,9 +61,9 @@ struct  ClientCtrl {
 		if (client_type == CLIENT_INVALID)
 			ss << "invalid]";
 		else if (client_type == CLIENT_SELFPLAY_ONLY)
-			ss << "selfplay only]";
+			ss << CYAN_B << "CLIENT_SELFPLAY_ONLY" << COLOR_END << "]";
 		else if (client_type == CLIENT_EVAL_THEN_SELFPLAY)
-			ss << "eval than selfplay]";
+			ss << WHITE_B << "CLIENT_EVAL_THEN_SELFPLAY" << COLOR_END << "]";
 		else
 			ss << client_type << "]";
 

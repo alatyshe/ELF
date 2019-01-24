@@ -215,7 +215,7 @@ class Context {
         // releasing. #batch = "
         //          << smem_->getEffectiveBatchSize() << std::endl;
 
-        // LOG(INFO) << "Receiver: Release batch\x1b[0m" << std::endl;
+        // LOG(INFO) << "Receiver: Release batch\u001b[0m" << std::endl;
         smem_->waitReplyReleaseBatch(server_, batch_status);
       }
     }

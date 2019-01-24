@@ -38,8 +38,8 @@ def sample_with_check(probs, greedy=False):
     """
     num_action = probs.size(1)
 
-    # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "Trainer::", inspect.currentframe().f_code.co_name)
-    # print("\x1b[1;31;40m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\x1b[0m")
+    # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+    # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
     # print("num_action\t: ", num_action)
     # print("probs\t: ", probs)
 

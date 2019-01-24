@@ -35,7 +35,7 @@ class GameBase {
 				_options(options),
 				_context_options(context_options),
 				_logger(elf::logging::getIndexedLogger(
-							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+							MAGENTA_B + std::string("|++|") + COLOR_END + 
 							"GameBase-", 
 							"")) {
 		if (options.seed == 0) {

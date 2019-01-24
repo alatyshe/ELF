@@ -14,8 +14,6 @@ struct CheckersBoardHistory {
 
 	// просто копируем положение фишек на доске
 	CheckersBoardHistory(const CheckersBoard& b) {
-		display_debug_info("struct CheckersBoardHistory", __FUNCTION__, "\x1b[1;36;40m");
-
 		forward[BLACK_PLAYER] = b.forward[BLACK_PLAYER];
 		backward[BLACK_PLAYER] = b.backward[BLACK_PLAYER];
 		pieces[BLACK_PLAYER] = (forward[BLACK_PLAYER]) | (backward[BLACK_PLAYER]);
@@ -39,11 +37,9 @@ class CheckersFeature {
 
 	CheckersFeature(const CheckersState& s) 
 			: s_(s) {
-		display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 	}
 
 	const CheckersState& state() const {
-		display_debug_info("CheckersFeature", __FUNCTION__, "\x1b[1;36;40m");
 		return s_;
 	}
 
@@ -74,7 +70,6 @@ struct CheckersReply {
 	int64_t									version = -1;
 
 	CheckersReply(const CheckersFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
-		display_debug_info("struct CheckersReply", __FUNCTION__, "\x1b[1;36;40m");
 	}
 	
 	std::string   info() {

@@ -173,7 +173,7 @@ class GoConsoleGTP:
             cmd = input(prompt_str)
             items = cmd.split()
             if len(items) < 1:
-                print("\x1b[1;31;40mInvalid input\x1b[0m : ", cmd)
+                print("\u001b[31;1mInvalid input\u001b[0m : ", cmd)
                 continue
 
             c = items[0]
@@ -196,6 +196,6 @@ class GoConsoleGTP:
 
             except Exception:
                 ret, msg = self.list_commands(batch, items, reply)
-                print("\x1b[1;31;40mInvalid command\x1b[0m   : ", cmd, "\n")
+                print("\u001b[31;1mInvalid command\u001b[0m   : ", cmd, "\n")
                 
-                print("\x1b[1;32;40mAvilable commands\x1b[0m :\n", msg)
+                print("\u001b[34mmAvilable commands\u001b[0m :\n", msg)

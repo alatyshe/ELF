@@ -20,7 +20,7 @@ from rlpytorch import \
 	Evaluator, load_env, ModelInterface
 
 logger = logging.getIndexedLogger(
-	'\x1b[1;31;40m|py|\x1b[0melfgames.checkers.selfplay-',
+	'\u001b[31;1m|py|\u001b[0melfgames.checkers.selfplay-',
 	'')
 
 class Stats(object):
@@ -29,7 +29,7 @@ class Stats(object):
 		self.total_sel_batchsize = 0
 		self.actor_count = 0
 		logger = logging.getIndexedLogger(
-			'\x1b[1;31;40m|py|\x1b[0melfgames.checkers.Stats-',
+			'\u001b[31;1m|py|\u001b[0melfgames.checkers.Stats-',
 			'')
 
 
@@ -91,17 +91,17 @@ def reload_model(model_loader, params, mi, actor_name, args):
 def reload(mi, model_loader, params, args, root, ver, actor_name):
 	if model_loader.options.load is None or model_loader.options.load == "":
 		real_path = os.path.join(root, "save-" + str(ver) + ".bin")
-		print(f'\x1b[1;31;40m|py|\x1b[0m\x1b[0;33;40mModel for {actor_name} is loading from {real_path}\x1b[0m')
+		print(f'\u001b[31;1m|py|\u001b[0m\x1b[0;33;40mModel for {actor_name} is loading from {real_path}\u001b[0m')
 	else:
 		this_root = os.path.dirname(model_loader.options.load)
 		real_path = os.path.join(this_root, "save-" + str(ver) + ".bin")
-		print(f'\x1b[1;31;40m|py|\x1b[0m\x1b[0;33;40mLoad model for {actor_name}: {real_path}\x1b[0m')
+		print(f'\u001b[31;1m|py|\u001b[0m\x1b[0;33;40mLoad model for {actor_name}: {real_path}\u001b[0m')
 
 	if model_loader.options.load != real_path:
 		model_loader.options.load = real_path
 		reload_model(model_loader, params, mi, actor_name, args)
 	else:
-		print('\x1b[1;31;40m|py|\x1b[0m\x1b[1;31;40mWarning! Same model, skip loading\x1b[0m', real_path)
+		print('\u001b[31;1m|py|\u001b[0m\u001b[31;1mWarning! Same model, skip loading\u001b[0m', real_path)
 
 
 

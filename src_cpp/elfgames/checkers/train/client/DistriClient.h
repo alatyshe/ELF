@@ -21,7 +21,7 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
       const CheckersGameOptions& options)
       : ThreadedCtrlBase(ctrl, 0),
         logger_(elf::logging::getIndexedLogger(
-            std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+            MAGENTA_B + std::string("|++|") + COLOR_END + 
             "ThreadedWriterCtrl-",
             "")) {
     elf::shared::Options netOptions = getNetOptions(contextOptions, options);
@@ -63,14 +63,14 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
     if (!writer_->getReplyNoblock(&smsg)) {
       logger_->info(
           "WriterCtrl: {}No message{}, seq={}, since_last_sec={}",
-          ORANGE_C,
+          YELLOW_C,
           COLOR_END,
           seq_,
           now - ts_since_last_sent_);
 
       // 900s = 15min
       if (now - ts_since_last_sent_ < kMaxSecSinceLastSent) {
-        logger_->info("Sleep for 10 sec .. ");
+        // logger_->info("Sleep for 10 sec .. ");
         std::this_thread::sleep_for(std::chrono::seconds(10));
       } else {
         logger_->warn(
@@ -183,7 +183,7 @@ struct CheckersGuardedRecords {
   CheckersGuardedRecords(const std::string& identity)
       : records_(identity),
         logger_(elf::logging::getIndexedLogger(
-            std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+            MAGENTA_B + std::string("|++|") + COLOR_END + 
             "CheckersGuardedRecords",
             "")) {
   }
@@ -253,7 +253,7 @@ struct CheckersGuardedRecords {
     std::lock_guard<std::mutex> lock(mutex_);
     logger_->info(
         "{}DumpAndClear(dump all states to JSON and clean){}, #records: {}, {}",
-        ORANGE_B,
+        YELLOW_B,
         COLOR_END,
         records_.records.size(),
         visStates(records_.states));
@@ -473,7 +473,7 @@ class DistriClient {
       : contextOptions_(contextOptions),
         options_(options),
         logger_(elf::logging::getIndexedLogger(
-          std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+          MAGENTA_B + std::string("|++|") + COLOR_END + 
           "DistriClient-", 
           "")) {
     dispatcher_.reset(new ThreadedDispatcher(ctrl_, contextOptions.num_games));

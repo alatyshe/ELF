@@ -79,7 +79,7 @@ class ModelSaver(object):
                 self.options.latest_symlink))
 
         self.logger = logging.getIndexedLogger(
-            '\x1b[1;31;40m|py|\x1b[0mrlpytorch.trainer.ModelSaver-',
+            '\u001b[31;1m|py|\u001b[0mrlpytorch.trainer.ModelSaver-',
             '')
 
     def feed(self, model):
@@ -157,7 +157,7 @@ class MultiCounter(object):
         self.stats = defaultdict(lambda: ValueStats())
         self.total_count = 0
         self.logger = logging.getIndexedLogger(
-            '\x1b[1;31;40m|py|\x1b[0mrlpytorch.trainer.utils.MultiCounter-',
+            '\u001b[31;1m|py|\u001b[0mrlpytorch.trainer.utils.MultiCounter-',
             '')
 
     def inc(self, key):
@@ -177,7 +177,7 @@ class MultiCounter(object):
     def summary(self, global_counter=None):
         this_time = datetime.now()
         res = "\n"
-        res += f"[\x1b[1;32;40mepisode #{global_counter + 1} finished\x1b[0m] "
+        res += f"[\u001b[32;1mepisode #{global_counter + 1} finished\u001b[0m] "
         if self.last_time is not None:
             res += f"Time spent = {(this_time - self.last_time).total_seconds() * 1000} ms, Stats:\n"
         else:

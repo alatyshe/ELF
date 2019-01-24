@@ -115,7 +115,7 @@ void		display_debug_info(
 
 		for (int i = 0; i < depth; i++)
 			std::cout << "  ";
-		std::cout << "\x1b[1;33;40m|++|\x1b[0m";
+		std::cout << "\\u001b[33;1m|++|\u001b[0m";
 		std::cout << color << clss_name << COLOR_END;
 		std::cout << "::" << mthd_name << std::endl;		
 	}	

@@ -59,7 +59,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 				client_(client),
 				rng_(time(NULL)),
 				logger_(elf::logging::getIndexedLogger(
-							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+							MAGENTA_B + std::string("|++|") + COLOR_END + 
 							"ThreadedCtrl-", 
 							"")) {
 		selfplay_.reset(new SelfPlaySubCtrl(gameOptions_, mcts_opt));
@@ -302,17 +302,16 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 class TrainCtrl : public DataInterface {
  public:
 	TrainCtrl(
-			Ctrl& 											ctrl,
-			int 												num_games,
+			Ctrl&												ctrl,
+			int													num_games,
 			elf::GameClient* 						client,
 			const CheckersGameOptions& 	gameOptions,
 			const elf::ai::tree_search::TSOptions& mcts_opt)
 			: ctrl_(ctrl),
 				rng_(time(NULL)),
 				selfplay_record_("tc_selfplay"),
-				logger_(
-						elf::logging::getIndexedLogger(
-							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+				logger_(elf::logging::getIndexedLogger(
+							MAGENTA_B + std::string("|++|") + COLOR_END + 
 							"TrainCtrl-", 
 							"")) {
 
@@ -324,7 +323,7 @@ class TrainCtrl : public DataInterface {
 
 		replay_buffer_.reset(new ReplayBuffer(rq_ctrl));
 		logger_->info(
-				"Finished initializing replay_buffer(ReplayBuffer) info : {}", replay_buffer_->info());
+				"Finished initializing replay_buffer(ReplayBuffer). info :\n{}", replay_buffer_->info());
 		
 		threaded_ctrl_.reset(new ThreadedCtrl(
 				ctrl_, client, replay_buffer_.get(), gameOptions, mcts_opt));
@@ -337,7 +336,7 @@ class TrainCtrl : public DataInterface {
 				gameOptions.expected_num_clients,
 				0.5));
 		logger_->info(
-				"Finished initializing client_mgr_(ClientManager)", client_mgr_->info());
+				"Finished initializing client_mgr_(ClientManager). info:\n{}", client_mgr_->info());
 
 	}
 

@@ -70,7 +70,7 @@ class DataOnlineLoader {
  public:
 	DataOnlineLoader(const elf::shared::Options& net_options)
 			: logger_(elf::logging::getIndexedLogger(
-						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"DataOnlineLoader-",
 						"")) {
 		auto curr_timestamp = time(NULL);

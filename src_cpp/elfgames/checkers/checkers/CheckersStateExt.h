@@ -196,7 +196,7 @@ class CheckersStateExtOffline {
 				_bf(_state),
 				_options(options),
 				_logger(elf::logging::getIndexedLogger(
-						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"CheckersStateExtOffline-",
 						"")) 
 				{

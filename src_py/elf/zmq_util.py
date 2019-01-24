@@ -25,7 +25,7 @@ class ZMQCtx:
 
 class ZMQSender:
     def __init__(self, addr, identity, send_timeout=0, recv_timeout=0):
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ZMQSender::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ZMQSender::", inspect.currentframe().f_code.co_name)
 
         self.ctx = zmq.Context()
         self.ctx.setsockopt(zmq.IPV6, 1)
@@ -41,7 +41,7 @@ class ZMQSender:
         self.sender.connect(addr)
 
     def Send(self, msg, copy=False):
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ZMQSender::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ZMQSender::", inspect.currentframe().f_code.co_name)
 
         with ZMQCtx():
             self.sender.send(msg, copy=copy)
@@ -49,7 +49,7 @@ class ZMQSender:
         return False
 
     def Receive(self):
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ZMQSender::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ZMQSender::", inspect.currentframe().f_code.co_name)
 
         with ZMQCtx():
             return self.sender.recv()
@@ -77,7 +77,7 @@ class ZMQSender:
 
 class ZMQReceiver:
     def __init__(self, addr, timeout=0):
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ZMQReceiver::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ZMQReceiver::", inspect.currentframe().f_code.co_name)
 
         self.ctx = zmq.Context()
         self.ctx.setsockopt(zmq.IPV6, 1)
@@ -89,7 +89,7 @@ class ZMQReceiver:
         self.receiver.bind(addr)
 
     def Send(self, identity, msg):
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ZMQReceiver::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ZMQReceiver::", inspect.currentframe().f_code.co_name)
 
         with ZMQCtx():
             self.receiver.send_multipart([identity, msg])
@@ -97,7 +97,7 @@ class ZMQReceiver:
         return False
 
     def Receive(self):
-        # print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ZMQReceiver::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ZMQReceiver::", inspect.currentframe().f_code.co_name)
 
         # return identity, msg
         with ZMQCtx():

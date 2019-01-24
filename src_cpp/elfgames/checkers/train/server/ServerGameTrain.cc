@@ -17,7 +17,7 @@ ServerGameTrain::ServerGameTrain(
       : GameBase(game_idx, client, context_options, options), 
         reader_(reader),
         logger_(elf::logging::getIndexedLogger(
-          std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+          MAGENTA_B + std::string("|++|") + COLOR_END + 
           "ServerGameTrain-" + std::to_string(game_idx) + "-",
           "")) {
   for (size_t i = 0; i < kNumState; ++i) {

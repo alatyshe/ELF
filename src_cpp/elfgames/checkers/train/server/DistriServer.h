@@ -28,26 +28,25 @@ class DistriServer {
 			: contextOptions_(contextOptions),
 				gameOptions_(gameOptions),
 				logger_(elf::logging::getIndexedLogger(
-					std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+					MAGENTA_B + std::string("|++|") + COLOR_END + 
 					"DistriServer-", 
 					"")) {
 		auto netOptions = getNetOptions(contextOptions_, gameOptions_);
 
+		logger_->info("Initialize trainCtrl_(TrainCtrl)");
 		trainCtrl_.reset(new TrainCtrl(
 				ctrl_,
 				contextOptions_.num_games,
 				client,
 				gameOptions_,
 				contextOptions_.mcts_options));
-		logger_->info(
-				"Finished initializing trainCtrl_(TrainCtrl)");
+
 
 		if (gameOptions_.mode == "train") {
-			// создаем экземпляр для подгрузки батчей онлайн
-
+			// создаем экземпляр класса для подгрузки батчей в онлайн режиме
+			logger_->info("Initialize onlineLoader_(DataOnlineLoader)");
 			onlineLoader_.reset(new DataOnlineLoader(netOptions));
-			logger_->info(
-				"Finished initializing onlineLoader_(DataOnlineLoader)");
+			
 
 			onlineLoader_->start(trainCtrl_.get());
 		} else if (gameOptions_.mode == "offline_train") {

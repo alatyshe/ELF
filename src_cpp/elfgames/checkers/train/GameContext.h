@@ -41,7 +41,7 @@ class GameContext {
 							const CheckersGameOptions&  gameOptions)
 			: GameFeature_(gameOptions),
 				logger_(elf::logging::getIndexedLogger(
-					std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+					MAGENTA_B + std::string("|++|") + COLOR_END + 
 					"GameContext-", 
 					"")) {
 		context_.reset(new elf::Context);
@@ -134,11 +134,11 @@ class GameContext {
 		return context_.get();
 	}
 
-	DistriServer*					getServer() {
+	DistriServer*				getServer() {
 		return server_.get();
 	}
 
-	DistriClient*					getClient() {
+	DistriClient*				getClient() {
 		return client_.get();
 	}
 

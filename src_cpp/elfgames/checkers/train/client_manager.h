@@ -131,24 +131,25 @@ struct ClientInfo {
 
 
 
-
+// контроллим тут всех наших клиентов.
+// создаем новых и говорим в каком режиме работать(EVAL_THEN_SELFPLAY/SELFPLAY_ONLY).
 class ClientManager {
  public:
 	ClientManager(
-			int 			max_num_threads,
-			uint64_t 	max_client_delay_sec,
-			int 			num_expected_clients,
-			float 		selfplay_only_ratio = 0.6,
-			int 			max_num_eval = -1,
+			int				max_num_threads,
+			uint64_t	max_client_delay_sec,
+			int				num_expected_clients,
+			float			selfplay_only_ratio = 0.6,
+			int				max_num_eval = -1,
 			std::function<uint64_t()> timer = elf_utils::sec_since_epoch_from_now)
-			: selfplay_only_ratio_(selfplay_only_ratio),
-				num_expected_clients_(num_expected_clients),
-				max_num_eval_(max_num_eval),
-				max_num_threads_(max_num_threads),
+			:	max_num_threads_(max_num_threads),
 				max_client_delay_sec_(max_client_delay_sec),
+				num_expected_clients_(num_expected_clients),
+				selfplay_only_ratio_(selfplay_only_ratio),
+				max_num_eval_(max_num_eval),
 				timer_(timer),
 				logger_(elf::logging::getIndexedLogger(
-						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"ClientManager-",
 						"")) {
 		assert(timer_ != nullptr);
@@ -219,6 +220,7 @@ class ClientManager {
 	}
 
  private:
+ 	// num clients that run only in selplay mode, without comparing models
 	float						selfplay_only_ratio_;
 	const int				num_expected_clients_;
 	const int				max_num_eval_;
@@ -246,8 +248,9 @@ class ClientManager {
 			 << "EvalThenSelfplay clients[" << num_eval_then_selfplay_ << "/"
 			 << 100 * static_cast<float>(num_eval_then_selfplay_) / n << "%]"<< std::endl
 			 << "[#expected_clients=" << num_expected_clients_ << "]"
-			 << "[#max_eval=" << max_num_eval_ << "]"
-			 << "[#max_th=" << max_num_threads_ << "]"
+			 << "[selfplay_only_ratio=" << selfplay_only_ratio_ << "%]"
+			 << "[#max_eval_clients=" << max_num_eval_ << "]"
+			 << "[#max_threads=" << max_num_threads_ << "]"
 			 << "[#client_delay=" << max_client_delay_sec_ << "]";
 
 		return ss.str();
@@ -261,6 +264,13 @@ class ClientManager {
 	ClientType alloc_type() {
 		ClientType t = CLIENT_INVALID;
 
+		if (num_eval_then_selfplay_ + num_selfplay_only_ == 0)
+		{
+			t = CLIENT_EVAL_THEN_SELFPLAY;
+			num_eval_then_selfplay_++;
+			return t;
+		}
+		// 
 		if (curr_selfplay_ratio() >= selfplay_only_ratio_ &&
 				(max_num_eval_ < 0 || num_eval_then_selfplay_ < max_num_eval_)) {
 			t = CLIENT_EVAL_THEN_SELFPLAY;

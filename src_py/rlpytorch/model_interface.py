@@ -58,7 +58,7 @@ class ModelInterface(object):
 		For each model in ``models``, there is an optimizer in
 		``optimizers`` in correspondence, using ``torch.optim.Adam``.
 		"""
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		self.option_map = option_map
 		self.models = {}
@@ -75,7 +75,7 @@ class ModelInterface(object):
 		Returns:
 			cloned `ModelInterface`.
 		"""
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		mi = ModelInterface(self.option_map)
 		for key, model in self.models.items():
@@ -134,7 +134,7 @@ class ModelInterface(object):
 			Raise exception if key is already in ``self.models``,
 			None if model is successfully added.
 		'''
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		if key in self.models:
 			raise("ModelInterface: key[%s] is already present!" % key)
@@ -152,7 +152,7 @@ class ModelInterface(object):
 				self.models[key].cuda()
 
 		def set_default(params, ks, arg_ks=None):
-			# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+			# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 			if arg_ks is None:
 				arg_ks = [None] * len(ks)
@@ -198,7 +198,7 @@ class ModelInterface(object):
 			model(`Model`): updated model
 		'''
 		# print("Updating model " + key)
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		if key not in self.models:
 			self.add_model(key, model)
@@ -212,7 +212,7 @@ class ModelInterface(object):
 		self.models[key].load_from(model)
 
 	def remove_model(self, key):
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		del self.models[key]
 		if key in self.optimizers:
@@ -226,7 +226,7 @@ class ModelInterface(object):
 			key(str): the key in ``models``
 			model(Model): the model containing the parameters to update
 		"""
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		for param, other_param in zip(
 				self.models[key].parameters(), model.parameters()):
@@ -240,7 +240,7 @@ class ModelInterface(object):
 			dst_key(str): destination key in ``self.models``
 			src_key(str): source key in ``self.models``
 		'''
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		assert dst_key in self.models, \
 			f'ModelInterface: dst_key = {dst_key} cannot be found'
@@ -255,7 +255,7 @@ class ModelInterface(object):
 
 	def zero_grad(self):
 		''' Zero the gradient for all ``optimizers`` '''
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		for k, optimizer in self.optimizers.items():
 			optimizer.zero_grad()
@@ -263,7 +263,7 @@ class ModelInterface(object):
 	def update_weights(self):
 		"""For each optimizer, call before_update for all the models,
 		then update the weights and increment the step for the model."""
-		# print("\x1b[1;31;40m|py|\x1b[0m\x1b[1;37;40m", "ModelInterface::", inspect.currentframe().f_code.co_name)
+		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "ModelInterface::", inspect.currentframe().f_code.co_name)
 
 		for k, optimizer in self.optimizers.items():
 			self.models[k].before_update()

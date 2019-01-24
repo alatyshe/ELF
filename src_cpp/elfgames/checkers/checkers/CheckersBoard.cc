@@ -347,13 +347,13 @@ std::string							get_true_state_str(const CheckersBoard board) {
             coords << std::setw(2) << std::right << std::to_string(y * 8 + x);
 
             if (observation[y][x] == -1) {
-                buff = "\x1b[6;31;40m (" + coords.str() + ")M\x1b[0m";
+                buff = std::string(RED_C) + " (" + coords.str() + ")M" + COLOR_END;
             } else if (observation[y][x] == -3) {
-                buff = "\x1b[6;31;40m (" + coords.str() + ")K\x1b[0m";
+                buff = std::string(RED_C) + " (" + coords.str() + ")K" + COLOR_END;
             } else if (observation[y][x] == 1) {
-                buff = "\x1b[6;32;40m (" + coords.str() + ")M\x1b[0m";
+                buff = std::string(GREEN_C) + " (" + coords.str() + ")M" + COLOR_END;
             } else if (observation[y][x] == 3) {
-                buff = "\x1b[6;32;40m (" + coords.str() + ")K\x1b[0m";
+                buff = std::string(GREEN_C) + " (" + coords.str() + ")K" + COLOR_END;
             }
             else {
             	buff = " (" + coords.str() + ")E";

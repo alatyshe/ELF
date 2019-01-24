@@ -91,7 +91,7 @@ class ModelLoader(object):
             self.logger = logger
         else:
             self.logger = logging.getIndexedLogger(
-                '\x1b[1;31;40m|py|\x1b[0mrlpytorch.model_loader.ModelLoader-',
+                '\u001b[31;1m|py|\u001b[0mrlpytorch.model_loader.ModelLoader-',
                 f'-model_index{model_idx}')
 
         self.option_map_for_model = option_map.clone()
@@ -218,15 +218,15 @@ def load_env(
             ``method``: Learning method used
             ``model_loaders``: loaders for model
     """
-    logger = logging.getIndexedLogger('\x1b[1;31;40m|py|\x1b[0mrlpytorch.model_loader.load_env', '')
+    logger = logging.getIndexedLogger('\u001b[31;1m|py|\u001b[0mrlpytorch.model_loader.load_env', '')
     logger.info('Loading env')
 
  
     game_loader_class = load_module(envs["game"]).Loader
-    logger.info(f'\x1b[1;32;40mModule successfully loaded :\x1b[0m {envs["game"]}')
+    logger.info(f'\u001b[32;1mModule successfully loaded :\u001b[0m {envs["game"]}')
 
     model_file = load_module(envs["model_file"])
-    logger.info(f'\x1b[1;32;40mModule successfully loaded :\x1b[0m {envs["model_file"]}')
+    logger.info(f'\u001b[32;1mModule successfully loaded :\u001b[0m {envs["model_file"]}')
 
     # TODO This is not good, need to fix.
     if len(model_file.Models[envs["model"]]) == 2:

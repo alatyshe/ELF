@@ -23,7 +23,7 @@ ClientGameSelfPlay::ClientGameSelfPlay(
 			checkers_notifier_(checkers_notifier),
 			_checkers_state_ext(game_idx, options),
 			logger_(elf::logging::getIndexedLogger(
-					std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+					MAGENTA_B + std::string("|++|") + COLOR_END + 
 					"ClientGameSelfPlay-" + std::to_string(game_idx) + "-",
 					"")) {
 }

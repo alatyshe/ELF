@@ -42,7 +42,7 @@ class ModelPerfomance {
 			: gameOptions_(gameOptions),
 				curr_pair_(p),
 				logger_(elf::logging::getIndexedLogger(
-							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+							MAGENTA_B + std::string("|++|") + COLOR_END + 
 							"ModelPerfomance-", 
 							"")) {
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -262,9 +262,8 @@ class EvalSubCtrl {
  public:
 	EvalSubCtrl(const CheckersGameOptions& gameOptions, const TSOptions& mcts_options)
 			: gameOptions_(gameOptions),
-				logger_(
-						elf::logging::getIndexedLogger(
-							std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+				logger_(elf::logging::getIndexedLogger(
+							MAGENTA_B + std::string("|++|") + COLOR_END + 
 							"EvalSubCtrl-", 
 							"")) {
 		// [TODO]: A bit hacky, we need to have a better way for this.

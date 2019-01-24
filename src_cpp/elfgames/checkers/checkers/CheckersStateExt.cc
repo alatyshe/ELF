@@ -7,7 +7,7 @@ CheckersStateExt::CheckersStateExt(int game_idx, const CheckersGameOptions& opti
 			_options(options),
 			_logger(
 					elf::logging::getIndexedLogger(
-						std::string("\x1b[1;35;40m|++|\x1b[0m") + 
+						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"CheckersStateExt-", 
 						"")) {
 	restart();
@@ -102,10 +102,10 @@ void	CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 					"Ply: {} exceeds thread_state. Restarting the game(Draw++)", _state.getPly());
 			break;
 		case CHEKCERS_BLACK_WIN:
-			_logger->info("\x1b[6;32;40mBlack\x1b[0m win at {} move", _state.getPly());
+			_logger->info("{}Black{} win at {} move", GREEN_C, COLOR_END, _state.getPly());
 			break;
 		case CHEKCERS_WHITE_WIN:
-			_logger->info("\x1b[6;31;40mWhite\x1b[0m win at {} move", _state.getPly());
+			_logger->info("{}White{} win at {} move", RED_C, COLOR_END,  _state.getPly());
 			break;
 	}
 

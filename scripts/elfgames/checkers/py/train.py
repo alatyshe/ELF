@@ -29,7 +29,7 @@ def main():
     print('Conda env:', os.environ.get("CONDA_DEFAULT_ENV", ""))
 
     logger = logging.getIndexedLogger(
-        '\x1b[1;31;40m|py|\x1b[0melfgames.checkers.train-',
+        '\u001b[31;1m|py|\u001b[0melfgames.checkers.train-',
         '')
 
     additional_to_load = {

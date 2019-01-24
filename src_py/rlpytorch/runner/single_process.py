@@ -40,7 +40,7 @@ class SingleProcessRun(object):
 	def __init__(self, option_map):
 		"""Initialization for SingleProcessRun."""
 		self.logger = logging.getIndexedLogger(
-			'\x1b[1;31;40m|py|\x1b[0mrlpytorch.runner.SingleProcessRun-',
+			'\u001b[31;1m|py|\u001b[0mrlpytorch.runner.SingleProcessRun-',
 			'')
 		pass
 
@@ -86,7 +86,7 @@ class SingleProcessRun(object):
 			self.after_start()
 
 		for k in range(self.options.num_episode):
-			self.logger.info(f'\x1b[1;36;40m{k + 1} episode of {self.options.num_episode} started\x1b[0m, minibatch={self.options.num_minibatch}')
+			self.logger.info(f'\u001b[36;1m{k + 1} episode of {self.options.num_episode} started\u001b[0m, minibatch={self.options.num_minibatch}')
 
 			if self.episode_start is not None:
 				self.episode_start(k)
