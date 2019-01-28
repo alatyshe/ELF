@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <nlohmann/json.hpp>
-#include "model_pair.h"
+#include "ModelPair.h"
 
 #include "../sgf/sgf.h"
 
@@ -67,9 +67,9 @@ struct  ClientCtrl {
 		else
 			ss << client_type << "]";
 
-		ss  << "[async=" << async << "]"
-				<< "[#th=" << num_game_thread_used << "]"
-				<< "[Player_swap=" << player_swap << "]";
+		ss  << "[Player_swap=" << player_swap << "]"
+				<< "[async=" << async << "]"
+				<< "[#th=" << num_game_thread_used << "]";
 
 		return ss.str();
 	}

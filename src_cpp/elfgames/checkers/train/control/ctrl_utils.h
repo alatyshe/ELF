@@ -58,13 +58,6 @@ struct RecordBufferSimple {
 
 
 
-
-
-
-
-
-
-
 struct RecordBuffer {
  public:
 	RecordBuffer() {}

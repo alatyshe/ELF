@@ -37,7 +37,6 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
   }
 
   std::string identity() const {
-
     return writer_->identity();
   }
 
@@ -52,10 +51,8 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
   static constexpr uint64_t kMaxSecSinceLastSent = 900;
 
 
-
   void on_thread() {
     std::string smsg;
-
     uint64_t now = elf_utils::sec_since_epoch_from_now();
 
     // Will block..
@@ -85,12 +82,14 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
     }
 
     logger_->info(
-        "In reply func: {}Message got{}. since_last_sec={}, seq={}, \n{}",
+        "In reply func: {}Message got{}. since_last_sec={}, seq={}",
         GREEN_B,
         COLOR_END,
         now - ts_since_last_sent_,
-        seq_,
-        smsg);
+        seq_
+        // ,
+        // smsg
+        );
 
     json j = json::parse(smsg);
     MsgRequestSeq msg = MsgRequestSeq::createFromJson(j);
@@ -101,11 +100,7 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
   }
 
 
-
-
-
   void getContentAndSend(int64_t msg_seq, bool iswait) {
-
     if (msg_seq != seq_) {
       logger_->info(
           "Warning! The sequence number [{}] in the msg is different from {}",
@@ -132,52 +127,7 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS
-// CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS
-// CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS
-// CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS
-// CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS
-// CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS
-
 struct CheckersGuardedRecords {
  public:
   CheckersGuardedRecords(const std::string& identity)
@@ -321,14 +271,6 @@ struct CheckersGuardedRecords {
 
 
 
-
-
-
-
-
-
-
-
 // используется в Client а так же в 
 // GameSelfPlay : public GameBase можно увидеть в методе act(вся логика игры)
 // CheckersGameNotifierBase 
@@ -354,13 +296,10 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
     // tell python / remote
     records_.feed(s);
 
-    // game_stats_.resetRankingIfNeeded(options_.num_reset_ranking);
-
     CheckersFinishReason reason = s.state().getPly() >= TOTAL_MAX_MOVE ? CHECKERS_MAX_STEP : 
     (s.state().nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
 
     game_stats_.feedWinRate(reason, s.state().getFinalValue());
-    // game_stats_.feedSgf(s.dumpSgf(""));
 
     // Report winrate (so that Python side could know).
     elf::FuncsWithState funcs =
@@ -399,66 +338,6 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
     return true;
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

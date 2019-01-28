@@ -45,11 +45,12 @@ class ModelPerfomance {
 							MAGENTA_B + std::string("|++|") + COLOR_END + 
 							"ModelPerfomance-", 
 							"")) {
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		const size_t cushion = 5;
+
+		// узнаем количество клиентов которые работают в режиме
+		// eval_than_selfplay и делим на 2
 		const size_t max_request_per_layer = mgr.getExpectedNumEval() / 2;
+		// количество раз, которое нужно для свапа игроков
 		const size_t num_request = gameOptions.eval_num_games / 2 + cushion;
 		const size_t num_eval_machine_per_layer =
 				compute_num_eval_machine(num_request, max_request_per_layer);
@@ -68,16 +69,20 @@ class ModelPerfomance {
 
 	ModelPerfomance(ModelPerfomance&&) = default;
 
-	int n_done() const {
+	// Завершенные игры
+	int				n_done() const {
 		return games_->win_count().n_done() + swap_games_->win_count().n_done();
 	}
-	int n_win() const {
+	// Игры которые выиграла нейронка
+	int				n_win() const {
 		return games_->win_count().n_win() + swap_games_->win_count().n_win();
 	}
 
-	float winrate() const {
-		const int num_games = n_done();
-		return num_games == 0 ? 0.0 : static_cast<float>(n_win()) / num_games;
+	// Винрейт
+	float			winrate() const {
+		const int total_games = n_done();
+		const int win_games = n_win();
+		return total_games == 0 ? 0.0 : static_cast<float>(win_games) / total_games;
 	}
 
 	EvalResult eval_result() const {
@@ -86,14 +91,23 @@ class ModelPerfomance {
 
 	std::string info() const {
 		std::stringstream ss;
-		ss << curr_pair_.info() << ", overall_wr: " << winrate() << "/" << n_done()
-			 << ", s/v: " << sent_ << "/" << recv_ << ", sealed: " << sealed_ << ", "
-			 << "|| Noswap: " << games_->info() << "|| Swap: " << swap_games_->info();
+		ss 	<< curr_pair_.info() << "\n" 
+				<< "[finished=" << finished_ << "];\t"
+				<< "[Winrate=" << winrate() << "]"
+				<< "[Win=" << n_win() << "]"
+				<< "[Lost=" << n_done() - n_win() << "]"
+				<< "[Total=" << n_done() << "]"
+				<< "[Draw=" << draw_ << "]"
+				<< "; Requests:"
+			 	<< "[sent=" << sent_ << "]"
+			 	<< "[recieved=" << recv_ << "];"
+			 	<< "\u001b[162;1m" << "\nSwap Games-:\t" << "\u001b[0m" << games_->info() 
+			 	<< "\u001b[178;1m" << "\nSwap Games+:\t" << "\u001b[0m" << swap_games_->info();
 		return ss.str();
 	}
 
 	EvalResult updateState(const ClientManager& mgr) {
-		if (sealed_)
+		if (finished_)
 			return eval_result_;
 
 		games_->checkStuck(mgr);
@@ -101,19 +115,27 @@ class ModelPerfomance {
 
 		eval_result_ = eval_check();
 
-		if (n_done() > 0 && (sent_ % 100 == 0 || recv_ % 100 == 0)) {
-			logger_->info("EvalResult: {}", info());
+		if (n_done() > 0 && (sent_ % 50 == 0 || recv_ % 50 == 0)) {
+			logger_->info("{}EvalResult{}: {}\n", 
+				GREEN_C,
+				COLOR_END,
+				info());
 		}
 
-		if (sealed_ || eval_result_ == EVAL_INCOMPLETE)
+		if (finished_ || eval_result_ == EVAL_INCOMPLETE)
 			return eval_result_;
 
-		set_sealed();
+		set_finished();
 		return eval_result_;
 	}
 
-	void feed(const ClientInfo& c, const CheckersRecord& r) {
-		if (r.request.client_ctrl.player_swap) {
+	// Тут заполняем реварды для нашей model_perfomance
+	void			feedInfo(const ClientInfo& c, const CheckersRecord& r) {
+		// мое
+		if (r.result.num_move >= TOTAL_MAX_MOVE - 1) {
+			draw_++;
+		}
+		else if (r.request.client_ctrl.player_swap) {
 			swap_games_->add(c, -r.result.reward);
 		} else {
 			games_->add(c, r.result.reward);
@@ -122,8 +144,10 @@ class ModelPerfomance {
 		recv_++;
 	}
 
-	void fillInRequest(const ClientInfo& c, MsgRequest* msg) {
-		if (sealed_)
+	// Заполняем инфу для реквеста, который мы отправляем клиенту
+	// и тут же заполняем свапать игроков, или нет 
+	void			fillInRequest(const ClientInfo& c, MsgRequest* msg) {
+		if (finished_)
 			return;
 
 		// decide order by checking the number of games.
@@ -138,12 +162,6 @@ class ModelPerfomance {
 			fair_pick::RegisterResult res = g.first->reg(c);
 			if (fair_pick::release_request(res))
 				continue;
-			if (sent_ % 100 == 0) {
-				logger_->info(
-						"Sending evaluation request: {}, seng: {}",
-						curr_pair_.info(),
-						sent_);
-			}
 
 			// We only use eval_num_threads threads to run evaluation to make it
 			// faster.
@@ -153,11 +171,22 @@ class ModelPerfomance {
 			msg->client_ctrl.num_game_thread_used = gameOptions_.eval_num_threads;
 			break;
 		}
+		// количество отправленных реквестов 
 		sent_++;
+
+		if (sent_ % 50 == 0) {
+			logger_->info(
+					"{}Sending{} evaluation request #{}:  {}\n",
+					YELLOW_C,
+					COLOR_END,
+					sent_,
+					msg->info()
+					);
+		}
 	}
 
-	bool IsSealed() const {
-		return sealed_;
+	bool			IsFinished() const {
+		return finished_;
 	}
 
 	const ModelPair& Pair() const {
@@ -165,17 +194,22 @@ class ModelPerfomance {
 	}
 
  private:
-	const CheckersGameOptions& gameOptions_;
-	const ModelPair curr_pair_;
+	const CheckersGameOptions&	gameOptions_;
+	const ModelPair							curr_pair_;
 
 	// For each machine + game_id, the list of rewards.
 	// Note that game_id decides whether we swap the player or not.
-	std::unique_ptr<fair_pick::Pick> games_, swap_games_;
+	std::unique_ptr<fair_pick::Pick>	games_;
+	std::unique_ptr<fair_pick::Pick>	swap_games_;
 
-	int sent_ = 0, recv_ = 0;
-	bool sealed_ = false;
-	RecordBuffer record_;
-	EvalResult eval_result_ = EVAL_INVALID;
+	int						draw_ = 0;
+	// Количество реквестов, отправленных клиенту
+	int						sent_ = 0;
+	// Количество полученных сообщений от клиента
+	int						recv_ = 0;
+	bool					finished_ = false;
+	RecordBuffer	record_;
+	EvalResult		eval_result_ = EVAL_INVALID;
 
 	std::shared_ptr<spdlog::logger> logger_;
 
@@ -222,11 +256,13 @@ class ModelPerfomance {
 		return EVAL_INCOMPLETE;
 	}
 
-	void set_sealed() {
+	void set_finished() {
 		// Save all games.
-		sealed_ = true;
+		finished_ = true;
 		logger_->info(
-				"Sealed[pass={}]{}, {}",
+				"{}Eval Finished{}[pass={}]{}\n Saved to file: {}\n\n",
+				GREEN_B,
+				COLOR_END,
 				(eval_result_ == EVAL_BLACK_PASS),
 				info(),
 				record_.prefix_save_counter());
@@ -304,7 +340,9 @@ class EvalSubCtrl {
 		return -1;
 	}
 
-	FeedResult feed(const ClientInfo& info, const CheckersRecord& r) {
+	// Получая инфу от клиента мы заполняем наши поля и возвращаем 
+	// Успешно ли
+	FeedResult feedStats(const ClientInfo& info, const CheckersRecord& r) {
 		if (r.request.vers.is_selfplay())
 			return NOT_EVAL;
 
@@ -314,7 +352,7 @@ class EvalSubCtrl {
 		if (perf == nullptr)
 			return NOT_REQUESTED;
 
-		perf->feed(info, r);
+		perf->feedInfo(info, r);
 		return FEEDED;
 	}
 
@@ -353,7 +391,7 @@ class EvalSubCtrl {
 		if (selfplay_ver == best_baseline_model_) {
 			if (selfplay_ver < new_version) {
 				logger_->info(
-						"Add new model for evaluation: {}, selfplay_ver: {}, baseline_ver: {}, eval_num_games={}, mcts.info: {}",
+						"Add new model for evaluation: {}, selfplay_ver: {}, baseline_ver: {}, eval_num_games={}\n\tmcts.info: {}",
 						new_version,
 						selfplay_ver,
 						best_baseline_model_,
@@ -362,7 +400,7 @@ class EvalSubCtrl {
 				add_candidate_model(new_version);
 			} else {
 				logger_->warn(
-						"New version: {} is the same or earlier than baseline: {}, mcts.info: {}",
+						"New version: {} is the same or earlier than baseline: {}\n\tmcts.info: {}",
 						new_version,
 						best_baseline_model_,
 						mcts_opt_.info());
@@ -393,6 +431,7 @@ class EvalSubCtrl {
 	// 
 	ModelPair get_key(int ver) {
 		ModelPair p;
+		
 		p.black_ver = ver;
 		p.white_ver = best_baseline_model_;
 		p.mcts_opt = mcts_opt_;
@@ -421,7 +460,7 @@ class EvalSubCtrl {
 
 	ModelPerfomance& find_or_create(const ClientManager& mgr, const ModelPair& mp) {
 		auto it = perfs_.find(mp);
-		
+
 		if (it == perfs_.end()) {
 			auto& ptr = perfs_[mp];
 			ptr.reset(new ModelPerfomance(gameOptions_, mgr, mp));

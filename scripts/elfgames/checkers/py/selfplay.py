@@ -91,17 +91,17 @@ def reload_model(model_loader, params, mi, actor_name, args):
 def reload(mi, model_loader, params, args, root, ver, actor_name):
 	if model_loader.options.load is None or model_loader.options.load == "":
 		real_path = os.path.join(root, "save-" + str(ver) + ".bin")
-		print(f'\u001b[31;1m|py|\u001b[0m\x1b[0;33;40mModel for {actor_name} is loading from {real_path}\u001b[0m')
+		# print(f'\u001b[31;1m|py|\u001b[0m\x1b[0;33;40mModel for {actor_name} is loading from {real_path}\u001b[0m')
 	else:
 		this_root = os.path.dirname(model_loader.options.load)
 		real_path = os.path.join(this_root, "save-" + str(ver) + ".bin")
-		print(f'\u001b[31;1m|py|\u001b[0m\x1b[0;33;40mLoad model for {actor_name}: {real_path}\u001b[0m')
+		# print(f'\u001b[31;1m|py|\u001b[0m\x1b[0;33;40mLoad model for {actor_name}: {real_path}\u001b[0m')
 
 	if model_loader.options.load != real_path:
 		model_loader.options.load = real_path
 		reload_model(model_loader, params, mi, actor_name, args)
-	else:
-		print('\u001b[31;1m|py|\u001b[0m\u001b[31;1mWarning! Same model, skip loading\u001b[0m', real_path)
+	# else:
+		# print('\u001b[31;1m|py|\u001b[0m\u001b[31;1mWarning! Same model, skip loading\u001b[0m', real_path)
 
 
 
@@ -215,8 +215,8 @@ def main():
 
 	def game_start(batch):
 		info = "game_start() load/reload models\n"
-		info += f"\twhite_ver: {batch['checkers_white_ver']}\n"
-		info += f"\tblack_ver: {batch['checkers_black_ver']}"
+		# info += f"\twhite_ver: {batch['checkers_white_ver']}\n"
+		# info += f"\tblack_ver: {batch['checkers_black_ver']}"
 
 		logger.info(info)
 		vers = [
@@ -245,7 +245,7 @@ def main():
 		win_rate = (100.0 * wr.black_wins / (wr.black_wins + wr.white_wins)
 					if (wr.black_wins + wr.white_wins) > 0 else 0.0)
 
-		info = f'game_end()\tB/W: {wr.black_wins}/{wr.white_wins}, '
+		info = 	f'game_end()\tB/W: {wr.black_wins}/{wr.white_wins}, '
 		info += f'Draw: {wr.both_lost}, '
 		info += f'Black winrate: {win_rate:.2f}, '
 		info += f'Total Games: {wr.total_games}'

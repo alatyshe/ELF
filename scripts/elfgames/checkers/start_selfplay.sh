@@ -9,8 +9,8 @@
 # LOAD0=myserver/save-3072.bin
 # LOAD1=myserver/save-143360.bin
 
-LOAD1=myserver/save-3072.bin
-LOAD0=myserver/save-143360.bin
+LOAD1=myserver/save-1024.bin
+LOAD0=myserver/save-2048.bin
 
 BATCHSIZE=64
 NUM_ROLLOUTS=100
@@ -41,7 +41,7 @@ model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	--batchsize2 $BATCHSIZE2	--white_mcts_rollout_per_batch $BATCHSIZE2 \
 	--white_mcts_rollout_per_thread $NUM_ROLLOUTS2 \
 	\
-	--use_mcts					--use_mcts_ai2 \
+	--use_mcts							--use_mcts_ai2 \
 	--mcts_virtual_loss 1		--mcts_epsilon 0.0 \
 	--mcts_alpha 0.00 			--mcts_threads 16\
 	--mcts_use_prior \

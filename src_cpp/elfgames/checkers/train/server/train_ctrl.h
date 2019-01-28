@@ -185,7 +185,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 		std::vector<FeedResult> res(records.size());
 
 		for (size_t i = 0; i < records.size(); ++i) {
-			res[i] = eval_->feed(info, records[i]);
+			res[i] = eval_->feedStats(info, records[i]);
 		}
 
 		// std::cout << "onEvalGames len : " << res.size() << std::endl;
@@ -248,10 +248,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 		// std::cout << "num : " << data.second << std::endl;
 		// std::cout << "id  : " << data.first.id << std::endl;
 		// std::cout << "label : " << data.first.label << std::endl;
-
-		// ОНО СЮДА ДАЖЕ НЕ ДОХОДИТ
-		std::cout << "\x1b[1;32;40mYES YES YES YES YES YES YES YES YES YES YES YES\x1b[0m" << std::endl;
-
 		int64_t ver = data.second;
 
 		eval_->setBaselineModel(ver);
@@ -334,7 +330,7 @@ class TrainCtrl : public DataInterface {
 				num_games,
 				gameOptions.client_max_delay_sec,
 				gameOptions.expected_num_clients,
-				0.5));
+				0));
 		logger_->info(
 				"Finished initializing client_mgr_(ClientManager). info:\n{}", client_mgr_->info());
 

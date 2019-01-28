@@ -21,7 +21,6 @@ enum CheckersFinishReason {
 	CHEKCERS_WHITE_WIN,
 };
 
-
 // Client Side
 // работает при запуске start_client.sh
 // нужен для генерации батчей(игры пройденной от начала до конца)
@@ -139,16 +138,6 @@ struct CheckersStateExt {
 		_predicted_values.push_back(predicted_value);
 	}
 
-
-	// float  getLastPredictedValue() const {
-
-	//   if (_predicted_values.empty())
-	//     return 0.0;
-	//   else
-	//     return _predicted_values.back();
-	// }
-
-
  protected:
 	const int							_game_idx;
 	int										_seq = 0;
@@ -170,22 +159,8 @@ struct CheckersStateExt {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// ==========================================================
+// ==========================================================
 // для тренировки нейросети, работает на стороне server
 class CheckersStateExtOffline {
  public:

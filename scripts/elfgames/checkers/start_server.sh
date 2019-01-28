@@ -24,36 +24,37 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--num_block 10 \
 	\
 	--use_mcts							--use_mcts_ai2 \
-	--mcts_epsilon 0.25			--mcts_persistent_tree \
+	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
 	--mcts_puct 0.85				--mcts_use_prior \
-	--mcts_threads 16				--mcts_rollout_per_thread 50 \
-	--mcts_virtual_loss 5		--mcts_alpha 0.03 \
+	--mcts_threads 8				--mcts_rollout_per_thread 50 \
+	--mcts_virtual_loss 5		--mcts_persistent_tree \
 	\
 	--save_first \
 	\
 	--use_data_parallel \
 	\
-	--num_episode 10 \
+	--num_episode 100000 \
 	--keep_prev_selfplay \
 	\
 	--weight_decay 0.0002		--opt_method sgd \
 	--bn_momentum=0					--num_cooldown=50 \
-	--expected_num_client 10 \
 	\
 	--selfplay_async \
 	--q_min_size 1					--q_max_size 1000		--num_reader 10 \
 	\
-	--selfplay_init_num 10 \
-	--selfplay_update_num 10 \
+	--selfplay_init_num 100 \
+	--selfplay_update_num 100 \
 	\
 	--eval_winrate_thres 0.55 \
-	--eval_num_games 0 \
+	--eval_num_games 100 \
 	\
 	--lr 0.01								--momentum 0.9 \
 	--verbose \
 	\
-	--tqdm \
 	
+	# --tqdm \
+	
+	# --expected_num_client 10 \
 	# 1>> server_log.log 2>&1 &
 	# --load myserver/save-15.bin \
 	# 1>> log.log 2>&1 &

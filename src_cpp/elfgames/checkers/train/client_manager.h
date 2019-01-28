@@ -139,7 +139,7 @@ class ClientManager {
 			int				max_num_threads,
 			uint64_t	max_client_delay_sec,
 			int				num_expected_clients,
-			float			selfplay_only_ratio = 0.6,
+			float			selfplay_only_ratio = 0.9,
 			int				max_num_eval = -1,
 			std::function<uint64_t()> timer = elf_utils::sec_since_epoch_from_now)
 			:	max_num_threads_(max_num_threads),
@@ -203,9 +203,15 @@ class ClientManager {
 	size_t getExpectedNumEval() const {
 		std::lock_guard<std::mutex> lock(mutex_);
 
+		// num_expected_clients_ 	- ожидаемое количество клиентов(если они установлены)
+		// selfplay_only_ratio_ 	- %клиентов работающих в режиме генерации батчей
 		if (num_expected_clients_ > 0) {
+			// Возвращаем ожидаемое количество клиентов,
+			// которые работают в режиме eval_than_selfplay
 			return num_expected_clients_ * (1.0 - selfplay_only_ratio_);
 		} else {
+			// в противном случае возращаем текущее количество 
+			// клиентов работающих в режиме eval_than_selfplay
 			return num_eval_then_selfplay_;
 		}
 	}
@@ -242,10 +248,10 @@ class ClientManager {
 		std::stringstream ss;
 		int n = num_selfplay_only_ + num_eval_then_selfplay_;
 
-		ss << "Clients total[" << n << "==100%]" << std::endl
-			 << "SelfplayOnly clients[" << num_selfplay_only_ << "/"
+		ss << "Total\t\t\tclients[" << n << "==100%]" << std::endl
+			 << "SelfplayOnly\t\tclients[" << num_selfplay_only_ << "/"
 			 << 100 * static_cast<float>(num_selfplay_only_) / n << "%]"<< std::endl
-			 << "EvalThenSelfplay clients[" << num_eval_then_selfplay_ << "/"
+			 << "EvalThenSelfplay\tclients[" << num_eval_then_selfplay_ << "/"
 			 << 100 * static_cast<float>(num_eval_then_selfplay_) / n << "%]"<< std::endl
 			 << "[#expected_clients=" << num_expected_clients_ << "]"
 			 << "[selfplay_only_ratio=" << selfplay_only_ratio_ << "%]"
@@ -264,12 +270,13 @@ class ClientManager {
 	ClientType alloc_type() {
 		ClientType t = CLIENT_INVALID;
 
-		if (num_eval_then_selfplay_ + num_selfplay_only_ == 0)
-		{
-			t = CLIENT_EVAL_THEN_SELFPLAY;
-			num_eval_then_selfplay_++;
-			return t;
-		}
+		// МОЕ
+		// if (num_eval_then_selfplay_ + num_selfplay_only_ == 0)
+		// {
+		// 	t = CLIENT_EVAL_THEN_SELFPLAY;
+		// 	num_eval_then_selfplay_++;
+		// 	return t;
+		// }
 		// 
 		if (curr_selfplay_ratio() >= selfplay_only_ratio_ &&
 				(max_num_eval_ < 0 || num_eval_then_selfplay_ < max_num_eval_)) {

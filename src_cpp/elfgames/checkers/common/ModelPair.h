@@ -4,8 +4,8 @@
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/utils/json_utils.h"
 
-// ==========================================================
-// ==========================================================
+
+// Model pair need for evaluation 2 models on client with EVAL_THAN_SELFPLAY
 struct			ModelPair {
 	int64_t black_ver = -1;
 	int64_t white_ver = -1;
@@ -28,11 +28,13 @@ struct			ModelPair {
 
 		ss << "\nModelPair::info()\t\t";
 		if (wait())
-			ss << "[wait]";
+			ss 	<< "[wait]";
 		else if (is_selfplay())
-			ss << "[selfplay_version=" << black_ver << "]";
-		else
-			ss << "[b_version=" << black_ver << "][w_version=" << white_ver << "]";
+			ss 	<< "[selfplay_version=" << black_ver << "]";
+		else {
+			ss 	<< "[" << GREEN_C << "Black_v" << COLOR_END << "=" << black_ver << "]["
+					<< RED_C << "White_v" << COLOR_END << "=" << white_ver << "]";
+		}
 		ss << mcts_opt.info();
 		return ss.str();
 	}
@@ -60,6 +62,7 @@ struct			ModelPair {
 		return p;
 	}
 };
+
 
 // ==========================================================
 // ==========================================================

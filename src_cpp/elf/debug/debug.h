@@ -4,7 +4,7 @@
 #include <string>
 
 #define BLACK_C 	"\u001b[30m"
-#define RED_C		"\u001b[31m"
+#define RED_C			"\u001b[31m"
 #define GREEN_C		"\u001b[32m"
 #define YELLOW_C	"\u001b[33m"
 #define BLUE_C		"\u001b[34m"
@@ -13,7 +13,7 @@
 #define WHITE_C		"\u001b[37m"
 
 #define BLACK_B 	"\u001b[30;1m"
-#define RED_B		"\u001b[31;1m"
+#define RED_B			"\u001b[31;1m"
 #define GREEN_B		"\u001b[32;1m"
 #define YELLOW_B	"\u001b[33;1m"
 #define BLUE_B		"\u001b[34;1m"

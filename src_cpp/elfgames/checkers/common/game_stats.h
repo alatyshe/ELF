@@ -15,26 +15,41 @@
 #include <thread>
 #include <vector>
 
+#include "elf/legacy/pybind_helper.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-#include "game_utils.h"
 
-// отображается иногда на клиенте
-// Total count: 5582
-// [0]: 2464 (44.1419%)
-// [1]: 1624 (29.0935%)
-// [2]: 319 (5.7148%)
-// [3]: 252 (4.51451%)
-// [4]: 350 (6.27015%)
-// [5]: 324 (5.80437%)
-// [6]: 189 (3.38588%)
-// [7]: 42 (0.752418%)
-// [8]: 8 (0.143318%)
-// [9]: 5 (0.0895736%)
-// [10]: 4 (0.0716589%)
-// ??????????????????????????????????
-// ??????????????????????????????????
-// ??????????????????????????????????
-// ??????????????????????????????????
+// ==========================================================
+// ==========================================================
+struct WinRateStats {
+	uint64_t	black_wins = 0;
+	uint64_t	white_wins = 0;
+	uint64_t	both_lost = 0;
+	float			sum_reward = 0.0;
+	uint64_t	total_games = 0;
+
+	void feed(CheckersFinishReason reason, float reward) {
+		if (reason == CHECKERS_MAX_STEP)
+			both_lost++;
+		else if (reward > 0)
+			black_wins++;
+		else
+			white_wins++;
+		sum_reward += reward;
+		total_games++;
+	}
+
+	void reset() {
+		black_wins = 0;
+		white_wins = 0;
+		both_lost = 0;
+		sum_reward = 0.0;
+		total_games = 0;
+	}
+
+	REGISTER_PYBIND_FIELDS(black_wins, white_wins, both_lost, sum_reward, total_games);
+};
+
+
 // ==========================================================
 // ==========================================================
 class GameStats {
@@ -45,30 +60,10 @@ class GameStats {
 						"GameStats-", 
 						"")) {}
 
-	// ????????????
-	// void feedMoveRanking(int ranking) {
-	// 	std::lock_guard<std::mutex> lock(_mutex);
-	// 	_move_ranking.feed(ranking);
-	// }
-	// // ????????????
-	// void resetRankingIfNeeded(int num_reset_ranking) {
-	// 	std::lock_guard<std::mutex> lock(_mutex);
-	// 	if (_move_ranking.total_count > (uint64_t)num_reset_ranking) {
-	// 		_logger->info("\n{}", _move_ranking.info());
-	// 		_move_ranking.reset();
-	// 	}
-	// }
-
-
 	void feedWinRate(CheckersFinishReason reason, float final_value) {
 		std::lock_guard<std::mutex> lock(_mutex);
 		_win_rate_stats.feed(reason, final_value);
 	}
-
-	// void feedSgf(const std::string& sgf) {
-	//   std::lock_guard<std::mutex> lock(_mutex);
-	//   _sgfs.push_back(sgf);
-	// }
 
 	// For sender.
 	WinRateStats getWinRateStats() {
@@ -76,15 +71,8 @@ class GameStats {
 		return _win_rate_stats;
 	}
 
-	// std::vector<std::string> getPlayedGames() {		
-	//   std::lock_guard<std::mutex> lock(_mutex);
-	//   return _sgfs;
-	// }
-
  private:
 	std::mutex		_mutex;
-	// Ranking				_move_ranking;
 	WinRateStats	_win_rate_stats;
-	// std::vector<std::string> _sgfs;
 	std::shared_ptr<spdlog::logger> _logger;
 };
