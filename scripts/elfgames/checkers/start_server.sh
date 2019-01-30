@@ -26,7 +26,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--use_mcts							--use_mcts_ai2 \
 	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
 	--mcts_puct 0.85				--mcts_use_prior \
-	--mcts_threads 8				--mcts_rollout_per_thread 50 \
+	--mcts_threads 16				--mcts_rollout_per_thread 100 \
 	--mcts_virtual_loss 5		--mcts_persistent_tree \
 	\
 	--save_first \
@@ -40,30 +40,32 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--bn_momentum=0					--num_cooldown=50 \
 	\
 	--selfplay_async \
-	--q_min_size 1					--q_max_size 1000		--num_reader 10 \
+	--q_min_size 1					--q_max_size 1000		--num_reader 2 \
 	\
-	--selfplay_init_num 100 \
-	--selfplay_update_num 100 \
+	--selfplay_init_num 50 \
+	--selfplay_update_num 50 \
 	\
 	--eval_winrate_thres 0.55 \
-	--eval_num_games 100 \
+	--eval_num_games 50 \
 	\
 	--lr 0.01								--momentum 0.9 \
 	--verbose \
-	\
+
+	# 1>> server_log.log 2>&1 &
+	# \
 	
 	# --tqdm \
 	
 	# --expected_num_client 10 \
-	# 1>> server_log.log 2>&1 &
+	
 	# --load myserver/save-15.bin \
 	# 1>> log.log 2>&1 &
 	
 
-	# --batchsize 256 - прогон один раз через нейронку> берет этот батч и дает неронке для обучения.
+	# --batchsize 256				- прогон один раз через нейронку> берет этот батч и дает неронке для обучения.
 	# --num_minibatch 128 - количество раз которое нужно давать нейронке --batchsize то есть 128 раз по 256 states
 
-	# --selfplay_init_num 2 - проигрывает необходимое количество игр(для разрастания дерева) 
+	# --selfplay_init_num 2	- проигрывает необходимое количество игр(для разрастания дерева) 
 	# после него начинает свою работу и начинает собирать батчи
 	#   |py| Trainer:: episode_start
 	#   |py| Evaluator:: episode_start
@@ -75,13 +77,16 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	# 
 	# --selfplay_update_num 5 \
 	# 
-	# --num_episode 5 - количество обновлений модели на сервере, после чего сервер
+	# --num_episode 5				- количество обновлений модели на сервере, после чего сервер
 	# 			посылает сигнал elf::base::Context-3 для остановки
 	# 				
 	# 
-	# --eval_num_games 20 - после добавления модели ее можно сравнить с предидущей
+	# --eval_num_games 20		- после добавления модели ее можно сравнить с предидущей
 	# 		eval_winrate_thres по этому параметру(выбирается лучшая)
-
+	# 
+	# 
+	# --keep_prev_selfplay	- оставляет прошлые игры при апдейте модели и спользует их для
+	# 			обучения
 
 
 

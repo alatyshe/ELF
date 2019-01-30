@@ -228,7 +228,7 @@ class Model_PolicyValue(Model):
 		self.tanh = nn.Tanh()
 		self.resnet = GoResNet(option_map, params)
 
-		self.options.gpu = 0
+		# self.options.gpu = 0
 		if torch.cuda.is_available() and self.options.gpu is not None:
 			self.init_conv.cuda(self.options.gpu)
 			self.resnet.cuda(self.options.gpu)

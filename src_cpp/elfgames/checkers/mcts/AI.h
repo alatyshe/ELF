@@ -8,6 +8,9 @@
 
 #pragma once
 
+#include <iomanip>
+#include <utility>
+
 #include "elf/ai/ai.h"
 #include "elf/ai/tree_search/tree_search_base.h"
 

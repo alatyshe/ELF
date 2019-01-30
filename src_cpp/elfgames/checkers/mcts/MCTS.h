@@ -92,7 +92,8 @@ class CheckersMCTSActor {
 			return;
 
 		if (oo_ != nullptr)
-			*oo_ << "Evaluating batch state. #states: " << states.size() << std::endl;
+			*oo_ 	<< std::endl << std::endl << "Evaluating batch state. #states: " 
+						<< states.size() << std::endl;
 
 		auto& resps = *p_resps;
 
@@ -137,7 +138,8 @@ class CheckersMCTSActor {
 
 	void evaluate(const CheckersState& s, NodeResponse* resp) {
 		if (oo_ != nullptr)
-			*oo_ << "Evaluating state at " << std::hex << &s << std::dec << std::endl;
+			*oo_ 	<< std::endl << std::endl << "Evaluating state at " 
+						<< std::hex << &s << std::dec << std::endl;
 
 		// if terminated(), get results, res = done
 		// else res = EVAL_NEED_NN
@@ -203,8 +205,9 @@ class CheckersMCTSActor {
 				*oo_ << s.showBoard() << std::endl;
 			}
 			float final_value = s.evaluateGame();
+			
 			if (oo_ != nullptr)
-				*oo_ << "Terminal state. Get raw score (no komi): " << final_value
+				*oo_ << "Terminal state. Get raw score: " << final_value
 						 << std::endl;
 			resp->value = final_value > 0 ? 1.0 : -1.0;
 			// No further action.
@@ -246,6 +249,9 @@ class CheckersMCTSActor {
 		}
 	}
 
+
+	// Получаем ответ от нейронки(вероятности на каждый шаг) и заполняем 
+	// output_pi
 	static void pi2response(
 			const CheckersFeature& bf,
 			const std::vector<float>& pi,
@@ -254,8 +260,8 @@ class CheckersMCTSActor {
 		const CheckersState& s = bf.state();
 
 		if (oo != nullptr) {
-			*oo << "In get_last_pi, #move returned " << pi.size() << std::endl;
-			*oo << s.showBoard() << std::endl << std::endl;
+			*oo << "In get_last_pi, #move returned: " << pi.size() << std::endl;
+			*oo << s.showBoard() << std::endl;
 		}
 
 		output_pi->clear();
@@ -270,10 +276,13 @@ class CheckersMCTSActor {
 		for (size_t i = 0; i < pi.size(); ++i) {
 			// Inv random transform will be applied
 			Coord m = i;
-			if (oo != nullptr)
-				*oo << "  Action " << i << " to Coord "
-						<< elf::ai::tree_search::ActionTrait<Coord>::to_string(m)
-						<< std::endl;
+			// 
+			// if (oo != nullptr) {
+			// 	*oo << "  Action " << std::setw(3) << std::left << i << " to Coord "
+			// 			<< moves::m_to_h.find(i)->second
+			// 			// << elf::ai::tree_search::ActionTrait<Coord>::to_string(m)
+			// 			<< std::endl;
+			// }
 
 			output_pi->push_back(std::make_pair(m, pi[i]));
 		}
@@ -281,7 +290,7 @@ class CheckersMCTSActor {
 		using data_type = std::pair<Coord, float>;
 
 		if (oo != nullptr)
-			*oo << "Before sorting" << std::endl;
+			*oo << "Before sorting moves" << std::endl;
 
 		std::sort(
 				output_pi->begin(),
@@ -291,7 +300,7 @@ class CheckersMCTSActor {
 				});
 
 		if (oo != nullptr)
-			*oo << "After sorting" << std::endl;
+			*oo << "After sorting moves" << std::endl;
 
 		std::vector<data_type> tmp;
 		int i = 0;
@@ -306,18 +315,23 @@ class CheckersMCTSActor {
 			}
 
 			if (oo != nullptr) {
-				*oo << "Predict [" << i << "][" << v.first << "] " << v.second;
-				if (valid)
+				// *oo << "Predict [" << i << "][" << v.first << "] " << v.second;
+				if (valid) {
+					*oo << "Predict [" << std::setw(3) << std::right << i 
+							<< "][" << std::setw(3) << std::right << v.first << "] "
+							<< std::setw(8) << std::right << moves::m_to_h.find(v.first)->second << " "
+							<< v.second;
 					*oo << " added" << std::endl;
-				else
-					*oo << " invalid" << std::endl;
+				}
+				// else
+				// 	*oo << " invalid" << std::endl;
 			}
 			i++;
 		}
 		*output_pi = tmp;
 		normalize(output_pi);
 		if (oo != nullptr)
-			*oo << "#Valid move: " << output_pi->size() << std::endl;
+			*oo << "Total valid moves: " << output_pi->size() << std::endl << std::endl;
 	}
 };
 

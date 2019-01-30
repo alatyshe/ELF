@@ -24,8 +24,8 @@ class CheckersState {
 		CheckersCopyBoard(&_board, &s._board);
 	}
 
-	bool	forward(const Coord& c);
-	bool	checkMove(const Coord& c) const;
+	bool forward(const Coord& c);
+	bool checkMove(const Coord& c) const;
 
 	void	setFinalValue(float final_value) {
 		_final_value = final_value;
@@ -104,11 +104,12 @@ class CheckersState {
 
 	float	evaluateGame() const {
 		float final_score = 0.0;
-		if (getPly() >= TOTAL_MAX_MOVE)
-			final_score = -1;
-		else
-			final_score = this->nextPlayer() == BLACK_PLAYER ? -1.0 : 1.0;
-
+		if (terminated()) {
+			if (getPly() >= TOTAL_MAX_MOVE)
+				final_score = -1;
+			else
+				final_score = this->nextPlayer() == BLACK_PLAYER ? -1.0 : 1.0;
+		}
 		return final_score;
 	}
 

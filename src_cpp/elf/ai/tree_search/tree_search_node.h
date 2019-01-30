@@ -524,10 +524,12 @@ class SearchTreeT {
       if (p.second.num_visits > 0) {
         const Node* n = getNode(p.second.child_node);
         if (n->isVisited()) {
+          // ss << (*n->getStatePtr()).showBoard();
           ss << indent_str << ActionTrait<Action>::to_string(p.first) << " "
              << p.second.info();
           ss << ", V: " << n->getValue();
           assert(n->getStatePtr() != nullptr);
+          
           std::string state_info =
               StateTrait<State, Action>::to_string(*n->getStatePtr());
           if (!state_info.empty()) {

@@ -85,6 +85,7 @@ class TreeSearchSingleThreadT {
         logger_(elf::logging::getIndexedLogger(
             "elf::ai::tree_search::TreeSearchSingleThreadT-",
             "")) {
+
     if (options_.verbose) {
       std::string log_file =
           options_.log_prefix + std::to_string(thread_id) + ".txt";
@@ -114,7 +115,6 @@ class TreeSearchSingleThreadT {
     }
 
     _set_ostream(actor);
-
     if (output_ != nullptr) {
       *output_ << "[run=" << run_id << "] " << actor.info() << std::endl
                << std::flush;

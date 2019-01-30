@@ -13,23 +13,23 @@ game=elfgames.checkers.game \
 model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	stdbuf -o 0 -e 0 python3 ./py/selfplay.py \
 	\
-	--server_id myserver		--port 1234 \
-	--gpu 0 \
+	--server_id myserver			--port 1234 \
+	--gpu 0 --gpu0 0  --gpu1 0\
 	\
 	--mode selfplay \
 	--batchsize 512 \
-	--num_games 16					--keys_in_reply checkers_V checkers_rv \
+	--num_games 16						--keys_in_reply checkers_V checkers_rv \
 	--T 1 \
-	--dim0 128							--dim1 128 \
-	--num_block0 10					--num_block1 10 \
+	--dim0 128								--dim1 128 \
+	--num_block0 10						--num_block1 10 \
 	\
-	--use_mcts							--use_mcts_ai2 \
-	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
-	--mcts_puct 0.85				--mcts_use_prior \
-	--mcts_threads 16				--mcts_rollout_per_thread 50 \
-	--mcts_virtual_loss 5		--mcts_persistent_tree \
+	--use_mcts								--use_mcts_ai2 \
+	--mcts_epsilon 0.25				--mcts_alpha 0.03 \
+	--mcts_puct 0.85					--mcts_use_prior \
+	--mcts_threads 16					--mcts_rollout_per_thread 100 \
+	--mcts_virtual_loss 5			--mcts_persistent_tree \
 	\
-	--policy_distri_cutoff 30	--policy_distri_training_for_all \
+	--policy_distri_cutoff 10	--policy_distri_training_for_all \
 	\
 	--no_check_loaded_options0 \
 	--no_check_loaded_options1 \
@@ -37,7 +37,7 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--replace_prefix1 resnet.module,resnet init_conv.module,init_conv\
 	--selfplay_timeout_usec 10 \
 	\
-	--use_fp160							--use_fp161 \
+	--use_fp160								--use_fp161 \
 	--verbose \
 	\
 	

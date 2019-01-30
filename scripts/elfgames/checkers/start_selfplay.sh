@@ -9,8 +9,8 @@
 # LOAD0=myserver/save-3072.bin
 # LOAD1=myserver/save-143360.bin
 
+LOAD0=myserver/save-0.bin
 LOAD1=myserver/save-1024.bin
-LOAD0=myserver/save-2048.bin
 
 BATCHSIZE=64
 NUM_ROLLOUTS=100

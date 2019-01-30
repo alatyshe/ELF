@@ -14,7 +14,7 @@ CheckersStateExt::CheckersStateExt(int game_idx, const CheckersGameOptions& opti
 }
 
 
-void									CheckersStateExt::setRequest(const MsgRequest& request) {
+void CheckersStateExt::setRequest(const MsgRequest& request) {
 	_curr_request = request;
 }
 
@@ -25,18 +25,18 @@ void									CheckersStateExt::addCurrentModel() {
 		_using_models.insert(_curr_request.vers.white_ver);
 }
 
-const MsgRequest&			CheckersStateExt::currRequest() const {
+const MsgRequest& CheckersStateExt::currRequest() const {
 	return _curr_request;
 }
 
-Coord									CheckersStateExt::lastMove() const {
+Coord CheckersStateExt::lastMove() const {
 	if (_state.justStarted())
 		return _last_move_for_the_game;
 	else
 		return _state.lastMove();
 }
 
-void									CheckersStateExt::restart() {
+void CheckersStateExt::restart() {
 	_last_value = _state.getFinalValue();
 	_state.reset();
 	_mcts_policies.clear();
@@ -47,7 +47,7 @@ void									CheckersStateExt::restart() {
 	addCurrentModel();
 }
 
-ThreadState						CheckersStateExt::getThreadState() const {
+ThreadState CheckersStateExt::getThreadState() const {
 	ThreadState s;
 
 	s.thread_id = _game_idx;
@@ -59,30 +59,30 @@ ThreadState						CheckersStateExt::getThreadState() const {
 }
 
 // Reward за последнюю сыгранную игру.
-float									CheckersStateExt::getLastGameFinalValue() const {
+float CheckersStateExt::getLastGameFinalValue() const {
 	return _last_value;
 }
 
 // Передаем индекс нашего шага и делаем шаг вперед для нашей доски
-bool									CheckersStateExt::forward(Coord c) {
+bool CheckersStateExt::forward(Coord c) {
 	return _state.forward(c);
 }
 
-int										CheckersStateExt::seq() const {
+int CheckersStateExt::seq() const {
 	return _seq;
 }
 
 // 
-const CheckersState&	CheckersStateExt::state() const {
+const CheckersState& CheckersStateExt::state() const {
 	return _state;
 }
 
-const  CheckersGameOptions& CheckersStateExt::options() const {
+const CheckersGameOptions& CheckersStateExt::options() const {
 	return _options;
 }
 
 
-void	CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
+void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 	_logger->info("\n{}", _state.showBoard());
 
 	std::string used_model;

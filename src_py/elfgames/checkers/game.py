@@ -70,24 +70,6 @@ class Loader(object):
 			'keep_prev_selfplay',
 			'TODO: fill this help message in',
 			False)
-		spec.addBoolOption(
-			'print_result',
-			'TODO: fill this help message in',
-			False)
-		spec.addIntOption(
-			'data_aug',
-			'specify data augumentation, 0-7, -1 mean random',
-			-1)
-		spec.addIntOption(
-			'ratio_pre_moves',
-			('how many moves to perform in each thread, before we use the '
-			 'data to train the model'),
-			0)
-		spec.addFloatOption(
-			'start_ratio_pre_moves',
-			('how many moves to perform in each thread, before we use the '
-			 'first sgf file to train the model'),
-			0.5)
 		spec.addIntOption(
 			'num_games_per_thread',
 			('For offline mode, it is the number of concurrent games per '
@@ -104,10 +86,6 @@ class Loader(object):
 			'checkers_num_future_actions',
 			'TODO: fill this help message in',
 			1)
-		spec.addIntOption(
-			'move_cutoff',
-			'Cutoff ply in replay',
-			-1)
 		spec.addStrOption(
 			'mode',
 			'TODO: fill this help message in',
@@ -149,7 +127,7 @@ class Loader(object):
 			'')
 		spec.addIntOption(
 			'policy_distri_cutoff',
-			'TODO: fill this help message in',
+			'first N moves will be randomly',
 			0)
 		spec.addIntOption(
 			'selfplay_timeout_usec',
@@ -213,10 +191,6 @@ class Loader(object):
 			('If specified for df_selfplay.py, then the two models will be '
 			 'evaluated on this client'),
 			'')
-		spec.addStrOption(
-			'comment',
-			'Comment for this run',
-			'')
 		spec.addBoolOption(
 			'cheat_eval_new_model_wins_half',
 			'When enabled, in evaluation mode, when the game '
@@ -278,15 +252,12 @@ class Loader(object):
 			self.options.black_use_policy_network_only
 		opt.white_use_policy_network_only = \
 			self.options.white_use_policy_network_only
-		opt.data_aug = self.options.data_aug
-		opt.ratio_pre_moves = self.options.ratio_pre_moves
 		opt.q_min_size = self.options.q_min_size
 		opt.q_max_size = self.options.q_max_size
 		opt.num_reader = self.options.num_reader
-		opt.start_ratio_pre_moves = self.options.start_ratio_pre_moves
 		opt.checkers_num_future_actions = self.options.checkers_num_future_actions
 		opt.num_reset_ranking = self.options.num_reset_ranking
-		opt.move_cutoff = self.options.move_cutoff
+		# opt.move_cutoff = self.options.move_cutoff
 		opt.policy_distri_cutoff = self.options.policy_distri_cutoff
 		opt.num_games_per_thread = self.options.num_games_per_thread
 		opt.keep_prev_selfplay = self.options.keep_prev_selfplay
@@ -299,7 +270,6 @@ class Loader(object):
 			self.options.white_mcts_rollout_per_thread
 
 		opt.client_max_delay_sec = self.options.client_max_delay_sec
-		opt.print_result = self.options.print_result
 		opt.selfplay_init_num = self.options.selfplay_init_num
 		opt.selfplay_update_num = self.options.selfplay_update_num
 		opt.selfplay_async = self.options.selfplay_async

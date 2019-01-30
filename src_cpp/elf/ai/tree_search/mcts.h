@@ -99,6 +99,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   std::string getCurrentTree() const {
     std::stringstream ss;
     ss << options_.info(true) << std::endl;
+    
     ss << elf::ai::tree_search::ActorTrait<Actor>::to_string(ts_->getActor(0))
        << std::endl;
     ss << ts_->printTree() << std::endl;

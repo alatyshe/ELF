@@ -28,18 +28,22 @@ ClientGameSelfPlay::ClientGameSelfPlay(
 					"")) {
 }
 
+
 std::string		ClientGameSelfPlay::showBoard() const {
 	return _checkers_state_ext.state().showBoard();
 }
+
 
 std::string		ClientGameSelfPlay::getLastMove() const {
 	return std::to_string(_checkers_state_ext.lastMove());
 }
 
+
 std::array<int, TOTAL_NUM_ACTIONS>		ClientGameSelfPlay::getValidMoves() const {
 	return GetValidMovesBinary(_checkers_state_ext.state().board(), 
 		_checkers_state_ext.state().board().active);
 }
+
 
 float 			ClientGameSelfPlay::getScore() {
 	return _checkers_state_ext.state().evaluateGame();
@@ -55,11 +59,12 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 		int64_t model_ver) {
 	logger_->info(
 			"Initializing actor {}; puct_override: {}; batch_override: {}; "
-			"per_thread_override: {}",
+			"per_thread_override: {},\nMCTS options: {}",
 			actor_name,
 			puct_override,
 			mcts_rollout_per_batch_override,
-			mcts_rollout_per_thread_override);
+			mcts_rollout_per_thread_override,
+			mcts_options.info());
 
 	MCTSActorParams params;
 	params.actor_name = actor_name;
@@ -67,6 +72,11 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 	params.required_version = model_ver;
 
 	elf::ai::tree_search::TSOptions opt = mcts_options;
+
+	// My
+	// opt.verbose = true;
+	// // my end
+
 	if (puct_override > 0.0) {
 		logger_->warn(
 				"PUCT overridden: {} -> {}", opt.alg_opt.c_puct, puct_override);
@@ -86,6 +96,7 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 				mcts_rollout_per_thread_override);
 		opt.num_rollouts_per_thread = mcts_rollout_per_thread_override;
 	}
+
 	if (opt.verbose) {
 		opt.log_prefix = "ts-game" + std::to_string(_game_idx) + "-mcts";
 		logger_->warn("Log prefix {}", opt.log_prefix);
@@ -93,9 +104,6 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 
 	return new MCTSCheckersAI(opt, [&](int) { return new CheckersMCTSActor(client_, params); });
 }
-
-
-
 
 
 Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
@@ -116,26 +124,19 @@ Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_a
 }
 
 
-
-
-
-
-
-
-
 Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
 	float predicted_value = mcts_checkers_ai->getValue();
 
 	_checkers_state_ext.addPredictedValue(predicted_value);
 
-	// if (!_options.dump_record_prefix.empty()) {
-	//   _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
-	// }
+	if (!_options.dump_record_prefix.empty()) {
+	  _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
+	}
 
 	// Check the ranking of selected move.
-	// if (checkers_notifier_ != nullptr) {
-	// 	checkers_notifier_->OnMCTSResult(c, mcts_checkers_ai->getLastResult());
-	// }
+	if (checkers_notifier_ != nullptr) {
+		checkers_notifier_->OnMCTSResult(c, mcts_checkers_ai->getLastResult());
+	}
 	return c;
 }
 
@@ -330,17 +331,15 @@ void ClientGameSelfPlay::act() {
 				finish_game(CHEKCERS_BLACK_WIN);
 				return;
 			}
-
 			CheckersFeature cf(cs);
 			CheckersReply   creply(cf);
 			_human_player->act(cf, &creply);
 
-			// skip the current move, and ask the ai to move.
-			// 171 = pass move надо бы это убрать 
-			if (creply.c == 171)
-				break;
 			// Otherwise we forward.
 			if (_checkers_state_ext.forward(creply.c)) {
+				if (cs.terminated()) {
+					finish_game(CHEKCERS_WHITE_WIN);
+				}
 				return;
 			}
 			logger_->warn(
@@ -419,11 +418,6 @@ void ClientGameSelfPlay::act() {
 	if (cs.terminated()) {
 		CheckersFinishReason reason = cs.getPly() >= TOTAL_MAX_MOVE ? CHECKERS_MAX_STEP : 
 		(cs.nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
-		finish_game(reason);
-	}
-
-	if (_options.move_cutoff > 0 && cs.getPly() >= _options.move_cutoff) {
-		CheckersFinishReason reason = CHECKERS_MAX_STEP;
 		finish_game(reason);
 	}
 }

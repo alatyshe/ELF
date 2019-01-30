@@ -36,32 +36,12 @@ struct CheckersGameOptions {
 	bool				black_use_policy_network_only = false;
 	bool				white_use_policy_network_only = false;
 
-	// -1 is random, 0-7 mean specific data aug.
-	int					data_aug = -1;
-
-	// Before we use the data from the first recorded replay in each thread,
-	// sample number of moves to fast-forward.
-	// This is to increase the diversity of the game.
-	// This number is sampled uniformly from [0, #Num moves * ratio_pre_moves]
-	float				start_ratio_pre_moves = 0.5;
-
-	// Similar as above, but note that it will be applied to any newly loaded game
-	// (except for the first one).
-	// This will introduce bias in the dataset.
-	// Useful when you want that (or when you want to visualize the data).
-	float				ratio_pre_moves = 0.0;
-
-	// Cutoff ply for each loaded game, and start a new one.
-	int					move_cutoff = -1;
 
 	// Cutoff ply for mcts policy / best a
 	int					policy_distri_cutoff = 20;
 	bool				policy_distri_training_for_all = false;
 
 	int					num_reset_ranking = 5000;
-
-	std::string 		preload_sgf;
-	int					preload_sgf_move_to = -1;
 
 	int					q_min_size = 10;
 	int					q_max_size = 1000;
@@ -101,7 +81,7 @@ struct CheckersGameOptions {
 	std::string server_id;
 	int					port;
 	bool				verbose = false;
-	bool				print_result = false;
+	// bool				print_result = false;
 	std::string dump_record_prefix;
 
 	std::string time_signature;
@@ -123,10 +103,7 @@ struct CheckersGameOptions {
 			 << ", update #games: " << selfplay_update_num
 			 << ", async: " << elf_utils::print_bool(selfplay_async) << std::endl;
 		ss << "UseMCTS: " << elf_utils::print_bool(use_mcts) << std::endl;
-		ss << "Data Aug: " << data_aug << std::endl;
-		ss << "Start_ratio_pre_moves: " << start_ratio_pre_moves << std::endl;
-		ss << "ratio_pre_moves: " << ratio_pre_moves << std::endl;
-		ss << "MoveCutOff: " << move_cutoff << std::endl;
+		// ss << "MoveCutOff: " << move_cutoff << std::endl;
 		ss << "PolicyDistriCutOff: " << policy_distri_cutoff << std::endl;
 
 		if (expected_num_clients > 0) {
@@ -149,9 +126,6 @@ struct CheckersGameOptions {
 
 		ss << "Policy distri training for all moves: "
 			 << elf_utils::print_bool(policy_distri_training_for_all) << std::endl;
-			 
-		if (print_result)
-			ss << "PrintResult: " << elf_utils::print_bool(print_result) << std::endl;
 
 		if (!dump_record_prefix.empty())
 			ss << "dumpRecord: " << dump_record_prefix << std::endl;
@@ -172,23 +146,13 @@ struct CheckersGameOptions {
 
 		if (cheat_selfplay_random_result)
 			ss << "Cheat selfplay mode: Random outcome." << std::endl;
-
 		ss << std::endl;
-
-		if (!preload_sgf.empty()) {
-			ss << "Preload SGF:" << preload_sgf << ", move_to" << preload_sgf_move_to
-				 << std::endl;
-		}
 		return ss.str();
 	}
 
 	REGISTER_PYBIND_FIELDS(
 			seed,
 			mode,
-			data_aug,
-			start_ratio_pre_moves,
-			ratio_pre_moves,
-			move_cutoff,
 			checkers_num_future_actions,
 			list_files,
 			verbose,
@@ -204,9 +168,6 @@ struct CheckersGameOptions {
 			num_reader,
 			dump_record_prefix,
 			use_mcts_ai2,
-			preload_sgf,
-			preload_sgf_move_to,
-			print_result,
 			num_reset_ranking,
 			policy_distri_training_for_all,
 			black_use_policy_network_only,

@@ -92,7 +92,7 @@ struct TSOptions {
   int num_threads = 16;
   int num_rollouts_per_thread = 100;
   int num_rollouts_per_batch = 8;
-  bool verbose = false;
+  bool verbose = true;
   bool verbose_time = false;
   int seed = 0;
   bool persistent_tree = true;
@@ -109,10 +109,10 @@ struct TSOptions {
   // Pre-added pseudo playout.
   int virtual_loss = 0;
 
-  std::string info(bool verbose = false) const {
+  std::string info(bool verbose_in = false) const {
     std::stringstream ss;
 
-    if (verbose) {
+    if (verbose_in) {
       ss << "Maximal #moves (0 = no constraint): " << max_num_moves
          << std::endl;
       ss << "Seed: " << seed << std::endl;
@@ -137,7 +137,11 @@ struct TSOptions {
     } else {
       ss << "[#th=" << num_threads << "][rl=" << num_rollouts_per_thread
          << "][per=" << persistent_tree << "][eps=" << root_epsilon
-         << "][alpha=" << root_alpha << "]" << alg_opt.info();
+         << "][alpha=" << root_alpha
+         << "][verbose=" << elf_utils::print_bool(verbose)
+         << "]" << alg_opt.info();
+         
+
     }
 
     return ss.str();

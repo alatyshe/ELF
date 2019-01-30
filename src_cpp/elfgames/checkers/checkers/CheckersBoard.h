@@ -29,29 +29,29 @@
 
 // Количество фич, которые мы подаем на нейронку
 // (фишки врага, фишки наши, дамки врага, дамки наши, черные ходят, белые ходят)
-constexpr uint64_t 	CHECKERS_NUM_FEATURES = 6;
+constexpr uint64_t	CHECKERS_NUM_FEATURES = 6;
 // Количество всех возможных actions(для американских шашек это 170)
-constexpr uint64_t 	TOTAL_NUM_ACTIONS = 170;
+constexpr uint64_t	TOTAL_NUM_ACTIONS = 170;
 // ограничение на количество ходов
-constexpr int 		TOTAL_MAX_MOVE = 150;
+constexpr int				TOTAL_MAX_MOVE = 150;
 
 // индекс нашего action;
-typedef unsigned short 	Coord;
+typedef unsigned short	Coord;
 
-#define BLACK_PLAYER 	0
-#define WHITE_PLAYER 	1
+#define BLACK_PLAYER	0
+#define WHITE_PLAYER	1
 
-#define BLACK_KING 		2
-#define WHITE_KING 		3
+#define BLACK_KING		2
+#define WHITE_KING		3
 
 // маска для заполнения поля(тк поле у нас храниться в 6 int64_t)
-#define UNUSED_BITS 	0b100000000100000000100000000100000000
-#define MASK        	0b111111111111111111111111111111111111
+#define UNUSED_BITS		0b100000000100000000100000000100000000
+#define MASK					0b111111111111111111111111111111111111
 
 typedef struct 
 {	
 	// ширина доски
-	int 					board_n;
+	int						board_n;
 	// логика доски
 	std::array<int64_t, 2>	forward;
 	std::array<int64_t, 2>	backward;
@@ -65,13 +65,13 @@ typedef struct
 	int						jump;
 
 	// последний шаг
-	int 					_last_move;
+	int						_last_move;
 	// общее количество шагов
-	int 					_ply;
+	int						_ply;
 
 	// последный шаг для игроков
-	int64_t 				_last_move_green;
-	int64_t 				_last_move_red;
+	int64_t					_last_move_green;
+	int64_t					_last_move_red;
 } CheckersBoard;
 
 
