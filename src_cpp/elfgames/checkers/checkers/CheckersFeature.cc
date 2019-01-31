@@ -8,10 +8,9 @@ static float* board_plane(float* features, int idx) {
 
 #define LAYER(idx) board_plane(features, idx)
 
-
 void CheckersFeature::getKings(int player, float* data) const {
-  std::array<std::array<int, 8>, 8>   observation;
-  observation = get_observation(s_.board(), player);
+  std::array<std::array<int, 8>, 8> observation;
+  observation = GetObservation(s_.board(), player);
   
   for (int y = 0; y < CHECKERS_BOARD_SIZE; ++y) {
     for (int x = 0; x < CHECKERS_BOARD_SIZE; ++x) {
@@ -23,8 +22,8 @@ void CheckersFeature::getKings(int player, float* data) const {
 
 
 void CheckersFeature::getPawns(int player, float* data) const {
-  std::array<std::array<int, 8>, 8>   observation;
-  observation = get_observation(s_.board(), player);
+  std::array<std::array<int, 8>, 8> observation;
+  observation = GetObservation(s_.board(), player);
   
   for (int y = 0; y < CHECKERS_BOARD_SIZE; ++y) {
     for (int x = 0; x < CHECKERS_BOARD_SIZE; ++x) {

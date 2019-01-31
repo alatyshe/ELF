@@ -26,38 +26,34 @@ enum CheckersFinishReason {
 // нужен для генерации батчей(игры пройденной от начала до конца)
 struct CheckersStateExt {
  public:
-	// Ok
 	CheckersStateExt(int game_idx, const CheckersGameOptions& options);
 
-	void								setRequest(const MsgRequest& request);
-	void								addCurrentModel();
-	const MsgRequest&		currRequest() const;
-	Coord								lastMove() const;
-	void								restart();
-	ThreadState 				getThreadState() const;
-	float								getLastGameFinalValue() const;
-	void								showFinishInfo(CheckersFinishReason reason) const;
-	bool								forward(Coord c);
-	int									seq() const;
-	const CheckersState&	state() const;
+	void setRequest(const MsgRequest& request);
+	void addCurrentModel();
+	const MsgRequest& currRequest() const;
+	Coord lastMove() const;
+	void restart();
+	ThreadState getThreadState() const;
+	float getLastGameFinalValue() const;
+	void showFinishInfo(CheckersFinishReason reason) const;
+	bool forward(Coord c);
+	int seq() const;
+	const CheckersState& state() const;
 	const CheckersGameOptions& options() const;
+	// save tree if --dump_record_prefix not empty
+	void saveCurrentTree(const std::string& tree_info) const;
 
 
 	// ??????????????????????????????????????????????
-	// ??????????????????????????????????????????????
-	// ??????????????????????????????????????????????
-	void								setFinalValue(CheckersFinishReason reason) {
+	void setFinalValue(CheckersFinishReason reason) {
 		float final_value = 0.0;
 
 		final_value = _state.evaluateGame();
 		_state.setFinalValue(final_value);
-		// return final_value;
 	}
 
 	// ??????????????????????????????????????????????
-	// ??????????????????????????????????????????????
-	// ??????????????????????????????????????????????
-	CheckersRecord 			dumpRecord() const {
+	CheckersRecord dumpRecord() const {
 		CheckersRecord r;
 
 		r.timestamp = elf_utils::sec_since_epoch_from_now();
@@ -65,7 +61,6 @@ struct CheckersStateExt {
 		r.seq = _seq;
 		r.request = _curr_request;
 
-		// пишем result
 		r.result.reward = _state.getFinalValue();
 		// записываем все хода в строку и отправляет json
 		r.result.content = coords2str(_state.getAllMoves());
@@ -75,41 +70,23 @@ struct CheckersStateExt {
 		r.result.num_move = _state.getPly() - 1;
 		r.result.values = _predicted_values;
 
-		// std::cout << "GoStateExtOffline::dumpRecord!!!!!!!!!!!" << std::endl;
-		// std::cout << "movesmovesmovesmovesmovesmovesmovesmovesmovesmovesmovesmoves" << std::endl;
+		// std::cout << "GoStateExtOffline::dumpRecord" << std::endl;
+		// std::cout << "Moves" << std::endl;
 		// std::cout << r.result.content << std::endl;
-		// std::cout << "r.info()r.info()r.info()r.info()r.info()r.info()r.info()" << std::endl;
+		// std::cout << "r.info()" << std::endl;
 		// std::vector<Coord> _moves = _state.getAllMoves();
 		// for (const Coord& c : _moves) {
 		//   std::cout << "[" << c << "] ";
 		// }
 		// std::cout << std::endl;
-		// std::cout << r.info() << std::endl << std::endl;
-		// std::cout << "=======================================" << std::endl;
-		// std::cout << "=======================================" << std::endl;
+		// std::cout << r.info() << std::endl;
+		// std::cout << "=============================" << std::endl;
 		_logger->info("Dump Record:{}\n\n", r.info());
 
 		return r;
 	}
 
-
-	// сохраняем дерево если параметр dump_record_prefix установлен
-	void   saveCurrentTree(const std::string& tree_info) const {
-
-	  // Dump the tree as well.
-	  std::string filename = _options.dump_record_prefix + "_gameidx_" +
-	      std::to_string(_game_idx) + "_seq_" + std::to_string(_seq) + "_move_" +
-	      std::to_string(_state.getPly()) + ".tree";
-	  std::ofstream oo(filename);
-
-	  oo << _state.showBoard() << std::endl;
-	  oo << tree_info;
-	}
-
-
 	// ??????????????????????????????????????????????
-	// ??????????????????????????????????????????????
-	// ??????????????????????????????????????????????  
 	// ПЕРЕПРОВЕРЬ ЭТУ ШТУКУ 300 раз!!!!!!!!!!!
 	void   addMCTSPolicy(
 			const elf::ai::tree_search::MCTSPolicy<Coord>& mcts_policy) {
@@ -161,7 +138,9 @@ struct CheckersStateExt {
 };
 
 
-// ==========================================================
+
+
+
 // ==========================================================
 // для тренировки нейросети, работает на стороне server
 class CheckersStateExtOffline {
@@ -175,8 +154,7 @@ class CheckersStateExtOffline {
 				_logger(elf::logging::getIndexedLogger(
 						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"CheckersStateExtOffline-",
-						"")) 
-				{
+						"")) {
 	}
 
 	void   fromRecord(const CheckersRecord& r) {
@@ -189,17 +167,16 @@ class CheckersStateExtOffline {
 		_predicted_values = r.result.values;
 		_state.reset();
 
-		// std::cout << "GoStateExtOffline::fromRecord!!!!!!!!!!!" << std::endl;
+		// std::cout << "GoStateExtOffline::fromRecord" << std::endl;
 		// std::cout << r.result.content << std::endl;
-		// std::cout << "movesmovesmovesmovesmovesmovesmovesmovesmovesmovesmovesmoves" << std::endl;
+		// std::cout << "Moves" << std::endl;
 		// for (const Coord& c : _offline_all_moves) {
 		//   std::cout << "[" << c << "] ";
 		// }
 		// std::cout << std::endl;
-		// std::cout << "r.info()r.info()r.info()r.info()r.info()r.info()r.info()" << std::endl;
+		// std::cout << "r.info()" << std::endl;
 		// std::cout << r.info() << std::endl << std::endl;
-		// std::cout << "=======================================" << std::endl;
-		// std::cout << "=======================================" << std::endl;
+		// std::cout << "=============================" << std::endl;
 	}
 
 	bool   switchRandomMove(std::mt19937* rng) {
@@ -219,7 +196,7 @@ class CheckersStateExtOffline {
 		return true;
 	}
 
-	void   switchBeforeMove(size_t move_to) {
+	void switchBeforeMove(size_t move_to) {
 		assert(move_to < _offline_all_moves.size());
 
 		_state.reset();
@@ -228,11 +205,11 @@ class CheckersStateExtOffline {
 		}
 	}
 
-	int  getNumMoves() const {
+	int getNumMoves() const {
 		return _offline_all_moves.size();
 	}
 
-	float getPredictedValue(int move_idx) const {		
+	float getPredictedValue(int move_idx) const {
 		return _predicted_values[move_idx];
 	}
 

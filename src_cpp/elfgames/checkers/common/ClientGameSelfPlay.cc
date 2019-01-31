@@ -7,8 +7,6 @@
  */
 
 #include "ClientGameSelfPlay.h"
-#include "../mcts/AI.h"
-#include "../mcts/MCTS.h"
 
 ////////////////// Game /////////////////////
 ClientGameSelfPlay::ClientGameSelfPlay(
@@ -59,12 +57,14 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 		int64_t model_ver) {
 	logger_->info(
 			"Initializing actor {}; puct_override: {}; batch_override: {}; "
-			"per_thread_override: {},\nMCTS options: {}",
+			"per_thread_override: {}",
 			actor_name,
 			puct_override,
 			mcts_rollout_per_batch_override,
-			mcts_rollout_per_thread_override,
-			mcts_options.info());
+			mcts_rollout_per_thread_override
+			// ,
+			// mcts_options.info()
+			);
 
 	MCTSActorParams params;
 	params.actor_name = actor_name;
@@ -420,6 +420,7 @@ void ClientGameSelfPlay::act() {
 		(cs.nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
 		finish_game(reason);
 	}
+	// exit(0);
 }
 
 

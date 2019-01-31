@@ -140,7 +140,10 @@ struct  MsgRequest {
 
 	std::string info() const {
 		std::stringstream ss;
-		ss << client_ctrl.info() << vers.info();
+
+		ss 	<< client_ctrl.info();
+		ss	<< vers.info();
+		
 		return ss.str();
 	}
 

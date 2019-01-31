@@ -39,7 +39,7 @@ template <>
 struct StateTrait<CheckersState, Coord> {
  public:
 	static std::string to_string(const CheckersState& s) {
-		return "Score : " + std::to_string(s.evaluateGame());
+		return "Score Current Board: " + std::to_string(s.evaluateGame());
 	}
 	static bool equals(const CheckersState& s1, const CheckersState& s2) {
 		CheckersBoard b1 = s1.board();

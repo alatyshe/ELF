@@ -16,7 +16,10 @@
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
-#include "../mcts/MCTS.h"
+
+#include "../mcts/AI.h"
+#include "../mcts/CheckersMCTSActor.h"
+#include "../mcts/MCTSCheckersAI.h"
 #include "../sgf/sgf.h"
 #include "GameBase.h"
 #include "GameFeature.h"

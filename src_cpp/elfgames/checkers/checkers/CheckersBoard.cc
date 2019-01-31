@@ -1,13 +1,13 @@
 #include "CheckersBoard.h"
 
 #define myassert(p, text) \
-  do {                    \
-    if (!(p)) {           \
-      printf((text));     \
-    }                     \
-  } while (0)
+	do {                    \
+		if (!(p)) {           \
+			printf((text));     \
+		}                     \
+	} while (0)
 
-void				ClearBoard(CheckersBoard* board) {
+void ClearBoard(CheckersBoard* board) {
 	// board->_total_moves = 0;
 	board->active = BLACK_PLAYER;
 	board->passive = WHITE_PLAYER;
@@ -24,13 +24,11 @@ void				ClearBoard(CheckersBoard* board) {
 	board->pieces[WHITE_PLAYER] = (board->forward[WHITE_PLAYER]) | (board->backward[WHITE_PLAYER]);
 
 	board->_last_move = 0;
-
 	board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK_PLAYER] | board->pieces[WHITE_PLAYER]);
-
 	board->jump = 0;
 }
 
-bool				CheckersPlay(CheckersBoard *board, int64_t action_index) {
+bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
 	/*
 		Updates the game state to reflect the effects of the input
 		move.
@@ -38,13 +36,13 @@ bool				CheckersPlay(CheckersBoard *board, int64_t action_index) {
 		A legal move is represented by an integer with exactly two
 		bits turned on: the old position and the new position.
 	*/
-	int64_t					move;
-	int64_t					active;
-	int64_t					passive;
-	int64_t					taken_piece;
-	int64_t					destination;
-	int							buffer;
-	uint64_t				buff;
+	int64_t move;
+	int64_t active;
+	int64_t passive;
+	int64_t taken_piece;
+	int64_t destination;
+	uint64_t buff;
+	int buffer;
 
 	auto index = moves::i_to_m.find(action_index);
 	move = index->second[0];
@@ -96,20 +94,16 @@ bool				CheckersPlay(CheckersBoard *board, int64_t action_index) {
 	buffer = board->active;
 	board->active = board->passive;
 	board->passive = buffer;
-
-	// std::cout << get_true_state_str(*board) << std::endl;
+	// std::cout << GetTrueStateStr(*board) << std::endl;
 	return false;
 }
 
 
-
-
-std::array<int, TOTAL_NUM_ACTIONS>		GetValidMovesBinary(CheckersBoard board, int player) {
-	// std::vector<std::array<int64_t, 2>>	result;
-	int 								buffer;
-	std::vector<int64_t>				moves;
-	std::string							move_buff;
-	std::array<int, TOTAL_NUM_ACTIONS>		result;
+std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int player) {
+	std::array<int, TOTAL_NUM_ACTIONS> result;
+	std::vector<int64_t> moves;
+	std::string move_buff;
+	int buffer;
 
 	result.fill(0);
 	if (player != board.active) {
@@ -120,39 +114,33 @@ std::array<int, TOTAL_NUM_ACTIONS>		GetValidMovesBinary(CheckersBoard board, int
 		moves = _get_moves(board);
 		for (auto i = moves.begin(); i != moves.end(); ++i) {
 			move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
-
-			// // print moves			
+			// print moves			
 			// std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
-
 			result[moves::m_to_i.find(move_buff)->second] = 1;
 		}
 
 		buffer = board.active;
 		board.active = board.passive;
 		board.passive = buffer;
-	}
-	else {
+	} else {
 		moves = _get_moves(board);
 
 		for (auto i = moves.begin(); i != moves.end(); ++i) {
 			move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
-			
-			// // print moves
+			// print moves
 			// std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
-
 			result[moves::m_to_i.find(move_buff)->second] = 1;
 		}
 	}
-
 	return result;
 }
 
-
-std::vector<std::array<int64_t, 2>>	GetValidMovesNumberAndDirection(CheckersBoard board, int player) {
-	std::vector<std::array<int64_t, 2>>	result;
-	int 								buffer;
-	std::vector<int64_t>				moves;
-	std::array<int64_t, 2>				move_buff;
+std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoard board, int player) {
+	std::vector<std::array<int64_t, 2>> result;
+	std::array<int64_t, 2> move_buff;
+	std::vector<int64_t> moves;
+	int buffer;
+	
 
 	if (player != board.active) {
 		buffer = board.active;
@@ -168,8 +156,7 @@ std::vector<std::array<int64_t, 2>>	GetValidMovesNumberAndDirection(CheckersBoar
 		buffer = board.active;
 		board.active = board.passive;
 		board.passive = buffer;
-	}
-	else {
+	} else {
 		moves = _get_moves(board);
 		for (auto i = moves.begin(); i != moves.end(); ++i) {
 			move_buff = {*i, _get_move_direction(board, *i, board.active)};
@@ -179,19 +166,44 @@ std::vector<std::array<int64_t, 2>>	GetValidMovesNumberAndDirection(CheckersBoar
 	return result;
 }
 
-bool				CheckersTryPlay(CheckersBoard board, Coord c) {
+bool CheckersTryPlay(CheckersBoard board, Coord c) {
 	std::array<int, TOTAL_NUM_ACTIONS> res = GetValidMovesBinary(board, board.active);
 	if (res[c])
 		return true;
 	return false;
 }
 
-bool				is_over(CheckersBoard board) {
+bool CheckersIsOver(CheckersBoard board) {
 	return (_get_moves(board).size() == 0);
 }
 
+float CheckersEvalBoard(CheckersBoard board, int player) {
+	std::array<std::array<int, 8>, 8> observation =	GetObservation(board, player);
+	float enemy_figures = 0;
+	float self_figures = 0;
+	float score = 0.0;
+	int total;
 
-// // CheckersBoard*		clone() {
+	for (int y = 0; y < 8; y++) {
+		for (int x = 0; x < 8; x++) {
+			if (observation[y][x] == 3) {
+				self_figures += 2;
+			} else if (observation[y][x] == -3) {
+				enemy_figures += 2;
+			} else if (observation[y][x] == 1) {
+				self_figures += 1;
+			} else if (observation[y][x] == -1) {
+				enemy_figures += 1;
+			}
+		}
+	}
+	total = enemy_figures + self_figures;
+	score = self_figures / total - enemy_figures / total;
+	return score;
+}
+
+
+// // CheckersBoard* clone() {
 // // 	CheckersBoard *B = new CheckersBoard();
 
 // //     B->backward = board->backward;
@@ -208,32 +220,8 @@ bool				is_over(CheckersBoard board) {
 // //     return (B);
 // // }
 
-// std::array<std::array<int, 8>, 8>	get_state_matrix_enemy(CheckersBoard *board, int player) {
-//     std::array<std::array<int, 8>, 8> observation = board->get_observation(player);
-
-//     for (int y = 0; y < 8; y++) {
-//         for (int x = 0; x < 8; x++) {
-//             if (observation[y][x] > 0)
-//                 observation[y][x] = 0;
-//         }
-//     }
-//     return (observation);
-// }
-
-// std::array<std::array<int, 8>, 8>	get_state_matrix_own(CheckersBoard *board, int player) {
-//     std::array<std::array<int, 8>, 8> observation = board->get_observation(player);
-
-//     for (int y = 0; y < 8; y++) {
-//         for (int x = 0; x < 8; x++) {
-//             if (observation[y][x] < 0)
-//                 observation[y][x] = 0;
-//         }
-//     }
-//     return (observation);
-// }
-
-// std::string			get_state_str(const Board board, int player) {
-// 	std::array<std::array<int, 8>, 8> observation = get_observation(board, player);
+// std::string get_state_str(const Board board, int player) {
+// 	std::array<std::array<int, 8>, 8> observation = GetObservation(board, player);
 // 	std::string str = "";
 // 	std::string id;
 // 	std::string man;
@@ -244,7 +232,7 @@ bool				is_over(CheckersBoard board) {
 //             id = " (" + std::to_string(x) + "," + std::to_string(y) + ")E";
 //             man = " (" + std::to_string(x) + "," + std::to_string(y) + ")M";
 //             king = " (" + std::to_string(x) + "," + std::to_string(y) + ")K";
-            
+						
 //             if (observation[y][x] == -1) {
 //                 id = "\x1b[6;31;40m" + man + "\x1b[0m";
 //             } else if (observation[y][x] == -3) {
@@ -262,127 +250,114 @@ bool				is_over(CheckersBoard board) {
 // }
 
 // Переводим наши int64_t в нормальный вид(доску 8x8)
-std::array<std::array<int, 8>, 8>	get_observation(CheckersBoard board, int player) {
+std::array<std::array<int, 8>, 8> GetObservation(CheckersBoard board, int player) {
 	std::array<std::array<int, 8>, 8>	board_out;
-	int		x;
-	int		y;
-	int		buff;
 	int64_t bin_black_pawn;
 	int64_t bin_black_king;
 	int64_t bin_white_pawn;
 	int64_t bin_white_king;
+	int buff;
+	int x;
+	int y;
 
 	for (int i = 0; i < 8; i++)
 		board_out[i].fill(0);
-	bin_black_pawn = board.forward[BLACK_PLAYER];
-    bin_black_king = board.backward[BLACK_PLAYER];
-    bin_white_pawn = board.backward[WHITE_PLAYER];
-    bin_white_king = board.forward[WHITE_PLAYER];
+		bin_black_pawn = board.forward[BLACK_PLAYER];
+		bin_black_king = board.backward[BLACK_PLAYER];
+		bin_white_pawn = board.backward[WHITE_PLAYER];
+		bin_white_king = board.forward[WHITE_PLAYER];
 
-    if (player == BLACK_PLAYER){
-        for (int i = 0; i < 35; i++) {
-            if (((bin_black_king >> i) & 1) == 1) {
-                buff = (1+i-i/9)-1;
-                x = 6-(buff)%4*2+((buff)/4)%2;
-                y = 7-(buff)/4;
-                board_out[y][x] = 3;
-            } else if (((bin_white_king >> i) & 1) == 1) {
-                buff = (1+i-i/9)-1;
-                x = 6-(buff)%4*2+((buff)/4)%2;
-                y = 7-(buff)/4;
-                board_out[y][x] = -3;
-            } else if (((bin_black_pawn >> i) & 1) == 1) {
-                buff = (1+i-i/9)-1;
-                x = 6-(buff)%4*2+((buff)/4)%2;
-                y = 7-(buff)/4;
-                board_out[y][x] = 1;
-            } else if (((bin_white_pawn >> i) & 1) == 1) {
-                buff = (1+i-i/9)-1;
-                x = 6-(buff)%4*2+((buff)/4)%2;
-                y = 7-(buff)/4;
-                board_out[y][x] = -1;
-            }
-        }
-    } else {
-        for (int i = 0; i < 35; i++) {
-            if (((bin_black_king >> i) & 1) == 1) {
-                buff = (1+i-i/9)-1;
-                x = 6-(buff)%4*2+((buff)/4)%2;
-                y = 7-(buff)/4;
-                board_out[7 - y][7 - x] = -3;
-            } else if (((bin_white_king >> i) & 1) == 1) {
-                buff = (1+i-i/9)-1;
-                x = 6-(buff)%4*2+((buff)/4)%2;
-                y = 7-(buff)/4;
-                board_out[7 - y][7 - x] = 3;
-            } else if (((bin_black_pawn >> i) & 1) == 1) {
-                buff = (1+i-i/9)-1;
-                x = 6-(buff)%4*2+((buff)/4)%2;
-                y = 7-(buff)/4;
-                board_out[7 - y][7 - x] = -1;
-            } else if (((bin_white_pawn >> i) & 1) == 1) {
-                buff = (1+i-i/9)-1;
-                x = 6-(buff)%4*2+((buff)/4)%2;
-                y = 7-(buff)/4;
-                board_out[7 - y][7 - x] = 1;
-            }
-        }
-    }
-    return (board_out);
+		if (player == BLACK_PLAYER){
+			for (int i = 0; i < 35; i++) {
+				if (((bin_black_king >> i) & 1) == 1) {
+					buff = (1+i-i/9)-1;
+					x = 6-(buff)%4*2+((buff)/4)%2;
+					y = 7-(buff)/4;
+					board_out[y][x] = 3;
+				} else if (((bin_white_king >> i) & 1) == 1) {
+					buff = (1+i-i/9)-1;
+					x = 6-(buff)%4*2+((buff)/4)%2;
+					y = 7-(buff)/4;
+					board_out[y][x] = -3;
+				} else if (((bin_black_pawn >> i) & 1) == 1) {
+					buff = (1+i-i/9)-1;
+					x = 6-(buff)%4*2+((buff)/4)%2;
+					y = 7-(buff)/4;
+					board_out[y][x] = 1;
+				} else if (((bin_white_pawn >> i) & 1) == 1) {
+					buff = (1+i-i/9)-1;
+					x = 6-(buff)%4*2+((buff)/4)%2;
+					y = 7-(buff)/4;
+					board_out[y][x] = -1;
+				}
+			}
+		} else {
+			for (int i = 0; i < 35; i++) {
+				if (((bin_black_king >> i) & 1) == 1) {
+					buff = (1+i-i/9)-1;
+					x = 6-(buff)%4*2+((buff)/4)%2;
+					y = 7-(buff)/4;
+					board_out[7 - y][7 - x] = -3;
+				} else if (((bin_white_king >> i) & 1) == 1) {
+					buff = (1+i-i/9)-1;
+					x = 6-(buff)%4*2+((buff)/4)%2;
+					y = 7-(buff)/4;
+					board_out[7 - y][7 - x] = 3;
+				} else if (((bin_black_pawn >> i) & 1) == 1) {
+					buff = (1+i-i/9)-1;
+					x = 6-(buff)%4*2+((buff)/4)%2;
+					y = 7-(buff)/4;
+					board_out[7 - y][7 - x] = -1;
+				} else if (((bin_white_pawn >> i) & 1) == 1) {
+					buff = (1+i-i/9)-1;
+					x = 6-(buff)%4*2+((buff)/4)%2;
+					y = 7-(buff)/4;
+					board_out[7 - y][7 - x] = 1;
+				}
+			}
+		}
+	return (board_out);
 }
 
-std::array<std::array<int, 8>, 8>	get_true_state(CheckersBoard board) {
-	return (get_observation(board, BLACK_PLAYER));
+std::array<std::array<int, 8>, 8> GetTrueState(CheckersBoard board) {
+	return (GetObservation(board, BLACK_PLAYER));
 }
 
 // Для отображения в терминале
-std::string							get_true_state_str(const CheckersBoard board) {
-	std::array<std::array<int, 8>, 8> observation = get_true_state(board);
+std::string GetTrueStateStr(const CheckersBoard board) {
+	std::array<std::array<int, 8>, 8> observation = GetTrueState(board);
 	std::string str = "";
 	std::string buff = "";
 
 	std::stringstream coords;
-    for (int y = 0; y < 8; y++) {
-        for (int x = 0; x < 8; x++) {
-            coords << std::setw(2) << std::right << std::to_string(y * 8 + x);
+	for (int y = 0; y < 8; y++) {
+		for (int x = 0; x < 8; x++) {
+			coords << std::setw(2) << std::right << std::to_string(y * 8 + x);
 
-            if (observation[y][x] == -1) {
-                buff = std::string(RED_C) + " (" + coords.str() + ")M" + COLOR_END;
-            } else if (observation[y][x] == -3) {
-                buff = std::string(RED_C) + " (" + coords.str() + ")K" + COLOR_END;
-            } else if (observation[y][x] == 1) {
-                buff = std::string(GREEN_C) + " (" + coords.str() + ")M" + COLOR_END;
-            } else if (observation[y][x] == 3) {
-                buff = std::string(GREEN_C) + " (" + coords.str() + ")K" + COLOR_END;
-            }
-            else {
-            	buff = " (" + coords.str() + ")E";
-            }
-            coords.str("");
-            str = str + buff;
-        }
-        str = str + "\n";
-    }
-    return(str);
+			if (observation[y][x] == -1) {
+				buff = std::string(RED_C) + " (" + coords.str() + ")M" + COLOR_END;
+			} else if (observation[y][x] == -3) {
+				buff = std::string(RED_C) + " (" + coords.str() + ")K" + COLOR_END;
+			} else if (observation[y][x] == 1) {
+				buff = std::string(GREEN_C) + " (" + coords.str() + ")M" + COLOR_END;
+			} else if (observation[y][x] == 3) {
+				buff = std::string(GREEN_C) + " (" + coords.str() + ")K" + COLOR_END;
+			} else {
+				buff = " (" + coords.str() + ")E";
+			}
+			coords.str("");
+			str = str + buff;
+		}
+		str = str + "\n";
+	}
+	return(str);
 }
 
-// void				set_current_player(CheckersBoard *board, int player) {
-//     int 				buffer;
+void CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src) {
+	myassert(dst, "dst cannot be nullptr");
+	myassert(src, "src cannot be nullptr");
 
-//     if (player != board->active)
-//     {
-//     	buffer = board->active;
-// 		board->active = board->passive;
-// 		board->passive = buffer;
-//     }
-// }
-
-
-void				CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src) {
-  myassert(dst, "dst cannot be nullptr");
-  myassert(src, "src cannot be nullptr");
-
-  memcpy(dst, src, sizeof(CheckersBoard));
+	memcpy(dst, src, sizeof(CheckersBoard));
 }
 
 
@@ -420,46 +395,46 @@ void				CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src) {
 
 
 // just logic board
-int64_t	    		_right_forward(CheckersBoard board) {
+int64_t _right_forward(CheckersBoard board) {
 	return ((board.empty >> 4) & board.forward[board.active]);
 }
 
-int64_t	    		_left_forward(CheckersBoard board) {
+int64_t _left_forward(CheckersBoard board) {
 	return ((board.empty >> 5) & board.forward[board.active]);
 }
 
-int64_t	    		_right_backward(CheckersBoard board) {
+int64_t _right_backward(CheckersBoard board) {
 	return ((board.empty << 4) & board.backward[board.active]);
 }
 
-int64_t	    		_left_backward(CheckersBoard board) {
+int64_t _left_backward(CheckersBoard board) {
 	return ((board.empty << 5) & board.backward[board.active]);
 }
 
-int64_t	    		_right_forward_jumps(CheckersBoard board) {
+int64_t _right_forward_jumps(CheckersBoard board) {
 	return ((board.empty >> 8) & (board.pieces[board.passive] >> 4) & board.forward[board.active]);
 }
 
-int64_t	    		_left_forward_jumps(CheckersBoard board) {
+int64_t _left_forward_jumps(CheckersBoard board) {
 	return ((board.empty >> 10) & (board.pieces[board.passive] >> 5) & board.forward[board.active]);
 }
 
-int64_t	    		_right_backward_jumps(CheckersBoard board) {
+int64_t _right_backward_jumps(CheckersBoard board) {
 	return ((board.empty << 8) & (board.pieces[board.passive] << 4) & board.backward[board.active]);
 }
 
-int64_t	    		_left_backward_jumps(CheckersBoard board) {
+int64_t _left_backward_jumps(CheckersBoard board) {
 	return ((board.empty << 10) & (board.pieces[board.passive] << 5) & board.backward[board.active]);
 }
 
 
-int64_t	    		_get_move_direction(CheckersBoard board, int64_t move, int player) {
+int64_t _get_move_direction(CheckersBoard board, int64_t move, int player) {
 	if (move < 0)
 		move = -move;
 	return (board.pieces[player] < (board.pieces[player] ^ move));
 }
 
-std::vector<int64_t>		_get_moves(CheckersBoard board) {
+std::vector<int64_t> _get_moves(CheckersBoard board) {
 	/*
 		Returns a list of all possible moves.
 
@@ -517,7 +492,7 @@ std::vector<int64_t>		_get_moves(CheckersBoard board) {
 	}
 }
 
-std::vector<int64_t>		_get_jumps(CheckersBoard board) {
+std::vector<int64_t> _get_jumps(CheckersBoard board) {
 	/*
 		Returns a list of all possible jumps.
 
@@ -567,14 +542,14 @@ std::vector<int64_t>		_get_jumps(CheckersBoard board) {
 	return (moves);
 }
 
-std::vector<int64_t>		_jumps_from(CheckersBoard board, int64_t piece) {
-    /*
-        Returns list of all possible jumps from the piece indicated.
+std::vector<int64_t> _jumps_from(CheckersBoard board, int64_t piece) {
+	/*
+			Returns list of all possible jumps from the piece indicated.
 
-        The argument piece should be of the form 2**n, where n + 1 is
-        the square of the piece in question (using the internal numeric
-        representaiton of the board).
-    */
+			The argument piece should be of the form 2**n, where n + 1 is
+			the square of the piece in question (using the internal numeric
+			representaiton of the board).
+	*/
 	int64_t	rfj;
 	int64_t	lfj;
 	int64_t	rbj;
@@ -583,29 +558,29 @@ std::vector<int64_t>		_jumps_from(CheckersBoard board, int64_t piece) {
 
 	uint64_t 				buff;
 
-    if (board.active == BLACK_PLAYER) {
-        rfj = ((board.empty >> 8) & (board.pieces[board.passive] >> 4) & piece);
-        lfj = ((board.empty >> 10) & (board.pieces[board.passive] >> 5) & piece);
-        if (piece & board.backward[board.active]) { // piece at square is a king
-            rbj = ((board.empty << 8) & (board.pieces[board.passive] << 4) & piece);
-            lbj = ((board.empty << 10) & (board.pieces[board.passive] << 5) & piece);
-        } else {
-            rbj = 0;
-            lbj = 0;
-        }
-    }
-    else {
-        rbj = ((board.empty << 8) & (board.pieces[board.passive] << 4) & piece);
-        lbj = ((board.empty << 10) & (board.pieces[board.passive] << 5) & piece);
-        if (piece & board.forward[board.active]) { // piece at square is a king
-            rfj = ((board.empty >> 8) & (board.pieces[board.passive] >> 4) & piece);
-            lfj = ((board.empty >> 10) & (board.pieces[board.passive] >> 5) & piece);
-        } else {
-            rfj = 0;
-            lfj = 0;
-        }
-    }
-    if ((rfj | lfj | rbj | lbj) != 0) {
+	if (board.active == BLACK_PLAYER) {
+		rfj = ((board.empty >> 8) & (board.pieces[board.passive] >> 4) & piece);
+		lfj = ((board.empty >> 10) & (board.pieces[board.passive] >> 5) & piece);
+		if (piece & board.backward[board.active]) { // piece at square is a king
+			rbj = ((board.empty << 8) & (board.pieces[board.passive] << 4) & piece);
+			lbj = ((board.empty << 10) & (board.pieces[board.passive] << 5) & piece);
+		} else {
+			rbj = 0;
+			lbj = 0;
+		}
+	} else {
+		rbj = ((board.empty << 8) & (board.pieces[board.passive] << 4) & piece);
+		lbj = ((board.empty << 10) & (board.pieces[board.passive] << 5) & piece);
+		if (piece & board.forward[board.active]) { // piece at square is a king
+			rfj = ((board.empty >> 8) & (board.pieces[board.passive] >> 4) & piece);
+			lfj = ((board.empty >> 10) & (board.pieces[board.passive] >> 5) & piece);
+		} else {
+			rfj = 0;
+			lfj = 0;
+		}
+	}
+	
+	if ((rfj | lfj | rbj | lbj) != 0) {
 		buff = static_cast<uint64_t>(rfj);
 		for(int i = 0; buff > 0; buff = (buff >> 1), i++) {
 			if ((buff & 1) == 1)
@@ -629,8 +604,8 @@ std::vector<int64_t>		_jumps_from(CheckersBoard board, int64_t piece) {
 			if ((buff & 1) == 1)
 				moves.push_back((0xfffffffffffffbff << (i - 10)));
 		}
-    }
-    return moves;
+	}
+	return moves;
 }
 
 

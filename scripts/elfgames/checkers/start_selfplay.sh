@@ -9,8 +9,8 @@
 # LOAD0=myserver/save-3072.bin
 # LOAD1=myserver/save-143360.bin
 
-LOAD0=myserver/save-0.bin
-LOAD1=myserver/save-1024.bin
+LOAD1=myserver/save-0.bin
+LOAD0=myserver/save-1024.bin
 
 BATCHSIZE=64
 NUM_ROLLOUTS=100
@@ -29,7 +29,7 @@ model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	\
 	--T 1 \
 	--server_id myserver		--port 2341 \
-	--gpu $GPU \
+	--gpu $GPU --gpu0 $GPU  --gpu1 $GPU\
 	\
 	--mode selfplay \
 	--num_games 1 \

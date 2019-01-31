@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../mcts/MCTS.h"
+#include "../mcts/CheckersMCTSActor.h"
 #include "elf/ai/tree_search/mcts.h"
 #include "record.h"
 #include "../checkers/Record.h"

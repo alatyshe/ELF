@@ -109,6 +109,11 @@ class TestActor {
 using NodeTest = elf::ai::tree_search::NodeTest;
 using TestActor = elf::ai::tree_search::TestActor;
 
+
+
+
+
+
 namespace {
 
 static constexpr size_t kBoardRegion = BOARD_SIZE * BOARD_SIZE;
@@ -116,6 +121,7 @@ static constexpr size_t kBoardRegion = BOARD_SIZE * BOARD_SIZE;
 // Automatically satisfied
 // skip this unit-test
 TEST(MctsTest, testActionFlip) {}
+
 
 TEST(MctsTest, testSelectLeaf) {
   // initialze root
@@ -135,6 +141,7 @@ TEST(MctsTest, testSelectLeaf) {
   root->findMove(algOpt, 1, &action);
   EXPECT_EQ(action, 3);
 }
+
 
 TEST(MctsTest, testBackupIncorporateResults) {
   State b;
@@ -208,6 +215,7 @@ TEST(MctsTest, testBackupIncorporateResults) {
   EXPECT_FLOAT_EQ(leaf.Q(), -0.6);
 }
 
+
 // check root add child twice,
 // and assert the same child inserted
 TEST(MctsTest, testAddChild) {
@@ -236,6 +244,7 @@ TEST(MctsTest, testAddChild) {
   NodeId id = root->followEdge(17, tree);
   EXPECT_EQ(id, 1);
 }
+
 
 // same as test_add_child()
 // test in case of deep copy
@@ -268,6 +277,7 @@ TEST(MctsTest, testAddChildIdempotency) {
   EXPECT_EQ(id, 1);
 }
 
+
 TEST(MctsTest, testDontPickUnexpandedChild) {
   // SearchTree tree;
   NodeTest root(0.);
@@ -296,6 +306,7 @@ TEST(MctsTest, testDontPickUnexpandedChild) {
   EXPECT_EQ(action2, 17);
 }
 
+
 // not test-friendly in ELF
 TEST(MctsTest, testNeverSelectIllegalMoves) {
   // in elfgames/go/mcts.h
@@ -304,6 +315,7 @@ TEST(MctsTest, testNeverSelectIllegalMoves) {
   // bool valid = s.checkMove(v.first))
   // will not be added in NodeResponse
 }
+
 
 TEST(MctsTest, testDoNotExplorePastFinish) {
   // test if two passes are played
@@ -328,6 +340,7 @@ TEST(MctsTest, testDoNotExplorePastFinish) {
   // so findmove() has no more childen to expand
 }
 } // anonymous namespace
+
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);

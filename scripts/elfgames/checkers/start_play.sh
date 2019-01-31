@@ -6,7 +6,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-MODEL=myserver/save-5120.bin
+MODEL=myserver/save-1024.bin
 # shift
 
 game=elfgames.checkers.game \
@@ -26,8 +26,11 @@ model_file=elfgames.checkers.df_model_checkers \
 	--verbose --gpu 0 \
 	--num_block 10 --dim 128 \
 	\
-	--mcts_puct 1.50 --batchsize 16 --mcts_rollout_per_batch 16 \
-	--mcts_threads 16 --mcts_rollout_per_thread 100 --mcts_virtual_loss 1
+	--dump_record_prefix mcts\
+	\
+	--mcts_puct 1.50 --batchsize 16\
+	--mcts_rollout_per_batch 16 \
+	--mcts_threads 16 --mcts_rollout_per_thread 200 --mcts_virtual_loss 1
 	# "$@"
 
 	# --replace_prefix resnet.module,resnet \

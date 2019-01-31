@@ -6,13 +6,12 @@ project(elfgames_checkers)
 set(ELFGAMES_CHECKERS_SOURCES
     common/ClientGameSelfPlay.cc
     train/server/ServerGameTrain.cc
-
-    train/client_manager.cc
-
     checkers/CheckersState.cc
     checkers/CheckersBoard.cc
     checkers/CheckersFeature.cc
     checkers/CheckersStateExt.cc
+    
+    train/client_manager.cc
     
     train/Pybind.cc
 )

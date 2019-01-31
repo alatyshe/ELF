@@ -99,13 +99,20 @@ void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 	switch (reason) {
 		case CHECKERS_MAX_STEP:
 			_logger->info(
-					"Ply: {} exceeds thread_state. Restarting the game(Draw++)", _state.getPly());
+				"Ply: {} exceeds thread_state. Restarting the game(Draw++)", 
+				_state.getPly());
 			break;
 		case CHEKCERS_BLACK_WIN:
-			_logger->info("{}Black{} win at {} move", GREEN_C, COLOR_END, _state.getPly());
+			_logger->info("{}Black{} win at {} move", 
+				GREEN_C, 
+				COLOR_END, 
+				_state.getPly());
 			break;
 		case CHEKCERS_WHITE_WIN:
-			_logger->info("{}White{} win at {} move", RED_C, COLOR_END,  _state.getPly());
+			_logger->info("{}White{} win at {} move", 
+				RED_C, 
+				COLOR_END, 
+				_state.getPly());
 			break;
 	}
 
@@ -114,3 +121,15 @@ void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 		_state.getFinalValue());
 
 }
+
+void CheckersStateExt::saveCurrentTree(const std::string& tree_info) const {
+	// Dump the tree as well.
+	std::string filename = _options.dump_record_prefix + "_gameidx_" +
+			std::to_string(_game_idx) + "_seq_" + std::to_string(_seq) + "_move_" +
+			std::to_string(_state.getPly()) + ".tree";
+	std::ofstream oo(filename);
+
+	oo << _state.showBoard() << std::endl;
+	oo << tree_info;
+}
+
