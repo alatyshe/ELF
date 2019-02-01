@@ -46,7 +46,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--selfplay_update_num 5 \
 	\
 	--eval_winrate_thres 0.55 \
-	--eval_num_games 5 \
+	--eval_num_games 9 \
 	\
 	--lr 0.01								--momentum 0.9 \
 	--verbose \

@@ -390,7 +390,7 @@ void ClientGameSelfPlay::act() {
 		((checkers_ai2 != nullptr && current_player == WHITE_PLAYER) 
 			? checkers_ai2.get() : checkers_ai1.get());
 	
-
+	// use_policy_network_only = true;
 	if (use_policy_network_only) {
 		// Then we only use policy network to move.
 		curr_ai->actPolicyOnly(cs, &move);

@@ -58,6 +58,3 @@ class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> 
 
 
 
-
-
-
