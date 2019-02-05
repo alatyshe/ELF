@@ -80,7 +80,6 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
       }
       return;
     }
-
     logger_->info(
         "In reply func: {}Message got{}. since_last_sec={}, seq={}",
         GREEN_B,

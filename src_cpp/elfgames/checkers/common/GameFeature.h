@@ -238,21 +238,3 @@ class GameFeature {
 	// Количество фич доски
 	int 								_num_plane_checkers;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

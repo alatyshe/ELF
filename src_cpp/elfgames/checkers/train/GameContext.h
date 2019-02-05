@@ -118,11 +118,11 @@ class GameContext {
 	}
 
 	// 
-	std::map<std::string, int>    getParams() const {
+	std::map<std::string, int> getParams() const {
 		return GameFeature_.getParams();
 	}
 
-	const GameBase*			getGame(int game_idx) const {
+	const GameBase* getGame(int game_idx) const {
 		if (_check_game_idx(game_idx)) {
 			logger_->error("Invalid game_idx [{}]", game_idx);
 			return nullptr;
@@ -130,15 +130,15 @@ class GameContext {
 		return games_[game_idx].get();
 	}
 
-	elf::Context* 			ctx() {
+	elf::Context* ctx() {
 		return context_.get();
 	}
 
-	DistriServer*				getServer() {
+	DistriServer*	getServer() {
 		return server_.get();
 	}
 
-	DistriClient*				getClient() {
+	DistriClient*	getClient() {
 		return client_.get();
 	}
 
@@ -150,7 +150,7 @@ class GameContext {
 	}
 
  private:
-	bool							_check_game_idx(int game_idx) const {
+	bool _check_game_idx(int game_idx) const {
 		return game_idx < 0 || game_idx >= (int)games_.size();
 	}
 

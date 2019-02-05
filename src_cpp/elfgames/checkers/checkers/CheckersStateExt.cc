@@ -18,7 +18,7 @@ void CheckersStateExt::setRequest(const MsgRequest& request) {
 	_curr_request = request;
 }
 
-void									CheckersStateExt::addCurrentModel() {
+void CheckersStateExt::addCurrentModel() {
 	if (_curr_request.vers.black_ver >= 0)
 		_using_models.insert(_curr_request.vers.black_ver);
 	if (_curr_request.vers.white_ver >= 0)
@@ -72,7 +72,6 @@ int CheckersStateExt::seq() const {
 	return _seq;
 }
 
-// 
 const CheckersState& CheckersStateExt::state() const {
 	return _state;
 }
@@ -80,7 +79,6 @@ const CheckersState& CheckersStateExt::state() const {
 const CheckersGameOptions& CheckersStateExt::options() const {
 	return _options;
 }
-
 
 void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 	_logger->info("\n{}", _state.showBoard());
@@ -115,7 +113,6 @@ void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 				_state.getPly());
 			break;
 	}
-
 	_logger->info(
 		"Reward: {}",
 		_state.getFinalValue());

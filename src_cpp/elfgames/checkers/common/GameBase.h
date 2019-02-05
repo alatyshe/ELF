@@ -68,14 +68,14 @@ class GameBase {
 	virtual ~GameBase() = default;
 
  protected:
-	elf::GameClient*      client_ = nullptr;
-	uint64_t              _seed = 0;
-	std::mt19937          _rng;
+	elf::GameClient* client_ = nullptr;
+	uint64_t _seed = 0;
+	std::mt19937 _rng;
 
-	int                   _game_idx = -1;
+	int _game_idx = -1;
 
-	CheckersGameOptions   _options;
-	ContextOptions        _context_options;
+	CheckersGameOptions _options;
+	ContextOptions _context_options;
 
  private:
 	std::shared_ptr<spdlog::logger> _logger;

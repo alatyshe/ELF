@@ -156,7 +156,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 	}
 
 	void setEvalMode(int64_t new_ver, int64_t old_ver) {
-
 		logger_->info("setEvalMode old_ver:{}, new_ver:{}\n", old_ver, new_ver);
 
 		eval_->setBaselineModel(old_ver);
@@ -173,7 +172,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 		for (size_t i = 0; i < records.size(); ++i) {
 			res[i] = selfplay_->feed(records[i]);
 		}
-
 		// std::cout << "onSelfplayGames len : " << res.size() << std::endl;
 		return res;
 	}
@@ -187,7 +185,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 		for (size_t i = 0; i < records.size(); ++i) {
 			res[i] = eval_->feedStats(info, records[i]);
 		}
-
 		// std::cout << "onEvalGames len : " << res.size() << std::endl;
 		return res;
 	}
@@ -275,21 +272,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 		client_->sendWait({kTrainCtrl}, &funcs);
 	}
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

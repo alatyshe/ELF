@@ -62,7 +62,6 @@ class DistriServer {
 	}
 
 
-
 	ReplayBuffer* getReplayBuffer() {
 		return trainCtrl_->getReplayBuffer();
 	}

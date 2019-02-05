@@ -45,13 +45,13 @@ class ClientGameSelfPlay : public GameBase {
 			ThreadedDispatcher*					dispatcher,
 			CheckersGameNotifierBase*		checkers_notifier = nullptr);
 
-	bool 	OnReceive(const MsgRequest& request, RestartReply* reply);
+	bool OnReceive(const MsgRequest& request, RestartReply* reply);
 
-	void											act() override;
-	std::string 							showBoard() const;
-	std::string 							getLastMove() const;
-	std::array<int, TOTAL_NUM_ACTIONS>		getValidMoves() const;
-	float 										getScore();
+	void act() override;
+	std::string showBoard() const;
+	std::string getLastMove() const;
+	std::array<int, TOTAL_NUM_ACTIONS> getValidMoves() const;
+	float getScore();
 
  private:
 	MCTSCheckersAI* init_checkers_ai(
@@ -62,11 +62,11 @@ class ClientGameSelfPlay : public GameBase {
 			int second_mcts_rollout_per_thread,
 			int64_t model_ver);
 
-	void			restart();
-	void			setAsync();
-	Coord			mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c);
-	Coord			mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c);
-	void			finish_game(CheckersFinishReason reason);
+	void restart();
+	void setAsync();
+	Coord mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c);
+	Coord mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c);
+	void finish_game(CheckersFinishReason reason);
 	
 	
 

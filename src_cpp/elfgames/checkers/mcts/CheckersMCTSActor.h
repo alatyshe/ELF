@@ -43,13 +43,6 @@ struct MCTSActorParams {
 
 
 
-
-
-
-
-
-
-
 class CheckersMCTSActor {
  public:
 	using Action = Coord;
@@ -136,6 +129,7 @@ class CheckersMCTSActor {
 		}
 	}
 
+
 	void evaluate(const CheckersState& s, NodeResponse* resp) {
 		if (oo_ != nullptr)
 			*oo_ 	<< std::endl << std::endl << "Evaluating state at " 
@@ -168,13 +162,16 @@ class CheckersMCTSActor {
 					 << std::endl;
 	}
 
+
 	bool forward(CheckersState& s, Coord a) {
 		return s.forward(a);
 	}
 
+
 	void setID(int id) {
 		ai_->setID(id);
 	}
+
 
 	float reward(const CheckersState& /*s*/, float value) const {
 		return value;
@@ -189,10 +186,12 @@ class CheckersMCTSActor {
  private:
 	std::shared_ptr<spdlog::logger> logger_;
 
+	
 	CheckersFeature get_extractor(const CheckersState& s) {
 		return CheckersFeature(s);
 	}
 
+	
 	PreEvalResult pre_evaluate(const CheckersState& s, NodeResponse* resp) {
 		resp->q_flip = s.nextPlayer() == WHITE_PLAYER;
 
@@ -218,6 +217,7 @@ class CheckersMCTSActor {
 		}
 	}
 
+	
 	void post_nn_result(const CheckersReply& reply, NodeResponse* resp) {
 		if (params_.required_version >= 0 &&
 				reply.version != params_.required_version) {
@@ -236,6 +236,7 @@ class CheckersMCTSActor {
 		pi2response(reply.bf, reply.pi, &resp->pi, oo_);
 	}
 
+	
 	static void normalize(std::vector<std::pair<Coord, float>>* output_pi) {
 		assert(output_pi != nullptr);
 		float total_prob = 1e-10;

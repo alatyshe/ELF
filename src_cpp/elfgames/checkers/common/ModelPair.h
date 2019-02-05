@@ -6,20 +6,20 @@
 
 
 // Model pair need for evaluation 2 models on client with EVAL_THAN_SELFPLAY
-struct			ModelPair {
+struct ModelPair {
 	int64_t black_ver = -1;
 	int64_t white_ver = -1;
 	elf::ai::tree_search::TSOptions mcts_opt;
 
-	bool				wait() const {
+	bool wait() const {
 		return black_ver < 0;
 	}
 
-	void				set_wait() {
+	void set_wait() {
 		black_ver = white_ver = -1;
 	}
 
-	bool				is_selfplay() const {
+	bool is_selfplay() const {
 		return black_ver >= 0 && white_ver == -1;
 	}
 
@@ -47,7 +47,7 @@ struct			ModelPair {
 		return !(p1 == p2);
 	}
 
-	void 					setJsonFields(json& j) const {
+	void setJsonFields(json& j) const {
 		JSON_SAVE(j, black_ver);
 		JSON_SAVE(j, white_ver);
 		JSON_SAVE_OBJ(j, mcts_opt);

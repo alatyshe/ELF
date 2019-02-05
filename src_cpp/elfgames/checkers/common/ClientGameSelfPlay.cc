@@ -27,23 +27,23 @@ ClientGameSelfPlay::ClientGameSelfPlay(
 }
 
 
-std::string		ClientGameSelfPlay::showBoard() const {
+std::string ClientGameSelfPlay::showBoard() const {
 	return _checkers_state_ext.state().showBoard();
 }
 
 
-std::string		ClientGameSelfPlay::getLastMove() const {
+std::string ClientGameSelfPlay::getLastMove() const {
 	return std::to_string(_checkers_state_ext.lastMove());
 }
 
 
-std::array<int, TOTAL_NUM_ACTIONS>		ClientGameSelfPlay::getValidMoves() const {
+std::array<int, TOTAL_NUM_ACTIONS> ClientGameSelfPlay::getValidMoves() const {
 	return GetValidMovesBinary(_checkers_state_ext.state().board(), 
 		_checkers_state_ext.state().board().active);
 }
 
 
-float 			ClientGameSelfPlay::getScore() {
+float ClientGameSelfPlay::getScore() {
 	return _checkers_state_ext.state().evaluateGame();
 }
 
@@ -141,13 +141,6 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 }
 
 
-
-
-
-
-
-
-
 void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
 	// My code
 	_checkers_state_ext.setFinalValue(reason);
@@ -173,12 +166,6 @@ void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
 }
 
 
-
-
-
-
-
-
 void ClientGameSelfPlay::setAsync() {
 	checkers_ai1->setRequiredVersion(-1);
 	if (checkers_ai2 != nullptr)
@@ -186,13 +173,6 @@ void ClientGameSelfPlay::setAsync() {
 
 	_checkers_state_ext.addCurrentModel();
 }
-
-
-
-
-
-
-
 
 
 void ClientGameSelfPlay::restart() {
@@ -237,13 +217,6 @@ void ClientGameSelfPlay::restart() {
 	}
 	_checkers_state_ext.restart();
 }
-
-
-
-
-
-
-
 
 
 bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
@@ -296,14 +269,6 @@ bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* repl
 		}
 	}
 }
-
-
-
-
-
-
-
-
 
 
 void ClientGameSelfPlay::act() {
@@ -375,7 +340,6 @@ void ClientGameSelfPlay::act() {
 		}
 	}
 
-
 	int current_player = cs.nextPlayer();
 	Coord move = M_INVALID;
 
@@ -399,7 +363,6 @@ void ClientGameSelfPlay::act() {
 		move = mcts_make_diverse_move(curr_ai, move);
 	}
 
-
 	move = mcts_update_info(curr_ai, move);
 
 	// делаем ход на доске
@@ -414,7 +377,6 @@ void ClientGameSelfPlay::act() {
 				);
 		return;
 	}
-
 	if (cs.terminated()) {
 		CheckersFinishReason reason = cs.getPly() >= TOTAL_MAX_MOVE ? CHECKERS_MAX_STEP : 
 		(cs.nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
@@ -422,27 +384,4 @@ void ClientGameSelfPlay::act() {
 	}
 	// exit(0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

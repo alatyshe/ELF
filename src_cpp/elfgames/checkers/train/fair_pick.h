@@ -166,7 +166,7 @@ class BatchRequest {
 		}
 	}
 
-	AddResult 		Add(const ClientInfo& c, float r) {
+	AddResult Add(const ClientInfo& c, float r) {
 		auto it = requests_.find(c.id());
 
 		if (it == requests_.end()) {
@@ -181,7 +181,7 @@ class BatchRequest {
 		return NEWLY_ADDED;
 	}
 
-	void 					CheckStuck(const ClientManager& mgr) {
+	void CheckStuck(const ClientManager& mgr) {
 		auto curr_timestamp = mgr.getCurrTimeStamp();
 
 		stucks_.clear();
@@ -207,18 +207,18 @@ class BatchRequest {
 		return win_count_;
 	}
 
-	size_t 					n_reg() const {
+	size_t n_reg() const {
 		return requests_.size();
 	}
 
-	bool 						IsDone() const {
+	bool IsDone() const {
 		// At least one request.
 		if (requests_.empty())
 			return false;
 		return win_count_.IsDone((int)requests_.size());
 	}
 
-	std::string 		stuck_info() const {
+	std::string stuck_info() const {
 		std::stringstream ss;
 
 		if (stucks_.size() > 0) {
@@ -233,7 +233,7 @@ class BatchRequest {
 		return ss.str();
 	}
 
-	std::string 		stuck_detail_info() const {
+	std::string stuck_detail_info() const {
 		std::stringstream ss;
 
 		ss << std::hex << "\nBatchRequest Addr: " << this << std::dec << "** ";
@@ -278,18 +278,18 @@ class Pick {
 		set_new_request();
 	}
 
-	RegisterResult 	reg(const ClientInfo& c) {
+	RegisterResult reg(const ClientInfo& c) {
 		return request_->Reg(c);
 	}
 
 	// Simple rule: first register, then add.
 	// Any results without registration will be discarded. This is because
 	// these results may have potential bias.
-	AddResult 			add(const ClientInfo& c, float r) {
+	AddResult add(const ClientInfo& c, float r) {
 		return request_->Add(c, r);
 	}
 
-	void 						checkStuck(const ClientManager& cm) {
+	void checkStuck(const ClientManager& cm) {
 		request_->CheckStuck(cm);
 
 		// Check whether the layers are done.
@@ -301,7 +301,7 @@ class Pick {
 		}
 	}
 
-	int 						numFinishedLayer() const {
+	int numFinishedLayer() const {
 		return num_finished_layer_;
 	}
 
@@ -309,11 +309,11 @@ class Pick {
 		return win_count_;
 	}
 
-	int 						n_reg_to_go() const {
+	int n_reg_to_go() const {
 		return remaining_request_ - request_->n_reg();
 	}
 
-	std::string 		info() const {
+	std::string info() const {
 		std::stringstream ss;
 
 		ss << "num_finished_layer: " << num_finished_layer_

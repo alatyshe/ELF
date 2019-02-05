@@ -23,62 +23,50 @@ class CheckersState {
 		CheckersCopyBoard(&_board, &s._board);
 	}
 
-
 	bool forward(const Coord& c);
 	bool checkMove(const Coord& c) const;
 
-
-	void	setFinalValue(float final_value) {
+	void setFinalValue(float final_value) {
 		_final_value = final_value;
 		_has_final_value = true;
 	}
 
-
-	float	getFinalValue() const {
+	float getFinalValue() const {
 		return _final_value;
 	}
 
-
-	bool	HasFinalValue() const {
+	bool HasFinalValue() const {
 		return _has_final_value;
 	}
 
-
-	void	reset();
-
+	void reset();
 
 	const CheckersBoard& board() const {
 		return _board;
 	}
 
-
 	// Note that ply started from 1.
-	bool	justStarted() const {
+	bool justStarted() const {
 		return _board._ply == 1;
 	}
 
-
-	int		getPly() const {
+	int getPly() const {
 		return _board._ply;
 	}
 
-
-	bool	terminated() const {
+	bool terminated() const {
 		return CheckersIsOver(_board) || getPly() >= TOTAL_MAX_MOVE ;
 	}
 
-
-	int		lastMove() const {
+	int lastMove() const {
 		return _board._last_move;
 	}
 
-
-	int		nextPlayer() const {
+	int nextPlayer() const {
 		return _board.active;
 	}
 
-
-	bool	moves_since(size_t* next_move_number, std::vector<Coord>* moves) const {
+	bool moves_since(size_t* next_move_number, std::vector<Coord>* moves) const {
 		if (*next_move_number > _moves.size()) {
 			// The move number is not right.
 			return false;
@@ -91,11 +79,9 @@ class CheckersState {
 		return true;
 	}
 
-
 	const std::vector<Coord>& getAllMoves() const {
 		return _moves;
 	}
-
 
 	std::string getAllMovesString() const {
 		std::stringstream ss;
@@ -104,7 +90,6 @@ class CheckersState {
 		}
 		return ss.str();
 	}
-
 
 	std::string showBoard() const {
 		std::stringstream ss;
@@ -120,8 +105,7 @@ class CheckersState {
 		return ss.str();
 	}
 
-
-	float	evaluateGame() const {
+	float evaluateGame() const {
 		float final_score = 0.0;
 		if (terminated()) {
 			if (getPly() >= TOTAL_MAX_MOVE)
@@ -137,7 +121,6 @@ class CheckersState {
 		return final_score;
 	}
 
-	// TODO: not a good design..
 	// const std::deque<BoardHistory>& getHistory() const {
 	//   return _history;
 	// }
@@ -150,22 +133,3 @@ class CheckersState {
 	float _final_value = 0.0;
 	bool _has_final_value = false;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

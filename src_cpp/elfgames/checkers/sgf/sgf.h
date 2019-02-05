@@ -18,10 +18,6 @@
 
 #include "../checkers/CheckersBoard.h"
 
-// constexpr int BOARD_SIZE = 9;
-// constexpr int BOARD_EXPAND_SIZE = BOARD_SIZE + 2;
-// constexpr int BOUND_COORD = BOARD_EXPAND_SIZE * BOARD_EXPAND_SIZE;
-
 // Load the remaining part.
 inline Coord str2coord(const std::string& s) {
   return (std::stoi(s));
@@ -30,7 +26,6 @@ inline Coord str2coord(const std::string& s) {
 inline std::string coord2str(Coord c) {
   return std::to_string(c);
 }
-
 // переводим координаты в строку
 inline std::string coords2str(const std::vector<Coord>& moves) {
   display_debug_info("", __FUNCTION__, BLUE_B);

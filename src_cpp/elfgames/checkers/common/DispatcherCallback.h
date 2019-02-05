@@ -29,7 +29,6 @@ class DispatcherCallback {
 	}
 
 
-
 	void OnFirstSend(const Addr& addr, MsgRequest* request) {
 		const size_t thread_idx = stoi(addr.label.substr(5));
 		
@@ -48,7 +47,6 @@ class DispatcherCallback {
 			request->vers.set_wait();
 		}
 	}
-
 
 
 	std::vector<bool> OnReply(
@@ -107,7 +105,7 @@ class DispatcherCallback {
 	}
 
  private:
-	elf::GameClient*									client_ = nullptr;
-	const std::string									start_target_ = "game_start";
-	std::shared_ptr<spdlog::logger>		logger_;
+	elf::GameClient* client_ = nullptr;
+	const std::string start_target_ = "game_start";
+	std::shared_ptr<spdlog::logger> logger_;
 };

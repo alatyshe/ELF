@@ -70,16 +70,16 @@ class ModelPerfomance {
 	ModelPerfomance(ModelPerfomance&&) = default;
 
 	// Завершенные игры
-	int				n_done() const {
+	int n_done() const {
 		return games_->win_count().n_done() + swap_games_->win_count().n_done();
 	}
 	// Игры которые выиграла нейронка
-	int				n_win() const {
+	int n_win() const {
 		return games_->win_count().n_win() + swap_games_->win_count().n_win();
 	}
 
 	// Винрейт
-	float			winrate() const {
+	float winrate() const {
 		const int total_games = n_done();
 		const int win_games = n_win();
 		return total_games == 0 ? 0.0 : static_cast<float>(win_games) / total_games;
@@ -130,7 +130,7 @@ class ModelPerfomance {
 	}
 
 	// Тут заполняем реварды для нашей model_perfomance
-	void			feedInfo(const ClientInfo& c, const CheckersRecord& r) {
+	void feedInfo(const ClientInfo& c, const CheckersRecord& r) {
 		// мое
 		if (r.result.num_move >= TOTAL_MAX_MOVE - 1) {
 			draw_++;
@@ -146,7 +146,7 @@ class ModelPerfomance {
 
 	// Заполняем инфу для реквеста, который мы отправляем клиенту
 	// и тут же заполняем свапать игроков, или нет 
-	void			fillInRequest(const ClientInfo& c, MsgRequest* msg) {
+	void fillInRequest(const ClientInfo& c, MsgRequest* msg) {
 		if (finished_)
 			return;
 
@@ -185,7 +185,7 @@ class ModelPerfomance {
 		}
 	}
 
-	bool			IsFinished() const {
+	bool IsFinished() const {
 		return finished_;
 	}
 

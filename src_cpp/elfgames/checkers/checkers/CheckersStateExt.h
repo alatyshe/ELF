@@ -88,7 +88,7 @@ struct CheckersStateExt {
 
 	// ??????????????????????????????????????????????
 	// ПЕРЕПРОВЕРЬ ЭТУ ШТУКУ 300 раз!!!!!!!!!!!
-	void   addMCTSPolicy(
+	void addMCTSPolicy(
 			const elf::ai::tree_search::MCTSPolicy<Coord>& mcts_policy) {
 		const auto& policy = mcts_policy.policy;
 
@@ -113,26 +113,25 @@ struct CheckersStateExt {
 	}
 
 	// Ok
-	void   addPredictedValue(float predicted_value) {
+	void addPredictedValue(float predicted_value) {
 		_predicted_values.push_back(predicted_value);
 	}
 
  protected:
-	const int							_game_idx;
-	int										_seq = 0;
+	const int _game_idx;
 
-	CheckersState					_state;
-	int										_last_move_for_the_game;
+	int _seq = 0;
+	int _last_move_for_the_game;
+	float _last_value;
+	std::set<int64_t> _using_models;
 
-	MsgRequest						_curr_request;
-	std::set<int64_t>			_using_models;
-
-	float									_last_value;
+	CheckersState _state;
 	
-	CheckersGameOptions		_options;
+	MsgRequest _curr_request;
+	CheckersGameOptions _options;
 
 	std::vector<CheckersCoordRecord> _mcts_policies;
-	std::vector<float>		_predicted_values;
+	std::vector<float> _predicted_values;
 
 	std::shared_ptr<spdlog::logger> _logger;
 };
@@ -157,7 +156,7 @@ class CheckersStateExtOffline {
 						"")) {
 	}
 
-	void   fromRecord(const CheckersRecord& r) {
+	void fromRecord(const CheckersRecord& r) {
 		_offline_all_moves = str2coords(r.result.content);
 		_offline_winner = r.result.reward > 0 ? 1.0 : -1.0;
 
@@ -179,7 +178,7 @@ class CheckersStateExtOffline {
 		// std::cout << "=============================" << std::endl;
 	}
 
-	bool   switchRandomMove(std::mt19937* rng) {
+	bool switchRandomMove(std::mt19937* rng) {
 		// Random sample one move
 		if ((int)_offline_all_moves.size() <= _options.checkers_num_future_actions - 1) {
 			_logger->warn(

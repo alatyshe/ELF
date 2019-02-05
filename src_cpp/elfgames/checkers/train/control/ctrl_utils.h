@@ -20,7 +20,6 @@ struct RecordBufferSimple {
 
 	void feed(const CheckersRecord& r) {
 		std::lock_guard<std::mutex> lock(mutex_);
-
 		records_.push_back(r);
 	}
 

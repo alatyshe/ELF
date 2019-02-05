@@ -116,21 +116,6 @@ struct ClientInfo {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // контроллим тут всех наших клиентов.
 // создаем новых и говорим в каком режиме работать(EVAL_THEN_SELFPLAY/SELFPLAY_ONLY).
 class ClientManager {
