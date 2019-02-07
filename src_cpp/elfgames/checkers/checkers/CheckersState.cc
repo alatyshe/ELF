@@ -4,7 +4,7 @@
 bool CheckersState::forward(const Coord& c) {
   if (c == M_INVALID)
     throw std::range_error("CheckersState::forward(): move is M_INVALID");
-  if (terminated())
+  if (terminated() || c > TOTAL_NUM_ACTIONS)
     return false;
   if (!CheckersTryPlay(_board, c))
     return false;

@@ -26,7 +26,24 @@ void ClearBoard(CheckersBoard* board) {
 	board->_last_move = 0;
 	board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK_PLAYER] | board->pieces[WHITE_PLAYER]);
 	board->jump = 0;
+
+	// test repeat moves
+	// board->forward[0] = 8589936704;
+	// board->forward[1] = 2147487744;
+	// board->backward[0] = 8589934592;
+	// board->backward[1] = 2183204864;
+	// board->pieces[0] = 8589936704;
+	// board->pieces[1] = 2183204864;
+	// board->empty = 23519356607;
+
+	std::fill(std::begin(board->_last_move_black), 
+		std::end(board->_last_move_black), -1);
+	std::fill(std::begin(board->_last_move_white), 
+		std::end(board->_last_move_white), -1);
+	board->_black_repeats_step = 0;
+	board->_white_repeats_step = 0;
 }
+
 
 bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
 	/*
@@ -49,6 +66,30 @@ bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
 
 	board->_last_move = action_index;
 	active = board->active;
+
+	// check repeated moves
+	if (active == WHITE_PLAYER) {
+		if (board->_last_move_white[1] == action_index) {
+			board->_white_repeats_step += 1;
+		} else {
+			board->_white_repeats_step = 0;
+			board->_remove_step_white = false;
+		}
+		board->_last_move_white[1] = board->_last_move_white[0];
+		board->_last_move_white[0] = action_index;
+		;
+	} else {
+		if (board->_last_move_black[1] == action_index) {
+			board->_black_repeats_step += 1;
+		} else {
+			board->_black_repeats_step = 0;
+			board->_remove_step_black = false;
+		}
+		board->_last_move_black[1] = board->_last_move_black[0];
+		board->_last_move_black[0] = action_index;
+	}
+	// end checking
+
 	passive = board->passive;
 	buffer = 0;
 	board->_ply += 1;
@@ -131,9 +172,26 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int 
 			// std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
 			result[moves::m_to_i.find(move_buff)->second] = 1;
 		}
+	}	
+	// Repeat moves
+	// if (player == BLACK_PLAYER && board._remove_step_black) {
+	// } else if (player == WHITE_PLAYER && board._remove_step_white) {
+	if (player == WHITE_PLAYER 
+			&& board._white_repeats_step >= REPEAT_MOVE
+			&& board._last_move_white[1] != 70
+			&& board._last_move_white[1] != 3) {
+		result[board._last_move_white[1]] = 0;
+		// result[board._last_move_white[0]] = 0;
+	} else if (player == BLACK_PLAYER
+			&& board._black_repeats_step >= REPEAT_MOVE
+			&& board._last_move_black[1] != 70
+			&& board._last_move_black[1] != 3) {
+		result[board._last_move_black[1]] = 0;
 	}
+
 	return result;
 }
+
 
 std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoard board, int player) {
 	std::vector<std::array<int64_t, 2>> result;
@@ -166,6 +224,7 @@ std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoar
 	return result;
 }
 
+
 bool CheckersTryPlay(CheckersBoard board, Coord c) {
 	std::array<int, TOTAL_NUM_ACTIONS> res = GetValidMovesBinary(board, board.active);
 	if (res[c])
@@ -173,9 +232,11 @@ bool CheckersTryPlay(CheckersBoard board, Coord c) {
 	return false;
 }
 
+
 bool CheckersIsOver(CheckersBoard board) {
 	return (_get_moves(board).size() == 0);
 }
+
 
 float CheckersEvalBoard(CheckersBoard board, int player) {
 	std::array<std::array<int, 8>, 8> observation =	GetObservation(board, player);
@@ -201,24 +262,6 @@ float CheckersEvalBoard(CheckersBoard board, int player) {
 	score = self_figures / total - enemy_figures / total;
 	return score;
 }
-
-
-// // CheckersBoard* clone() {
-// // 	CheckersBoard *B = new CheckersBoard();
-
-// //     B->backward = board->backward;
-// //     B->forward = board->forward;
-// //     B->pieces = board->pieces;
-// //     B->empty = board->empty;
-
-// // 	B->active = board->active;
-// // 	B->passive = board->passive;
-
-// //     B->jump = board->jump;
-// //     B->mandatory_jumps = board->mandatory_jumps;
-
-// //     return (B);
-// // }
 
 // std::string get_state_str(const Board board, int player) {
 // 	std::array<std::array<int, 8>, 8> observation = GetObservation(board, player);

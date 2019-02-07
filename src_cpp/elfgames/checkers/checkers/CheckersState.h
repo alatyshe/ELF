@@ -95,6 +95,16 @@ class CheckersState {
 		std::stringstream ss;
 
 		ss 	<< GetTrueStateStr(_board);
+		
+		ss 	<< "[" << _board.forward[0]
+				<< "][" << _board.forward[1]
+				<< "][" << _board.backward[0]
+				<< "][" << _board.backward[1]
+				<< "][" << _board.pieces[0]
+				<< "][" << _board.pieces[1]
+				<< "][" << _board.empty << "]"
+				<< std::endl;
+
 		ss	<< "\nLast move\t: " << moves::m_to_h.find(lastMove())->second
 				<< "\nCurrentPlayer\t: ";
 		if (this->nextPlayer() == BLACK_PLAYER)
@@ -121,6 +131,13 @@ class CheckersState {
 		return final_score;
 	}
 
+	void setRemoveStepWhite(bool value) {
+		_board._remove_step_white = value;
+	}
+
+	void setRemoveStepBlack(bool value) {
+		_board._remove_step_black = value;
+	}
 	// const std::deque<BoardHistory>& getHistory() const {
 	//   return _history;
 	// }

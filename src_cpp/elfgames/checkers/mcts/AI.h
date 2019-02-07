@@ -58,8 +58,16 @@ struct StateTrait<CheckersState, Coord> {
 		res += (b1.jump != b2.jump);
 		res += (b1._last_move != b2._last_move);
 		res += (b1._ply != b2._ply);
-		res += (b1._last_move_green != b2._last_move_green);
-		res += (b1._last_move_red != b2._last_move_red);
+
+		// repeat moves
+		res += (b1._last_move_black[0] != b2._last_move_black[0]);
+		res += (b1._last_move_black[1] != b2._last_move_black[1]);
+		res += (b1._last_move_white[0] != b2._last_move_white[0]);
+		res += (b1._last_move_white[1] != b2._last_move_white[1]);
+		res += (b1._remove_step_black != b2._remove_step_black);
+		res += (b1._remove_step_white != b2._remove_step_white);
+		res += (b1._black_repeats_step != b2._black_repeats_step);
+		res += (b1._white_repeats_step != b2._white_repeats_step);
 
 		return res == 0;
 	}

@@ -19,7 +19,7 @@
 #include "elf/debug/debug.h"
 
 // специальные хода
-#define M_INVALID 171
+# define M_INVALID 171
 
 # define MAX_CHECKERS_HISTORY 1
 # define CHECKERS_BOARD_SIZE 8
@@ -31,7 +31,9 @@ constexpr uint64_t CHECKERS_NUM_FEATURES = 6;
 // Количество всех возможных actions(для американских шашек это 170)
 constexpr uint64_t TOTAL_NUM_ACTIONS = 170;
 // Max move for game
-constexpr int TOTAL_MAX_MOVE = 150;
+constexpr int TOTAL_MAX_MOVE = 250;
+
+constexpr int REPEAT_MOVE = 4;
 
 // индекс нашего action;
 typedef unsigned short	Coord;
@@ -68,8 +70,12 @@ typedef struct
 	int _ply;
 
 	// последный шаг для игроков
-	int64_t _last_move_green;
-	int64_t _last_move_red;
+	std::array<int64_t, 2> _last_move_black;
+	std::array<int64_t, 2> _last_move_white;
+	bool _remove_step_black;
+	bool _remove_step_white;
+	int _black_repeats_step;
+	int _white_repeats_step;
 } CheckersBoard;
 
 
