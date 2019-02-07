@@ -27,7 +27,7 @@ namespace ai {
 namespace tree_search {
 
 template <typename State, typename Action>
-class SearchTreeT;
+class TreeT;
 
 template <typename State>
 class NodeBaseT {
@@ -100,7 +100,7 @@ template <typename State, typename Action>
 class NodeT : public NodeBaseT<State> {
  public:
   using Node = NodeT<State, Action>;
-  using SearchTree = SearchTreeT<State, Action>;
+  using Tree = TreeT<State, Action>;
 
   enum VisitType {
     NOT_VISITED = 0,
@@ -118,7 +118,8 @@ class NodeT : public NodeBaseT<State> {
   NodeT(const Node&) = delete;
   Node& operator=(const Node&) = delete;
 
-  const std::unordered_map<Action, EdgeInfo>& getStateActions() const {    return stateActions_;
+  const std::unordered_map<Action, EdgeInfo>& getStateActions() const {
+    return stateActions_;
   }
 
   int getNumVisits() const {
@@ -289,7 +290,7 @@ class NodeT : public NodeBaseT<State> {
     return true;
   }
 
-  NodeId followEdge(const Action& action, SearchTree& tree) {
+  NodeId followEdge(const Action& action, Tree& tree) {
     if (status_ != VISITED)
       return InvalidNodeId;
 
@@ -329,6 +330,7 @@ class NodeT : public NodeBaseT<State> {
   // TODO Poor choice of variable name - fix later (ssengupta@fb)
   const float unsignedParentQ_;
   bool flipQSign_ = false;
+
 
   struct BestAction {
     Action action_with_max_score;
@@ -370,6 +372,10 @@ class NodeT : public NodeBaseT<State> {
       return ss.str();
     }
   };
+
+
+
+
 
   // Algorithms.
   BestAction UCT(const SearchAlgoOptions& alg_opt, std::ostream* oo = nullptr)
@@ -424,17 +430,17 @@ class NodeT : public NodeBaseT<State> {
 
 
 template <typename State, typename Action>
-class SearchTreeT {
+class TreeT {
  public:
   using Node = NodeT<State, Action>;
-  using SearchTree = SearchTreeT<State, Action>;
+  using Tree = TreeT<State, Action>;
 
-  SearchTreeT() {
+  TreeT() {
     clear();
   }
 
-  SearchTreeT(const SearchTree&) = delete;
-  SearchTree& operator=(const SearchTree&) = delete;
+  TreeT(const Tree&) = delete;
+  Tree& operator=(const Tree&) = delete;
 
   void clear() {
     allocatedNodes_.clear();

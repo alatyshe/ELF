@@ -77,7 +77,7 @@ template <typename State, typename Action>
 class TreeSearchSingleThreadT {
  public:
   using Node = NodeT<State, Action>;
-  using SearchTree = SearchTreeT<State, Action>;
+  using Tree = TreeT<State, Action>;
 
   TreeSearchSingleThreadT(int thread_id, const TSOptions& options)
       : threadId_(thread_id),
@@ -102,8 +102,9 @@ class TreeSearchSingleThreadT {
       int run_id,
       const std::atomic_bool* stop_search,
       Actor& actor,
-      SearchTree& search_tree) {
+      Tree& search_tree) {
     int num_rollout;
+
     runInfoWhenStateReady_.pop(&num_rollout);
 
     Node* root = search_tree.getRootNode();
@@ -120,6 +121,8 @@ class TreeSearchSingleThreadT {
                << std::flush;
     }
 
+    // запускаем поиск пока не споймаем остановку поиска stop_search
+    // idx += options_.num_rollouts_per_batch ?????????????????
     for (int idx = 0;
          idx < num_rollout && (stop_search == nullptr || !stop_search->load());
          idx += options_.num_rollouts_per_batch) {
@@ -151,6 +154,8 @@ class TreeSearchSingleThreadT {
 
   std::shared_ptr<spdlog::logger> logger_;
 
+  // если у actor есть метод reward, то вызываем метод actora
+  // Проверяем наличие метода с помощью MEMBER_FUNC_CHECK
   MEMBER_FUNC_CHECK(reward)
   template <
       typename Actor,
@@ -159,6 +164,7 @@ class TreeSearchSingleThreadT {
     return actor.reward(*node->getStatePtr(), node->getValue());
   }
 
+  // если его нет, то просто берем value от ноды
   template <
       typename Actor,
       typename std::enable_if<!has_func_reward<Actor>::value>::type* U =
@@ -168,6 +174,8 @@ class TreeSearchSingleThreadT {
     return node->getValue();
   }
 
+
+  // тоже самое делаем с _set_ostream
   MEMBER_FUNC_CHECK(set_ostream)
   template <
       typename Actor,
@@ -214,9 +222,15 @@ class TreeSearchSingleThreadT {
       const RunContext& ctx,
       Node* root,
       Actor& actor,
-      SearchTree& search_tree) {
+      Tree& search_tree) {
+
     // Start from the root and run one path
     std::vector<Traj> trajs;
+
+    // в предидущем вызове мы инкрементим idx на этот параметр
+    // idx += options_.num_rollouts_per_batch
+    // это походу количество роллаутов для конкретного state
+    // пока не не станет больше num_rollout
     for (int j = 0; j < options_.num_rollouts_per_batch; ++j) {
       trajs.push_back(single_rollout<Actor>(ctx, root, actor, search_tree));
     }
@@ -278,10 +292,12 @@ class TreeSearchSingleThreadT {
       RunContext ctx,
       Node* root,
       Actor& actor,
-      SearchTree& search_tree) {
+      Tree& search_tree) {
+    
     Node* node = root;
 
     Traj traj;
+    // находим ноду которую не посещали
     while (node->isVisited()) {
       // If there is no move available, skip.
       Action action;
@@ -363,7 +379,7 @@ class TreeSearchT {
  public:
   using Node = NodeT<State, Action>;
   using TreeSearchSingleThread = TreeSearchSingleThreadT<State, Action>;
-  using SearchTree = SearchTreeT<State, Action>;
+  using Tree = TreeT<State, Action>;
   using MCTSResult = MCTSResultT<Action>;
 
   TreeSearchT(const TSOptions& options, std::function<Actor*(int)> actor_gen)
@@ -387,7 +403,7 @@ class TreeSearchT {
               // &this->done_.flag(),
               &this->stopSearch_,
               *this->actors_[i],
-              this->searchTree_);
+              this->Tree_);
 
           // if (this->done_.get()) {
           if (this->stopSearch_.load()) {
@@ -416,7 +432,7 @@ class TreeSearchT {
   }
 
   std::string printTree() const {
-    return searchTree_.printTree();
+    return Tree_.printTree();
   }
 
   MCTSResult runPolicyOnly(const State& root_state) {
@@ -427,7 +443,7 @@ class TreeSearchT {
     setRootNodeState(root_state);
 
     // Some hack here.
-    Node* root = searchTree_.getRootNode();
+    Node* root = Tree_.getRootNode();
 
     if (!root->isVisited()) {
       NodeResponseT<Action> resp;
@@ -446,7 +462,7 @@ class TreeSearchT {
     setRootNodeState(root_state);
 
     if (options_.root_epsilon > 0.0) {
-      Node* root = searchTree_.getRootNode();
+      Node* root = Tree_.getRootNode();
       root->enhanceExploration(
           options_.root_epsilon, options_.root_alpha, actors_[0]->rng());
     }
@@ -462,11 +478,11 @@ class TreeSearchT {
   }
 
   void treeAdvance(const Action& action) {
-    searchTree_.treeAdvance(action);
+    Tree_.treeAdvance(action);
   }
 
   void clear() {
-    searchTree_.clear();
+    Tree_.clear();
   }
 
   void stop() {
@@ -495,7 +511,7 @@ class TreeSearchT {
 
   std::unique_ptr<std::ostream> output_;
 
-  SearchTree searchTree_;
+  Tree Tree_;
 
   TSOptions options_;
   std::atomic<bool> stopSearch_;
@@ -512,7 +528,7 @@ class TreeSearchT {
   }
 
   void setRootNodeState(const State& root_state) {
-    Node* root = searchTree_.getRootNode();
+    Node* root = Tree_.getRootNode();
 
     if (root == nullptr) {
       throw std::range_error("TreeSearch::root cannot be null!");
@@ -529,7 +545,7 @@ class TreeSearchT {
   }
 
   MCTSResult chooseAction() const {    
-    const Node* root = searchTree_.getRootNode();
+    const Node* root = Tree_.getRootNode();
     if (root == nullptr) {
       throw std::range_error("TreeSearch::root cannot be null!");
     }
