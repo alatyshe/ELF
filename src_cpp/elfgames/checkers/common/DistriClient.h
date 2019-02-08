@@ -6,9 +6,8 @@
 #include "elf/logging/IndexedLoggerFactory.h"
 
 // checkers
-#include "../../common/DispatcherCallback.h"
-#include "../distri_base.h"
-
+#include "DispatcherCallback.h"
+#include "../train/distri_base.h"
 
 using ThreadedCtrlBase = elf::ThreadedCtrlBase;
 
@@ -126,7 +125,7 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
 
 
 
-// CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS CHECKERS
+// CHECKERS
 struct CheckersGuardedRecords {
  public:
   CheckersGuardedRecords(const std::string& identity)
@@ -296,7 +295,7 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
     records_.feed(s);
 
     CheckersFinishReason reason = s.state().getPly() >= TOTAL_MAX_MOVE ? CHECKERS_MAX_STEP : 
-    (s.state().nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
+    (s.state().currentPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
 
     game_stats_.feedWinRate(reason, s.state().getFinalValue());
 

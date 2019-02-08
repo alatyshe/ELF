@@ -62,7 +62,7 @@ class CheckersState {
 		return _board._last_move;
 	}
 
-	int nextPlayer() const {
+	int currentPlayer() const {
 		return _board.active;
 	}
 
@@ -105,9 +105,14 @@ class CheckersState {
 				<< "][" << _board.empty << "]"
 				<< std::endl;
 
-		ss	<< "\nLast move\t: " << moves::m_to_h.find(lastMove())->second
-				<< "\nCurrentPlayer\t: ";
-		if (this->nextPlayer() == BLACK_PLAYER)
+
+		if (lastMove() != M_INVALID)
+			ss	<< "\nLast move\t: " << moves::m_to_h.find(lastMove())->second;
+		else
+			ss	<< "\nLast move\t: Invalid";
+
+		ss	<< "\nCurrentPlayer\t: ";
+		if (this->currentPlayer() == BLACK_PLAYER)
 			ss << GREEN_C << "Black" << COLOR_END;
 		else
 			ss << RED_C << "White" << COLOR_END;
@@ -120,7 +125,7 @@ class CheckersState {
 		if (terminated()) {
 			if (getPly() >= TOTAL_MAX_MOVE)
 				final_score = -1;
-			else if (this->nextPlayer() == BLACK_PLAYER)
+			else if (this->currentPlayer() == BLACK_PLAYER)
 				final_score = -1;
 			else
 				final_score = 1;
@@ -131,13 +136,6 @@ class CheckersState {
 		return final_score;
 	}
 
-	void setRemoveStepWhite(bool value) {
-		_board._remove_step_white = value;
-	}
-
-	void setRemoveStepBlack(bool value) {
-		_board._remove_step_black = value;
-	}
 	// const std::deque<BoardHistory>& getHistory() const {
 	//   return _history;
 	// }

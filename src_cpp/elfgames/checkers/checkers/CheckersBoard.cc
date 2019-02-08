@@ -23,7 +23,7 @@ void ClearBoard(CheckersBoard* board) {
 	board->backward[WHITE_PLAYER] = 0x7fbc00000;
 	board->pieces[WHITE_PLAYER] = (board->forward[WHITE_PLAYER]) | (board->backward[WHITE_PLAYER]);
 
-	board->_last_move = 0;
+	board->_last_move = M_INVALID;
 	board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK_PLAYER] | board->pieces[WHITE_PLAYER]);
 	board->jump = 0;
 

@@ -60,8 +60,7 @@ void registerPy(pybind11::module& m) {
   py::class_<ClientGameSelfPlay>(m, "ClientGameSelfPlay")
       .def("showBoard", &ClientGameSelfPlay::showBoard)
       // для игры в консоле
-      .def("getValidMoves", &ClientGameSelfPlay::getValidMoves)
-      .def("getLastMove", &ClientGameSelfPlay::getLastMove);
+      .def("getValidMoves", &ClientGameSelfPlay::getValidMoves);
 }
 
 } // namespace go

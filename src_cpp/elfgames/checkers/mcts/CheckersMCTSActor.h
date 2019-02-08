@@ -193,7 +193,7 @@ class CheckersMCTSActor {
 
 	
 	PreEvalResult pre_evaluate(const CheckersState& s, NodeResponse* resp) {
-		resp->q_flip = s.nextPlayer() == WHITE_PLAYER;
+		resp->q_flip = s.currentPlayer() == WHITE_PLAYER;
 
 		if (s.terminated()) {
 			if (oo_ != nullptr) {

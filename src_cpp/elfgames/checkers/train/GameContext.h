@@ -22,11 +22,12 @@
 
 // Checkers
 #include "../common/ClientGameSelfPlay.h"
+#include "../common/DistriClient.h"
 #include "../common/record.h"
+
 #include "../mcts/AI.h"
 
 #include "data_loader.h"
-#include "client/DistriClient.h"
 
 #include "server/DistriServer.h"
 #include "server/ServerGameTrain.h"
@@ -155,13 +156,13 @@ class GameContext {
 	}
 
  private:
-	std::unique_ptr<elf::Context>						context_;
-	std::vector<std::unique_ptr<GameBase>>	games_;
+	std::unique_ptr<elf::Context> context_;
+	std::vector<std::unique_ptr<GameBase>> games_;
 
-	std::unique_ptr<DistriServer>						server_;
-	std::unique_ptr<DistriClient>						client_;
+	std::unique_ptr<DistriServer> server_;
+	std::unique_ptr<DistriClient> client_;
 
-	GameFeature															GameFeature_;
+	GameFeature GameFeature_;
 
-	std::shared_ptr<spdlog::logger>					logger_;
+	std::shared_ptr<spdlog::logger> logger_;
 };

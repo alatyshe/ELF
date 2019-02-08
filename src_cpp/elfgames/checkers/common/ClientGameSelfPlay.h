@@ -23,7 +23,7 @@
 #include "../sgf/sgf.h"
 #include "GameBase.h"
 #include "GameFeature.h"
-#include "game_stats.h"
+#include "GameStats.h"
 #include "notifier.h"
 
 #include "../checkers/CheckersStateExt.h"
@@ -49,7 +49,6 @@ class ClientGameSelfPlay : public GameBase {
 
 	void act() override;
 	std::string showBoard() const;
-	std::string getLastMove() const;
 	std::array<int, TOTAL_NUM_ACTIONS> getValidMoves() const;
 	float getScore();
 

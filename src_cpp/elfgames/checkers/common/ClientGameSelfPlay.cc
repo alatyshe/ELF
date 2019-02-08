@@ -24,11 +24,6 @@ std::string ClientGameSelfPlay::showBoard() const {
 }
 
 
-std::string ClientGameSelfPlay::getLastMove() const {
-	return std::to_string(_checkers_state_ext.lastMove());
-}
-
-
 std::array<int, TOTAL_NUM_ACTIONS> ClientGameSelfPlay::getValidMoves() const {
 	return GetValidMovesBinary(_checkers_state_ext.state().board(), 
 		_checkers_state_ext.state().board().active);
@@ -125,10 +120,10 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 	  _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
 	}
 
-	// Check the ranking of selected move.
-	if (checkers_notifier_ != nullptr) {
-		checkers_notifier_->OnMCTSResult(c, mcts_checkers_ai->getLastResult());
-	}
+	// // Check the ranking of selected move.
+	// if (checkers_notifier_ != nullptr) {
+	// 	checkers_notifier_->OnMCTSResult(c, mcts_checkers_ai->getLastResult());
+	// }
 	return c;
 }
 
@@ -281,8 +276,14 @@ void ClientGameSelfPlay::act() {
 	}
 	_online_counter++;
 
+
 	const CheckersState& cs = _checkers_state_ext.state();
-	if (_human_player != nullptr && cs.nextPlayer() == WHITE_PLAYER) {
+	// just display board on every move
+	if (_human_player != nullptr)
+		std::cout << cs.showBoard() << std::endl;
+
+
+	if (_human_player != nullptr && cs.currentPlayer() == WHITE_PLAYER) {
 		do {
 			if (cs.terminated()) {
 				finish_game(CHEKCERS_BLACK_WIN);
@@ -332,7 +333,7 @@ void ClientGameSelfPlay::act() {
 		}
 	}
 
-	int current_player = cs.nextPlayer();
+	int current_player = cs.currentPlayer();
 	Coord move = M_INVALID;
 
 	CheckersFeature cf(cs);
@@ -371,9 +372,10 @@ void ClientGameSelfPlay::act() {
 	}
 	if (cs.terminated()) {
 		CheckersFinishReason reason = cs.getPly() >= TOTAL_MAX_MOVE ? CHECKERS_MAX_STEP : 
-		(cs.nextPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
+		(cs.currentPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
 		finish_game(reason);
 	}
 	// exit(0);
 }
+
 

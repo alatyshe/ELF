@@ -21,11 +21,11 @@
 // ==========================================================
 // ==========================================================
 struct WinRateStats {
-	uint64_t	black_wins = 0;
-	uint64_t	white_wins = 0;
-	uint64_t	both_lost = 0;
-	float			sum_reward = 0.0;
-	uint64_t	total_games = 0;
+	uint64_t black_wins = 0;
+	uint64_t white_wins = 0;
+	uint64_t both_lost = 0;
+	float sum_reward = 0.0;
+	uint64_t total_games = 0;
 
 	void feed(CheckersFinishReason reason, float reward) {
 		if (reason == CHECKERS_MAX_STEP)
@@ -72,7 +72,7 @@ class GameStats {
 	}
 
  private:
-	std::mutex		_mutex;
-	WinRateStats	_win_rate_stats;
+	std::mutex _mutex;
+	WinRateStats _win_rate_stats;
 	std::shared_ptr<spdlog::logger> _logger;
 };

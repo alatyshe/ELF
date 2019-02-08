@@ -92,7 +92,7 @@ class GoConsoleGTP:
             return False, msg
 
     def on_board(self, batch, items, reply):
-        self.showboard(batch)
+        # self.showboard(batch)
 
         valid = batch.GC.getGame(0).getValidMoves()
 
@@ -109,8 +109,7 @@ class GoConsoleGTP:
                 if not self.moves_for_human[idx][1]:
                     x1, y1, x2, y2 = x2, y2, x1, y1
                 print("", idx, "\t: ", (x1 + y1 * 8), "=>", (x2 + y2 * 8))
-                # , "=>", "Forward" if self.moves_for_human[idx][1] else "Backward")
-
+        print("")
         return True, None
 
     def on_quit(self, batch, items, reply):
@@ -147,12 +146,8 @@ class GoConsoleGTP:
     def showboard(self, batch):
         print(batch.GC.getGame(0).showBoard())
 
-    def get_last_move(self, batch):
-        return batch.GC.getGame(0).getLastMove()
-
     def get_final_score(self, batch):
         return batch.GC.getGame(0).getLastScore()
-
 
     def print_msg(self, ret, msg):
         print("\n%s %s\n\n" % (("=" if ret else "?"), msg))
@@ -161,15 +156,11 @@ class GoConsoleGTP:
         # Show last command results.
         if self.last_cmd == "play" or self.last_cmd == "clear_board":
             print("New Game")
-        elif self.last_cmd == "genmove":
-            print("Last move : ", self.get_last_move(batch))
 
         self.last_cmd = ""
 
         self.on_board(batch, [], [])
         while True:
-
-
             cmd = input(prompt_str)
             items = cmd.split()
             if len(items) < 1:

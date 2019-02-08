@@ -47,7 +47,6 @@ class GameBase {
 		_rng.seed(_seed);
 	}
 
-	// 
 	void mainLoop() {
 		if (_options.verbose) {
 			_logger->info(
@@ -64,7 +63,7 @@ class GameBase {
 		}
 	}
 
-	virtual void act() 	= 0;
+	virtual void act() = 0;
 	virtual ~GameBase() = default;
 
  protected:
@@ -80,8 +79,5 @@ class GameBase {
  private:
 	std::shared_ptr<spdlog::logger> _logger;
 };
-
-
-
 
 

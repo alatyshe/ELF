@@ -29,7 +29,7 @@
 #include "../control/ctrl_eval.h"
 #include "../control/ctrl_selfplay.h"
 
-#include "../../common/game_stats.h"
+#include "../../common/GameStats.h"
 #include "../../common/notifier.h"
 
 using namespace std::chrono_literals;

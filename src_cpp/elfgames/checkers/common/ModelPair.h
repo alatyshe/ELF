@@ -43,6 +43,7 @@ struct ModelPair {
 		return p1.black_ver == p2.black_ver && p1.white_ver == p2.white_ver &&
 				p1.mcts_opt == p2.mcts_opt;
 	}
+
 	friend bool operator!=(const ModelPair& p1, const ModelPair& p2) {
 		return !(p1 == p2);
 	}
@@ -66,11 +67,13 @@ struct ModelPair {
 
 // ==========================================================
 // ==========================================================
+// ????????????????????????????????????????????
 namespace std {
 template <>
 struct hash<ModelPair> {
 	typedef ModelPair argument_type;
 	typedef std::size_t result_type;
+
 	result_type operator()(argument_type const& s) const noexcept {
 		result_type const h1(std::hash<int64_t>{}(s.black_ver));
 		result_type const h2(std::hash<int64_t>{}(s.white_ver));

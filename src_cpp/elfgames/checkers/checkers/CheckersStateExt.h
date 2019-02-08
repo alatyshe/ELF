@@ -81,7 +81,7 @@ struct CheckersStateExt {
 		// std::cout << std::endl;
 		// std::cout << r.info() << std::endl;
 		// std::cout << "=============================" << std::endl;
-		_logger->info("Dump Record:{}\n\n", r.info());
+		_logger->info("Dump Record:{}\n", r.info());
 
 		return r;
 	}
@@ -213,19 +213,19 @@ class CheckersStateExtOffline {
 	}
 
  private:
-	const int							_game_idx;
-	CheckersState					_state;
-	CheckersFeature				_bf;
-	CheckersGameOptions 	_options;
+	const int _game_idx;
+	CheckersState _state;
+	CheckersFeature _bf;
+	CheckersGameOptions _options;
 
 	int _seq;
-	MsgRequest						_curr_request;
+	MsgRequest _curr_request;
 
-	std::vector<Coord>		_offline_all_moves;
-	float									_offline_winner;
+	std::vector<Coord> _offline_all_moves;
+	float _offline_winner;
 
-	std::vector<CheckersCoordRecord> 	_mcts_policies;
-	std::vector<float>		_predicted_values;
+	std::vector<CheckersCoordRecord> _mcts_policies;
+	std::vector<float> _predicted_values;
 
 	std::shared_ptr<spdlog::logger> _logger;
 };
