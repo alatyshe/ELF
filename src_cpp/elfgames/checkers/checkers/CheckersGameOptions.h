@@ -93,21 +93,51 @@ struct CheckersGameOptions {
 	std::string info() const {
 		std::stringstream ss;
 
+		ss << std::setw(30) << std::right;
 		ss << "Seed: " << seed << std::endl;
+		ss << std::setw(30) << std::right;
 		ss << "Time signature: " << time_signature << std::endl;
+		ss << std::setw(30) << std::right;
 		ss << "Client max delay in sec: " << client_max_delay_sec << std::endl;
-		ss << "#FutureActions: " << checkers_num_future_actions << std::endl;
-		ss << "#GamePerThread: " << num_games_per_thread << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Num future actions: " << checkers_num_future_actions << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Games per thread: " << num_games_per_thread << std::endl;
+		ss << std::setw(30) << std::right;
 		ss << "mode: " << mode << std::endl;
-		ss << "Selfplay init min #games: " << selfplay_init_num
-			 << ", update #games: " << selfplay_update_num
-			 << ", async: " << elf_utils::print_bool(selfplay_async) << std::endl;
+
+		ss << std::setw(30) << std::right;
+		ss << "Keep prev Selfplay: " << keep_prev_selfplay << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Init min games: " << selfplay_init_num << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Update games: " << selfplay_update_num << std::endl;
+		
+		ss << std::setw(30) << std::right;
+		ss << "Eval num games: " << eval_num_games << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Eval Threshold: " << eval_thres << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Eval num Threads: " << eval_num_threads << std::endl;
+
+		ss << std::setw(30) << std::right;
+		ss << "Async: " << elf_utils::print_bool(selfplay_async) << std::endl;
+
+		ss << std::setw(30) << std::right;
 		ss << "UseMCTS: " << elf_utils::print_bool(use_mcts) << std::endl;
-		// ss << "MoveCutOff: " << move_cutoff << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "UseMCTS AI2: " << elf_utils::print_bool(use_mcts_ai2) << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Black policy network only: " << elf_utils::print_bool(black_use_policy_network_only) << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "White policy network only: " << elf_utils::print_bool(white_use_policy_network_only) << std::endl;
+
+		ss << std::setw(30) << std::right;
 		ss << "PolicyDistriCutOff: " << policy_distri_cutoff << std::endl;
 
 		if (expected_num_clients > 0) {
-			ss << "Expected #client: " << expected_num_clients << std::endl;
+			ss << std::setw(30) << std::right;
+			ss << "Expected clients: " << expected_num_clients << std::endl;
 		}
 
 		if (!list_files.empty()) {
@@ -118,27 +148,48 @@ struct CheckersGameOptions {
 			ss << std::endl;
 		}
 
-		ss << "Server_addr: " << server_addr << ", server_id: " << server_id
-			 << ", port: " << port << std::endl;
-		ss << "#Reader: " << num_reader << ", Qmin_sz: " << q_min_size
-			 << ", Qmax_sz: " << q_max_size << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << std::endl
+			 << "Server options: "
+			 << server_addr
+			 << "[server_id=" << server_id << "]"
+			 << "[port=" << port << "]"
+			 << std::endl;
+
+		ss << std::setw(30) << std::right;
+		ss << "Num Reader: " << num_reader << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Q_min_size: " << q_min_size << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "Q_max_size: " << q_max_size << std::endl;
+
+		ss << std::setw(30) << std::right;
 		ss << "Verbose: " << elf_utils::print_bool(verbose) << std::endl;
 
 		ss << "Policy distri training for all moves: "
 			 << elf_utils::print_bool(policy_distri_training_for_all) << std::endl;
 
-		if (!dump_record_prefix.empty())
+		if (!dump_record_prefix.empty()) {
+			ss << std::setw(30) << std::right;
 			ss << "dumpRecord: " << dump_record_prefix << std::endl;
-		ss << "Reset move ranking after " << num_reset_ranking << " actions"
+		}
+
+		ss << std::setw(30) << std::right;
+		ss << "Reset move ranking after: " << num_reset_ranking << " actions"
 			 << std::endl;
 
-		if (white_puct > 0.0)
+		if (white_puct > 0.0) {
+			ss << std::setw(30) << std::right;
 			ss << "White puct: " << white_puct << std::endl;
+		}
 
-		if (black_use_policy_network_only)
-			ss << "Black uses policy network only" << std::endl;
-		if (white_use_policy_network_only)
-			ss << "White uses policy network only" << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "White MCTS rollout per batch: " << white_mcts_rollout_per_batch << std::endl;
+		ss << std::setw(30) << std::right;
+		ss << "White MCTS rollout per thread: " << white_mcts_rollout_per_thread << std::endl;
+
+		ss << std::setw(30) << std::right;
+		ss << "Client max delay in sec: " << client_max_delay_sec << std::endl;
 
 		if (cheat_eval_new_model_wins_half)
 			ss << "Cheat mode: New model gets 100% win rate half of the time."
@@ -146,7 +197,7 @@ struct CheckersGameOptions {
 
 		if (cheat_selfplay_random_result)
 			ss << "Cheat selfplay mode: Random outcome." << std::endl;
-		ss << std::endl;
+
 		return ss.str();
 	}
 

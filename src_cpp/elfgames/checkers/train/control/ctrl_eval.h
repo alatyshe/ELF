@@ -391,19 +391,19 @@ class EvalSubCtrl {
 		if (selfplay_ver == best_baseline_model_) {
 			if (selfplay_ver < new_version) {
 				logger_->info(
-						"Add new model for evaluation: {}, selfplay_ver: {}, baseline_ver: {}, eval_num_games={}\n\tmcts.info: {}",
+						"Add new model for evaluation: {}, selfplay_ver: {}, baseline_ver: {}, eval_num_games={}\nTree Search Options :\n{}",
 						new_version,
 						selfplay_ver,
 						best_baseline_model_,
 						gameOptions_.eval_num_games,
-						mcts_opt_.info());
+						mcts_opt_.info(true));
 				add_candidate_model(new_version);
 			} else {
 				logger_->warn(
-						"New version: {} is the same or earlier than baseline: {}\n\tmcts.info: {}",
+						"New version: {} is the same or earlier than baseline: {}\nTree Search Options :\n{}",
 						new_version,
 						best_baseline_model_,
-						mcts_opt_.info());
+						mcts_opt_.info(true));
 			}
 		} else {
 			logger_->warn(

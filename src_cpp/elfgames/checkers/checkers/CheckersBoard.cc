@@ -145,6 +145,7 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int 
 	std::vector<int64_t> moves;
 	std::string move_buff;
 	int buffer;
+	int total_moves = 0;
 
 	result.fill(0);
 	if (player != board.active) {
@@ -158,6 +159,7 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int 
 			// print moves			
 			// std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
 			result[moves::m_to_i.find(move_buff)->second] = 1;
+			total_moves += 1;
 		}
 
 		buffer = board.active;
@@ -171,21 +173,20 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int 
 			// print moves
 			// std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
 			result[moves::m_to_i.find(move_buff)->second] = 1;
+			total_moves += 1;
 		}
 	}	
 	// Repeat moves
 	// if (player == BLACK_PLAYER && board._remove_step_black) {
 	// } else if (player == WHITE_PLAYER && board._remove_step_white) {
-	if (player == WHITE_PLAYER 
-			&& board._white_repeats_step >= REPEAT_MOVE
-			&& board._last_move_white[1] != 70
-			&& board._last_move_white[1] != 3) {
+	if (total_moves > 1
+			&& player == WHITE_PLAYER 
+			&& board._white_repeats_step >= REPEAT_MOVE) {
 		result[board._last_move_white[1]] = 0;
 		// result[board._last_move_white[0]] = 0;
-	} else if (player == BLACK_PLAYER
-			&& board._black_repeats_step >= REPEAT_MOVE
-			&& board._last_move_black[1] != 70
-			&& board._last_move_black[1] != 3) {
+	} else if (total_moves > 1
+			&& player == BLACK_PLAYER
+			&& board._black_repeats_step >= REPEAT_MOVE) {
 		result[board._last_move_black[1]] = 0;
 	}
 

@@ -44,7 +44,9 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
       : options_(options),
         logger_(elf::logging::getIndexedLogger(
             "elf::ai::tree_search::MCTSAI_T-",
-            "")) {    
+            "")) {
+    logger_->info("Tree Search Options : \n{}", options.info(true));
+
     ts_.reset(new TreeSearch(options_, gen));
   }
 
@@ -56,6 +58,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
     return ts_.get();
   }
 
+  // act() call ts_->run(), which return best action
   bool act(const State& s, Action* a) override {
     align_state(s);
     if (options_.verbose_time) {
@@ -87,6 +90,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
     return true;
   }
 
+  // reset Tree;
   bool endGame(const State&) override {
     resetTree();
     return true;
@@ -146,6 +150,10 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
     }
   }
 
+  // Important function advanceMove() if move is valid, 
+  // ts_ will call treeAdvance(), which will recursively remove 
+  // not selected nodes; otherwise reset tree;
+  // 
   // Note that moves_since should have the following signature.
   //   bool moves_since(size_t *nextMoveNumber, vector<Action> *recent_moves)
   // It will compare the current nextMoveNumber to the move number in the

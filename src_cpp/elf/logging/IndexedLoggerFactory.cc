@@ -33,7 +33,7 @@ std::shared_ptr<spdlog::logger> IndexedLoggerFactory::makeLogger(
   size_t curCount = counter_++;
 
   std::stringstream loggerName;
-  loggerName <<  prefix << std::setw(3) << std::left << curCount << suffix;
+  loggerName << prefix << std::setw(3) << std::left << curCount << suffix;
 
   return creator_(loggerName.str());
 }

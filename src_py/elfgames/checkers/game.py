@@ -289,7 +289,7 @@ class Loader(object):
 		GC = checkers.GameContext(co, opt)
 
 		if self.options.parameter_print:
-			print("****************** Options ******************")
+			print("************ CheckersGameOptions ************")
 			print(opt.info())
 			print("*********************************************")
 			print("Version: ", GC.ctx().version())

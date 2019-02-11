@@ -215,6 +215,7 @@ class NodeT : public NodeBaseT<State> {
     return true;
   }
 
+  // act with argmax UCT
   bool findMove(
       const SearchAlgoOptions& alg_opt,
       int node_depth,
@@ -263,6 +264,7 @@ class NodeT : public NodeBaseT<State> {
     return true;
   }
 
+  // backup value
   bool updateEdgeStats(const Action& action, float reward, float virtual_loss) {
     if (status_ != VISITED)
       return false;
@@ -290,6 +292,7 @@ class NodeT : public NodeBaseT<State> {
     return true;
   }
 
+  // tree adds a new node
   NodeId followEdge(const Action& action, Tree& tree) {
     if (status_ != VISITED)
       return InvalidNodeId;
@@ -430,6 +433,7 @@ class NodeT : public NodeBaseT<State> {
 
 
 template <typename State, typename Action>
+
 class TreeT {
  public:
   using Node = NodeT<State, Action>;
@@ -449,6 +453,7 @@ class TreeT {
     allocateRoot();
   }
 
+  // will free all unused nodes recursively before moving the next root;
   void treeAdvance(const Action& action) {
     NodeId next_root = InvalidNodeId;
     Node* r = getRootNode();
@@ -476,6 +481,7 @@ class TreeT {
   }
 
   // Low level functions.
+  // add a new node with parent Q?
   NodeId addNode(float unsigned_parent_q) {
     std::lock_guard<std::mutex> lock(allocMutex_);
 
@@ -499,6 +505,7 @@ class TreeT {
     freeNode(id);
   }
 
+  // get the node by key
   Node* operator[](NodeId i) {
     std::lock_guard<std::mutex> lock(allocMutex_);
 

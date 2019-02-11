@@ -59,6 +59,9 @@ class CheckersMCTSActor {
 					"CheckersMCTSActor-", 
 					"")) {
 		ai_.reset(new CheckersAI(client, {params_.actor_name}));
+
+		logger_->info(
+    		"MCTS Actor params : {}", params.info());
 	}
 
 	std::string info() const {
@@ -77,6 +80,8 @@ class CheckersMCTSActor {
 		return &rng_;
 	}
 
+
+	// отдаем на оценку нейронке
 	// batch evaluate.
 	void evaluate(
 			const std::vector<const CheckersState*>& states,
@@ -120,6 +125,7 @@ class CheckersMCTSActor {
 			p_replies.push_back(&replies[i]);
 		}
 
+		// will call neural net
 		if (!ai_->act_batch(p_bfs, p_replies)) {
 			logger_->info("act unsuccessful! ");
 		} else {
@@ -129,7 +135,7 @@ class CheckersMCTSActor {
 		}
 	}
 
-
+	// отдаем на оценку нейронке
 	void evaluate(const CheckersState& s, NodeResponse* resp) {
 		if (oo_ != nullptr)
 			*oo_ 	<< std::endl << std::endl << "Evaluating state at " 
@@ -147,6 +153,7 @@ class CheckersMCTSActor {
 			CheckersReply reply(bf);
 
 			// AI-Client will run a one-step neural network
+			// will call neural net
 			if (!ai_->act(bf, &reply)) {
 				// This happens when the game is about to end,
 				logger_->info("act unsuccessful! ");
@@ -178,7 +185,10 @@ class CheckersMCTSActor {
 	}
 
  protected:
+
 	MCTSActorParams params_;
+
+	// client to run neural network
 	std::unique_ptr<CheckersAI> ai_;
 	std::ostream* oo_ = nullptr;
 	std::mt19937 rng_;
@@ -191,23 +201,22 @@ class CheckersMCTSActor {
 		return CheckersFeature(s);
 	}
 
-	
+	// check terminated;
+	// узнаем нужно ли вызывать нейронку для оценки следующего сотояния доски, 
+	// или можно уже получить reward.
 	PreEvalResult pre_evaluate(const CheckersState& s, NodeResponse* resp) {
 		resp->q_flip = s.currentPlayer() == WHITE_PLAYER;
 
 		if (s.terminated()) {
+			float final_value = s.evaluateGame();
+	
 			if (oo_ != nullptr) {
-				*oo_ << "Terminal state at " << s.getPly() << " Use TT evaluator"
-						 << std::endl;
+				*oo_ << s.showBoard() << std::endl;
+				*oo_ << "Terminal state at " << s.getPly() << std::endl;
+				*oo_ << "Score :" << final_value << std::endl; 
 				*oo_ << "Moves[" << s.getAllMoves().size()
 						 << "]: " << s.getAllMovesString() << std::endl;
-				*oo_ << s.showBoard() << std::endl;
 			}
-			float final_value = s.evaluateGame();
-			
-			if (oo_ != nullptr)
-				*oo_ << "Terminal state. Get raw score: " << final_value
-						 << std::endl;
 			resp->value = final_value > 0 ? 1.0 : -1.0;
 			// No further action.
 			resp->pi.clear();
@@ -252,6 +261,7 @@ class CheckersMCTSActor {
 
 
 	// Получаем ответ от нейронки(вероятности на каждый шаг) и заполняем 
+	// with inv-transform considered, remove invalid moves, normalize
 	// output_pi
 	static void pi2response(
 			const CheckersFeature& bf,

@@ -10,6 +10,7 @@
 
 #include <sstream>
 #include <string>
+#include <iomanip>
 
 #include "tree_search_base.h"
 
@@ -113,25 +114,41 @@ struct TSOptions {
     std::stringstream ss;
 
     if (verbose_in) {
-      ss << "Maximal #moves (0 = no constraint): " << max_num_moves
-         << std::endl;
+      
+      // Maximal moves (0 = no constraint)
+      if (max_num_moves > 0) {
+        ss << std::setw(20) << std::right;
+        ss << "Maximal moves: " << max_num_moves << std::endl;
+      }
+      ss << std::setw(20) << std::right;
       ss << "Seed: " << seed << std::endl;
-      ss << "Log Prefix: " << log_prefix << std::endl;
-      ss << "#Threads: " << num_threads << std::endl;
-      ss << "#Rollout per thread: " << num_rollouts_per_thread
-         << ", #rollouts per batch: " << num_rollouts_per_batch << std::endl;
-      ss << "Verbose: " << elf_utils::print_bool(verbose)
-         << ", Verbose_time: " << elf_utils::print_bool(verbose_time)
-         << std::endl;
-      ss << "Persistent tree: " << elf_utils::print_bool(persistent_tree)
-         << std::endl;
+      ss << std::setw(20) << std::right;
+      ss << "Log Prefix: " << "[" << log_prefix << "]" << std::endl;
+      ss << std::setw(20) << std::right;
+      ss << "Threads: " << num_threads << std::endl;
+      ss << std::setw(20) << std::right;
+      ss << "Rollout per thread: " << num_rollouts_per_thread << std::endl;
+      ss << std::setw(20) << std::right;
+      ss << "Rollouts per batch: " << num_rollouts_per_batch << std::endl;
+      ss << std::setw(20) << std::right;
+      ss << "Verbose: " << elf_utils::print_bool(verbose) << std::endl;
+      ss << std::setw(20) << std::right;
+      ss << "Verbose_time: " << elf_utils::print_bool(verbose_time) << std::endl;
+      ss << std::setw(20) << std::right;
+      ss << "Persistent tree: " << elf_utils::print_bool(persistent_tree) << std::endl;
+      ss << std::setw(20) << std::right;
       ss << "#Virtual loss: " << virtual_loss << std::endl;
+      ss << std::setw(20) << std::right;
       ss << "Pick method: " << pick_method << std::endl;
 
       if (root_epsilon > 0) {
-        ss << "Root exploration: epsilon: " << root_epsilon
-           << ", alpha: " << root_alpha << std::endl;
+        ss << std::setw(20) << std::right;
+        ss << "Root exploration:"
+           << "[eps=" << root_epsilon
+           << "][alpha=" << root_alpha 
+           << "]" << std::endl;
       }
+      ss << std::setw(20) << std::right;
       ss << "Algorithm: " << alg_opt.info() << std::endl;
 
     } else {
