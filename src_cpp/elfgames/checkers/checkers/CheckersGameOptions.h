@@ -181,12 +181,11 @@ struct CheckersGameOptions {
 		if (white_puct > 0.0) {
 			ss << std::setw(30) << std::right;
 			ss << "White puct: " << white_puct << std::endl;
+			ss << std::setw(30) << std::right;
+			ss << "White MCTS rollout per batch: " << white_mcts_rollout_per_batch << std::endl;
+			ss << std::setw(30) << std::right;
+			ss << "White MCTS rollout per thread: " << white_mcts_rollout_per_thread << std::endl;
 		}
-
-		ss << std::setw(30) << std::right;
-		ss << "White MCTS rollout per batch: " << white_mcts_rollout_per_batch << std::endl;
-		ss << std::setw(30) << std::right;
-		ss << "White MCTS rollout per thread: " << white_mcts_rollout_per_thread << std::endl;
 
 		ss << std::setw(30) << std::right;
 		ss << "Client max delay in sec: " << client_max_delay_sec << std::endl;

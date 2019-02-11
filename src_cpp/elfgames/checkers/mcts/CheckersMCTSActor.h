@@ -60,8 +60,8 @@ class CheckersMCTSActor {
 					"")) {
 		ai_.reset(new CheckersAI(client, {params_.actor_name}));
 
-		logger_->info(
-    		"MCTS Actor params : {}", params.info());
+		// logger_->info(
+		// 		"MCTS Actor params : {}", params.info());
 	}
 
 	std::string info() const {

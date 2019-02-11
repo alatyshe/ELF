@@ -24,11 +24,6 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--num_block0 10						--num_block1 10 \
 	\
 	--use_mcts								--use_mcts_ai2 \
-	--mcts_epsilon 0.45				--mcts_alpha 0.3 \
-	--mcts_puct 0.85					--mcts_use_prior \
-	--mcts_threads 4					--mcts_rollout_per_thread 200 \
-	--mcts_virtual_loss 2			--mcts_persistent_tree \
-	\
 	--policy_distri_cutoff 5	--policy_distri_training_for_all \
 	\
 	--no_check_loaded_options0 \
@@ -41,9 +36,17 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--verbose \
 	# --dump_record_prefix tree\
 	
-	# 1>> client_log.log 2>&1 &
 	# --suicide_after_n_games 120
 	
 
-	# \
-	# 1>> client.log 2>&1 &
+	# Params that client gets from server
+	# MCTS:
+	# --mcts_epsilon 0.25
+	# --mcts_alpha 0.03
+	# --mcts_puct 0.9
+	# --mcts_threads 1
+	# --mcts_rollout_per_thread 100
+	# --mcts_virtual_loss 5
+	# --mcts_persistent_tree
+	# --mcts_use_prior
+

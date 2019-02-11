@@ -25,7 +25,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	\
 	--use_mcts							--use_mcts_ai2 \
 	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
-	--mcts_puct 0.85				--mcts_use_prior \
+	--mcts_puct 0.9					--mcts_use_prior \
 	--mcts_threads 16				--mcts_rollout_per_thread 100 \
 	--mcts_virtual_loss 5		--mcts_persistent_tree \
 	\
@@ -62,11 +62,11 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	# 1>> log.log 2>&1 &
 	
 
-	# --batchsize 256				- прогон один раз через нейронку> берет этот батч и дает неронке для обучения.
+	# --batchsize 256			- прогон один раз через нейронку. берет этот батч и дает неронке для обучения.
 	# --num_minibatch 128 - количество раз которое нужно давать нейронке --batchsize то есть 128 раз по 256 states
 
-	# --selfplay_init_num 2	- проигрывает необходимое количество игр(для разрастания дерева) 
-	# после него начинает свою работу и начинает собирать батчи
+	# --selfplay_init_num 2	- проигрывает необходимое количество игр(для батча) 
+	# после чего тренирует модель через
 	#   |py| Trainer:: episode_start
 	#   |py| Evaluator:: episode_start
 	# 

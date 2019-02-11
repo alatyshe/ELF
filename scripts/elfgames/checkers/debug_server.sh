@@ -24,8 +24,9 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--num_block 10 \
 	\
 	--use_mcts							--use_mcts_ai2 \
+	\
 	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
-	--mcts_puct 0.85				--mcts_use_prior \
+	--mcts_puct 0.9					--mcts_use_prior \
 	--mcts_threads 1				--mcts_rollout_per_thread 200 \
 	--mcts_virtual_loss 5		--mcts_persistent_tree \
 	\

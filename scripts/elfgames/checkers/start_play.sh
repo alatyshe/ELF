@@ -26,10 +26,12 @@ model_file=elfgames.checkers.df_model_checkers \
 	--verbose					--gpu 0 \
 	--num_block 10		--dim 128 \
 	\
-	--mcts_virtual_loss 1 \
+	--use_mcts \
+	\
+	--mcts_virtual_loss 5 \
 	--mcts_rollout_per_batch 1 \
 	--mcts_persistent_tree \
-	--use_mcts							--mcts_verbose_time \
+	--mcts_verbose_time \
 	--mcts_use_prior				--mcts_puct 0.9 \
 	--mcts_threads 1				--mcts_rollout_per_thread 100 \
 	# "$@"
