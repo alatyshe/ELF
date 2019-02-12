@@ -430,7 +430,7 @@ class TreeSearchT {
 							// &this->done_.flag(),
 							&this->stopSearch_,
 							*this->actors_[i],
-							this->Tree_);
+							this->tree_);
 
 					// if (this->done_.get()) {
 					if (this->stopSearch_.load()) {
@@ -459,7 +459,7 @@ class TreeSearchT {
 	}
 
 	std::string printTree() const {
-		return Tree_.printTree();
+		return tree_.printTree();
 	}
 
 	MCTSResult runPolicyOnly(const State& root_state) {
@@ -470,7 +470,7 @@ class TreeSearchT {
 		setRootNodeState(root_state);
 
 		// Some hack here.
-		Node* root = Tree_.getRootNode();
+		Node* root = tree_.getRootNode();
 
 		if (!root->isVisited()) {
 			NodeResponseT<Action> resp;
@@ -490,7 +490,7 @@ class TreeSearchT {
 		setRootNodeState(root_state);
 
 		if (options_.root_epsilon > 0.0) {
-			Node* root = Tree_.getRootNode();
+			Node* root = tree_.getRootNode();
 			root->enhanceExploration(
 					options_.root_epsilon, options_.root_alpha, actors_[0]->rng());
 		}
@@ -506,11 +506,11 @@ class TreeSearchT {
 	}
 
 	void treeAdvance(const Action& action) {
-		Tree_.treeAdvance(action);
+		tree_.treeAdvance(action);
 	}
 
 	void clear() {
-		Tree_.clear();
+		tree_.clear();
 	}
 
 	void stop() {
@@ -540,7 +540,7 @@ class TreeSearchT {
 
 	std::unique_ptr<std::ostream> output_;
 
-	Tree Tree_;
+	Tree tree_;
 
 	TSOptions options_;
 	std::atomic<bool> stopSearch_;
@@ -557,7 +557,7 @@ class TreeSearchT {
 	}
 
 	void setRootNodeState(const State& root_state) {
-		Node* root = Tree_.getRootNode();
+		Node* root = tree_.getRootNode();
 
 		if (root == nullptr) {
 			throw std::range_error("TreeSearch::root cannot be null!");
@@ -575,7 +575,7 @@ class TreeSearchT {
 
 	// get results from the hash table SA
 	MCTSResult chooseAction() const {    
-		const Node* root = Tree_.getRootNode();
+		const Node* root = tree_.getRootNode();
 		if (root == nullptr) {
 			throw std::range_error("TreeSearch::root cannot be null!");
 		}

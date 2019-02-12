@@ -67,18 +67,9 @@ class AI_T {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+// Просто класс для оправки batch на сторону python по ключу
+// который мы задаем в game.py
+// например: checkers_actor_black, checkers_actor_white, game_start, game_end
 template <typename S, typename A>
 class AIClientT : public AI_T<S, A> {
  public:

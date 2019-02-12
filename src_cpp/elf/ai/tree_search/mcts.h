@@ -26,6 +26,13 @@ namespace elf {
 namespace ai {
 namespace tree_search {
 
+// Класс который связывает алгоритм MCTS и нашего AIClientT
+// Содержит в себе 
+// 1) Экземпляр класса AIClientT, который просто оправляет наши
+//    данные на сторону python по ключам(подробнее в файле ai.h)
+// 2) TreeSearch - наш алгоритм поиска, который в себе реализует алгоритм поиска
+//    по дереву(многопоточный), само дерево - Tree(состоящее из нод),
+//    и вектор из TreeSearchSingleThread(один поток нашего дерева)
 template <typename Actor>
 class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
  public:
@@ -61,6 +68,8 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   // act() call ts_->run(), which return best action
   bool act(const State& s, Action* a) override {
     align_state(s);
+
+    // VERBOSE
     if (options_.verbose_time) {
       elf_utils::MyClock clock;
       clock.restart();
@@ -150,6 +159,10 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
     }
   }
 
+  // treeAdvance - удаляет неиспользуемые ноды в истории дерева оставяя
+  // только ноды по которым мы проходили во время игры.
+  // Нужно для того, чтобы не хранить огромное дерево в середине игры.
+
   // Important function advanceMove() if move is valid, 
   // ts_ will call treeAdvance(), which will recursively remove 
   // not selected nodes; otherwise reset tree;
@@ -162,6 +175,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   // number.
   void advanceMoves(const State& s) {    
     std::vector<Action> recent_moves;
+
     bool move_valid =
         elf::ai::tree_search::StateTrait<State, Action>::moves_since(
             s, &nextMoveNumber_, &recent_moves);

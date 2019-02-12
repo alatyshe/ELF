@@ -14,8 +14,11 @@
 
 # --mcts_threads 8				--mcts_rollout_per_thread 50
 
-LOAD0=myserver/save-609280.bin
-LOAD1=myserver/save-613376.bin
+# LOAD0=myserver/save-609280.bin
+# LOAD1=myserver/save-613376.bin
+
+LOAD1=myserver/save-609280.bin
+LOAD0=myserver/save-613376.bin
 
 BATCHSIZE=64
 NUM_ROLLOUTS=50

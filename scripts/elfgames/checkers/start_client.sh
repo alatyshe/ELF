@@ -36,7 +36,7 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--verbose \
 	# --suicide_after_n_games 120
 	
-	
+
 	# --num_games - int, 'number of games'
 	# --batchsize - int, 'batch size'
 	# --T - int, 'number of timesteps'
@@ -48,7 +48,7 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	# --mcts_rollout_per_batch 	- int, 'Batch size for mcts rollout'
 	# --mcts_verbose 						- bool, 'enables mcts verbosity'
 	# --mcts_verbose_time 			- bool, 'enables mcts verbosity for time stats'
-	# --mcts_persistent_tree  	- bool, 'use persistent tree in MCTS'
+	# --mcts_persistent_tree  	- bool, 'use persistent tree in MCTS' если не установлен, обнуляет дерево на каждом шаге
 	# --mcts_epsilon 						- float, 'for exploration enhancement, weight of randomization'
 	# --mcts_alpha 							- float, 'for exploration enhancement, alpha term in gamma distribution'	
 	# --mcts_pick_method 				- string, 'criterion for mcts node selection' 'most_visited'
