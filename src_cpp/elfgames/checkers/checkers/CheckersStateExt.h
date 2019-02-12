@@ -26,7 +26,7 @@ enum CheckersFinishReason {
 // нужен для генерации батчей(игры пройденной от начала до конца)
 struct CheckersStateExt {
  public:
-	CheckersStateExt(int game_idx, const CheckersGameOptions& options);
+	CheckersStateExt(int game_idx, const CheckersGameOptions& game_options);
 
 	void setRequest(const MsgRequest& request);
 	void addCurrentModel();
@@ -39,7 +39,7 @@ struct CheckersStateExt {
 	bool forward(Coord c);
 	int seq() const;
 	const CheckersState& state() const;
-	const CheckersGameOptions& options() const;
+	const CheckersGameOptions& gameOptions() const;
 	// save tree if --dump_record_prefix not empty
 	void saveCurrentTree(const std::string& tree_info) const;
 
@@ -128,7 +128,7 @@ struct CheckersStateExt {
 	CheckersState _state;
 	
 	MsgRequest _curr_request;
-	CheckersGameOptions _options;
+	CheckersGameOptions _game_options;
 
 	std::vector<CheckersCoordRecord> _mcts_policies;
 	std::vector<float> _predicted_values;
@@ -146,10 +146,10 @@ class CheckersStateExtOffline {
  public:
 	friend class GameFeature;
 
-	CheckersStateExtOffline(int game_idx, const CheckersGameOptions& options)
+	CheckersStateExtOffline(int game_idx, const CheckersGameOptions& game_options)
 			: _game_idx(game_idx),
 				_bf(_state),
-				_options(options),
+				_game_options(game_options),
 				_logger(elf::logging::getIndexedLogger(
 						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"CheckersStateExtOffline-",
@@ -180,17 +180,17 @@ class CheckersStateExtOffline {
 
 	bool switchRandomMove(std::mt19937* rng) {
 		// Random sample one move
-		if ((int)_offline_all_moves.size() <= _options.checkers_num_future_actions - 1) {
+		if ((int)_offline_all_moves.size() <= _game_options.checkers_num_future_actions - 1) {
 			_logger->warn(
 					"[{}] #moves {} smaller than {} - 1",
 					_game_idx,
 					_offline_all_moves.size(),
-					_options.checkers_num_future_actions);
+					_game_options.checkers_num_future_actions);
 			exit(0);
 			return false;
 		}
 		size_t move_to = (*rng)() %
-				(_offline_all_moves.size() - _options.checkers_num_future_actions + 1);
+				(_offline_all_moves.size() - _game_options.checkers_num_future_actions + 1);
 		switchBeforeMove(move_to);
 		return true;
 	}
@@ -216,7 +216,7 @@ class CheckersStateExtOffline {
 	const int _game_idx;
 	CheckersState _state;
 	CheckersFeature _bf;
-	CheckersGameOptions _options;
+	CheckersGameOptions _game_options;
 
 	int _seq;
 	MsgRequest _curr_request;

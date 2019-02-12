@@ -5,13 +5,13 @@ ClientGameSelfPlay::ClientGameSelfPlay(
 		int game_idx,
 		elf::GameClient* client,
 		const ContextOptions& context_options,
-		const CheckersGameOptions& options,
+		const CheckersGameOptions& game_options,
 		ThreadedDispatcher* dispatcher,
 		CheckersGameNotifierBase* checkers_notifier)
-		: GameBase(game_idx, client, context_options, options),
+		: GameBase(game_idx, client, context_options, game_options),
 			dispatcher_(dispatcher),
 			checkers_notifier_(checkers_notifier),
-			_checkers_state_ext(game_idx, options),
+			_checkers_state_ext(game_idx, game_options),
 			logger_(elf::logging::getIndexedLogger(
 					MAGENTA_B + std::string("|++|") + COLOR_END + 
 					"ClientGameSelfPlay-" + std::to_string(game_idx) + "-",
@@ -58,38 +58,38 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 	params.seed = _rng();
 	params.required_version = model_ver;
 
-	elf::ai::tree_search::TSOptions opt = mcts_options;
+	elf::ai::tree_search::TSOptions mcts_opt = mcts_options;
 
 	// My
-	// opt.verbose = true;
+	// mcts_opt.verbose = true;
 	// // my end
 
 	if (puct_override > 0.0) {
 		logger_->warn(
-				"PUCT overridden: {} -> {}", opt.alg_opt.c_puct, puct_override);
-		opt.alg_opt.c_puct = puct_override;
+				"PUCT overridden: {} -> {}", mcts_opt.alg_opt.c_puct, puct_override);
+		mcts_opt.alg_opt.c_puct = puct_override;
 	}
 	if (mcts_rollout_per_batch_override > 0) {
 		logger_->warn(
 				"Batch size overridden: {} -> {}",
-				opt.num_rollouts_per_batch,
+				mcts_opt.num_rollouts_per_batch,
 				mcts_rollout_per_batch_override);
-		opt.num_rollouts_per_batch = mcts_rollout_per_batch_override;
+		mcts_opt.num_rollouts_per_batch = mcts_rollout_per_batch_override;
 	}
 	if (mcts_rollout_per_thread_override > 0) {
 		logger_->warn(
 				"Rollouts per thread overridden: {} -> {}",
-				opt.num_rollouts_per_thread,
+				mcts_opt.num_rollouts_per_thread,
 				mcts_rollout_per_thread_override);
-		opt.num_rollouts_per_thread = mcts_rollout_per_thread_override;
+		mcts_opt.num_rollouts_per_thread = mcts_rollout_per_thread_override;
 	}
 
-	if (opt.verbose) {
-		opt.log_prefix = "ts-game" + std::to_string(_game_idx) + "-mcts";
-		logger_->warn("Log prefix {}", opt.log_prefix);
+	if (mcts_opt.verbose) {
+		mcts_opt.log_prefix = "ts-game" + std::to_string(_game_idx) + "-mcts";
+		logger_->warn("Log prefix {}", mcts_opt.log_prefix);
 	}
 
-	return new MCTSCheckersAI(opt, [&](int) { return new CheckersMCTSActor(client_, params); });
+	return new MCTSCheckersAI(mcts_opt, [&](int) { return new CheckersMCTSActor(client_, params); });
 }
 
 
@@ -97,12 +97,12 @@ Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_a
 	auto policy = mcts_checkers_ai->getMCTSPolicy();
 
 	bool diverse_policy =
-			_checkers_state_ext.state().getPly() <= _options.policy_distri_cutoff;
+			_checkers_state_ext.state().getPly() <= _game_options.policy_distri_cutoff;
 	if (diverse_policy) {
 		// Sample from the policy.
 		c = policy.sampleAction(&_rng);
 	}
-	if (_options.policy_distri_training_for_all || diverse_policy) {
+	if (_game_options.policy_distri_training_for_all || diverse_policy) {
 		// [TODO]: Warning: MCTS Policy might not correspond to move idx.
 		_checkers_state_ext.addMCTSPolicy(policy);
 	}
@@ -116,7 +116,7 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 
 	_checkers_state_ext.addPredictedValue(predicted_value);
 
-	if (!_options.dump_record_prefix.empty()) {
+	if (!_game_options.dump_record_prefix.empty()) {
 	  _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
 	}
 
@@ -134,7 +134,7 @@ void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
 	// показывает борду
 	_checkers_state_ext.showFinishInfo(reason);
 
-	// if (!_options.dump_record_prefix.empty()) {
+	// if (!_game_options.dump_record_prefix.empty()) {
 	//   _state_ext.dumpSgf();
 	// }
 
@@ -168,7 +168,7 @@ void ClientGameSelfPlay::restart() {
 
 	checkers_ai1.reset(nullptr);
 	checkers_ai2.reset(nullptr);
-	if (_options.mode == "selfplay") {
+	if (_game_options.mode == "selfplay") {
 		checkers_ai1.reset(init_checkers_ai(
 				"checkers_actor_black",
 				checkers_request.vers.mcts_opt,
@@ -180,16 +180,16 @@ void ClientGameSelfPlay::restart() {
 			checkers_ai2.reset(init_checkers_ai(
 					"checkers_actor_white",
 					checkers_request.vers.mcts_opt,
-					_checkers_state_ext.options().white_puct,
-					_checkers_state_ext.options().white_mcts_rollout_per_batch,
-					_checkers_state_ext.options().white_mcts_rollout_per_thread,
+					_checkers_state_ext.gameOptions().white_puct,
+					_checkers_state_ext.gameOptions().white_mcts_rollout_per_batch,
+					_checkers_state_ext.gameOptions().white_mcts_rollout_per_thread,
 					checkers_async ? -1 : checkers_request.vers.white_ver));
 		}
 		if (!checkers_request.vers.is_selfplay() && checkers_request.client_ctrl.player_swap) {
 			// Swap the two pointer.
 			swap(checkers_ai1, checkers_ai2);
 		}
-	} else if (_options.mode == "online") {
+	} else if (_game_options.mode == "online") {
 		checkers_ai1.reset(init_checkers_ai(
 				"checkers_actor_black",
 				checkers_request.vers.mcts_opt,
@@ -199,7 +199,7 @@ void ClientGameSelfPlay::restart() {
 				checkers_request.vers.black_ver));
 		_human_player.reset(new CheckersAI(client_, {"human_actor"}));
 	} else {
-		logger_->critical("Unknown mode! {}", _options.mode);
+		logger_->critical("Unknown mode! {}", _game_options.mode);
 		throw std::range_error("Unknown mode");
 	}
 	_checkers_state_ext.restart();
@@ -214,7 +214,7 @@ bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* repl
 	bool is_waiting = request.vers.wait();
 	bool is_prev_waiting = _checkers_state_ext.currRequest().vers.wait();
 
-	if (_options.verbose && !(is_waiting && is_prev_waiting)) {
+	if (_game_options.verbose && !(is_waiting && is_prev_waiting)) {
 		logger_->debug(
 				"Receive request: {}, old: {}",
 				(!is_waiting ? request.info() : "[wait]"),
@@ -340,8 +340,8 @@ void ClientGameSelfPlay::act() {
 	CheckersReply   creply(cf);
 
 	bool use_policy_network_only =
-			(current_player == WHITE_PLAYER && _options.white_use_policy_network_only) ||
-			(current_player == BLACK_PLAYER && _options.black_use_policy_network_only);
+			(current_player == WHITE_PLAYER && _game_options.white_use_policy_network_only) ||
+			(current_player == BLACK_PLAYER && _game_options.black_use_policy_network_only);
 
 	MCTSCheckersAI* curr_ai =
 		((checkers_ai2 != nullptr && current_player == WHITE_PLAYER) 

@@ -31,9 +31,9 @@ model_file=elfgames.checkers.df_model_checkers \
 	--mcts_virtual_loss 5 \
 	--mcts_rollout_per_batch 1 \
 	--mcts_persistent_tree \
-	--mcts_verbose_time \
 	--mcts_use_prior				--mcts_puct 0.9 \
 	--mcts_threads 1				--mcts_rollout_per_thread 100 \
+	--mcts_verbose_time \
 	# "$@"
 
 	# --replace_prefix resnet.module,resnet \

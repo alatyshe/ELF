@@ -225,59 +225,59 @@ class Loader(object):
 		if self.options.parameter_print:
 			co.print()
 
-		opt = checkers.CheckersGameOptions()
+		game_opt = checkers.CheckersGameOptions()
 
-		opt.seed = 0
-		opt.list_files = self.options.list_files
+		game_opt.seed = 0
+		game_opt.list_files = self.options.list_files
 
 		if self.options.server_addr:
-			opt.server_addr = self.options.server_addr
+			game_opt.server_addr = self.options.server_addr
 		else:
 			if self.options.server_id:
-				opt.server_addr = addrs[self.options.server_id]
-				opt.server_id = self.options.server_id
+				game_opt.server_addr = addrs[self.options.server_id]
+				game_opt.server_id = self.options.server_id
 			else:
-				opt.server_addr = ""
-				opt.server_id = ""
+				game_opt.server_addr = ""
+				game_opt.server_id = ""
 
-		opt.port = self.options.port
-		opt.mode = self.options.mode
-		opt.use_mcts = self.options.use_mcts
-		opt.use_mcts_ai2 = self.options.use_mcts_ai2
-		opt.dump_record_prefix = self.options.dump_record_prefix
-		opt.policy_distri_training_for_all = \
+		game_opt.port = self.options.port
+		game_opt.mode = self.options.mode
+		game_opt.use_mcts = self.options.use_mcts
+		game_opt.use_mcts_ai2 = self.options.use_mcts_ai2
+		game_opt.dump_record_prefix = self.options.dump_record_prefix
+		game_opt.policy_distri_training_for_all = \
 			self.options.policy_distri_training_for_all
-		opt.verbose = self.options.verbose
-		opt.black_use_policy_network_only = \
+		game_opt.verbose = self.options.verbose
+		game_opt.black_use_policy_network_only = \
 			self.options.black_use_policy_network_only
-		opt.white_use_policy_network_only = \
+		game_opt.white_use_policy_network_only = \
 			self.options.white_use_policy_network_only
-		opt.q_min_size = self.options.q_min_size
-		opt.q_max_size = self.options.q_max_size
-		opt.num_reader = self.options.num_reader
-		opt.checkers_num_future_actions = self.options.checkers_num_future_actions
-		opt.num_reset_ranking = self.options.num_reset_ranking
-		# opt.move_cutoff = self.options.move_cutoff
-		opt.policy_distri_cutoff = self.options.policy_distri_cutoff
-		opt.num_games_per_thread = self.options.num_games_per_thread
-		opt.keep_prev_selfplay = self.options.keep_prev_selfplay
-		opt.expected_num_clients = self.options.expected_num_clients
+		game_opt.q_min_size = self.options.q_min_size
+		game_opt.q_max_size = self.options.q_max_size
+		game_opt.num_reader = self.options.num_reader
+		game_opt.checkers_num_future_actions = self.options.checkers_num_future_actions
+		game_opt.num_reset_ranking = self.options.num_reset_ranking
+		# game_opt.move_cutoff = self.options.move_cutoff
+		game_opt.policy_distri_cutoff = self.options.policy_distri_cutoff
+		game_opt.num_games_per_thread = self.options.num_games_per_thread
+		game_opt.keep_prev_selfplay = self.options.keep_prev_selfplay
+		game_opt.expected_num_clients = self.options.expected_num_clients
 
-		opt.white_puct = self.options.white_puct
-		opt.white_mcts_rollout_per_batch = \
+		game_opt.white_puct = self.options.white_puct
+		game_opt.white_mcts_rollout_per_batch = \
 			self.options.white_mcts_rollout_per_batch
-		opt.white_mcts_rollout_per_thread = \
+		game_opt.white_mcts_rollout_per_thread = \
 			self.options.white_mcts_rollout_per_thread
 
-		opt.client_max_delay_sec = self.options.client_max_delay_sec
-		opt.selfplay_init_num = self.options.selfplay_init_num
-		opt.selfplay_update_num = self.options.selfplay_update_num
-		opt.selfplay_async = self.options.selfplay_async
-		opt.eval_num_games = self.options.eval_num_games
-		opt.eval_thres = self.options.eval_winrate_thres
-		opt.cheat_eval_new_model_wins_half = \
+		game_opt.client_max_delay_sec = self.options.client_max_delay_sec
+		game_opt.selfplay_init_num = self.options.selfplay_init_num
+		game_opt.selfplay_update_num = self.options.selfplay_update_num
+		game_opt.selfplay_async = self.options.selfplay_async
+		game_opt.eval_num_games = self.options.eval_num_games
+		game_opt.eval_thres = self.options.eval_winrate_thres
+		game_opt.cheat_eval_new_model_wins_half = \
 			self.options.cheat_eval_new_model_wins_half
-		opt.cheat_selfplay_random_result = \
+		game_opt.cheat_selfplay_random_result = \
 			self.options.cheat_selfplay_random_result
 
 		self.max_batchsize = max(
@@ -286,25 +286,25 @@ class Loader(object):
 			else self.options.batchsize
 		co.batchsize = self.max_batchsize
 
-		GC = checkers.GameContext(co, opt)
+		GC = checkers.GameContext(co, game_opt)
 
 		if self.options.parameter_print:
 			print("************ CheckersGameOptions ************")
-			print(opt.info())
+			print(game_opt.info())
 			print("*********************************************")
 			print("Version: ", GC.ctx().version())
 			print("*********************************************")
 
-		return co, GC, opt
+		return co, GC, game_opt
 
 
 	def initialize(self):
-		co, GC, opt = self._set_params()
+		co, GC, game_opt = self._set_params()
 
 		params = GC.getParams()
 
 		if self.options.parameter_print:
-			print("Mode: ", opt.mode)
+			print("Mode: ", game_opt.mode)
 			print("checkers_num_action: ", params["checkers_num_action"])
 
 		desc = {}

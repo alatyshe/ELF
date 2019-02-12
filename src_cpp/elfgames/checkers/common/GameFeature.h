@@ -18,9 +18,9 @@
 
 class GameFeature {
  public:
-	GameFeature(const CheckersGameOptions& options) : 
-			options_(options) {
-		_num_plane_checkers = CHECKERS_NUM_FEATURES;
+	GameFeature(const CheckersGameOptions& game_options) : 
+			game_options_(game_options) {
+		num_plane_checkers_ = CHECKERS_NUM_FEATURES;
 	}
 	// Inference part.
 	static void extractCheckersState(
@@ -129,9 +129,9 @@ class GameFeature {
 			int64_t* offline_a) {
 		const CheckersFeature& bf = s._bf;
 
-		std::fill(offline_a, offline_a + s._options.checkers_num_future_actions, 0);
+		std::fill(offline_a, offline_a + s._game_options.checkers_num_future_actions, 0);
 		const size_t move_to = s._state.getPly() - 1;
-		for (int i = 0; i < s._options.checkers_num_future_actions; ++i) {
+		for (int i = 0; i < s._game_options.checkers_num_future_actions; ++i) {
 			Coord m = s._offline_all_moves[move_to + i];
 			offline_a[i] = m;
 		}
@@ -169,7 +169,7 @@ class GameFeature {
 		// регаем ключ по которому мы будем доставать наш state и сообщаем размерность, 
 		// что он будет такой размерности
 		auto& checkers_s = e.addField<float>("checkers_s").addExtents(
-			batchsize, {batchsize, _num_plane_checkers, CHECKERS_BOARD_SIZE, CHECKERS_BOARD_SIZE});
+			batchsize, {batchsize, num_plane_checkers_, CHECKERS_BOARD_SIZE, CHECKERS_BOARD_SIZE});
 		// добавляем к этому ключу вот методы для 
 		// тк нам нужно заполнить эту память и передать python
 		checkers_s.addFunction<CheckersFeature>(extractCheckersState)
@@ -180,7 +180,7 @@ class GameFeature {
 		e.addField<int64_t>("a").addExtent(batchsize);
 		e.addField<int64_t>("checkers_rv").addExtent(batchsize);
 		e.addField<int64_t>("checkers_offline_a")
-				.addExtents(batchsize, {batchsize, options_.checkers_num_future_actions});
+				.addExtents(batchsize, {batchsize, game_options_.checkers_num_future_actions});
 		e.addField<float>({
 			"checkers_V", 
 			"checkers_winner", 
@@ -228,13 +228,13 @@ class GameFeature {
 				{"checkers_num_action", TOTAL_NUM_ACTIONS},
 				{"checkers_board_size", 8},
 				{"checkers_num_future_actions", 1},
-				{"checkers_num_planes", _num_plane_checkers}
+				{"checkers_num_planes", num_plane_checkers_}
 		};
 	}
 
  private:
  	// Параметры игры
-	CheckersGameOptions options_;
+	CheckersGameOptions game_options_;
 	// Количество фич доски
-	int 								_num_plane_checkers;
+	int 								num_plane_checkers_;
 };

@@ -1,10 +1,10 @@
 #include "CheckersStateExt.h"
 
-CheckersStateExt::CheckersStateExt(int game_idx, const CheckersGameOptions& options)
+CheckersStateExt::CheckersStateExt(int game_idx, const CheckersGameOptions& game_options)
 		: _game_idx(game_idx),
 			_last_move_for_the_game(M_INVALID),
 			_last_value(0.0),
-			_options(options),
+			_game_options(game_options),
 			_logger(
 					elf::logging::getIndexedLogger(
 						MAGENTA_B + std::string("|++|") + COLOR_END + 
@@ -76,8 +76,8 @@ const CheckersState& CheckersStateExt::state() const {
 	return _state;
 }
 
-const CheckersGameOptions& CheckersStateExt::options() const {
-	return _options;
+const CheckersGameOptions& CheckersStateExt::gameOptions() const {
+	return _game_options;
 }
 
 void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
@@ -121,7 +121,7 @@ void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
 
 void CheckersStateExt::saveCurrentTree(const std::string& tree_info) const {
 	// Dump the tree as well.
-	std::string filename = _options.dump_record_prefix + "_gameidx_" +
+	std::string filename = _game_options.dump_record_prefix + "_gameidx_" +
 			std::to_string(_game_idx) + "_seq_" + std::to_string(_seq) + "_move_" +
 			std::to_string(_state.getPly()) + ".tree";
 	std::ofstream oo(filename);

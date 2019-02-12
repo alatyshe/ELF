@@ -17,13 +17,13 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
   ThreadedWriterCtrl(
       Ctrl& ctrl,
       const ContextOptions& contextOptions,
-      const CheckersGameOptions& options)
+      const CheckersGameOptions& game_options)
       : ThreadedCtrlBase(ctrl, 0),
         logger_(elf::logging::getIndexedLogger(
             MAGENTA_B + std::string("|++|") + COLOR_END + 
             "ThreadedWriterCtrl-",
             "")) {
-    elf::shared::Options netOptions = getNetOptions(contextOptions, options);
+    elf::shared::Options netOptions = getNetOptions(contextOptions, game_options);
     writer_.reset(new elf::shared::Writer(netOptions));
     auto currTimestamp = time(NULL);
     logger_->info(
@@ -277,11 +277,11 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   CheckersGameNotifier(
       Ctrl& ctrl,
       const std::string& identity,
-      const CheckersGameOptions& options,
+      const CheckersGameOptions& game_options,
       elf::GameClient* client)
       : ctrl_(ctrl), 
         records_(identity), 
-        options_(options), 
+        game_options_(game_options), 
         client_(client) {
     using std::placeholders::_1;
     using std::placeholders::_2;
@@ -326,7 +326,7 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   Ctrl&                     ctrl_;
   GameStats                 game_stats_;
   CheckersGuardedRecords    records_;
-  const CheckersGameOptions options_;
+  const CheckersGameOptions game_options_;
   elf::GameClient*          client_ = nullptr;
   const std::string         end_target_ = "game_end";
 
@@ -345,10 +345,10 @@ class DistriClient {
  public:
   DistriClient(
       const ContextOptions& contextOptions,
-      const CheckersGameOptions& options,
+      const CheckersGameOptions& game_options,
       elf::GameClient* client)
-      : contextOptions_(contextOptions),
-        options_(options),
+      : context_options_(contextOptions),
+        game_options_(game_options),
         logger_(elf::logging::getIndexedLogger(
           MAGENTA_B + std::string("|++|") + COLOR_END + 
           "DistriClient-", 
@@ -357,17 +357,17 @@ class DistriClient {
     dispatcher_callback_.reset(
         new DispatcherCallback(dispatcher_.get(), client));
 
-    if (options_.mode == "selfplay") {
+    if (game_options_.mode == "selfplay") {
       
       writer_ctrl_.reset(
-          new ThreadedWriterCtrl(ctrl_, contextOptions, options));
+          new ThreadedWriterCtrl(ctrl_, contextOptions, game_options));
 
       checkers_game_notifier_.reset(
-          new CheckersGameNotifier(ctrl_, writer_ctrl_->identity(), options, client));
+          new CheckersGameNotifier(ctrl_, writer_ctrl_->identity(), game_options, client));
 
-    } else if (options_.mode == "online") {
+    } else if (game_options_.mode == "online") {
     } else {
-      throw std::range_error("options.mode not recognized! " + options_.mode);
+      throw std::range_error("game_options.mode not recognized! " + game_options_.mode);
     }
     logger_->info(
       "{}DistriClient successfully created{}\n",
@@ -404,7 +404,7 @@ class DistriClient {
     MsgRequest request;
     request.vers.black_ver = black_ver;
     request.vers.white_ver = white_ver;
-    request.vers.mcts_opt = contextOptions_.mcts_options;
+    request.vers.mcts_opt = context_options_.mcts_options;
     request.client_ctrl.num_game_thread_used = numThreads;
     dispatcher_->sendToThread(request);
   }
@@ -419,8 +419,8 @@ class DistriClient {
   std::unique_ptr<DispatcherCallback>   dispatcher_callback_;
   std::unique_ptr<CheckersGameNotifier> checkers_game_notifier_;
 
-  const ContextOptions                  contextOptions_;
-  const CheckersGameOptions             options_;
+  const ContextOptions                  context_options_;
+  const CheckersGameOptions             game_options_;
 
   std::shared_ptr<spdlog::logger>       logger_;
 };

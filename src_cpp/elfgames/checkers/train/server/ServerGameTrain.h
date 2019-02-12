@@ -16,7 +16,7 @@ class ServerGameTrain : public GameBase {
       int game_idx,
       elf::GameClient* client,
       const ContextOptions& context_options,
-      const CheckersGameOptions& options,
+      const CheckersGameOptions& game_options,
       elf::shared::ReaderQueuesT<CheckersRecord>* reader);
 
   void act() override;

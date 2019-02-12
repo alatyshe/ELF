@@ -29,26 +29,26 @@ class GameBase {
 			int game_idx,
 			elf::GameClient* client,
 			const ContextOptions& context_options,
-			const CheckersGameOptions& options)
+			const CheckersGameOptions& game_options)
 			: client_(client),
 				_game_idx(game_idx),
-				_options(options),
+				_game_options(game_options),
 				_context_options(context_options),
 				_logger(elf::logging::getIndexedLogger(
 							MAGENTA_B + std::string("|++|") + COLOR_END + 
 							"GameBase-", 
 							"")) {
-		if (options.seed == 0) {
+		if (game_options.seed == 0) {
 			_seed = elf_utils::get_seed(
 					game_idx ^ std::hash<std::string>{}(context_options.job_id));
 		} else {
-			_seed = options.seed;
+			_seed = game_options.seed;
 		}
 		_rng.seed(_seed);
 	}
 
 	void mainLoop() {
-		if (_options.verbose) {
+		if (_game_options.verbose) {
 			_logger->info(
 					"mainLoop was started [{}] Seed: {}, thread_id: {}",
 					_game_idx,
@@ -73,7 +73,7 @@ class GameBase {
 
 	int _game_idx = -1;
 
-	CheckersGameOptions _options;
+	CheckersGameOptions _game_options;
 	ContextOptions _context_options;
 
  private:

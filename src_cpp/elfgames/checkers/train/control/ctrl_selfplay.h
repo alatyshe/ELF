@@ -31,15 +31,15 @@ using TSOptions = elf::ai::tree_search::TSOptions;
 // исходя из полноты батча
 struct SelfPlayRecord {
  public:
-	SelfPlayRecord(int ver, const CheckersGameOptions& options)
+	SelfPlayRecord(int ver, const CheckersGameOptions& game_options)
 			: ver_(ver),
-				options_(options),
+				game_options_(game_options),
 				logger_(elf::logging::getIndexedLogger(
 						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"SelfPlayRecord-",
 						"")) {
 		std::string selfplay_prefix =
-				"selfplay-" + options_.server_id + "-" + options_.time_signature;
+				"selfplay-" + game_options_.server_id + "-" + game_options_.time_signature;
 		records_.resetPrefix(selfplay_prefix + "-" + std::to_string(ver_));
 	}
 
@@ -79,12 +79,12 @@ struct SelfPlayRecord {
 	}
 
 	bool is_check_point() const {
-		if (options_.selfplay_init_num > 0 && options_.selfplay_update_num > 0) {
+		if (game_options_.selfplay_init_num > 0 && game_options_.selfplay_update_num > 0) {
 			return (
-					counter_ == options_.selfplay_init_num ||
-					((counter_ > options_.selfplay_init_num) &&
-					 (counter_ - options_.selfplay_init_num) %
-									 options_.selfplay_update_num ==
+					counter_ == game_options_.selfplay_init_num ||
+					((counter_ > game_options_.selfplay_init_num) &&
+					 (counter_ - game_options_.selfplay_init_num) %
+									 game_options_.selfplay_update_num ==
 							 0));
 		} else {
 			// Otherwise just save one every 1000 games.
@@ -106,31 +106,31 @@ struct SelfPlayRecord {
 	bool needWaitForMoreSample() const {
 		// UNCOMMENT
 		logger_->info("Need: {}; Counter: {}; Selfplay_init_num: {}; Selfplay_update_num: {}; Num_weight_update: {}; ",
-			options_.selfplay_init_num +
-				options_.selfplay_update_num * num_weight_update_,
+			game_options_.selfplay_init_num +
+				game_options_.selfplay_update_num * num_weight_update_,
 			counter_,
-			options_.selfplay_init_num,
-			options_.selfplay_update_num,
+			game_options_.selfplay_init_num,
+			game_options_.selfplay_update_num,
 			num_weight_update_
 			);
 		
-		if (options_.selfplay_init_num <= 0){
+		if (game_options_.selfplay_init_num <= 0){
 			return false;
 		}
-		if (counter_ < options_.selfplay_init_num){
+		if (counter_ < game_options_.selfplay_init_num){
 			return true;
 		}
 
-		if (options_.selfplay_update_num <= 0){
+		if (game_options_.selfplay_update_num <= 0){
 			return false;
 		}
 		// counter - счетчик игр которые уже сыграл клиент 
-		// options_.selfplay_init_num - нужно вначале отыграть игр после чего
+		// game_options_.selfplay_init_num - нужно вначале отыграть игр после чего
 		//        формируется батч
-		// options_.selfplay_update_num - после N игр обновляем веса
+		// game_options_.selfplay_update_num - после N игр обновляем веса
 		// num_weight_update_ - количесвто раз которые мы обновляли веса
-		return counter_ < options_.selfplay_init_num +
-				options_.selfplay_update_num * num_weight_update_;
+		return counter_ < game_options_.selfplay_init_num +
+				game_options_.selfplay_update_num * num_weight_update_;
 	}
 
 	void notifyWeightUpdate() {
@@ -138,7 +138,7 @@ struct SelfPlayRecord {
 	}
 
 	void fillInRequest(const ClientInfo&, MsgRequest* msg) const {
-		msg->client_ctrl.async = options_.selfplay_async;
+		msg->client_ctrl.async = game_options_.selfplay_async;
 	}
 
 	std::string info() const {
@@ -167,7 +167,7 @@ struct SelfPlayRecord {
  private:
 	// statistics.
 	const int64_t ver_;
-	const CheckersGameOptions& options_;
+	const CheckersGameOptions& game_options_;
 
 	RecordBuffer records_;
 
@@ -192,8 +192,8 @@ class SelfPlaySubCtrl {
 		SUFFICIENT_SAMPLE
 	};
 
-	SelfPlaySubCtrl(const CheckersGameOptions& options, const TSOptions& mcts_options)
-			: options_(options),
+	SelfPlaySubCtrl(const CheckersGameOptions& game_options, const TSOptions& mcts_options)
+			: game_options_(game_options),
 				mcts_options_(mcts_options),
 				curr_ver_(-1),
 				logger_(elf::logging::getIndexedLogger(
@@ -291,7 +291,7 @@ class SelfPlaySubCtrl {
  private:
 	mutable std::mutex mutex_;
 
-	CheckersGameOptions			options_;
+	CheckersGameOptions			game_options_;
 	TSOptions								mcts_options_;
 	int64_t									curr_ver_;
 	std::unordered_map<int64_t, std::unique_ptr<SelfPlayRecord>> perfs_;
@@ -306,7 +306,7 @@ class SelfPlaySubCtrl {
 		if (it != perfs_.end()) {
 			return *it->second;
 		}
-		auto* record = new SelfPlayRecord(ver, options_);
+		auto* record = new SelfPlayRecord(ver, game_options_);
 		perfs_[ver].reset(record);
 		return *record;
 	}

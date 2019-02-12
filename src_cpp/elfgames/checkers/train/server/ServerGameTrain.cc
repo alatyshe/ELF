@@ -12,16 +12,16 @@ ServerGameTrain::ServerGameTrain(
     int game_idx,
     elf::GameClient* client,
     const ContextOptions& context_options,
-    const CheckersGameOptions& options,
+    const CheckersGameOptions& game_options,
     elf::shared::ReaderQueuesT<CheckersRecord>* reader)
-      : GameBase(game_idx, client, context_options, options), 
+      : GameBase(game_idx, client, context_options, game_options), 
         reader_(reader),
         logger_(elf::logging::getIndexedLogger(
           MAGENTA_B + std::string("|++|") + COLOR_END + 
           "ServerGameTrain-" + std::to_string(game_idx) + "-",
           "")) {
   for (size_t i = 0; i < kNumState; ++i) {
-    _checkers_state_ext.emplace_back(new CheckersStateExtOffline(game_idx, options));
+    _checkers_state_ext.emplace_back(new CheckersStateExtOffline(game_idx, game_options));
   }
   logger_->info("Was succefully created");
 }

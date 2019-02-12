@@ -41,7 +41,7 @@ class ClientGameSelfPlay : public GameBase {
 			int													game_idx,
 			elf::GameClient*						client,
 			const ContextOptions&				context_options,
-			const CheckersGameOptions&	options,
+			const CheckersGameOptions&	game_options,
 			ThreadedDispatcher*					dispatcher,
 			CheckersGameNotifierBase*		checkers_notifier = nullptr);
 

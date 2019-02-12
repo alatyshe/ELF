@@ -25,11 +25,6 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	\
 	--use_mcts							--use_mcts_ai2 \
 	\
-	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
-	--mcts_puct 0.9					--mcts_use_prior \
-	--mcts_threads 1				--mcts_rollout_per_thread 200 \
-	--mcts_virtual_loss 5		--mcts_persistent_tree \
-	\
 	--save_first \
 	\
 	--use_data_parallel \
@@ -52,6 +47,11 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--lr 0.01								--momentum 0.9 \
 	--verbose \
 	--tqdm \
+	\
+	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
+	--mcts_puct 0.9					--mcts_use_prior \
+	--mcts_threads 1				--mcts_rollout_per_thread 200 \
+	--mcts_virtual_loss 5		--mcts_persistent_tree \
 
 	# 1>> server_log.log 2>&1 &
 	
