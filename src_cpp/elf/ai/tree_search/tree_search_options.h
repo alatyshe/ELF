@@ -95,20 +95,19 @@ struct TSOptions {
   int num_rollouts_per_batch = 8;
   bool verbose = true;
   bool verbose_time = false;
-  int seed = 0;
   bool persistent_tree = true;
   float root_epsilon = 0.0;
   float root_alpha = 0.0;
-  std::string log_prefix = "";
-
   // [TODO] Not a good design.
   // string pick_method = "strongest_prior";
   std::string pick_method = "most_visited";
+  // Pre-added pseudo playout.
+  int virtual_loss = 0;
 
   SearchAlgoOptions alg_opt;
 
-  // Pre-added pseudo playout.
-  int virtual_loss = 0;
+  std::string log_prefix = "";
+  int seed = 0;
 
   std::string info(bool verbose_in = false) const {
     std::stringstream ss;
@@ -123,7 +122,7 @@ struct TSOptions {
       ss << std::setw(20) << std::right;
       ss << "Seed: " << seed << std::endl;
       ss << std::setw(20) << std::right;
-      ss << "Log Prefix: " << "[" << log_prefix << "]" << std::endl;
+      ss << "Mcts log_prefix: " << "[" << log_prefix << "]" << std::endl;
       ss << std::setw(20) << std::right;
       ss << "Threads: " << num_threads << std::endl;
       ss << std::setw(20) << std::right;
@@ -152,11 +151,14 @@ struct TSOptions {
       ss << "Algorithm: " << alg_opt.info() << std::endl;
 
     } else {
-      ss << "[#th=" << num_threads << "][rl=" << num_rollouts_per_thread
-         << "][per=" << persistent_tree << "][eps=" << root_epsilon
+      ss << "[num_th=" << num_threads 
+         << "][rl_th=" << num_rollouts_per_thread
+         << "][rl_b=" << num_rollouts_per_batch
+         << "][per=" << elf_utils::print_bool(persistent_tree) 
+         << "][eps=" << root_epsilon
          << "][alpha=" << root_alpha
          << "][verbose=" << elf_utils::print_bool(verbose)
-         << "]" << alg_opt.info();
+         << "] " << alg_opt.info();
          
 
     }

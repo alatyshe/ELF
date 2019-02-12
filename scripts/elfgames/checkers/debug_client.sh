@@ -37,16 +37,31 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	# --dump_record_prefix tree\
 	
 	# --suicide_after_n_games 120
+
+
+	# --num_games - int, 'number of games'
+	# --batchsize - int, 'batch size'
+	# --T - int, 'number of timesteps'
 	
-
 	# Params that client gets from server
-	# MCTS:
-	# --mcts_epsilon 0.25
-	# --mcts_alpha 0.03
-	# --mcts_puct 0.9
-	# --mcts_threads 1
-	# --mcts_rollout_per_thread 100
-	# --mcts_virtual_loss 5
-	# --mcts_persistent_tree
-	# --mcts_use_prior
+	# 	TSOptions
+	# --mcts_threads - int 'number of MCTS threads'
+	# --mcts_rollout_per_thread - int, 'number of rollotus per MCTS thread'
+	# --mcts_rollout_per_batch - int, 'Batch size for mcts rollout'
+	# --mcts_verbose - bool, 'enables mcts verbosity'
+	# --mcts_verbose_time - bool, 'enables mcts verbosity for time stats'
+	# --mcts_persistent_tree  - bool, 'use persistent tree in MCTS'
+	# --mcts_epsilon - float, 'for exploration enhancement, weight of randomization'
+	# --mcts_alpha - float, 'for exploration enhancement, alpha term in gamma distribution'	
+	# --mcts_pick_method - string, 'criterion for mcts node selection' 'most_visited'
+	# --mcts_virtual_loss - int, '"virtual" number of losses for MCTS edges'
 
+	# 	SearchAlgoOptions
+	# --mcts_use_prior - bool, 'use prior in MCTS'
+	# --mcts_puct - float, 'prior weight'
+	# --mcts_unexplored_q_zero - bool, 'set all unexplored node to have Q value zero'
+	# --mcts_root_unexplored_q_zero - bool, 'set unexplored child of root node to have Q value zero'
+	
+	
+	
+	

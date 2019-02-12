@@ -15,7 +15,7 @@
 # --mcts_threads 8				--mcts_rollout_per_thread 50
 
 LOAD0=myserver/save-609280.bin
-LOAD1=myserver/save-610304.bin
+LOAD1=myserver/save-613376.bin
 
 BATCHSIZE=64
 NUM_ROLLOUTS=50
@@ -50,10 +50,10 @@ model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	--mcts_virtual_loss 1		--mcts_epsilon 0.0 \
 	--mcts_alpha 0.00 			--mcts_threads 8\
 	--mcts_use_prior \
-	--mcts_persistent_tree		--mcts_puct 0.85 \
+	--mcts_persistent_tree	--mcts_puct 0.9 \
 	\
 	--eval_model_pair loaded \
-	--policy_distri_cutoff 10 \
+	--policy_distri_cutoff 5 \
 	--num_block0 $NUM_BLOCK		--dim0 $DIM \
 	--num_block1 $NUM_BLOCK		--dim1 $DIM \
 	--no_check_loaded_options0 \
