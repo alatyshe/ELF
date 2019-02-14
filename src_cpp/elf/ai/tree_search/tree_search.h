@@ -115,6 +115,7 @@ class TreeSearchSingleThreadT {
 			const std::atomic_bool* stop_search,
 			Actor& actor,
 			Tree& search_tree) {
+
 		int num_rollout;
 
 		runInfoWhenStateReady_.pop(&num_rollout);
@@ -133,8 +134,8 @@ class TreeSearchSingleThreadT {
 							 << std::flush;
 		}
 
-		// запускаем поиск пока не споймаем остановку поиска stop_search
-		// idx += options_.num_rollouts_per_batch ?????????????????
+		// запускаем поиск пока не споймаем остановку stop_search
+		// idx += options_.num_rollouts_per_batch 
 		for (int idx = 0;
 				 idx < num_rollout && (stop_search == nullptr || !stop_search->load());
 				 idx += options_.num_rollouts_per_batch) {
@@ -155,6 +156,7 @@ class TreeSearchSingleThreadT {
 	int threadId_;
 	const TSOptions& options_;
 
+	// Нода - экшн и листок от этого экшена
 	struct Traj {
 		std::vector<std::pair<Node*, Action>> traj;
 		Node* leaf;
@@ -420,9 +422,18 @@ class TreeSearchT {
 			actors_.emplace_back(actor_gen(i));
 		}
 
+		// std::vector<std::thread> threadPool_;
+		// std::vector<std::unique_ptr<TreeSearchSingleThread>> treeSearches_;
+		// std::vector<std::unique_ptr<Actor>> actors_;
+
 		for (int i = 0; i < options.num_threads; ++i) {
 			TreeSearchSingleThread* th = treeSearches_[i].get();
-			threadPool_.emplace_back(std::thread{[i, this, th]() {
+
+			// [i, this, th] - области видимости lambda функции
+			// () - параметры
+			// {} - тело функции
+			threadPool_.emplace_back(std::thread{
+				[i, this, th]() {
 				int counter = 0;
 				while (true) {
 					th->run(
@@ -521,6 +532,7 @@ class TreeSearchT {
 		countStoppedThreads_.waitUntilCount(threadPool_.size());
 
 		for (auto& p : threadPool_) {
+			// завершаем потоки
 			p.join();
 		}
 	}

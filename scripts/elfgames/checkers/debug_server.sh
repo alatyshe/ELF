@@ -50,9 +50,11 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	\
 	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
 	--mcts_puct 0.9					--mcts_use_prior \
-	--mcts_threads 1				--mcts_rollout_per_thread 200 \
-	--mcts_virtual_loss 5		--mcts_persistent_tree \
+	--mcts_threads 4				--mcts_rollout_per_thread 200 \
+	--mcts_virtual_loss 3		--mcts_persistent_tree \
+	--mcts_rollout_per_batch 5 \
 
+	# --mcts_verbose
 	# 1>> server_log.log 2>&1 &
 	
 	# --expected_num_client 10 \

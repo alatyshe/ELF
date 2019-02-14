@@ -56,7 +56,7 @@ struct ClientCtrl {
 
 	std::string info() const {
 		std::stringstream ss;
-		ss  << "\nClientCtrl::info()\t\t[client=";
+		ss  << "\nClientCtrl::info()\t[client=";
 
 		if (client_type == CLIENT_INVALID)
 			ss << "invalid]";

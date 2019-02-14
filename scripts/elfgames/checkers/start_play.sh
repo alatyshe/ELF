@@ -28,7 +28,7 @@ model_file=elfgames.checkers.df_model_checkers \
 	\
 	--use_mcts \
 	\
-	--mcts_virtual_loss 5 \
+	--mcts_virtual_loss 1 \
 	--mcts_rollout_per_batch 1 \
 	--mcts_persistent_tree \
 	--mcts_use_prior				--mcts_puct 0.9 \

@@ -381,6 +381,8 @@ class NodeT : public NodeBaseT<State> {
 
 
   // Algorithms.
+  // http://liacs.leidenuniv.nl/~plaata1/papers/paper_ICAART17.pdf
+  // http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.159.4373&rep=rep1&type=pdf
   BestAction UCT(const SearchAlgoOptions& alg_opt, std::ostream* oo = nullptr)
       const {
     BestAction best_action;

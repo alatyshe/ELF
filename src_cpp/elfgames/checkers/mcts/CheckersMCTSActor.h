@@ -15,15 +15,6 @@
 
 #include "AI.h"
 
-
-// AlphaGo Zero uses Tromp-Taylor scoring 66 during MCTS simulations 
-// and self-play training. This is because human scores 
-// (Chinese, Japanese or Korean rules) are not well-defined
-// if the game terminates before territorial boundaries are resolved.
-// However, all tournament and evaluation games were scored
-// using Chinese rules.
-
-
 struct MCTSActorParams {
 	std::string		actor_name;
 	uint64_t			seed = 0;
@@ -58,7 +49,7 @@ class CheckersMCTSActor {
 					MAGENTA_B + std::string("|++|") + COLOR_END + 
 					"CheckersMCTSActor-", 
 					"")) {
-		ai_.reset(new CheckersAI(client, {params_.actor_name}));
+		ai_.reset(new AIClientT(client, {params_.actor_name}));
 
 		// logger_->info(
 		// 		"MCTS Actor params : {}", params.info());
@@ -189,7 +180,7 @@ class CheckersMCTSActor {
 	MCTSActorParams params_;
 
 	// client to run neural network
-	std::unique_ptr<CheckersAI> ai_;
+	std::unique_ptr<AIClientT> ai_;
 	std::ostream* oo_ = nullptr;
 	std::mt19937 rng_;
 

@@ -26,13 +26,25 @@ namespace elf {
 namespace ai {
 namespace tree_search {
 
-// Класс который связывает алгоритм MCTS и нашего AIClientT
-// Содержит в себе 
-// 1) Экземпляр класса AIClientT, который просто оправляет наши
-//    данные на сторону python по ключам(подробнее в файле ai.h)
-// 2) TreeSearch - наш алгоритм поиска, который в себе реализует алгоритм поиска
-//    по дереву(многопоточный), само дерево - Tree(состоящее из нод),
-//    и вектор из TreeSearchSingleThread(один поток нашего дерева)
+// Класс который связывает алгоритм MCTS и нашего Actor(который имеет
+// в себе экземпляр класса AIClientT).
+// 
+// Содержит в себе TreeSearch который отвечает за:
+// 1) Реализацию алгоритма поиска  по дереву(многопоточный),
+//    + содержит само дерево - Tree(состоящее из нод),
+//    вектор из TreeSearchSingleThread(один поток нашего дерева)
+//    и вектор из Actor(CheckersMCTSActor).
+// 2) Принимает в себя метод который возвращает экземплар 
+//    класса Actor(в данном случае это CheckersMCTSActor).
+//    Он оправляет наши данные через класс AIClientT
+//    на сторону python по ключам, и реализовывает методы оценки доски.
+//    (подробнее в файле ai.h и MCTSCheckersAI.h).
+// 
+// От этого класса наследуется MCTSCheckersAI который дописывает 
+// некоторые методы этого класса:
+// 1) getValue();
+// 2) getMCTSPolicy();
+// 3) setRequiredVersion(int64_t ver);
 template <typename Actor>
 class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
  public:
@@ -52,7 +64,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
         logger_(elf::logging::getIndexedLogger(
             "elf::ai::tree_search::MCTSAI_T-",
             "")) {
-    logger_->info("Tree Search Options : \n{}", options.info(true));
+    // logger_->info("Tree Search Options : \n{}", options.info(true));
 
     ts_.reset(new TreeSearch(options_, gen));
   }
@@ -74,6 +86,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
       elf_utils::MyClock clock;
       clock.restart();
 
+      // устанавливаем текущее состояние как root
       lastResult_ = ts_->run(s);
 
       clock.record("MCTS");
@@ -86,7 +99,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
     } else {
       lastResult_ = ts_->run(s);
     }
-
+    // lastResult_ => MCTSResultT 
     *a = lastResult_.best_action;
     return true;
   }
@@ -160,7 +173,7 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   }
 
   // treeAdvance - удаляет неиспользуемые ноды в истории дерева оставяя
-  // только ноды по которым мы проходили во время игры.
+  // только ноды по которым мы двигались во время игры.
   // Нужно для того, чтобы не хранить огромное дерево в середине игры.
 
   // Important function advanceMove() if move is valid, 

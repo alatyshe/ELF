@@ -158,6 +158,7 @@ struct TSOptions {
          << "][eps=" << root_epsilon
          << "][alpha=" << root_alpha
          << "][verbose=" << elf_utils::print_bool(verbose)
+         // << "][V_loss=" << virtual_loss
          << "] " << alg_opt.info();
          
 

@@ -96,12 +96,14 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
 Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
 	auto policy = mcts_checkers_ai->getMCTSPolicy();
 
+	// Делаем рандомный шаг если diverse_policy == true
 	bool diverse_policy =
 			_checkers_state_ext.state().getPly() <= _game_options.policy_distri_cutoff;
 	if (diverse_policy) {
 		// Sample from the policy.
 		c = policy.sampleAction(&_rng);
 	}
+
 	if (_game_options.policy_distri_training_for_all || diverse_policy) {
 		// [TODO]: Warning: MCTS Policy might not correspond to move idx.
 		_checkers_state_ext.addMCTSPolicy(policy);
@@ -130,7 +132,7 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 
 void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
 	// My code
-	_checkers_state_ext.setFinalValue(reason);
+	_checkers_state_ext.setFinalValue();
 	// показывает борду
 	_checkers_state_ext.showFinishInfo(reason);
 
@@ -197,7 +199,7 @@ void ClientGameSelfPlay::restart() {
 				-1,
 				-1,
 				checkers_request.vers.black_ver));
-		_human_player.reset(new CheckersAI(client_, {"human_actor"}));
+		_human_player.reset(new AIClientT(client_, {"human_actor"}));
 	} else {
 		logger_->critical("Unknown mode! {}", _game_options.mode);
 		throw std::range_error("Unknown mode");
@@ -311,13 +313,13 @@ void ClientGameSelfPlay::act() {
 			CheckersFeature cf(cs);
 			CheckersReply   creply(cf);
 			
-			CheckersAI ai_black(client_, {"checkers_actor_black"});
+			AIClientT ai_black(client_, {"checkers_actor_black"});
 			ai_black.act(cf, &creply);
 
 			if (client_->DoStopGames())
 				return;
 
-			CheckersAI ai_white(client_, {"checkers_actor_white"});
+			AIClientT ai_white(client_, {"checkers_actor_white"});
 			ai_white.act(cf, &creply);
 
 			elf::FuncsWithState funcs = client_->BindStateToFunctions(

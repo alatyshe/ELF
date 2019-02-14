@@ -17,13 +17,16 @@
 # LOAD0=myserver/save-609280.bin
 # LOAD1=myserver/save-613376.bin
 
-LOAD1=myserver/save-609280.bin
-LOAD0=myserver/save-613376.bin
+# LOAD1=myserver/save-609280.bin
+# LOAD0=myserver/save-613376.bin
 
-BATCHSIZE=64
+LOAD1=myserver/save-609280.bin
+LOAD0=myserver/save-609280.bin
+
+BATCHSIZE=5
 NUM_ROLLOUTS=50
 
-BATCHSIZE2=64
+BATCHSIZE2=5
 NUM_ROLLOUTS2=50
 
 GPU=0
@@ -44,13 +47,15 @@ model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	--keys_in_reply checkers_V checkers_rv\
 	\
 	--batchsize $BATCHSIZE \
+	--mcts_rollout_per_batch $BATCHSIZE \
 	--mcts_rollout_per_thread $NUM_ROLLOUTS \
 	\
 	--batchsize2 $BATCHSIZE2 \
+	--white_mcts_rollout_per_batch $BATCHSIZE2 \
 	--white_mcts_rollout_per_thread $NUM_ROLLOUTS2 \
 	\
 	--use_mcts							--use_mcts_ai2 \
-	--mcts_virtual_loss 1		--mcts_epsilon 0.0 \
+	--mcts_virtual_loss 3		--mcts_epsilon 0.0 \
 	--mcts_alpha 0.00 			--mcts_threads 8\
 	--mcts_use_prior \
 	--mcts_persistent_tree	--mcts_puct 0.9 \
@@ -73,5 +78,5 @@ model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	"$@"
 
 # --resign_thres 0.05 \
-# --mcts_rollout_per_batch $BATCHSIZE \
-# --white_mcts_rollout_per_batch $BATCHSIZE2 \
+
+

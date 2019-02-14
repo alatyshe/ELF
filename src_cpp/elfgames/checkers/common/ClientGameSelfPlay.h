@@ -30,8 +30,6 @@
 #include "../checkers/CheckersFeature.h"
 #include "../checkers/CheckersState.h"
 
-class AIClientT;
-
 // ==========================================================
 // ==========================================================
 class ClientGameSelfPlay : public GameBase {
@@ -81,7 +79,7 @@ class ClientGameSelfPlay : public GameBase {
 	// Opponent ai (used for selfplay evaluation)
 	std::unique_ptr<MCTSCheckersAI> checkers_ai2;
 	
-	std::unique_ptr<CheckersAI>     _human_player;
+	std::unique_ptr<AIClientT>     _human_player;
 
 	std::shared_ptr<spdlog::logger> logger_;
 };

@@ -26,7 +26,7 @@ struct ModelPair {
 	std::string	info() const {
 		std::stringstream ss;
 
-		ss << "\nModelPair::info()\t\t";
+		ss << "\nModelPair::info()\t";
 		if (wait())
 			ss 	<< "[wait]";
 		else if (is_selfplay())

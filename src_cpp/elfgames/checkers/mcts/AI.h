@@ -16,7 +16,7 @@
 
 #include "../checkers/CheckersState.h"
 
-using CheckersAI = elf::ai::AIClientT<CheckersFeature, CheckersReply>;
+using AIClientT = elf::ai::AIClientT<CheckersFeature, CheckersReply>;
 
 namespace elf {
 namespace ai {

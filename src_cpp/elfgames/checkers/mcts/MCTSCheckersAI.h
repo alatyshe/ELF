@@ -30,7 +30,7 @@ class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> 
 
 	float getValue() const {
 		// Check if we need to resign.
-		const auto& result = getLastResult();
+		const MCTSResult& result = getLastResult();
 
 		if (result.total_visits == 0)
 			return result.root_value;
@@ -39,13 +39,16 @@ class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> 
 	}
 
 	elf::ai::tree_search::MCTSPolicy<Coord> getMCTSPolicy() const {
-		const auto& result = getLastResult();
+		const MCTSResult& result = getLastResult();
 		auto policy = result.mcts_policy;
 
 		policy.normalize();
 		return policy;
 	}
 
+	// Берем наш MCTS и 
+	// устанавливаем каждому потоку
+	// свою версию нейронки
 	void setRequiredVersion(int64_t ver) {
 		auto* engine = getEngine();
 		assert(engine != nullptr);
