@@ -31,7 +31,7 @@
 #include "tree_search_options.h"
 #include "elf/debug/debug.h"
 
-/*
+/*eval_num_games
  * Use the following function of S
  * Copy Constructor: duplicate the state.
  * s.set_thread(int i). Set the thread idx.

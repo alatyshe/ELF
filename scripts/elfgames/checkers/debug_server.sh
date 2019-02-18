@@ -18,7 +18,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	\
 	--mode train \
 	--batchsize 64					--num_minibatch 128 \
-	--num_games 1						--keys_in_reply checkers_V \
+	--num_games 4						--keys_in_reply checkers_V \
 	--T 1 \
 	--dim 128 \
 	--num_block 10 \

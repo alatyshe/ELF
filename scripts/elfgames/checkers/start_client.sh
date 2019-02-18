@@ -17,8 +17,8 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--gpu 0 --gpu0 0 --gpu1 0\
 	\
 	--mode selfplay \
-	--batchsize 512 \
-	--num_games 16						--keys_in_reply checkers_V checkers_rv \
+	--batchsize 128 \
+	--num_games 8							--keys_in_reply checkers_V checkers_rv \
 	--T 1 \
 	--dim0 128								--dim1 128 \
 	--num_block0 10						--num_block1 10 \
@@ -44,8 +44,8 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	# Params that client gets from server
 	# 	TSOptions
 	# --mcts_threads 						- int 'number of MCTS threads'
-	# --mcts_rollout_per_thread - int, 'number of rollotus per MCTS thread'
-	# --mcts_rollout_per_batch 	- int, 'Batch size for mcts rollout'
+	# --mcts_rollout_per_thread - int, 'number of rollotus per MCTS thread' 
+	# --mcts_rollout_per_batch 	- int, 'Batch size for mcts rollout' нет смысла ставить значение больше количества валидных actions
 	# --mcts_verbose 						- bool, 'enables mcts verbosity'
 	# --mcts_verbose_time 			- bool, 'enables mcts verbosity for time stats'
 	# --mcts_persistent_tree  	- bool, 'use persistent tree in MCTS' если не установлен, обнуляет дерево на каждом шаге
