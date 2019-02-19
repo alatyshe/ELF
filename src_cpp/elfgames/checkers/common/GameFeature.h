@@ -14,7 +14,7 @@
 #include "../checkers/CheckersState.h"
 #include "../checkers/CheckersStateExt.h"
 
-// enum SpecialActionType { SA_SKIP = -100, SA_PASS, SA_CLEAR };
+// enum SpecialActionType { SA_SKIP = -100, SA_CLEAR };
 
 class GameFeature {
  public:
@@ -62,7 +62,6 @@ class GameFeature {
 			int* move_idx) {
 
 		// просто текущий номер хода
-		// (при приходе доски он проигрывает игры согласно JSON)
 		// и итерирует move_idx
 
 		*move_idx = s._state.getPly() - 1;

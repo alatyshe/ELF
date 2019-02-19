@@ -2,11 +2,13 @@
 #include "CheckersState.h"
 
 static float* board_plane(float* features, int idx) {
-  // возвращаем ячейку памяти с которой нужно заполнять наш массив
+  // returns the memory cell, with which our array will be filled.
   return features + idx * CHECKERS_BOARD_SIZE * CHECKERS_BOARD_SIZE;
 }
 
+// features param will taken from parent function 
 #define LAYER(idx) board_plane(features, idx)
+
 
 void CheckersFeature::getKings(int player, float* data) const {
   std::array<std::array<int, 8>, 8> observation;
@@ -20,7 +22,6 @@ void CheckersFeature::getKings(int player, float* data) const {
   }
 }
 
-
 void CheckersFeature::getPawns(int player, float* data) const {
   std::array<std::array<int, 8>, 8> observation;
   observation = GetObservation(s_.board(), player);
@@ -33,43 +34,24 @@ void CheckersFeature::getPawns(int player, float* data) const {
   }
 }
 
-// // If player == S_EMPTY, get history of both sides.
-// bool CheckersFeature::getHistory(int player, float* data) const {
-//   // const Board* _board = &s_.board();
+// void CheckersFeature::getHistory(int player, float* data) const {
+//   const Board* _board = &s_.board();
 
-//   // memset(data, 0, kBoardRegion * sizeof(float));
-//   // for (int i = 0; i < BOARD_SIZE; ++i) {
-//   //   for (int j = 0; j < BOARD_SIZE; ++j) {
-//   //     Coord c = OFFSETXY(i, j);
-//   //     if (S_ISA(_board->_infos[c].color, player))
-//   //       data[transform(i, j)] = _board->_infos[c].last_placed;
-//   //   }
-//   // }
-//   return true;
-// }
-
-// bool CheckersFeature::getHistoryExp(int player, float* data) const {
-//   // const Board* _board = &s_.board();
-
-//   // memset(data, 0, kBoardRegion * sizeof(float));
-//   // for (int i = 0; i < BOARD_SIZE; ++i) {
-//   //   for (int j = 0; j < BOARD_SIZE; ++j) {
-//   //     Coord c = OFFSETXY(i, j);
-//   //     if (S_ISA(_board->_infos[c].color, player)) {
-//   //       data[transform(i, j)] =
-//   //           exp((_board->_infos[c].last_placed - _board->_ply) / 10.0);
-//   //     }
-//   //   }
-//   // }
+//   for (int i = 0; i < CHECKERS_BOARD_SIZE; ++i) {
+//     for (int j = 0; j < CHECKERS_BOARD_SIZE; ++j) {
+//     }
+//   }
 //   return true;
 // }
 
 
-// Получаем от питона выделенную память из GCWrapper.run() smem
-// (зависит от количества фич и размера доски)
-// и заполняем ее нашими признаками
-// если фич несколько(на нашем примере их 6)
-// то получаем массив вида 6x91, который переводим в одномерный массив размером 546
+// Extract game state, this method calls from GameFeature::extractState()
+// Filling the memory for submission to the assessment in the neural network.
+// vector features - depends on the number of features and size of the board.
+// For example we have 6 CHECKERS_NUM_FEATURES defined in checkersBoard.h
+// and board size 8 x 8 = 64, so we have 2 dim array 6 x 64
+// wich transform into 1d array 384 lenght.
+// From python side we get this information by the key "checkers_s".
 void CheckersFeature::extract(std::vector<float>* features) const {
   features->resize(CHECKERS_NUM_FEATURES * kBoardRegion);
   extract(&(*features)[0]);
@@ -77,22 +59,19 @@ void CheckersFeature::extract(std::vector<float>* features) const {
 
 void CheckersFeature::extract(float* features) const {
   const CheckersBoard* _board = &s_.board();
-  // берем активного игрока
+
   int active_player = _board->active;
   int passive_player = _board->passive;
 
   std::fill(features, features + CHECKERS_NUM_FEATURES * kBoardRegion, 0.0);
+
   // Save the current board state to game state.
-  // заполнаем слои нашего бинарого признака для передачи 
-  // в python по ключу "checkers_s"
-  // не забываем задефайнить эти ключи в game_feature.h
-  // фишки наши, фишки врага
   getPawns(active_player, LAYER(0));
   getKings(active_player, LAYER(1));
   getPawns(passive_player, LAYER(2));
   getKings(passive_player, LAYER(3));
 
-  // кто сейчас ходит
+  // the player on move
   float* black_indicator = LAYER(4);
   float* white_indicator = LAYER(5);
   if (active_player == BLACK_PLAYER)

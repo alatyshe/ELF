@@ -56,7 +56,6 @@ struct CheckersMsgResult {
 			}
 			j["policies"].push_back(j1);
 		}
-
 		JSON_SAVE(j, values);
 	}
 

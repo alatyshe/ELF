@@ -11,9 +11,11 @@ bool CheckersState::forward(const Coord& c) {
 
   CheckersPlay(&_board, c);
   _moves.push_back(c);
+
   // _history.emplace_back(_board);
   // if (_history.size() > MAX_CHECKERS_HISTORY)
   //   _history.pop_front();
+  
   return true;
 }
 
@@ -28,10 +30,3 @@ void CheckersState::reset() {
   _final_value = 0.0;
   _has_final_value = false;
 }
-
-
-
-
-
-
-
