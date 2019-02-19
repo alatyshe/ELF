@@ -8,13 +8,13 @@
 
 #pragma once
 
-// ELF
+// elf
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elf/utils/utils.h"
 
-// Checkers
+// checkers
 #include "GameFeature.h"
 
 // Base class. from this class inherited ClientGameSelfplay and ServerGameTrain

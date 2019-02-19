@@ -9,10 +9,10 @@
 #pragma once
 #include <atomic>
 
-// ELF
+// elf
 #include "elf/logging/IndexedLoggerFactory.h"
 
-// Checkers
+// checkers
 #include "../common/record.h"
 
 

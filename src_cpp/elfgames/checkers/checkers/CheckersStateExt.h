@@ -6,11 +6,10 @@
 #include "elf/ai/tree_search/tree_search_base.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
+// checkers
 #include "CheckersState.h"
 #include "CheckersFeature.h"
 #include "CheckersGameOptions.h"
-
-// Game options
 #include "../common/record.h"
 #include "../sgf/sgf.h"
 #include "Record.h"

@@ -1,9 +1,9 @@
 #pragma once
 
-// ELF
+// elf
 #include "elf/debug/debug.h"
 
-// Checkers
+// checkers
 #include "CheckersBoard.h"
 #include "CheckersFeature.h"
 

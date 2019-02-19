@@ -10,9 +10,11 @@
 
 #include <iostream>
 
+// elf
 #include "elf/ai/tree_search/mcts.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
+// checkers
 #include "AI.h"
 
 struct MCTSActorParams {

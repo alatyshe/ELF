@@ -2,7 +2,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.3)
 project(elfgames_checkers)
 
 # Source files
-
 set(ELFGAMES_CHECKERS_SOURCES
     common/ClientGameSelfPlay.cc
     train/server/ServerGameTrain.cc

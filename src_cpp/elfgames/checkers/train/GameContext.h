@@ -15,12 +15,12 @@
 #include <memory>
 #include <vector>
 
-// ELF
+// elf
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
-// Checkers
+// checkers
 #include "../common/ClientGameSelfPlay.h"
 #include "../common/DistriClient.h"
 #include "../common/record.h"
@@ -28,7 +28,6 @@
 #include "../mcts/AI.h"
 
 #include "data_loader.h"
-
 #include "server/DistriServer.h"
 #include "server/ServerGameTrain.h"
 

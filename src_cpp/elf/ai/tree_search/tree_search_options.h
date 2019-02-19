@@ -147,6 +147,9 @@ struct TSOptions {
            << "][alpha=" << root_alpha 
            << "]" << std::endl;
       }
+      else {
+        ss << std::endl;
+      }
       ss << std::setw(20) << std::right;
       ss << "Algorithm: " << alg_opt.info() << std::endl;
 

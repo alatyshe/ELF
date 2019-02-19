@@ -1,18 +1,9 @@
 #pragma once
 
-#include <random>
-#include <deque>
 #include <queue>
-#include <map>
 #include <vector>
-#include <sstream>
-#include <iostream>
-#include <cmath>
-#include <bitset>
 #include <memory.h>
-#include <stdio.h>
 #include <iomanip>
-#include <utility>
 
 // checkers
 #include "hash_all_moves.h"

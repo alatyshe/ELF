@@ -11,9 +11,11 @@
 #include <iomanip>
 #include <utility>
 
+// elf
 #include "elf/ai/ai.h"
 #include "elf/ai/tree_search/tree_search_base.h"
 
+// checkers
 #include "../checkers/CheckersState.h"
 
 using AIClientT = elf::ai::AIClientT<CheckersFeature, CheckersReply>;

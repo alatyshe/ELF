@@ -14,8 +14,10 @@
 #include <string>
 #include <vector>
 
+// elf
 #include "elf/logging/IndexedLoggerFactory.h"
 
+// checkers
 #include "../checkers/CheckersBoard.h"
 
 // Load the remaining part.

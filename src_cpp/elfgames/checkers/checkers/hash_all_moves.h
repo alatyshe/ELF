@@ -9,7 +9,7 @@
 // If the bit on the board and on the move is active - we deactivate it,
 // otherwise - activate. This way we move the chips.
 // 
-// в m_to_i 
+// m_to_i 
 //    {"68, 1", 2}:
 //        68  - our move, 
 //        1   - direction(backward, forward)

@@ -2,11 +2,12 @@
 
 #include <sstream>
 #include <string>
+
+// elf
 #include "elf/legacy/pybind_helper.h"
 #include "elf/utils/utils.h"
 
-// filled in game.py
-// 
+// Options filled in game.py
 struct CheckersGameOptions {
   // Seed.
   unsigned int seed;

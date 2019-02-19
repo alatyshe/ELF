@@ -8,6 +8,7 @@
 
 #include <nlohmann/json.hpp>
 
+// checkers
 #include "../common/ModelPair.h"
 #include "../checkers/CheckersBoard.h"
 
