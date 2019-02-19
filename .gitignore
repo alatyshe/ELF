@@ -1,6 +1,7 @@
 # Build and interpreter artifacts
 ._*
 .DS*
+*_DS*
 *.a
 *.bin
 *.dSYM
