@@ -8,9 +8,6 @@
 
 #pragma once
 
-// TODO: Figure out how to remove this (ssengupta@fb)
-// #include <time.h>
-
 #include <iostream>
 #include <memory>
 #include <vector>
