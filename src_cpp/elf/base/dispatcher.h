@@ -4,7 +4,6 @@
 #include "../concurrency/ConcurrentQueue.h"
 #include "ctrl.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-#include "elf/debug/debug.h"
 
 namespace elf {
 

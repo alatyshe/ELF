@@ -17,14 +17,14 @@
 #include <thread>
 #include <vector>
 
-// ELF
+// elf
 #include "elf/base/context.h"
 #include "elf/base/dispatcher.h"
 #include "elf/concurrency/ConcurrentQueue.h"
 #include "elf/concurrency/Counter.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
-// Checkers
+// checkers
 #include "../data_loader.h"
 #include "../control/ctrl_eval.h"
 #include "../control/ctrl_selfplay.h"

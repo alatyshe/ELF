@@ -21,8 +21,6 @@
 // TODO - replace this with something appropriate from C++ (ssengupta@fb)
 #include <time.h>
 
-#include "elf/debug/debug.h"
-
 namespace elf_utils {
 
 inline std::string print_bool(bool b) {

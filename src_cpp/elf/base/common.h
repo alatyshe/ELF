@@ -13,7 +13,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "elf/debug/debug.h"
 
 namespace elf {
 

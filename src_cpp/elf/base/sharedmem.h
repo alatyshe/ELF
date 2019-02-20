@@ -15,7 +15,6 @@
 #include "elf/comm/comm.h"
 #include "elf/concurrency/ConcurrentQueue.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-#include "elf/debug/debug.h"
 
 #include "extractor.h"
 

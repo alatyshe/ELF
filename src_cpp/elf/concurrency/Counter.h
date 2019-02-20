@@ -19,8 +19,6 @@
 #include <mutex>
 #include <thread>
 
-#include "elf/debug/debug.h"
-
 namespace elf {
 namespace concurrency {
 

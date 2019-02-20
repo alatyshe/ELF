@@ -17,7 +17,6 @@
 #include <thread>
 
 #include "elf/logging/IndexedLoggerFactory.h"
-#include "elf/debug/debug.h"
 
 namespace elf {
 

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "elf/concurrency/Counter.h"
-#include "elf/debug/debug.h"
 
 namespace comm {
 

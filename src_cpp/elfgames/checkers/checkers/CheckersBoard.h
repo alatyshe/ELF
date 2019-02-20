@@ -6,10 +6,30 @@
 #include <iomanip>
 
 // checkers
-#include "hash_all_moves.h"
-#include "elf/debug/debug.h"
+#include "HashAllMoves.h"
 
-// специальные хода
+#define BLACK_C   "\u001b[30m"
+#define RED_C     "\u001b[31m"
+#define GREEN_C   "\u001b[32m"
+#define YELLOW_C  "\u001b[33m"
+#define BLUE_C    "\u001b[34m"
+#define MAGENTA_C "\u001b[35m"
+#define CYAN_C    "\u001b[36m"
+#define WHITE_C   "\u001b[37m"
+
+#define BLACK_B   "\u001b[30;1m"
+#define RED_B     "\u001b[31;1m"
+#define GREEN_B   "\u001b[32;1m"
+#define YELLOW_B  "\u001b[33;1m"
+#define BLUE_B    "\u001b[34;1m"
+#define MAGENTA_B "\u001b[35;1m"
+#define CYAN_B    "\u001b[36;1m"
+#define WHITE_B   "\u001b[37;1m"
+
+#define COLOR_END "\u001b[0m"
+
+
+// special moves
 # define M_INVALID 171
 
 # define MAX_CHECKERS_HISTORY 1
@@ -76,7 +96,6 @@ void CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src);
 std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int player);
 std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoard board, int player);
 
-// Board in 8x8 array
 std::array<std::array<int, 8>, 8> GetTrueState(const CheckersBoard board);
 std::array<std::array<int, 8>, 8> GetObservation(const CheckersBoard board, int player);
 std::string GetTrueStateStr(const CheckersBoard board);

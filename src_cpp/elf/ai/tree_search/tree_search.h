@@ -29,7 +29,6 @@
 
 #include "tree_search_node.h"
 #include "tree_search_options.h"
-#include "elf/debug/debug.h"
 
 /*eval_num_games
  * Use the following function of S

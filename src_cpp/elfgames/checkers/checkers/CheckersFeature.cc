@@ -2,7 +2,6 @@
 #include "CheckersState.h"
 
 static float* board_plane(float* features, int idx) {
-  // returns the memory cell, with which our array will be filled.
   return features + idx * CHECKERS_BOARD_SIZE * CHECKERS_BOARD_SIZE;
 }
 

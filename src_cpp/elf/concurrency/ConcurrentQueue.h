@@ -43,7 +43,6 @@
 #include <blockingconcurrentqueue.h>
 #include <tbb/concurrent_queue.h>
 
-#include "elf/debug/debug.h"
 
 namespace elf {
 namespace concurrency {

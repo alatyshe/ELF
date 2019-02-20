@@ -30,8 +30,6 @@ inline std::string coord2str(Coord c) {
 }
 // переводим координаты в строку
 inline std::string coords2str(const std::vector<Coord>& moves) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-
   std::string sgf = "(";
   for (size_t i = 0; i < moves.size(); i++) {
     sgf += ";[" + coord2str(moves[i]) + "]";
@@ -40,9 +38,7 @@ inline std::string coords2str(const std::vector<Coord>& moves) {
   return sgf;
 }
 
-inline std::vector<Coord> str2coords(const std::string& sgf) {
-  display_debug_info("", __FUNCTION__, BLUE_B);
-  
+inline std::vector<Coord> str2coords(const std::string& sgf) {  
   std::vector<Coord> moves;
   if (sgf.empty() || sgf[0] != '(')
     return moves;

@@ -25,7 +25,6 @@
 #include "elf/concurrency/ConcurrentQueue.h"
 #include "elf/concurrency/Counter.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-#include "elf/debug/debug.h"
 #include "extractor.h"
 #include "sharedmem.h"
 

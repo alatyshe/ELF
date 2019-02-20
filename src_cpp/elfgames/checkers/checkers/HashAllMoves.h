@@ -5,7 +5,7 @@
 
 // Since the board is represented by six numbers(forward, backward, pieces),
 // the pattern of transition from one state to another is changing.
-// For the step we use the number in which all the logic is encoded 2 active bits.
+// For the step it uses the number in which all the logic is encoded in 2 active bits
 // If the bit on the board and on the move is active - we deactivate it,
 // otherwise - activate. This way we move the chips.
 // 
@@ -187,7 +187,6 @@ const std::map<std::string, int>  m_to_i = {
   {"-8598323200, 0", 168},
   {"-17196646400, 0", 169}
 };
-
 
 const std::map<int, std::array<int64_t, 2>> i_to_m = {
   {0, {17, true}},
@@ -534,6 +533,5 @@ const std::map<int, std::string>  m_to_h = {
   {168 ,"3 => 21"},
   {169 ,"1 => 19"}
   };
-} 
-
+}
 // all_moves

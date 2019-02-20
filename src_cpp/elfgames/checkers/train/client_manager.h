@@ -15,7 +15,6 @@
 // checkers
 #include "../common/record.h"
 
-
 class ClientManager;
 
 // Онформация по одному клиенту с которым сервер имеет связь

@@ -23,7 +23,6 @@
 
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elf/utils/utils.h"
-#include "elf/debug/debug.h"
 
 using json = nlohmann::json;
 

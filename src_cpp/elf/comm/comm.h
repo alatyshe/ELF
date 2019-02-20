@@ -21,7 +21,6 @@
 
 #include "elf/concurrency/TBBHashers.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-#include "elf/debug/debug.h"
 
 #include "broadcast.h"
 

@@ -20,7 +20,6 @@
 
 #include "tree_search_base.h"
 #include "tree_search_options.h"
-#include "elf/debug/debug.h"
 
 namespace elf {
 namespace ai {

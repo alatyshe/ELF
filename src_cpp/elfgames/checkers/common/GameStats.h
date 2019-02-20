@@ -50,7 +50,6 @@ struct WinRateStats {
   REGISTER_PYBIND_FIELDS(black_wins, white_wins, both_lost, sum_reward, total_games);
 };
 
-
 // ==========================================================
 // ==========================================================
 class GameStats {

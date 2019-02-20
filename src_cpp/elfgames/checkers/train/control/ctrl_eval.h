@@ -10,18 +10,15 @@
 
 #include <fstream>
 
-// ELF
+// elf
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elf/utils/utils.h"
 
-// Checkers
+// checkers
+#include "ctrl_utils.h"
 #include "../client_manager.h"
 #include "../fair_pick.h"
-
-#include "ctrl_utils.h"
-
-
 
 using TSOptions = elf::ai::tree_search::TSOptions;
 

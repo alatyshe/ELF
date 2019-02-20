@@ -164,8 +164,6 @@ class GameFeature {
   // ================================================================
   // ================================================================
   void registerExtractor(int batchsize, elf::Extractor& e) {
-    display_debug_info("GameFeature", __FUNCTION__, RED_B);
-
     // регаем ключ по которому мы будем доставать наш state и сообщаем размерность, 
     // что он будет такой размерности
     auto& checkers_s = e.addField<float>("checkers_s").addExtents(
@@ -221,9 +219,7 @@ class GameFeature {
   }
 
 
-  std::map<std::string, int> getParams() const {
-    display_debug_info("GameFeature", __FUNCTION__, RED_B);
-    
+  std::map<std::string, int> getParams() const {    
     return std::map<std::string, int>{
         {"checkers_num_action", TOTAL_NUM_ACTIONS},
         {"checkers_board_size", 8},

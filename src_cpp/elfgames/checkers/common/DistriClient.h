@@ -131,9 +131,6 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
 
 
 
-
-
-// CHECKERS
 struct CheckersGuardedRecords {
  public:
   CheckersGuardedRecords(const std::string& identity)
@@ -152,8 +149,6 @@ struct CheckersGuardedRecords {
 
   void updateState(const ThreadState& ts) {
     // call from CheckersGameNotifier::OnStateUpdate
-    // Разобрать!!!!!!!!!!!!!!!!!!!!!!!
-    // Разобрать!!!!!!!!!!!!!!!!!!!!!!!
     // Разобрать!!!!!!!!!!!!!!!!!!!!!!!
     std::lock_guard<std::mutex> lock(mutex_);
 

@@ -14,6 +14,9 @@
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/utils/json_utils.h"
 
+// checkers
+#include "../checkers/CheckersBoard.h"
+
 // Model pair need for evaluation 2 models on client with EVAL_THAN_SELFPLAY
 struct ModelPair {
   int64_t black_ver = -1;

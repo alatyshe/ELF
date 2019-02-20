@@ -12,7 +12,6 @@
 #include <vector>
 
 #include <boost/range/adaptor/reversed.hpp>
-#include "elf/debug/debug.h"
 
 namespace elf {
 

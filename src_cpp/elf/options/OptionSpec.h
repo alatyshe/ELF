@@ -42,7 +42,6 @@
 #include <utility>
 #include <vector>
 
-#include "elf/debug/debug.h"
 #include <nlohmann/json.hpp>
 
 namespace elf {

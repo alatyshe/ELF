@@ -41,7 +41,6 @@
 #include <nlohmann/json.hpp>
 
 #include "OptionSpec.h"
-#include "elf/debug/debug.h"
 
 namespace elf {
 namespace options {

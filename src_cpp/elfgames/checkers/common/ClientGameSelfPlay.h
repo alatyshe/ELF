@@ -75,7 +75,6 @@ class ClientGameSelfPlay : public GameBase {
 
 
   int _online_counter = 0;
-
   std::unique_ptr<MCTSCheckersAI> checkers_ai1;
   // Opponent ai (used for selfplay evaluation)
   std::unique_ptr<MCTSCheckersAI> checkers_ai2;

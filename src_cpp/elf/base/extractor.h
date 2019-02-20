@@ -19,7 +19,6 @@
 #include "common.h"
 
 #include "elf/logging/IndexedLoggerFactory.h"
-#include "elf/debug/debug.h"
 
 // This file exists to bind functionss of the form f(State, MemoryAddress).
 // to its arguments

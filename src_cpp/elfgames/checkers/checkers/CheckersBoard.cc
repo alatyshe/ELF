@@ -43,7 +43,6 @@ void ClearBoard(CheckersBoard* board) {
   board->_white_repeats_step = 0;
 }
 
-
 bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
   /*
     Updates the game state to reflect the effects of the input
@@ -138,7 +137,6 @@ bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
   return false;
 }
 
-
 std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int player) {
   std::array<int, TOTAL_NUM_ACTIONS> result;
   std::vector<int64_t> moves;
@@ -177,8 +175,6 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int 
   } 
 
   // Repeat moves
-  // if (player == BLACK_PLAYER && board._remove_step_black) {
-  // } else if (player == WHITE_PLAYER && board._remove_step_white) {
   if (total_moves > 1
       && player == WHITE_PLAYER 
       && board._white_repeats_step >= REPEAT_MOVE) {
@@ -191,7 +187,6 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int 
 
   return result;
 }
-
 
 std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoard board, int player) {
   std::vector<std::array<int64_t, 2>> result;
@@ -223,7 +218,6 @@ std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoar
   return result;
 }
 
-
 bool CheckersTryPlay(CheckersBoard board, Coord c) {
   std::array<int, TOTAL_NUM_ACTIONS> res = GetValidMovesBinary(board, board.active);
   if (res[c])
@@ -231,11 +225,9 @@ bool CheckersTryPlay(CheckersBoard board, Coord c) {
   return false;
 }
 
-
 bool CheckersIsOver(CheckersBoard board) {
   return (_get_moves(board).size() == 0);
 }
-
 
 float CheckersEvalBoard(CheckersBoard board, int player) {
   std::array<std::array<int, 8>, 8> observation = GetObservation(board, player);
@@ -291,7 +283,11 @@ float CheckersEvalBoard(CheckersBoard board, int player) {
 //     return(str);
 // }
 
-// Переводим наши int64_t в нормальный вид(доску 8x8)
+// translates the board in 8x8 format 
+//      3: our kings 
+//      1: our pawns 
+//      -3: enemy kings 
+//      -1: enemy pawns
 std::array<std::array<int, 8>, 8> GetObservation(CheckersBoard board, int player) {
   std::array<std::array<int, 8>, 8> board_out;
   int64_t bin_black_pawn;
@@ -365,7 +361,7 @@ std::array<std::array<int, 8>, 8> GetTrueState(CheckersBoard board) {
   return (GetObservation(board, BLACK_PLAYER));
 }
 
-// Для отображения в терминале
+// for display in terminal
 std::string GetTrueStateStr(const CheckersBoard board) {
   std::array<std::array<int, 8>, 8> observation = GetTrueState(board);
   std::string str = "";

@@ -11,7 +11,7 @@
 // elf
 #include "elf/ai/tree_search/mcts.h"
 
-// Checkers
+// checkers
 #include "record.h"
 #include "../checkers/Record.h"
 #include "../mcts/CheckersMCTSActor.h"

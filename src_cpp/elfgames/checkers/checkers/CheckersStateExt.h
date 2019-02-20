@@ -2,7 +2,7 @@
 
 #include <set>
 
-// ELF
+// elf
 #include "elf/ai/tree_search/tree_search_base.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
@@ -22,7 +22,7 @@ enum CheckersFinishReason {
 
 // Client Side
 // calls from start_client.sh
-// Using for generate batches for server
+// Generates batches for server
 struct CheckersStateExt {
  public:
   CheckersStateExt(int game_idx, const CheckersGameOptions& game_options);

@@ -6,12 +6,12 @@
 #include <memory>
 #include <vector>
 
-// ELF
+// elf
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
-// Checkers
+// checkers
 #include "../distri_base.h"
 #include "../../common/record.h"
 #include "../data_loader.h"

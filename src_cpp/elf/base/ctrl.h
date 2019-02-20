@@ -22,7 +22,6 @@
 
 #include "elf/concurrency/Counter.h"
 #include "elf/concurrency/TBBHashers.h"
-#include "elf/debug/debug.h"
 
 namespace elf {
 

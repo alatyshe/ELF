@@ -12,11 +12,11 @@
 #include <algorithm>
 #include <deque>
 
-// ELF
+// elf
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
-// Checkers
+// checkers
 #include "ctrl_utils.h"
 #include "../client_manager.h"
 #include "../../checkers/CheckersGameOptions.h"

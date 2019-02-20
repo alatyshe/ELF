@@ -9,7 +9,7 @@
 #pragma once
 
 // TODO: Figure out how to remove this (ssengupta@fb)
-#include <time.h>
+// #include <time.h>
 
 #include <iostream>
 #include <memory>
@@ -24,9 +24,7 @@
 #include "../common/ClientGameSelfPlay.h"
 #include "../common/DistriClient.h"
 #include "../common/record.h"
-
 #include "../mcts/AI.h"
-
 #include "data_loader.h"
 #include "server/DistriServer.h"
 #include "server/ServerGameTrain.h"

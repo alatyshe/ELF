@@ -1,7 +1,10 @@
 #pragma once
 
-#include "CheckersBoard.h"
+// elf
 #include "elf/logging/IndexedLoggerFactory.h"
+
+// checkers
+#include "CheckersBoard.h"
 
 // Do not used yet
 struct CheckersBoardHistory {

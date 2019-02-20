@@ -136,7 +136,7 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
   // My code
   _checkers_state_ext.setFinalValue();
-  // показывает борду
+  // show board
   _checkers_state_ext.showFinishInfo(reason);
 
   // if (!_game_options.dump_record_prefix.empty()) {

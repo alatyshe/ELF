@@ -14,7 +14,6 @@
 // checkers
 #include "../../common/record.h"
 
-
 // сбрасывает все наши рекорды в файл каждые num_record_threshold
 struct RecordBufferSimple {
  public:
