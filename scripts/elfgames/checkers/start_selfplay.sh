@@ -6,22 +6,22 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-# LOAD0=myserver/save-3072.bin
-# LOAD1=myserver/save-143360.bin
+# LOAD0=models/save-3072.bin
+# LOAD1=models/save-143360.bin
 
-# LOAD1=myserver/save-609280.bin
-# LOAD0=myserver/save-610304.bin
+# LOAD1=models/save-609280.bin
+# LOAD0=models/save-610304.bin
 
 # --mcts_threads 8				--mcts_rollout_per_thread 50
 
-# LOAD0=myserver/save-609280.bin
-# LOAD1=myserver/save-613376.bin
+# LOAD0=models/save-609280.bin
+# LOAD1=models/save-613376.bin
 
-# LOAD1=myserver/save-609280.bin
-# LOAD0=myserver/save-613376.bin
+# LOAD1=models/save-609280.bin
+# LOAD0=models/save-613376.bin
 
-LOAD1=myserver/save-609280.bin
-LOAD0=myserver/save-609280.bin
+LOAD1=models/save-609280.bin
+LOAD0=models/save-609280.bin
 
 BATCHSIZE=5
 NUM_ROLLOUTS=50
@@ -39,7 +39,7 @@ model=df_pred \
 model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	\
 	--T 1 \
-	--server_id myserver		--port 2341 \
+	--server_id models		--port 2341 \
 	--gpu $GPU --gpu0 $GPU  --gpu1 $GPU\
 	\
 	--mode selfplay \

@@ -75,6 +75,10 @@ class Evaluator(object):
       		'\u001b[31;1m|py|\u001b[0mrlpytorch.trainer.Evaluator-',
       		'')
 
+		print("name : ", name)
+		print("actor_name : ", actor_name)
+
+
 	def episode_start(self, i):
 		''' Called before each episode. Reset ``actor_count`` to 0.
 
@@ -110,7 +114,7 @@ class Evaluator(object):
 		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
 		if self.verbose:
-			self.logger.info(f"In Evaluator[{self.name}]::actor")
+			self.logger.info(f"In Evaluator[{self.actor_name}]::actor")
 
 		# actor model.
 		m = self.mi[self.actor_name]

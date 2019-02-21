@@ -89,7 +89,7 @@ class Loader(object):
 		spec.addStrOption(
 			'mode',
 			'TODO: fill this help message in',
-			'online')
+			'play')
 		spec.addBoolOption(
 			'black_use_policy_network_only',
 			'TODO: fill this help message in',
@@ -309,7 +309,7 @@ class Loader(object):
 
 		desc = {}
 
-		if self.options.mode == "online":
+		if self.options.mode == "play":
 			desc["human_actor"] = dict(
 				input=["checkers_s"],
 				reply=[ "pi", 

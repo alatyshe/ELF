@@ -8,12 +8,12 @@
 
 
 
-save=./myserver \
+save=./models \
 game=elfgames.checkers.game \
 model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	stdbuf -o 0 -e 0 python3 -u ./py/train.py \
 	\
-	--server_id myserver		--port 1234 \
+	--server_id models		--port 1234 \
 	--gpu 0 \
 	\
 	--mode train \
@@ -59,7 +59,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	
 	# --expected_num_client 10 \
 	
-	# --load myserver/save-15.bin \
+	# --load models/save-15.bin \
 	# 1>> log.log 2>&1 &
 	
 

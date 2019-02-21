@@ -368,7 +368,7 @@ class DistriClient {
       checkers_game_notifier_.reset(
           new CheckersGameNotifier(ctrl_, writer_ctrl_->identity(), game_options, client));
 
-    } else if (game_options_.mode == "online") {
+    } else if (game_options_.mode == "play") {
     } else {
       throw std::range_error("game_options.mode not recognized! " + game_options_.mode);
     }

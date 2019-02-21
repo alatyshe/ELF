@@ -194,7 +194,7 @@ void ClientGameSelfPlay::restart() {
       // Swap the two pointer.
       swap(checkers_ai1, checkers_ai2);
     }
-  } else if (_game_options.mode == "online") {
+  } else if (_game_options.mode == "play") {
     checkers_ai1.reset(init_checkers_ai(
         "checkers_actor_black",
         checkers_request.vers.mcts_opt,

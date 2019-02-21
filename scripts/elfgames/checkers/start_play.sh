@@ -6,8 +6,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-MODEL=myserver/save-723968.bin
-# MODEL=myserver/save-609280.bin
+MODEL=models/save-609280.bin
 
 # MODEL=model_dima/save-67584.bin
 # shift
@@ -19,7 +18,7 @@ model_file=elfgames.checkers.df_model_checkers \
 	--server_addr localhost --port 1234 \
 	\
 	--batchsize 64 \
-	--mode online			--keys_in_reply checkers_V checkers_rv \
+	--mode play			--keys_in_reply checkers_V checkers_rv \
 	--load $MODEL \
 	\
 	--replace_prefix resnet.module,resnet init_conv.module,init_conv \

@@ -223,10 +223,10 @@ def load_env(
 
  
     game_loader_class = load_module(envs["game"]).Loader
-    logger.info(f'\u001b[32;1mModule successfully loaded :\u001b[0m {envs["game"]}')
+    logger.info(f'\u001b[32;1mModule game successfully loaded :\u001b[0m {envs["game"]}')
 
     model_file = load_module(envs["model_file"])
-    logger.info(f'\u001b[32;1mModule successfully loaded :\u001b[0m {envs["model_file"]}')
+    logger.info(f'\u001b[32;1mModule model_file successfully loaded :\u001b[0m {envs["model_file"]}')
 
     # TODO This is not good, need to fix.
     if len(model_file.Models[envs["model"]]) == 2:
@@ -247,6 +247,7 @@ def load_env(
         sampler_class,
         ModelInterface,
     )))
+
     if num_models is None:
         option_spec.merge(ModelLoader.get_option_spec(model_class))
     else:
@@ -290,4 +291,8 @@ def load_env(
     logger.info(f'Parsed options:\n{pretty_option_str}')
     logger.info('Finished loading env')
 
+    # env_str = ""
+    # for i in env:
+    #     env_str += f"{i} : {env[i]}\n"
+    # logger.info(f"env :\n{env_str}")
     return env

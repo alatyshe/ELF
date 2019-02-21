@@ -8,12 +8,12 @@
 
 echo $PYTHONPATH $SLURMD_NODENAME $CUDA_VISIBLE_DEVICES
 
-root=./myserver \
+root=./models \
 game=elfgames.checkers.game \
 model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	stdbuf -o 0 -e 0 python3 ./py/selfplay.py \
 	\
-	--server_id myserver			--port 1234 \
+	--server_id models			--port 1234 \
 	--gpu 0 --gpu0 0 --gpu1 0\
 	\
 	--mode selfplay \
