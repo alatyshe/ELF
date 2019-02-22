@@ -46,9 +46,6 @@ def main():
   trainer = env['trainer']
   runner = env['runner']
 
-  # print("Trainer : ", trainer.get_option_spec().getPythonArgparseOptionsAsJSONString())
-  # print("Runner  : ",  runner.get_option_spec().getPythonArgparseOptionsAsJSONString())
-
   GC = env["game"].initialize()
 
   model_loader = env["model_loaders"][0]

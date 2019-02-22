@@ -39,7 +39,7 @@ model=df_pred \
 model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	\
 	--T 1 \
-	--server_id models		--port 2341 \
+	--server_id myserver		--port 2341 \
 	--gpu $GPU --gpu0 $GPU  --gpu1 $GPU\
 	\
 	--mode selfplay \
