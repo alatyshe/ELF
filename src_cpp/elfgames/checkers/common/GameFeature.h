@@ -10,13 +10,15 @@
 
 // elf
 #include "elf/base/extractor.h"
-
 // checkers
 #include "../checkers/CheckersState.h"
 #include "../checkers/CheckersStateExt.h"
 
 // enum SpecialActionType { SA_SKIP = -100, SA_CLEAR };
 
+/*
+  This Class responsible for data exchange between C++ and python.
+*/
 class GameFeature {
  public:
   GameFeature(const CheckersGameOptions& game_options) : 
@@ -24,6 +26,7 @@ class GameFeature {
     num_plane_checkers_ = CHECKERS_NUM_FEATURES;
   }
   // Inference part.
+  // Write the state of the game board in the memory cell
   static void extractCheckersState(
       const CheckersFeature& bf, 
       float* f) {
@@ -55,22 +58,20 @@ class GameFeature {
   }
 
 
+
   // /////////////
   // // Training part.
-  // посмотреть где используется в тренировке и как
   static void extractCheckersMoveIdx(
       const CheckersStateExtOffline& s, 
       int* move_idx) {
-
-    // просто текущий номер хода
-    // и итерирует move_idx
-
+    // Current move number
     *move_idx = s._state.getPly() - 1;
   }
 
   static void extractCheckersNumMove(
       const CheckersStateExtOffline& s, 
       int* num_move) {
+    // Total move number
     *num_move = s.getNumMoves();
   }
 
@@ -80,15 +81,12 @@ class GameFeature {
     *predicted_value = s.getPredictedValue(s._state.getPly() - 1);
   }
 
-
   static void extractCheckersWinner(
       const CheckersStateExtOffline& s, 
       float* winner) {
     *winner = s._offline_winner;
   }
 
-
-  // Посмотреть где вызывается
   static void extractCheckersStateExt(
       const CheckersStateExtOffline& s, 
       float* f) {
@@ -96,7 +94,7 @@ class GameFeature {
     extractCheckersState(s._bf, f);
   }
 
-  // Проверить!!!!!!!!!!!!!!!!!!!!!
+  // check it
   static void extractCheckersMCTSPi(
       const CheckersStateExtOffline& s, 
       float* mcts_scores) {
@@ -161,20 +159,18 @@ class GameFeature {
     *ver = msg.model_ver;
   }
 
-  // ================================================================
-  // ================================================================
   void registerExtractor(int batchsize, elf::Extractor& e) {
-    // регаем ключ по которому мы будем доставать наш state и сообщаем размерность, 
-    // что он будет такой размерности
+    // Registers the key, by which we will get our game state 
+    // from python side and says which size it will be.
     auto& checkers_s = e.addField<float>("checkers_s").addExtents(
       batchsize, {batchsize, num_plane_checkers_, CHECKERS_BOARD_SIZE, CHECKERS_BOARD_SIZE});
-    // добавляем к этому ключу вот методы для 
-    // тк нам нужно заполнить эту память и передать python
+    // Binds methods to this key.
+    // We use these methods to fill the memory and pass this info to the Python.
     checkers_s.addFunction<CheckersFeature>(extractCheckersState)
       .addFunction<CheckersStateExtOffline>(extractCheckersStateExt);
 
 
-    // добавляем еще поля 
+    // Register the rest of the keys 
     e.addField<int64_t>("a").addExtent(batchsize);
     e.addField<int64_t>("checkers_rv").addExtent(batchsize);
     e.addField<int64_t>("checkers_offline_a")
@@ -191,8 +187,7 @@ class GameFeature {
         .addExtent(batchsize);
 
 
-
-    // привязываем к каждому полю свой метод для записи инфы в код ++
+    // Binds on each key its own method for transferring information inside C++ from python.
     e.addClass<CheckersReply>()
         .addFunction<int64_t>("a", CheckersReplyAction)
         .addFunction<float>("pi", CheckersReplyPolicy)
@@ -229,8 +224,7 @@ class GameFeature {
   }
 
  private:
-  // Параметры игры
   CheckersGameOptions game_options_;
-  // Количество фич доски
+  // number of characteristics.
   int                 num_plane_checkers_;
 };

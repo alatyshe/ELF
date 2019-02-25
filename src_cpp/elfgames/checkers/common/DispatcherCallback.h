@@ -12,7 +12,6 @@
 #include "elf/base/context.h"
 #include "elf/base/dispatcher.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-
 // checkers
 #include "record.h"
 
@@ -20,9 +19,10 @@ using Ctrl = elf::Ctrl;
 using Addr = elf::Addr;
 using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
 
-
-// Работает на стороне клиента
-// Используется в GameContext 
+/*
+  Works on client side.
+  Listen to the server for requests. Updates model versions from server message.
+*/
 class DispatcherCallback {
  public:
   DispatcherCallback(ThreadedDispatcher* dispatcher, elf::GameClient* client)
@@ -38,7 +38,6 @@ class DispatcherCallback {
         std::bind(&DispatcherCallback::OnReply, this, _1, _2),
         std::bind(&DispatcherCallback::OnFirstSend, this, _1, _2));
   }
-
 
   void OnFirstSend(const Addr& addr, MsgRequest* request) {
     const size_t thread_idx = stoi(addr.label.substr(5));
@@ -91,8 +90,7 @@ class DispatcherCallback {
     std::vector<bool> next_session(replies.size(), false);
 
     if (request != nullptr) {
-
-      // Once it is done, send to Python side.
+      // Once it is done, send to Python side for load/reload models
       logger_->info(
           "Received actionable request: black_ver = {}, white_ver = {}, "
           "#addrs_to_reply: {}",
@@ -100,8 +98,8 @@ class DispatcherCallback {
           request->vers.white_ver,
           n);
       elf::FuncsWithState funcs =
-          client_->BindStateToFunctions({start_target_}, &request->vers);
-      client_->sendWait({start_target_}, &funcs);
+          client_->BindStateToFunctions({"game_start"}, &request->vers);
+      client_->sendWait({"game_start"}, &funcs);
 
       for (size_t i = 0; i < replies.size(); ++i) {
         RestartReply& r = replies[i];
@@ -117,6 +115,5 @@ class DispatcherCallback {
 
  private:
   elf::GameClient* client_ = nullptr;
-  const std::string start_target_ = "game_start";
   std::shared_ptr<spdlog::logger> logger_;
 };

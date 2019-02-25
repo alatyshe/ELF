@@ -19,8 +19,6 @@
 #include "elf/legacy/pybind_helper.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 
-// ==========================================================
-// ==========================================================
 struct WinRateStats {
   uint64_t black_wins = 0;
   uint64_t white_wins = 0;
@@ -29,7 +27,7 @@ struct WinRateStats {
   uint64_t total_games = 0;
 
   void feed(CheckersFinishReason reason, float reward) {
-    if (reason == CHECKERS_MAX_STEP)
+    if (reason == MAX_STEP)
       both_lost++;
     else if (reward > 0)
       black_wins++;
@@ -50,8 +48,7 @@ struct WinRateStats {
   REGISTER_PYBIND_FIELDS(black_wins, white_wins, both_lost, sum_reward, total_games);
 };
 
-// ==========================================================
-// ==========================================================
+
 class GameStats {
  public:
   GameStats()

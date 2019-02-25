@@ -257,7 +257,6 @@ class Loader(object):
 		game_opt.num_reader = self.options.num_reader
 		game_opt.checkers_num_future_actions = self.options.checkers_num_future_actions
 		game_opt.num_reset_ranking = self.options.num_reset_ranking
-		# game_opt.move_cutoff = self.options.move_cutoff
 		game_opt.policy_distri_cutoff = self.options.policy_distri_cutoff
 		game_opt.num_games_per_thread = self.options.num_games_per_thread
 		game_opt.keep_prev_selfplay = self.options.keep_prev_selfplay
@@ -363,7 +362,6 @@ class Loader(object):
 			)
 
 		elif self.options.mode == "train" or self.options.mode == "offline_train":
-
 			desc["train"] = dict(
 				input=[ "checkers_s", 
 						"checkers_offline_a", 
@@ -378,6 +376,7 @@ class Loader(object):
 				reply=None,
 				batchsize=1
 			)
+
 		else:
 			raise "No such mode: " + self.options.mode
 

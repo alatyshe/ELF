@@ -16,7 +16,6 @@
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-
 // checkers
 #include "../common/ClientGameSelfPlay.h"
 #include "../common/DistriClient.h"
@@ -32,8 +31,8 @@ class GameContext {
  public:
 	using ThreadedDispatcher = ClientGameSelfPlay::ThreadedDispatcher;
 
-	GameContext(const ContextOptions&       contextOptions, 
-							const CheckersGameOptions&  gameOptions)
+	GameContext(const ContextOptions& contextOptions, 
+							const CheckersGameOptions& gameOptions)
 			: GameFeature_(gameOptions),
 				logger_(elf::logging::getIndexedLogger(
 					MAGENTA_B + std::string("|++|") + COLOR_END + 
@@ -44,45 +43,39 @@ class GameContext {
 		int numGames = contextOptions.num_games;
 		const int batchsize = contextOptions.batchsize;
 
-		// Register all functions.
+		// Register all keys.
 		GameFeature_.registerExtractor(batchsize, context_->getExtractor());
 
-		elf::GameClient* gc = context_->getClient();
+		elf::GameClient* gameClient = context_->getClient();
 		ThreadedDispatcher* dispatcher = nullptr;
 
-		// создаем необходимое количество игр
-		// у каждой игры свой уникальный id - i
-		// для доступа к ней
+		// Creates the necessary number of games. Each game has its own unique id.
 		if (gameOptions.mode == "train" || gameOptions.mode == "offline_train") {
 			// start_server.sh
-			server_.reset(new DistriServer(contextOptions, gameOptions, gc));
+			server_.reset(new DistriServer(contextOptions, gameOptions, gameClient));
 
 			for (int i = 0; i < numGames; ++i) {
 				games_.emplace_back(new ServerGameTrain(
-						i, 
-						gc, 
-						contextOptions, 
-						gameOptions, 
-						server_->getReplayBuffer()
-						));
+						i,
+						gameClient,
+						contextOptions,
+						gameOptions,
+						server_->getReplayBuffer()));
 			}
 			logger_->info("{} ServerGameTrain was created", numGames);
-
 		} else {
 			// start_client.sh
-			client_.reset(new DistriClient(contextOptions, gameOptions, gc));
-
+			client_.reset(new DistriClient(contextOptions, gameOptions, gameClient));
 			dispatcher = client_->getDispatcher();
 
 			for (int i = 0; i < numGames; ++i) {
 				games_.emplace_back(new ClientGameSelfPlay(
 						i,
-						gc,
+						gameClient,
 						contextOptions,
 						gameOptions,
 						dispatcher,
-						client_->getCheckersNotifier()
-						));
+						client_->getCheckersNotifier()));
 			}
 			logger_->info("{} ClientGameSelfPlay was created", numGames);
 		}
@@ -98,14 +91,8 @@ class GameContext {
 				});
 
 		if (server_ != nullptr) {
-			// Регаем метод который запускается при старте сервера
-			// суть его в том, чтобы он загрузил батчи из файла(если они указаны),
-			// и тренировался на них.
-			// [this, gameOptions] - области видимости lambda функции
-			// () - параметры
-			// { server_->loadOfflineSelfplayData(); } - тело функции
-			
-			// logic = 
+			// Registers the lambda function that is called when the server starts.
+			// It uses batches from the file (if specified) for training.
 			// GameContext => DistriServer => DataOnlineLoader =>
 			context_->setCBAfterGameStart(
 					[this, gameOptions]() { server_->loadOfflineSelfplayData(); });

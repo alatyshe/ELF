@@ -12,15 +12,12 @@ import os
 import sys
 import re
 import time
-
 import torch
 
 from elf import logging
 from rlpytorch import load_env, SingleProcessRun, Trainer
 
-
 matcher = re.compile(r"save-(\d+).bin")
-
 
 def main():
   print('Python version:', sys.version)
@@ -32,6 +29,9 @@ def main():
     '\u001b[31;1m|py|\u001b[0melfgames.checkers.train-',
     '')
 
+  # Trainer is also a pure python class wrapped on evaluator.
+  # Train the models.
+  # Runner - seems run all this shit.
   additional_to_load = {
     'trainer': (
       Trainer.get_option_spec(),
@@ -41,16 +41,32 @@ def main():
       lambda option_map: SingleProcessRun(option_map)),
   }
 
+
+
   env = load_env(os.environ, additional_to_load=additional_to_load)
+
+
+
+
 
   trainer = env['trainer']
   runner = env['runner']
 
+
+
+  """
+    Initializes keys('train', 'train_ctrl')
+    for communication Python and C++ code, defined in Game.py and GameFeature.h.
+    Also, initializes GameContext from C++ library wrapped by GC from python side
+    + sets mode that parsed from options like play/selfplay/train/offline_train.
+  """
   GC = env["game"].initialize()
+
 
   model_loader = env["model_loaders"][0]
   model = model_loader.load_model(GC.params)
   env["mi"].add_model("model", model, opt=True)
+
 
   keep_prev_selfplay = env["game"].options.keep_prev_selfplay
   model_ver = 0
@@ -80,7 +96,6 @@ def main():
 
   def train(batch, *args, **kwargs):
     # Check whether the version match.
-    # logger.info("train")
     if keep_prev_selfplay or \
         (batch["checkers_selfplay_ver"] != checkers_selfplay_ver).sum() == 0:
       trainer.train(batch, *args, **kwargs)

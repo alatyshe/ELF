@@ -13,11 +13,12 @@
 // elf
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/utils/json_utils.h"
-
 // checkers
 #include "../checkers/CheckersBoard.h"
 
-// Model pair need for evaluation 2 models on client with EVAL_THAN_SELFPLAY
+/* 
+  Model pair need for evaluation 2 models on client with EVAL_THAN_SELFPLAY type.
+*/
 struct ModelPair {
   int64_t black_ver = -1;
   int64_t white_ver = -1;
@@ -79,7 +80,6 @@ struct ModelPair {
 
 // ==========================================================
 // ==========================================================
-// ????????????????????????????????????????????
 namespace std {
 template <>
 struct hash<ModelPair> {

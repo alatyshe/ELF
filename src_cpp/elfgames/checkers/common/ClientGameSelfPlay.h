@@ -16,7 +16,6 @@
 #include "elf/base/dispatcher.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-
 // checkers
 #include "../mcts/AI.h"
 #include "../mcts/CheckersMCTSActor.h"
@@ -25,24 +24,23 @@
 #include "GameBase.h"
 #include "GameFeature.h"
 #include "GameStats.h"
-#include "notifier.h"
+#include "Notifier.h"
 
 #include "../checkers/CheckersStateExt.h"
 #include "../checkers/CheckersFeature.h"
 #include "../checkers/CheckersState.h"
 
-// ==========================================================
-// ==========================================================
+// Running on the client side to generate batches.
 class ClientGameSelfPlay : public GameBase {
  public:
   using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
   ClientGameSelfPlay(
-      int                         game_idx,
-      elf::GameClient*            client,
-      const ContextOptions&       context_options,
-      const CheckersGameOptions&  game_options,
-      ThreadedDispatcher*         dispatcher,
-      CheckersGameNotifierBase*   checkers_notifier = nullptr);
+      int game_idx,
+      elf::GameClient* client,
+      const ContextOptions& context_options,
+      const CheckersGameOptions& game_options,
+      ThreadedDispatcher* dispatcher,
+      CheckersGameNotifierBase* checkers_notifier = nullptr);
 
   bool OnReceive(const MsgRequest& request, RestartReply* reply);
 
@@ -59,27 +57,23 @@ class ClientGameSelfPlay : public GameBase {
       int second_mcts_rollout_per_batch,
       int second_mcts_rollout_per_thread,
       int64_t model_ver);
-
   void restart();
   void setAsync();
   Coord mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c);
   Coord mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c);
-  void finish_game(CheckersFinishReason reason);
-  
-  
+  void finish_game();
 
  private:
-  ThreadedDispatcher*             dispatcher_ = nullptr;
-  CheckersGameNotifierBase*       checkers_notifier_ = nullptr;
-  CheckersStateExt                _checkers_state_ext;
-
+  ThreadedDispatcher* dispatcher_ = nullptr;
+  CheckersGameNotifierBase* checkers_notifier_ = nullptr;
+  CheckersStateExt _checkers_state_ext;
 
   int _online_counter = 0;
   std::unique_ptr<MCTSCheckersAI> checkers_ai1;
   // Opponent ai (used for selfplay evaluation)
   std::unique_ptr<MCTSCheckersAI> checkers_ai2;
   
-  std::unique_ptr<AIClientT>     _human_player;
+  std::unique_ptr<AIClientT> _human_player;
 
   std::shared_ptr<spdlog::logger> logger_;
 };

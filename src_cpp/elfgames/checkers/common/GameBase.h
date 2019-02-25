@@ -13,15 +13,16 @@
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elf/utils/utils.h"
-
 // checkers
 #include "GameFeature.h"
 
-// Base class. from this class inherited ClientGameSelfplay and ServerGameTrain
-// Creates the N number of copies in class GameContext,
-// specified in the parameter --num_games.
-// ==========================================================
-// ==========================================================
+/*
+  Base class. from this class inherited ClientGameSelfplay and ServerGameTrain
+  Creates the N number of copies in class GameContext,
+  specified in the parameter --num_games.
+  ClientGameSelfplay - generates batches.
+  ServerGameTrain - train model.
+*/
 class GameBase {
  public:
   GameBase(
@@ -54,9 +55,11 @@ class GameBase {
           _seed,
           std::hash<std::thread::id>{}(std::this_thread::get_id()));
     }
-    // Main loop of the game.
-    // Run loop till client/server won't tell to stop.
-    // The parameter is responsible for this - --suicide_after_n_games
+    /*
+      Main loop of the game.
+      Run loop till client/server won't tell to stop.
+      The parameter is responsible for this - --suicide_after_n_games.
+    */
     while (!client_->DoStopGames()) {
       act();
     }

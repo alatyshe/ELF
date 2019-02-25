@@ -5,7 +5,6 @@
 // elf
 #include "elf/ai/tree_search/tree_search_base.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-
 // checkers
 #include "CheckersState.h"
 #include "CheckersFeature.h"
@@ -15,9 +14,9 @@
 #include "Record.h"
 
 enum CheckersFinishReason {
-  CHECKERS_MAX_STEP = 0,
-  CHEKCERS_BLACK_WIN,
-  CHEKCERS_WHITE_WIN,
+  MAX_STEP = 0,
+  BLACK_WIN,
+  WHITE_WIN,
 };
 
 // Client Side
@@ -34,20 +33,15 @@ struct CheckersStateExt {
   void restart();
   ThreadState getThreadState() const;
   float getLastGameFinalValue() const;
-  void showFinishInfo(CheckersFinishReason reason) const;
+  void showFinishInfo() const;
   bool forward(Coord c);
   int seq() const;
   const CheckersState& state() const;
   const CheckersGameOptions& gameOptions() const;
   void saveCurrentTree(const std::string& tree_info) const;
+  void setFinalValue();
 
-  void setFinalValue() {
-    float final_value = 0.0;
-
-    final_value = _state.evaluateGame();
-    _state.setFinalValue(final_value);
-  }
-
+  // packing the result of the game in json for sending to the server
   CheckersRecord dumpRecord() const {
     CheckersRecord r;
 
@@ -57,7 +51,6 @@ struct CheckersStateExt {
     r.request = _curr_request;
 
     r.result.reward = _state.getFinalValue();
-    // записываем все хода в строку и отправляет json
     r.result.content = coords2str(_state.getAllMoves());
     r.result.using_models =
         std::vector<int64_t>(_using_models.begin(), _using_models.end());
@@ -77,12 +70,10 @@ struct CheckersStateExt {
     // std::cout << r.info() << std::endl;
     // std::cout << "=============================" << std::endl;
     _logger->info("Dump Record:{}\n", r.info());
-
     return r;
   }
 
-  // ??????????????????????????????????????????????
-  // ПЕРЕПРОВЕРЬ ЭТУ ШТУКУ 300 раз!!!!!!!!!!!
+  // need to check it
   void addMCTSPolicy(
       const elf::ai::tree_search::MCTSPolicy<Coord>& mcts_policy) {
     const auto& policy = mcts_policy.policy;
@@ -93,7 +84,6 @@ struct CheckersStateExt {
       const auto& entry = policy[k];
       max_val = std::max(max_val, entry.second);
     }
-
     _mcts_policies.emplace_back();
     std::fill(
         _mcts_policies.back().prob,
@@ -130,11 +120,6 @@ struct CheckersStateExt {
   std::shared_ptr<spdlog::logger> _logger;
 };
 
-
-
-
-
-// ==========================================================
 // Server Side
 // calls from start_server.sh
 class CheckersStateExtOffline {

@@ -13,12 +13,13 @@
 // elf
 #include "elf/ai/tree_search/mcts.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-
 // checkers
 #include "AI.h"
 
 struct MCTSActorParams {
+	// "checkers_actor_black", "checkers_actor_white"
 	std::string		actor_name;
+
 	uint64_t			seed = 0;
 	// Required model version.
 	// If -1, then there is no requirement on model version (any model response
@@ -34,8 +35,9 @@ struct MCTSActorParams {
 };
 
 
-
-
+/*
+	Only agent. need for send states to nn for eval and 
+*/
 class CheckersMCTSActor {
  public:
 	using Action = Coord;

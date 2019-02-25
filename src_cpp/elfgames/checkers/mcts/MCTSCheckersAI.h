@@ -28,7 +28,9 @@ struct ActorTrait<CheckersMCTSActor> {
 
 
 
-
+/*
+	Tree search logic.
+*/
 class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> {
  public:
 	MCTSCheckersAI(
@@ -38,9 +40,7 @@ class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> 
 	}
 
 	float getValue() const {
-		// Check if we need to resign.
 		const MCTSResult& result = getLastResult();
-
 		if (result.total_visits == 0)
 			return result.root_value;
 		else
@@ -55,9 +55,9 @@ class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> 
 		return policy;
 	}
 
-	// Берем наш MCTS и 
-	// устанавливаем каждому потоку
-	// свою версию нейронки
+	/*
+		Set current version of nn model to each mcts thread.
+	*/
 	void setRequiredVersion(int64_t ver) {
 		auto* engine = getEngine();
 		assert(engine != nullptr);

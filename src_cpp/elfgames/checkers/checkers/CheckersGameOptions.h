@@ -21,9 +21,8 @@ struct CheckersGameOptions {
   //    This means how many games are played sequentially in each thread.
   int num_games_per_thread = -1;
 
-  // mode == "online": it will open the game in online mode.
-  //    In this mode, the thread will not output the next k moves (since every
-  //    game is new).
+  // mode == "play": In this mode, the thread will 
+  //    not output the next k moves (since every game is new).
   //    Instead, it will get the action from the neural network to proceed.
   // mode == "offline": offline training
   // mode == "selfplay": self play.
@@ -37,7 +36,6 @@ struct CheckersGameOptions {
   bool black_use_policy_network_only = false;
   bool white_use_policy_network_only = false;
 
-
   // Cutoff ply for mcts policy / best a
   int policy_distri_cutoff = 20;
   bool policy_distri_training_for_all = false;
@@ -47,7 +45,6 @@ struct CheckersGameOptions {
   int q_min_size = 10;
   int q_max_size = 1000;
   int num_reader = 50;
-
 
   // Second puct used for ai2, if -1 then use the same puct.
   float       white_puct = -1.0;

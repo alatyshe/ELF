@@ -80,7 +80,7 @@ const CheckersGameOptions& CheckersStateExt::gameOptions() const {
   return _game_options;
 }
 
-void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
+void CheckersStateExt::showFinishInfo() const {
   _logger->info("\n{}", _state.showBoard());
 
   std::string used_model;
@@ -94,24 +94,21 @@ void CheckersStateExt::showFinishInfo(CheckersFinishReason reason) const {
       _seq,
       used_model);
 
-  switch (reason) {
-    case CHECKERS_MAX_STEP:
-      _logger->info(
-        "Ply: {} exceeds thread_state. Restarting the game(Draw++)", 
-        _state.getPly());
-      break;
-    case CHEKCERS_BLACK_WIN:
-      _logger->info("{}Black{} win at {} move", 
-        GREEN_C, 
-        COLOR_END, 
-        _state.getPly());
-      break;
-    case CHEKCERS_WHITE_WIN:
-      _logger->info("{}White{} win at {} move", 
-        RED_C, 
-        COLOR_END, 
-        _state.getPly());
-      break;
+  if (_state.getPly() >= TOTAL_MAX_MOVE) {
+    _logger->info(
+      "Ply: {} exceeds thread_state. Restarting the game(Draw++)", 
+      _state.getPly());
+  } else if (_state.currentPlayer() == WHITE_PLAYER) {
+    _logger->info("{}Black{} win at {} move", 
+      GREEN_C, 
+      COLOR_END, 
+      _state.getPly());
+  }
+  else if (_state.currentPlayer() == BLACK_PLAYER) {
+    _logger->info("{}White{} win at {} move", 
+      RED_C, 
+      COLOR_END, 
+      _state.getPly());
   }
   _logger->info(
     "Reward: {}",
@@ -129,5 +126,12 @@ void CheckersStateExt::saveCurrentTree(const std::string& tree_info) const {
 
   oo << _state.showBoard() << std::endl;
   oo << tree_info;
+}
+
+void CheckersStateExt::setFinalValue() {
+  float final_value = 0.0;
+
+  final_value = _state.evaluateGame();
+  _state.setFinalValue(final_value);
 }
 

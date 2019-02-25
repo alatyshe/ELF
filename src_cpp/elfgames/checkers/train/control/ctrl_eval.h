@@ -14,7 +14,6 @@
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elf/utils/utils.h"
-
 // checkers
 #include "ctrl_utils.h"
 #include "../client_manager.h"
@@ -22,7 +21,9 @@
 
 using TSOptions = elf::ai::tree_search::TSOptions;
 
-// Класс для сравнения и выбора лучшей из 2-х моделей
+/*
+	Use for compare 2 models
+*/
 class ModelPerfomance {
  public:
 	enum EvalResult {

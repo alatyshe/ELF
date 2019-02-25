@@ -2,7 +2,6 @@
 
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
-
 // checkers
 #include "CheckersBoard.h"
 
@@ -14,7 +13,7 @@ struct CheckersBoardHistory {
   int64_t                 empty;
   int                     active;
 
-  // copy position of the pawns and kings on the board
+  // Copy position of the pawns and kings on the board.
   CheckersBoardHistory(const CheckersBoard& b) {
     forward[BLACK_PLAYER] = b.forward[BLACK_PLAYER];
     backward[BLACK_PLAYER] = b.backward[BLACK_PLAYER];
@@ -53,16 +52,16 @@ class CheckersFeature {
 };
 
 // Sending info to the python side by this class 
-// and wait until fields will be filled by python side
+// and wait until fields will be filled by python side.
 struct CheckersReply {
   const CheckersFeature&  bf;
   // Best action
   int                     c;
   // Policy prediction, representing the model’s priors 
-  // on available moves given the current board situation
+  // on available moves given the current board situation.
   std::vector<float>      pi;
   // Filled by value function, that representing the
-  // probability of the current player winning
+  // probability of the current player winning.
   float                   value = 0;
   // Model version.
   int64_t                 version = -1;

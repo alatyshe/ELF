@@ -52,18 +52,15 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
       actor_name,
       puct_override,
       mcts_rollout_per_batch_override,
-      mcts_rollout_per_thread_override
-      // ,
-      // mcts_options.info()
-      );
+      mcts_rollout_per_thread_override);
 
   MCTSActorParams params;
+  
   params.actor_name = actor_name;
   params.seed = _rng();
   params.required_version = model_ver;
 
   elf::ai::tree_search::TSOptions mcts_opt = mcts_options;
-
   // My
   // mcts_opt.verbose = true;
 
@@ -95,11 +92,10 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
   return new MCTSCheckersAI(mcts_opt, [&](int) { return new CheckersMCTSActor(client_, params); });
 }
 
-
 Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
   auto policy = mcts_checkers_ai->getMCTSPolicy();
 
-  // Делаем рандомный шаг если diverse_policy == true
+  // make random move if diverse_policy == true
   bool diverse_policy =
       _checkers_state_ext.state().getPly() <= _game_options.policy_distri_cutoff;
   if (diverse_policy) {
@@ -115,7 +111,6 @@ Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_a
   return c;
 }
 
-
 Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
   float predicted_value = mcts_checkers_ai->getValue();
 
@@ -124,20 +119,14 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
   if (!_game_options.dump_record_prefix.empty()) {
     _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
   }
-
-  // // Check the ranking of selected move.
-  // if (checkers_notifier_ != nullptr) {
-  //  checkers_notifier_->OnMCTSResult(c, mcts_checkers_ai->getLastResult());
-  // }
   return c;
 }
 
-
-void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
+void ClientGameSelfPlay::finish_game() {
   // My code
   _checkers_state_ext.setFinalValue();
   // show board
-  _checkers_state_ext.showFinishInfo(reason);
+  _checkers_state_ext.showFinishInfo();
 
   // if (!_game_options.dump_record_prefix.empty()) {
   //   _state_ext.dumpSgf();
@@ -148,15 +137,13 @@ void ClientGameSelfPlay::finish_game(CheckersFinishReason reason) {
   if (checkers_ai2 != nullptr) {
     checkers_ai2->endGame(_checkers_state_ext.state());
   }
-  // сообщает клиенту, что игры окончена
+  // Says python that game is over.
   if (checkers_notifier_ != nullptr){
     checkers_notifier_->OnGameEnd(_checkers_state_ext);
   }
-
   // My code
   _checkers_state_ext.restart();
 }
-
 
 void ClientGameSelfPlay::setAsync() {
   checkers_ai1->setRequiredVersion(-1);
@@ -165,7 +152,6 @@ void ClientGameSelfPlay::setAsync() {
 
   _checkers_state_ext.addCurrentModel();
 }
-
 
 void ClientGameSelfPlay::restart() {
   const MsgRequest& checkers_request = _checkers_state_ext.currRequest();
@@ -209,7 +195,6 @@ void ClientGameSelfPlay::restart() {
   }
   _checkers_state_ext.restart();
 }
-
 
 bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
   // при связи с сервером
@@ -262,7 +247,6 @@ bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* repl
   }
 }
 
-
 void ClientGameSelfPlay::act() {
   if (_online_counter % 5 == 0) {
     using std::placeholders::_1;
@@ -290,18 +274,13 @@ void ClientGameSelfPlay::act() {
 
   if (_human_player != nullptr && cs.currentPlayer() == WHITE_PLAYER) {
     do {
-      if (cs.terminated()) {
-        finish_game(CHEKCERS_BLACK_WIN);
-        return;
-      }
       CheckersFeature cf(cs);
       CheckersReply   creply(cf);
       _human_player->act(cf, &creply);
 
-      // Otherwise we forward.
       if (_checkers_state_ext.forward(creply.c)) {
         if (cs.terminated()) {
-          finish_game(CHEKCERS_WHITE_WIN);
+          finish_game();
         }
         return;
       }
@@ -363,7 +342,7 @@ void ClientGameSelfPlay::act() {
 
   move = mcts_update_info(curr_ai, move);
 
-  // делаем ход на доске
+  // make move
   if (!_checkers_state_ext.forward(move)) {
     logger_->error(
         "Something is wrong! Move {} cannot be applied\nCurrent board: "
@@ -375,12 +354,10 @@ void ClientGameSelfPlay::act() {
         );
     return;
   }
+
   if (cs.terminated()) {
-    CheckersFinishReason reason = cs.getPly() >= TOTAL_MAX_MOVE ? CHECKERS_MAX_STEP : 
-    (cs.currentPlayer() == WHITE_PLAYER) ? CHEKCERS_BLACK_WIN : CHEKCERS_WHITE_WIN;
-    finish_game(reason);
+    finish_game();
   }
-  // exit(0);
 }
 
 

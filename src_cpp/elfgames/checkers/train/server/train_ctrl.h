@@ -23,14 +23,12 @@
 #include "elf/concurrency/ConcurrentQueue.h"
 #include "elf/concurrency/Counter.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-
 // checkers
 #include "../data_loader.h"
 #include "../control/ctrl_eval.h"
 #include "../control/ctrl_selfplay.h"
-
 #include "../../common/GameStats.h"
-#include "../../common/notifier.h"
+#include "../../common/Notifier.h"
 
 using namespace std::chrono_literals;
 using ReplayBuffer = elf::shared::ReaderQueuesT<CheckersRecord>;
@@ -38,13 +36,14 @@ using ThreadedCtrlBase = elf::ThreadedCtrlBase;
 using Ctrl = elf::Ctrl;
 using Addr = elf::Addr;
 
-
-// Контроль потоков со стороны сервера
-// С помощью этого класса сервер постоянно слушает клиентов
-// и ожидает от них получения batch(состояний игры и reward за игру)
-// выполняет это - метод waitForSufficientSelfplay
-// + он контролит выбор лучшей модели, через передачу питону
-// по ключу train_ctrl
+/*
+	Контроль потоков со стороны сервера
+	С помощью этого класса сервер постоянно слушает клиентов
+	и ожидает от них получения batch(состояний игры и reward за игру)
+	выполняет это - метод waitForSufficientSelfplay
+	+ он контролит выбор лучшей модели, через передачу питону
+	по ключу train_ctrl
+*/
 class ThreadedCtrl : public ThreadedCtrlBase {
  public:
 	ThreadedCtrl(
@@ -229,7 +228,9 @@ class ThreadedCtrl : public ThreadedCtrlBase {
  private:
 	std::shared_ptr<spdlog::logger> logger_;
 
-	// Сообщает о новой лучшей модели
+	/* 
+		Reports a new, better model.
+	*/
 	void on_thread() override {
 		// std::cout << "ThreadedCtrl::on_thread" << std::endl;
 

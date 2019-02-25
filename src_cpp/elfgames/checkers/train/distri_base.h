@@ -9,7 +9,6 @@
 // elf
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
-
 // checkers
 #include "../common/record.h"
 #include "../checkers/Record.h"

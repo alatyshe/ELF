@@ -18,8 +18,7 @@ struct CheckersCoordRecord {
 	unsigned char		prob[TOTAL_NUM_ACTIONS];
 };
 
-// ==========================================================
-// ==========================================================
+
 struct CheckersMsgResult {
 	int									num_move = 0;
 	float								reward = 0.0;
@@ -82,8 +81,7 @@ struct CheckersMsgResult {
 	}
 };
 
-// ==========================================================
-// ==========================================================
+// One game record
 struct CheckersRecord {
 	MsgRequest					request;
 	CheckersMsgResult		result;
@@ -189,8 +187,7 @@ struct CheckersRecord {
 	}
 };
 
-// ==========================================================
-// ==========================================================
+// Collect game records to send it to server
 struct CheckersRecords {
 	std::string identity;
 	std::unordered_map<int, ThreadState> states;
@@ -264,7 +261,7 @@ struct CheckersRecords {
 		json j = json::parse(s);
 
 		if (j.find("identity") == j.end()) {
-			// This is a vector<Records>
+			// This is a vector<CheckersRecords>
 			CheckersRecords rs("");
 			rs.records = CheckersRecord::createBatchFromJson(s);
 			return rs;

@@ -13,7 +13,6 @@
 #include <mutex>
 #include <string>
 #include <vector>
-
 #include <nlohmann/json.hpp>
 
 // checkers
@@ -22,21 +21,26 @@
 
 using json = nlohmann::json;
 
-// ==========================================================
-// ==========================================================
+/*
+  SELFPLAY_ONLY - implies that this client will only generate batches.
+  CLIENT_EVAL_THEN_SELFPLAY - implies that this client will, 
+    in addition to generating games, evaluate the models that 
+    the server will send on evaluation.
+*/
 enum ClientType {
   CLIENT_INVALID,
   CLIENT_SELFPLAY_ONLY,
   CLIENT_EVAL_THEN_SELFPLAY
 };
 
-// ==========================================================
-// ==========================================================
+
+/* 
+  Information about client, used in MsgRequest.
+*/
 struct ClientCtrl {
   ClientType client_type = CLIENT_SELFPLAY_ONLY;
   // -1 means to use all the threads.
   int num_game_thread_used = -1;
-
   bool player_swap = false;
   bool async = false;
 
@@ -46,6 +50,7 @@ struct ClientCtrl {
     JSON_SAVE(j, player_swap);
     JSON_SAVE(j, async);
   }
+
   static ClientCtrl createFromJson(
       const json& j,
       bool player_swap_optional = false) {
@@ -89,21 +94,22 @@ struct ClientCtrl {
             c1.player_swap == c2.player_swap && 
             c1.async == c2.async;
   }
+
   friend bool operator!=(const ClientCtrl& c1, const ClientCtrl& c2) {
     return !(c1 == c2);
   }
 };
 
-// ==========================================================
-// ==========================================================
+/*
+  Used model version.
+*/ 
 struct MsgVersion {
   int64_t model_ver;
 
   MsgVersion(int ver = -1) : model_ver(ver) {}
 };
 
-// ==========================================================
-// ==========================================================
+
 enum RestartReply {
   NO_OP,
   ONLY_WAIT,
@@ -113,8 +119,7 @@ enum RestartReply {
   UPDATE_COMPLETE,
 };
 
-// ==========================================================
-// ==========================================================
+
 struct MsgRestart {
   RestartReply  result;
   int           game_idx;
@@ -123,8 +128,7 @@ struct MsgRestart {
       : result(res), game_idx(game_idx) { }
 };
 
-// ==========================================================
-// ==========================================================
+
 struct MsgRequest {
   ModelPair   vers;
   ClientCtrl  client_ctrl;
@@ -149,10 +153,8 @@ struct MsgRequest {
 
   std::string info() const {
     std::stringstream ss;
-
     ss  << client_ctrl.info();
     ss  << vers.info();
-    
     return ss.str();
   }
 
@@ -165,8 +167,7 @@ struct MsgRequest {
   }
 };
 
-// ==========================================================
-// ==========================================================
+
 struct MsgRequestSeq {
   int64_t seq = -1;
   MsgRequest request;
@@ -178,7 +179,6 @@ struct MsgRequestSeq {
 
   static MsgRequestSeq createFromJson(const json& j) {
     MsgRequestSeq s;
-
     JSON_LOAD_OBJ(s, j, request);
     JSON_LOAD(s, j, seq);
     return s;
@@ -197,8 +197,10 @@ struct MsgRequestSeq {
   }
 };
 
-// ==========================================================
-// ==========================================================
+
+/* 
+  Information about 1 game thread.
+*/  
 struct ThreadState {
   int thread_id = -1;
   // Which game we have played.
@@ -206,6 +208,7 @@ struct ThreadState {
   // Which move we have proceeded.
   int move_idx = 0;
 
+  // Player versions
   int64_t black = -1;
   int64_t white = -1;
 

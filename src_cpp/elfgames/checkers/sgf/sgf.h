@@ -16,7 +16,6 @@
 
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
-
 // checkers
 #include "../checkers/CheckersBoard.h"
 
@@ -28,7 +27,7 @@ inline Coord str2coord(const std::string& s) {
 inline std::string coord2str(Coord c) {
   return std::to_string(c);
 }
-// переводим координаты в строку
+
 inline std::string coords2str(const std::vector<Coord>& moves) {
   std::string sgf = "(";
   for (size_t i = 0; i < moves.size(); i++) {

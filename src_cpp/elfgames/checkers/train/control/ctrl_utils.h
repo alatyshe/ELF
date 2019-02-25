@@ -14,7 +14,9 @@
 // checkers
 #include "../../common/record.h"
 
-// сбрасывает все наши рекорды в файл каждые num_record_threshold
+/*
+	Dumps all our record every num_record_threshold in a file.
+*/
 struct RecordBufferSimple {
  public:
 	RecordBufferSimple(const std::string& prefix) : prefix_(prefix) {}
