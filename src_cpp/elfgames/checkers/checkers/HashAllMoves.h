@@ -1,19 +1,21 @@
 #pragma once
 # include <map>
 
-// all possible moves for checkers
+/*
+  all possible moves for checkers
 
-// Since the board is represented by six numbers(forward, backward, pieces),
-// the pattern of transition from one state to another is changing.
-// For the step it uses the number in which all the logic is encoded in 2 active bits
-// If the bit on the board and on the move is active - we deactivate it,
-// otherwise - activate. This way we move the chips.
-// 
-// m_to_i 
-//    {"68, 1", 2}:
-//        68  - our move, 
-//        1   - direction(backward, forward)
-//        2   - index of move
+  Since the board is represented by six numbers(forward, backward, pieces),
+  the pattern of transition from one state to another is changing.
+  For the step it uses the number in which all the logic is encoded in 2 active bits
+  If the bit on the board and on the move is active - we deactivate it,
+  otherwise - activate. This way we move the chips.
+
+  m_to_i 
+     {"68, 1", 2}:
+         68  - our move, 
+         1   - direction(backward, forward)
+         2   - index of move
+ */
 namespace moves {
 const std::map<std::string, int>  m_to_i = {
   {"17, 1", 0},

@@ -27,13 +27,26 @@
 
 #include <thread>
 
+/*
+	The context of the game wrapped by python GameContext.
+	Contains:
+	Context - configures data exchange between С++ and Python, allocates shared memmory.
+	GameBase - vector of games. The number of which is set by parameter --num_games.
+	DistriServer - .
+	DistriClient - .
+
+	GameFeature - Registers the keys by which Python will access memory in C++ 
+			as well as the methods that will be called while accessing these keys.
+
+	logger_ - displays log info in terminal.
+*/
 class GameContext {
  public:
 	using ThreadedDispatcher = ClientGameSelfPlay::ThreadedDispatcher;
 
 	GameContext(const ContextOptions& contextOptions, 
 							const CheckersGameOptions& gameOptions)
-			: GameFeature_(gameOptions),
+			: gameFeature_(gameOptions),
 				logger_(elf::logging::getIndexedLogger(
 					MAGENTA_B + std::string("|++|") + COLOR_END + 
 					"GameContext-", 
@@ -43,8 +56,8 @@ class GameContext {
 		int numGames = contextOptions.num_games;
 		const int batchsize = contextOptions.batchsize;
 
-		// Register all keys.
-		GameFeature_.registerExtractor(batchsize, context_->getExtractor());
+		// Register all keys "checkers_s", "checkers_V" etc.
+		gameFeature_.registerExtractor(batchsize, context_->getExtractor());
 
 		elf::GameClient* gameClient = context_->getClient();
 		ThreadedDispatcher* dispatcher = nullptr;
@@ -91,17 +104,19 @@ class GameContext {
 				});
 
 		if (server_ != nullptr) {
-			// Registers the lambda function that is called when the server starts.
-			// It uses batches from the file (if specified) for training.
-			// GameContext => DistriServer => DataOnlineLoader =>
+			/* 
+				Registers the lambda function that is called when the server starts.
+				It uses batches from the file(if specified) for training.
+				GameContext => DistriServer => DataOnlineLoader =>
+			*/
 			context_->setCBAfterGameStart(
-					[this, gameOptions]() { server_->loadOfflineSelfplayData(); });
+					[this, gameOptions] () { server_->loadOfflineSelfplayData(); }
+					);
 		}
 	}
 
-	// 
 	std::map<std::string, int> getParams() const {
-		return GameFeature_.getParams();
+		return gameFeature_.getParams();
 	}
 
 	const GameBase* getGame(int game_idx) const {
@@ -143,7 +158,7 @@ class GameContext {
 	std::unique_ptr<DistriServer> server_;
 	std::unique_ptr<DistriClient> client_;
 
-	GameFeature GameFeature_;
+	GameFeature gameFeature_;
 
 	std::shared_ptr<spdlog::logger> logger_;
 };

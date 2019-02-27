@@ -19,7 +19,9 @@
 using ThreadedCtrlBase = elf::ThreadedCtrlBase;
 
 /* 
-  Listen server, get info from it and says that client alive.
+  --------------------
+  --------------------
+  --------------------
 */
 class ThreadedWriterCtrl : public ThreadedCtrlBase {
  public:
@@ -165,8 +167,7 @@ struct CheckersGuardedRecords {
       std::unordered_map<int, ThreadState> states;
       std::unordered_map<int, uint64_t> timestamps;
 
-      // last_states_ - std::deque<std::pair<uint64_t, ThreadState>>
-
+      // last_states_ -> std::deque<std::pair<uint64_t, ThreadState>>
       for (const auto& s : last_states_) {
         // unique index of ThreadState = just key to this ThreadState
         timestamps[s.second.thread_id] = s.first;
@@ -221,7 +222,6 @@ struct CheckersGuardedRecords {
       black       - version of nn
       white       - version of nn
     */
-
     std::stringstream ss;
     ss << "#states: " << states.size();
     ss << "[";
@@ -258,7 +258,8 @@ struct CheckersGuardedRecords {
 
 /* 
   Used to call the game_end python function from selfplay.py
-  Display statistics about the game from python side.
+  Display statistics about the game from python side
+  and contain records of finished games.
 */
 class CheckersGameNotifier : public CheckersGameNotifierBase {
  public:
@@ -339,7 +340,7 @@ class DistriClient {
       writerCtrl_.reset(
           new ThreadedWriterCtrl(ctrl_, contextOptions, game_options));
 
-      checkers_game_notifier_.reset(
+      checkersGameNotifier_.reset(
           new CheckersGameNotifier(ctrl_, writerCtrl_->identity(), game_options, client));
 
     } else if (gameOptions_.mode == "play") {
@@ -353,7 +354,7 @@ class DistriClient {
   }
 
   ~DistriClient() {
-    checkers_game_notifier_.reset(nullptr);
+    checkersGameNotifier_.reset(nullptr);
     thereadedDispatcher_.reset(nullptr);
     writerCtrl_.reset(nullptr);
   }
@@ -363,15 +364,15 @@ class DistriClient {
   }
 
   CheckersGameNotifier* getCheckersNotifier() {
-    return checkers_game_notifier_.get();
+    return checkersGameNotifier_.get();
   }
 
   const GameStats& getCheckersGameStats() const {
-    assert(checkers_game_notifier_ != nullptr);
-    return checkers_game_notifier_->getGameStats();
+    assert(checkersGameNotifier_ != nullptr);
+    return checkersGameNotifier_->getGameStats();
   }
 
-  // Used in client side.
+  // Transfers to all streams the models versions for black and white players.
   void setRequest(
       int64_t black_ver,
       int64_t white_ver,
@@ -391,7 +392,7 @@ class DistriClient {
   std::unique_ptr<ThreadedWriterCtrl>   writerCtrl_;
 
   std::unique_ptr<DispatcherCallback>   dispatcherCallback_;
-  std::unique_ptr<CheckersGameNotifier> checkers_game_notifier_;
+  std::unique_ptr<CheckersGameNotifier> checkersGameNotifier_;
 
   const ContextOptions                  contextOptions_;
   const CheckersGameOptions             gameOptions_;

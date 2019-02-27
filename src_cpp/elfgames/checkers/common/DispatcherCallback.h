@@ -58,7 +58,6 @@ class DispatcherCallback {
     }
   }
 
-
   std::vector<bool> OnReply(
       const std::vector<MsgRequest>& requests,
       std::vector<RestartReply>* p_replies) {   
@@ -88,7 +87,6 @@ class DispatcherCallback {
     }
 
     std::vector<bool> next_session(replies.size(), false);
-
     if (request != nullptr) {
       // Once it is done, send to Python side for load/reload models
       logger_->info(
@@ -109,7 +107,6 @@ class DispatcherCallback {
         }
       }
     }
-
     return next_session;
   }
 

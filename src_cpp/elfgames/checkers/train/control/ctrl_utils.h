@@ -15,7 +15,7 @@
 #include "../../common/record.h"
 
 /*
-	Dumps all our record every num_record_threshold in a file.
+	Dumps all our record in a file every num_record_threshold.
 */
 struct RecordBufferSimple {
  public:
@@ -54,7 +54,6 @@ struct RecordBufferSimple {
 	size_t											num_record_saved_ = 0;
 	std::vector<CheckersRecord>	records_;
 };
-
 
 
 

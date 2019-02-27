@@ -17,7 +17,7 @@
 #include "../checkers/CheckersBoard.h"
 
 /* 
-  Model pair need for evaluation 2 models on client with EVAL_THAN_SELFPLAY type.
+  Model pair used for evaluation 2 models on the client with EVAL_THAN_SELFPLAY type.
 */
 struct ModelPair {
   int64_t black_ver = -1;

@@ -311,14 +311,14 @@ class Loader(object):
 		if self.options.mode == "play":
 			desc["human_actor"] = dict(
 				input=["checkers_s"],
-				reply=[ "pi", 
+				reply=["pi", 
 						"a", 
 						"checkers_V"],
 				batchsize=1,
 			)
 			desc["checkers_actor_black"] = dict(
 				input=["checkers_s"],
-				reply=[ "pi", 
+				reply=["pi", 
 						"checkers_V", 
 						"a", 
 						"checkers_rv"],
@@ -332,7 +332,7 @@ class Loader(object):
 			)
 			desc["game_start"] = dict(
 				batchsize=1,
-				input=[ "checkers_white_ver", 
+				input=["checkers_white_ver", 
 						"checkers_black_ver"],
 				reply=None
 			)
@@ -340,7 +340,7 @@ class Loader(object):
 			# checkers
 			desc["checkers_actor_white"] = dict(
 				input=["checkers_s"],
-				reply=[ "pi", 
+				reply=["pi", 
 						"checkers_V", 
 						"a", 
 						"checkers_rv"],
@@ -351,7 +351,7 @@ class Loader(object):
 			)            
 			desc["checkers_actor_black"] = dict(
 				input=["checkers_s"],
-				reply=[ "pi", 
+				reply=["pi", 
 						"checkers_V", 
 						"a", 
 						"checkers_rv"],
@@ -363,7 +363,7 @@ class Loader(object):
 
 		elif self.options.mode == "train" or self.options.mode == "offline_train":
 			desc["train"] = dict(
-				input=[ "checkers_s", 
+				input=["checkers_s", 
 						"checkers_offline_a", 
 						"checkers_winner", 
 						"checkers_mcts_scores", 

@@ -7,11 +7,11 @@
 
 // Do not used yet
 struct CheckersBoardHistory {
-  std::array<int64_t, 2>  forward;
-  std::array<int64_t, 2>  backward;
-  std::array<int64_t, 2>  pieces;
-  int64_t                 empty;
-  int                     active;
+  std::array<int64_t, 2> forward;
+  std::array<int64_t, 2> backward;
+  std::array<int64_t, 2> pieces;
+  int64_t empty;
+  int active;
 
   // Copy position of the pawns and kings on the board.
   CheckersBoardHistory(const CheckersBoard& b) {
@@ -42,7 +42,7 @@ class CheckersFeature {
   void extract(float* features) const;
 
  private:
-  const CheckersState&    s_;
+  const CheckersState& s_;
   static constexpr int64_t kBoardRegion = CHECKERS_BOARD_SIZE * CHECKERS_BOARD_SIZE;
 
   // Compute features.
@@ -51,20 +51,22 @@ class CheckersFeature {
   // void getHistory(int player, float* data) const;
 };
 
-// Sending info to the python side by this class 
-// and wait until fields will be filled by python side.
+/* 
+  Sending info to the python side by this class 
+  and wait until fields will be filled by python side.
+*/
 struct CheckersReply {
-  const CheckersFeature&  bf;
+  const CheckersFeature& bf;
   // Best action
-  int                     c;
+  int c;
   // Policy prediction, representing the model’s priors 
   // on available moves given the current board situation.
-  std::vector<float>      pi;
+  std::vector<float> pi;
   // Filled by value function, that representing the
   // probability of the current player winning.
-  float                   value = 0;
+  float value = 0;
   // Model version.
-  int64_t                 version = -1;
+  int64_t version = -1;
 
   CheckersReply(const CheckersFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
   }

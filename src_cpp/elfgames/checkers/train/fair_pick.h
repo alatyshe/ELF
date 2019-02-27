@@ -268,7 +268,9 @@ class BatchRequest {
 
 
 
-// Создаются 2 указателя на swap_game и no_swap_game
+/* 
+	Создаются 2 указателя на swap_game и no_swap_game
+*/
 class Pick {
  public:
 	Pick(size_t num_request, size_t max_request_per_layer)

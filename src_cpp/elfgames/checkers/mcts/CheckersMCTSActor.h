@@ -36,7 +36,7 @@ struct MCTSActorParams {
 
 
 /*
-	Only agent. need for send states to nn for eval and 
+	Only agent. need for send states to nn for eval.
 */
 class CheckersMCTSActor {
  public:
@@ -75,9 +75,6 @@ class CheckersMCTSActor {
 		return &rng_;
 	}
 
-
-	// отдаем на оценку нейронке
-	// batch evaluate.
 	void evaluate(
 			const std::vector<const CheckersState*>& states,
 			std::vector<NodeResponse>* p_resps) {
@@ -129,8 +126,6 @@ class CheckersMCTSActor {
 			}
 		}
 	}
-
-	// отдаем на оценку нейронке
 	void evaluate(const CheckersState& s, NodeResponse* resp) {
 		if (oo_ != nullptr)
 			*oo_ 	<< std::endl << std::endl << "Evaluating state at " 
@@ -180,9 +175,8 @@ class CheckersMCTSActor {
 	}
 
  protected:
-
 	MCTSActorParams params_;
-
+	
 	// client to run neural network
 	std::unique_ptr<AIClientT> ai_;
 	std::ostream* oo_ = nullptr;
@@ -190,15 +184,16 @@ class CheckersMCTSActor {
 
  private:
 	std::shared_ptr<spdlog::logger> logger_;
-
 	
 	CheckersFeature get_extractor(const CheckersState& s) {
 		return CheckersFeature(s);
 	}
 
-	// check terminated;
-	// узнаем нужно ли вызывать нейронку для оценки следующего сотояния доски, 
-	// или можно уже получить reward.
+	/*
+		check terminated;
+		Whether we need to call the neural network to evaluate 
+		the next state of the board, or we can already get a reward.
+	*/
 	PreEvalResult pre_evaluate(const CheckersState& s, NodeResponse* resp) {
 		resp->q_flip = s.currentPlayer() == WHITE_PLAYER;
 
@@ -255,7 +250,6 @@ class CheckersMCTSActor {
 	}
 
 
-	// Получаем ответ от нейронки(вероятности на каждый шаг) и заполняем 
 	// with inv-transform considered, remove invalid moves, normalize
 	// output_pi
 	static void pi2response(

@@ -65,7 +65,7 @@ bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
   board->_last_move = action_index;
   active = board->active;
 
-  // check repeated moves
+  // Check repeated moves.
   if (active == WHITE_PLAYER) {
     if (board->_last_move_white[1] == action_index) {
       board->_white_repeats_step += 1;
@@ -86,7 +86,7 @@ bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
     board->_last_move_black[1] = board->_last_move_black[0];
     board->_last_move_black[0] = action_index;
   }
-  // end checking
+  // End checking.
 
   passive = board->passive;
   buffer = 0;
@@ -446,14 +446,13 @@ std::vector<int64_t> _get_moves(CheckersBoard board) {
 
     Jumps are indicated with a negative sign.
   */
-  int64_t         rf;
-  int64_t         lf;
-  int64_t         rb;
-  int64_t         lb;
-  std::vector<int64_t>  jumps;
-  std::vector<int64_t>  moves;
-
-  uint64_t        buff;
+  int64_t rf;
+  int64_t lf;
+  int64_t rb;
+  int64_t lb;
+  std::vector<int64_t> jumps;
+  std::vector<int64_t> moves;
+  uint64_t buff;
   // First check if we are in a jump sequence
   // if (board.jump) {
   //  return (board.mandatory_jumps);
@@ -504,13 +503,12 @@ std::vector<int64_t> _get_jumps(CheckersBoard board) {
 
     Jumps are indicated with a negative sign.
   */
-  int64_t         rfj;
-  int64_t         lfj;
-  int64_t         rbj;
-  int64_t         lbj;
-  std::vector<int64_t>  moves;
-
-  uint64_t        buff;
+  int64_t rfj;
+  int64_t lfj;
+  int64_t rbj;
+  int64_t lbj;
+  std::vector<int64_t> moves;
+  uint64_t buff;
 
   rfj = _right_forward_jumps(board);
   lfj = _left_forward_jumps(board);
@@ -557,9 +555,8 @@ std::vector<int64_t> _jumps_from(CheckersBoard board, int64_t piece) {
   int64_t lfj;
   int64_t rbj;
   int64_t lbj;
-  std::vector<int64_t>  moves;
-
-  uint64_t        buff;
+  std::vector<int64_t> moves;
+  uint64_t buff;
 
   if (board.active == BLACK_PLAYER) {
     rfj = ((board.empty >> 8) & (board.pieces[board.passive] >> 4) & piece);

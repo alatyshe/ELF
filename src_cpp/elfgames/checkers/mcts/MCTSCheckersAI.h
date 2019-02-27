@@ -26,8 +26,6 @@ struct ActorTrait<CheckersMCTSActor> {
 } // namespace elf
 
 
-
-
 /*
 	Tree search logic.
 */

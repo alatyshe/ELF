@@ -19,9 +19,11 @@ enum CheckersFinishReason {
   WHITE_WIN,
 };
 
-// Client Side
-// calls from start_client.sh
-// Generates batches for server
+/* 
+  Client Side
+  calls from start_client.sh
+  Generates batches for server
+*/
 struct CheckersStateExt {
  public:
   CheckersStateExt(int game_idx, const CheckersGameOptions& game_options);
@@ -115,13 +117,16 @@ struct CheckersStateExt {
   CheckersGameOptions _game_options;
 
   std::vector<CheckersCoordRecord> _mcts_policies;
+  // board value
   std::vector<float> _predicted_values;
 
   std::shared_ptr<spdlog::logger> _logger;
 };
 
-// Server Side
-// calls from start_server.sh
+/* 
+  Server Side
+  calls from start_server.sh
+*/
 class CheckersStateExtOffline {
  public:
   friend class GameFeature;

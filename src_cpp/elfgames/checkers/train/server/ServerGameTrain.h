@@ -9,7 +9,9 @@
 #include "../../common/GameBase.h"
 #include "elf/distributed/shared_reader.h"
 
-// server side
+/* 
+  server side
+*/
 class ServerGameTrain : public GameBase {
  public:
   ServerGameTrain(

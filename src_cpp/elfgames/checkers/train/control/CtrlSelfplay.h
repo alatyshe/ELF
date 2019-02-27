@@ -23,11 +23,13 @@
 
 using TSOptions = elf::ai::tree_search::TSOptions;
 
-
-// Класс отвечающий за сбор инфы от клиента про количество отыгранных игр
-// и прочей мелкой статистики.
-// + метода который сообщает серверу может ли он начать обучение
-// исходя из полноты батча
+/*
+	Stores Records in RecordBuffer for one model(ver).
+	Those records don't use for training!
+	Stores simple statistics about Records.
+	Has a method that tells whether Records quantities 
+	are enough to update the model weights(needWaitForMoreSample).
+*/
 struct SelfPlayRecord {
  public:
 	SelfPlayRecord(int ver, const CheckersGameOptions& game_options)
@@ -38,24 +40,26 @@ struct SelfPlayRecord {
 						"SelfPlayRecord-",
 						"")) {
 		std::string selfplay_prefix =
-				"selfplay-" + game_options_.server_id + "-" + game_options_.time_signature;
-		records_.resetPrefix(selfplay_prefix + "-" + std::to_string(ver_));
+				"SelfPlayRecord-" + game_options_.server_id + "-" + game_options_.time_signature;
+		recordBuffer_.resetPrefix(selfplay_prefix + "-ver_" + std::to_string(ver_));
 	}
 
-	// Получает новый батч и обновляет инфу 
+	// Takes new batch and update info, also add Record to our vector.
 	void feed(const CheckersRecord& record) {
 		const CheckersMsgResult& r = record.result;
 
 		const bool didBlackWin = r.reward > 0;
-		if (didBlackWin) {
+		if (r.num_move >= TOTAL_MAX_MOVE - 1)
+			draw_++;
+		else if (didBlackWin) {
 			black_win_++;
 		} else {
 			white_win_++;
 		}
 		counter_++;
 
-		// records_ = RecordBuffer
-		records_.feed(record);
+		// recordBuffer_ -> RecordBuffer
+		recordBuffer_.feed(record);
 
 		if (r.num_move < 100)
 			move0_100++;
@@ -66,8 +70,8 @@ struct SelfPlayRecord {
 		else
 			move300_up++;
 
-		// отображаем общую инфу по батчам каждые 100 игр
-		if (counter_ - last_counter_shown_ >= 100) {
+		// shows info every 100 batches
+		if (counter_ - last_counter_shown_ >= 10) {
 			logger_->info("\n{}", info());
 			last_counter_shown_ = counter_;
 		}
@@ -93,20 +97,26 @@ struct SelfPlayRecord {
 
 	bool checkAndSave() {
 		if (is_check_point()) {
-			records_.saveCurrent();
-			records_.clear();
+			recordBuffer_.saveCurrent();
+			recordBuffer_.clear();
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	// true если надо подождать для больше времени для батча
+	/*
+		counter - count of completed games for the model ver_. 
+		game_options_.selfplay_init_num - the number of batches to get 
+			before upgrading the model for the first time.
+		game_options_.selfplay_update_num - 
+		num_weight_update_ - 
+	*/
 	bool needWaitForMoreSample() const {
-		// UNCOMMENT
-		logger_->info("Need: {}; Counter: {}; Selfplay_init_num: {}; Selfplay_update_num: {}; Num_weight_update: {}; ",
+		logger_->info("Need: {} for model: {}; Counter: {}; Selfplay_init_num: {}; Selfplay_update_num: {}; Num_weight_update: {}; ",
 			game_options_.selfplay_init_num +
 				game_options_.selfplay_update_num * num_weight_update_,
+			ver_,
 			counter_,
 			game_options_.selfplay_init_num,
 			game_options_.selfplay_update_num,
@@ -123,11 +133,6 @@ struct SelfPlayRecord {
 		if (game_options_.selfplay_update_num <= 0){
 			return false;
 		}
-		// counter - счетчик игр которые уже сыграл клиент 
-		// game_options_.selfplay_init_num - нужно вначале отыграть игр после чего
-		//        формируется батч
-		// game_options_.selfplay_update_num - после N игр обновляем веса
-		// num_weight_update_ - количесвто раз которые мы обновляли веса
 		return counter_ < game_options_.selfplay_init_num +
 				game_options_.selfplay_update_num * num_weight_update_;
 	}
@@ -141,24 +146,26 @@ struct SelfPlayRecord {
 	}
 
 	std::string info() const {
-		const int n = black_win_ + white_win_;
-		const float black_win_rate = static_cast<float>(black_win_) / (n + 1e-10);
+		const int total = black_win_ + white_win_ + draw_;
+		const float black_win_rate = static_cast<float>(black_win_) / (black_win_ + white_win_ + 1e-10);
 
 		std::stringstream ss;
-		ss  << "FIX IT(need more info like draw) === Record Stats (" << ver_ << ") ====" << std::endl;
+		ss  << "==== Record Stats (Model:" << ver_ << ") ====" << std::endl;
 		
-		ss  << "B_win/W_win/total: " << black_win_ << "/" << white_win_ << "/" << n 
-				<< std::endl 
-				<< "B win rate=" << black_win_rate * 100 << "%."
+		ss  << "B_win/W_win : " 
+				<< black_win_ 
+				<< "/" << white_win_ << std::endl
+				<< "Draw :\t" << draw_ << std::endl
+				<< "Total :\t" << total << std::endl 
+				<< "B winrate = " << black_win_rate * 100 << "%."
 				<< std::endl;
 
 		ss  << "Game finished in N moves: " << std::endl
-				<< "[  0, 100)\t="    << move0_100 << std::endl
-				<< "[100, 200)\t="  << move100_200 << std::endl;
-				// << "[200, 300)\t="  << move200_300 << std::endl;
-				// << "[300,  up)\t="   << move300_up << std::endl;
+				<< "[  0, 100) = "    << move0_100 << std::endl
+				<< "[100, 200) = "  << move100_200 << std::endl
+				<< "[200, 300)="  << move200_300 << std::endl;
 
-		ss << "=== End Record Stats ====" << std::endl;
+		ss << "====== End Record Stats =======" << std::endl;
 
 		return ss.str();
 	}
@@ -168,20 +175,29 @@ struct SelfPlayRecord {
 	const int64_t ver_;
 	const CheckersGameOptions& game_options_;
 
-	RecordBuffer records_;
+	RecordBuffer recordBuffer_;
 
-	int black_win_ = 0, white_win_ = 0;
+	int black_win_ = 0, white_win_ = 0, draw_ = 0;
 	int move0_100 = 0, move100_200 = 0, move200_300 = 0, move300_up = 0;
+
 	int counter_ = 0;
 	int last_counter_shown_ = 0;
+
 	int num_weight_update_ = 0;
 
 	std::shared_ptr<spdlog::logger> logger_;
 };
 
 
+/*
+	Contains Records for all models. Those records don't use for training!
 
-
+	The logic is simple: 
+		We get a CheckersRecord, extract a version of the model from this
+		(also checking type of this record), then perform a SelfPlayRecord 
+		search in perfs_ for a specific model and add a 
+		CheckersRecord to SelfPlayRecord.
+*/
 class SelfPlaySubCtrl {
  public:
 	enum CtrlResult {
@@ -203,8 +219,7 @@ class SelfPlaySubCtrl {
 
 	FeedResult feed(const CheckersRecord& r) {
 		std::lock_guard<std::mutex> lock(mutex_);
-		// Проверка есть ли второй игрок white(чекаем нашу инфу полученную от клиента)
-		// если игрок есть, то это не selfplay
+		// checks for second player(white)
 		if (!r.request.vers.is_selfplay())
 			return NOT_SELFPLAY;
 		if (curr_ver_ != r.request.vers.black_ver)
@@ -234,7 +249,10 @@ class SelfPlaySubCtrl {
 	bool setCurrModel(int64_t ver) {
 		std::lock_guard<std::mutex> lock(mutex_);
 		if (ver != curr_ver_) {
-			logger_->info("SelfPlay: {} -> {}", curr_ver_, ver);
+			logger_->info("Total SelfPlayRecords: {}, SelfPlay: {} -> {}", 
+					perfs_.size() + 1, 
+					curr_ver_, 
+					ver);
 			curr_ver_ = ver;
 			find_or_create(curr_ver_);
 			return true;

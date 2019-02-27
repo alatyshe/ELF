@@ -14,7 +14,7 @@
 #include "../distri_base.h"
 #include "../../common/record.h"
 #include "../data_loader.h"
-#include "train_ctrl.h"
+#include "TrainCtrl.h"
 
 class DistriServer {
  public:
@@ -40,14 +40,14 @@ class DistriServer {
 
 
 		if (gameOptions_.mode == "train") {
-			// создаем экземпляр класса для подгрузки батчей в онлайн режиме
+			// For loading data online.
 			logger_->info("Initialize onlineLoader_(DataOnlineLoader)");
 			onlineLoader_.reset(new DataOnlineLoader(netOptions));
 			
 
 			onlineLoader_->start(trainCtrl_.get());
 		} else if (gameOptions_.mode == "offline_train") {
-			// подразумевается что данные у нас уже есть
+			// Data for training is already available in files.
 			;
 		} else {
 			throw std::range_error("options.mode not recognized! " + gameOptions_.mode);
@@ -58,7 +58,6 @@ class DistriServer {
 			COLOR_END);
 	}
 
-
 	ReplayBuffer* getReplayBuffer() {
 		return trainCtrl_->getReplayBuffer();
 	}
@@ -67,7 +66,6 @@ class DistriServer {
 		trainCtrl_->getThreadedCtrl()->waitForSufficientSelfplay(selfplay_ver);
 	}
 
-	// Used in training side.
 	void notifyNewVersion(int64_t selfplay_ver, int64_t new_version) {
 		trainCtrl_->getThreadedCtrl()->addNewModelForEvaluation(
 				selfplay_ver, new_version);

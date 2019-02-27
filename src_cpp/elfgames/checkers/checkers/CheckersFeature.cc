@@ -8,7 +8,6 @@ static float* board_plane(float* features, int idx) {
 // features param will taken from parent function 
 #define LAYER(idx) board_plane(features, idx)
 
-
 void CheckersFeature::getKings(int player, float* data) const {
   std::array<std::array<int, 8>, 8> observation;
   observation = GetObservation(s_.board(), player);
@@ -42,7 +41,6 @@ void CheckersFeature::getPawns(int player, float* data) const {
 //   }
 //   return true;
 // }
-
 
 // Extract game state, this method calls from GameFeature::extractState()
 // Filling the memory for submission to the assessment in the neural network.

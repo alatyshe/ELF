@@ -45,10 +45,9 @@ class ModelPerfomance {
 							"")) {
 		const size_t cushion = 5;
 
-		// узнаем количество клиентов которые работают в режиме
-		// eval_than_selfplay и делим на 2
+		// getExpectedNumEval() - returns number of clients who work in the eval mode.
 		const size_t max_request_per_layer = mgr.getExpectedNumEval() / 2;
-		// количество раз, которое нужно для свапа игроков
+		// number of times need to swap players
 		const size_t num_request = gameOptions.eval_num_games / 2 + cushion;
 		const size_t num_eval_machine_per_layer =
 				compute_num_eval_machine(num_request, max_request_per_layer);
@@ -67,16 +66,16 @@ class ModelPerfomance {
 
 	ModelPerfomance(ModelPerfomance&&) = default;
 
-	// Завершенные игры
+	// Finished games.
 	int n_done() const {
 		return games_->win_count().n_done() + swap_games_->win_count().n_done();
 	}
-	// Игры которые выиграла нейронка
+
+	// Number of games won.
 	int n_win() const {
 		return games_->win_count().n_win() + swap_games_->win_count().n_win();
 	}
 
-	// Винрейт
 	float winrate() const {
 		const int total_games = n_done();
 		const int win_games = n_win();
@@ -127,7 +126,7 @@ class ModelPerfomance {
 		return eval_result_;
 	}
 
-	// Тут заполняем реварды для нашей model_perfomance
+	// Fills rewards for our model_perfomance
 	void feedInfo(const ClientInfo& c, const CheckersRecord& r) {
 		// мое
 		if (r.result.num_move >= TOTAL_MAX_MOVE - 1) {
@@ -142,8 +141,10 @@ class ModelPerfomance {
 		recv_++;
 	}
 
-	// Заполняем инфу для реквеста, который мы отправляем клиенту
-	// и тут же заполняем свапать игроков, или нет 
+	/*
+		Fills in the info for the request, which we send to the 
+		client and immediately decide whether to swap the players or not
+	*/
 	void fillInRequest(const ClientInfo& c, MsgRequest* msg) {
 		if (finished_)
 			return;
@@ -169,7 +170,7 @@ class ModelPerfomance {
 			msg->client_ctrl.num_game_thread_used = gameOptions_.eval_num_threads;
 			break;
 		}
-		// количество отправленных реквестов 
+		// number of requests sent 
 		sent_++;
 
 		if (sent_ % 50 == 0) {
@@ -201,9 +202,9 @@ class ModelPerfomance {
 	std::unique_ptr<fair_pick::Pick>	swap_games_;
 
 	int						draw_ = 0;
-	// Количество реквестов, отправленных клиенту
+	// The number of requests sent to the client.
 	int						sent_ = 0;
-	// Количество полученных сообщений от клиента
+	// The number of received messages from the client.
 	int						recv_ = 0;
 	bool					finished_ = false;
 	RecordBuffer	record_;
@@ -273,25 +274,6 @@ class ModelPerfomance {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class EvalSubCtrl {
  public:
 	EvalSubCtrl(const CheckersGameOptions& gameOptions, const TSOptions& mcts_options)
@@ -338,8 +320,6 @@ class EvalSubCtrl {
 		return -1;
 	}
 
-	// Получая инфу от клиента мы заполняем наши поля и возвращаем 
-	// Успешно ли
 	FeedResult feedStats(const ClientInfo& info, const CheckersRecord& r) {
 		if (r.request.vers.is_selfplay())
 			return NOT_EVAL;
@@ -426,7 +406,6 @@ class EvalSubCtrl {
 
 	std::shared_ptr<spdlog::logger> logger_;
 
-	// 
 	ModelPair get_key(int ver) {
 		ModelPair p;
 		
@@ -436,9 +415,11 @@ class EvalSubCtrl {
 		return p;
 	}
 
-	// добавляем модель для оценки
+	/*
+		Add a model for evaluation. 
+		Returns false if the model for eval has been added earlier.
+	*/
 	bool add_candidate_model(int ver) {
-		// проверяем, не создавали ли мы до этого класс для сравнения этих моделей
 		auto it = perfs_.find(get_key(ver));
 		if (it == perfs_.end())
 			models_to_eval_.push_back(ver);

@@ -58,7 +58,7 @@ class GameBase {
     /*
       Main loop of the game.
       Run loop till client/server won't tell to stop.
-      The parameter is responsible for this - --suicide_after_n_games.
+      The parameter is responsible for this - --suicide_after_n_games(client side).
     */
     while (!client_->DoStopGames()) {
       act();

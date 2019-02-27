@@ -30,7 +30,23 @@
 #include "../checkers/CheckersFeature.h"
 #include "../checkers/CheckersState.h"
 
-// Running on the client side to generate batches.
+/*
+  Running on the client side to generate batches.
+  Contains:
+  ThreadedDispatcher - checks messages from server(update model version, eval 2 models etc).
+  CheckersGameNotifierBase - Used to call the game_end python function from selfplay.py
+      Displays statistics about the game from python side and contain records of finished games.
+  CheckersStateExt - Generates batches, dumps finished games to records(json) etc.
+  checkers_ai1 - uses MCTS for searching best action. Responsible for
+      generating batches for training the neural network.
+  checkers_ai2 - also uses MCTS. Initialized only when the client receives
+      a notification from the server to compare two models.
+  _human_player - The base class AIClientT that sends batch files from C++ to python 
+      and expects to receive an answer. In our case, these are the keys that 
+      we registered in the GameFeature.h and game.py files namely by 
+      "pi", "a", "checkers_V".
+  logger_ - displays log info in terminal.
+*/
 class ClientGameSelfPlay : public GameBase {
  public:
   using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
