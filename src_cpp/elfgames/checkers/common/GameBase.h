@@ -22,6 +22,8 @@
   specified in the parameter --num_games.
   ClientGameSelfplay - generates batches.
   ServerGameTrain - train model.
+
+  Important, contains elf::GameClient.
 */
 class GameBase {
  public:

@@ -36,7 +36,8 @@ struct MCTSActorParams {
 
 
 /*
-	Only agent. need for send states to nn for eval.
+	Only agent. used to send states to neural network for evaluation
+	and other methods for MCTS.
 */
 class CheckersMCTSActor {
  public:

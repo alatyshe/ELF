@@ -15,6 +15,7 @@
 #include "../../common/record.h"
 
 /*
+	Used in TrainCtrl and stores ALL Records we received from clients.
 	Dumps all our record in a file every num_record_threshold.
 */
 struct RecordBufferSimple {
@@ -49,16 +50,19 @@ struct RecordBufferSimple {
 
  private:
 	std::mutex									mutex_;
-	std::string									prefix_;
+	std::vector<CheckersRecord>	records_;
+
 	size_t											num_file_saved_ = 0;
 	size_t											num_record_saved_ = 0;
-	std::vector<CheckersRecord>	records_;
+
+	std::string									prefix_;
 };
 
 
-
-
-
+/*
+	Used in ModelPerf(models evaluation) and SelfPlayRecord.
+	Unlike BufferSimple, it used for store recordings of games for a particular model.
+*/ 
 struct RecordBuffer {
  public:
 	RecordBuffer() {}
@@ -125,7 +129,9 @@ struct RecordBuffer {
 	std::mutex                  mutex_;
 	std::vector<CheckersRecord> records_;
 	std::vector<CheckersRecord> offline_records_;
+	
 	int                         num_file_saved_ = 0;
+
 	std::string                 prefix_;
 };
 

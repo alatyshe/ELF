@@ -176,7 +176,7 @@ def main():
     Example:
       We register "human_actor" as key and register the 
       same method on the python side. 
-      When our AIClientT calls method act(it takes 2 parameters: state, and key)
+      When AIClientT calls method act(it takes 2 parameters: state, and key)
       act connect to python and transmits the state by 
       key("human_actor", "checkers_actor_black")
       to these methods(actor() func defined below).

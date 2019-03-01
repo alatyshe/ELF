@@ -19,6 +19,9 @@
 // checkers
 #include "../checkers/CheckersBoard.h"
 
+/*
+  Translates data into a string and vice versa
+*/
 // Load the remaining part.
 inline Coord str2coord(const std::string& s) {
   return (std::stoi(s));

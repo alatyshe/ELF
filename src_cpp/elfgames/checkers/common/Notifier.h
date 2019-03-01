@@ -15,6 +15,10 @@
 #include "../checkers/Record.h"
 #include "../mcts/CheckersMCTSActor.h"
 
+
+/*
+  from this class inherit CheckersGameNotifier.
+*/
 class CheckersGameNotifierBase {
  public:
   using MCTSResult = elf::ai::tree_search::MCTSResultT<Coord>;

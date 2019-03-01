@@ -16,7 +16,7 @@
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 // checkers
-#include "ctrl_utils.h"
+#include "CtrlUtils.h"
 #include "../client_manager.h"
 #include "../../checkers/CheckersGameOptions.h"
 

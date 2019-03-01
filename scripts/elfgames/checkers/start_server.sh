@@ -17,13 +17,13 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--gpu 0 \
 	\
 	--mode train \
-	--num_games 8					--keys_in_reply checkers_V \
+	--num_games 8						--keys_in_reply checkers_V \
 	--T 1 \
 	--dim 128 \
 	--num_block 10 \
 	\
 	--batchsize 128 \
-	--num_minibatch 1024 		--num_cooldown=128 \
+	--num_minibatch 1024		--num_cooldown=128 \
 	--bn_momentum=0					--momentum 0.9 \
 	--weight_decay 0.0002		--opt_method sgd \
 	--lr 0.01	\

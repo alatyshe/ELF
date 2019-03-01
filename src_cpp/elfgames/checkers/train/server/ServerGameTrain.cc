@@ -13,9 +13,9 @@ ServerGameTrain::ServerGameTrain(
     elf::GameClient* client,
     const ContextOptions& context_options,
     const CheckersGameOptions& game_options,
-    elf::shared::ReaderQueuesT<CheckersRecord>* reader)
+    elf::shared::ReaderQueuesT<CheckersRecord>* readerQueues)
       : GameBase(game_idx, client, context_options, game_options), 
-        reader_(reader),
+        readerQueues_(readerQueues),
         logger_(elf::logging::getIndexedLogger(
           MAGENTA_B + std::string("|++|") + COLOR_END + 
           "ServerGameTrain-" + std::to_string(game_idx) + "-",
@@ -32,7 +32,7 @@ void ServerGameTrain::act() {
   for (size_t i = 0; i < kNumState; ++i) {
     while (true) {
       int q_idx;
-      auto sampler = reader_->getSamplerWithParity(&_rng, &q_idx);
+      auto sampler = readerQueues_->getSamplerWithParity(&_rng, &q_idx);
       const CheckersRecord* r = sampler.sample();
       if (r == nullptr) {
         continue;
@@ -49,7 +49,6 @@ void ServerGameTrain::act() {
   }
 
   // client_->sendWait({"train"}, &funcs);
-
   std::vector<elf::FuncsWithState*> funcPtrsToSend(funcsToSend.size());
   for (size_t i = 0; i < funcsToSend.size(); ++i) {
     funcPtrsToSend[i] = &funcsToSend[i];

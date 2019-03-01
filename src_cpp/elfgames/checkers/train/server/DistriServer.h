@@ -16,6 +16,10 @@
 #include "../data_loader.h"
 #include "TrainCtrl.h"
 
+
+/*
+	
+*/
 class DistriServer {
  public:
 	DistriServer(
@@ -84,14 +88,18 @@ class DistriServer {
 		onlineLoader_.reset(nullptr);
 	}
 
+	/* 
+		For loading records from file
+	*/
 	void loadOfflineSelfplayData() {
+
 		if (gameOptions_.list_files.empty())
 			return;
 
 		std::atomic<int> count(0);
 		const size_t numThreads = 16;
 
-		auto thread_main = [this, &count](size_t idx) {
+		auto thread_main = [this, &count] (size_t idx) {
 			for (size_t k = 0; k * numThreads + idx < gameOptions_.list_files.size();
 					 ++k) {
 				const std::string& f = gameOptions_.list_files[k * numThreads + idx];
@@ -124,7 +132,7 @@ class DistriServer {
 	}
 
  private:
-	Ctrl ctrl_;
+	Ctrl 	ctrl_;
 
 	std::unique_ptr<TrainCtrl>				trainCtrl_;
 	std::unique_ptr<DataOnlineLoader>	onlineLoader_;

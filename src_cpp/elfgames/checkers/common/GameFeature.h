@@ -14,8 +14,6 @@
 #include "../checkers/CheckersState.h"
 #include "../checkers/CheckersStateExt.h"
 
-// enum SpecialActionType { SA_SKIP = -100, SA_CLEAR };
-
 /*
   This Class responsible for data exchange between C++ and python.
 */

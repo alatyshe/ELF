@@ -50,6 +50,7 @@
 class ClientGameSelfPlay : public GameBase {
  public:
   using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
+  
   ClientGameSelfPlay(
       int game_idx,
       elf::GameClient* client,

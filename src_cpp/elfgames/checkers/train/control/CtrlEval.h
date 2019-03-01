@@ -15,7 +15,7 @@
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elf/utils/utils.h"
 // checkers
-#include "ctrl_utils.h"
+#include "CtrlUtils.h"
 #include "../client_manager.h"
 #include "../fair_pick.h"
 
@@ -126,7 +126,9 @@ class ModelPerfomance {
 		return eval_result_;
 	}
 
-	// Fills rewards for our model_perfomance
+	/*
+		Fills rewards for our model_perfomance and add to records pool.
+	*/
 	void feedInfo(const ClientInfo& c, const CheckersRecord& r) {
 		// мое
 		if (r.result.num_move >= TOTAL_MAX_MOVE - 1) {

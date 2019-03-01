@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <thread>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -25,24 +26,22 @@
 #include "server/DistriServer.h"
 #include "server/ServerGameTrain.h"
 
-#include <thread>
-
 /*
 	The context of the game wrapped by python GameContext.
 	Contains:
-	Context - configures data exchange between С++ and Python, allocates shared memmory.
-	GameBase - vector of games. The number of which is set by parameter --num_games.
-	DistriServer - .
-	DistriClient - .
+		Context - configures data exchange between С++ and Python, allocates shared memmory.
+		GameBase - vector of games. The number of which is set by parameter --num_games.
+		DistriServer - .
+		DistriClient - .
 
-	GameFeature - Registers the keys by which Python will access memory in C++ 
+		GameFeature - Registers the keys by which Python will access memory in C++ 
 			as well as the methods that will be called while accessing these keys.
 
-	logger_ - displays log info in terminal.
+		logger_ - displays log info in terminal.
 */
 class GameContext {
  public:
-	using ThreadedDispatcher = ClientGameSelfPlay::ThreadedDispatcher;
+ 	using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
 
 	GameContext(const ContextOptions& contextOptions, 
 							const CheckersGameOptions& gameOptions)
@@ -51,22 +50,51 @@ class GameContext {
 					MAGENTA_B + std::string("|++|") + COLOR_END + 
 					"GameContext-", 
 					"")) {
+
+		/* 
+			Context contains:
+				Extractor - 
+				GameStateCollector - 
+				Comm - 
+				Server - 
+				GameClient - 
+
+				BatchComm - 
+				BatchServer - 
+				BatchClient - 
+				BatchMessage -
+				smem2keys_ - 
+				num_games_ - 
+				GameCallback - 
+				cb_after_game_start_ - 
+				game_threads_ - 
+		*/
 		context_.reset(new elf::Context);
 
 		int numGames = contextOptions.num_games;
 		const int batchsize = contextOptions.batchsize;
 
-		// Register all keys "checkers_s", "checkers_V" etc.
+		/* 
+			Register all keys "checkers_s", "checkers_V" etc.
+		*/
 		gameFeature_.registerExtractor(batchsize, context_->getExtractor());
 
+		/*
+			The Client acts as an intermediary between C++ and python 
+			by sending information through keys to the python.
+		*/
 		elf::GameClient* gameClient = context_->getClient();
+
 		ThreadedDispatcher* dispatcher = nullptr;
 
 		// Creates the necessary number of games. Each game has its own unique id.
 		if (gameOptions.mode == "train" || gameOptions.mode == "offline_train") {
-			// start_server.sh
+			// if ("train mode"), initialize ``reader``, 
+			// reset the ``Data Online Loader`` or ``Offline Loader``. 
+
 			server_.reset(new DistriServer(contextOptions, gameOptions, gameClient));
 
+			// Push into the vector _games of size num_game Train or Selfplay;
 			for (int i = 0; i < numGames; ++i) {
 				games_.emplace_back(new ServerGameTrain(
 						i,
@@ -77,10 +105,12 @@ class GameContext {
 			}
 			logger_->info("{} ServerGameTrain was created", numGames);
 		} else {
-			// start_client.sh
+			// if mode is "selfplay" or "online", set ``eval control`` and ``writer``
+
 			client_.reset(new DistriClient(contextOptions, gameOptions, gameClient));
 			dispatcher = client_->getDispatcher();
 
+			//  Push into the vector _games of size num_game Train or Selfplay;
 			for (int i = 0; i < numGames; ++i) {
 				games_.emplace_back(new ClientGameSelfPlay(
 						i,
@@ -93,7 +123,7 @@ class GameContext {
 			logger_->info("{} ClientGameSelfPlay was created", numGames);
 		}
 
-
+	  // set start call back as games[i]->mainLoop()
 		context_->setStartCallback(
 				numGames, 
 				[this, dispatcher] (int i, elf::GameClient*) {
@@ -107,7 +137,7 @@ class GameContext {
 			/* 
 				Registers the lambda function that is called when the server starts.
 				It uses batches from the file(if specified) for training.
-				GameContext => DistriServer => DataOnlineLoader =>
+				GameContext -> DistriServer -> loadOfflineSelfplayData()
 			*/
 			context_->setCBAfterGameStart(
 					[this, gameOptions] () { server_->loadOfflineSelfplayData(); }

@@ -149,8 +149,8 @@ struct CheckersGuardedRecords {
       thread_id   - index
       seq         - Which game we have played
       move_idx    - Which move we have proceeded
-      black       - version of nn
-      white       - version of nn
+      black       - version of model
+      white       - version of model
     */
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -219,8 +219,8 @@ struct CheckersGuardedRecords {
       thread_id   - index
       seq         - Which game we have played
       move_idx    - Which move we have proceeded
-      black       - version of nn
-      white       - version of nn
+      black       - version of model
+      white       - version of model
     */
     std::stringstream ss;
     ss << "#states: " << states.size();
@@ -331,6 +331,8 @@ class DistriClient {
           MAGENTA_B + std::string("|++|") + COLOR_END + 
           "DistriClient-", 
           "")) {
+    // ThreadedDispatcher -> elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
+
     thereadedDispatcher_.reset(new ThreadedDispatcher(ctrl_, contextOptions.num_games));
     dispatcherCallback_.reset(
         new DispatcherCallback(thereadedDispatcher_.get(), client));

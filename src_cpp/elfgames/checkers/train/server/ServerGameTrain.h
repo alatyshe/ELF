@@ -19,12 +19,12 @@ class ServerGameTrain : public GameBase {
       elf::GameClient* client,
       const ContextOptions& context_options,
       const CheckersGameOptions& game_options,
-      elf::shared::ReaderQueuesT<CheckersRecord>* reader);
+      elf::shared::ReaderQueuesT<CheckersRecord>* readerQueues);
 
   void act() override;
 
  private:
-  elf::shared::ReaderQueuesT<CheckersRecord>* reader_ = nullptr;
+  elf::shared::ReaderQueuesT<CheckersRecord>* readerQueues_ = nullptr;
 
   static constexpr size_t kNumState = 64;
   std::vector<std::unique_ptr<CheckersStateExtOffline>> _checkers_state_ext;

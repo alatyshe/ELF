@@ -6,7 +6,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-MODEL=models/save-609280.bin
+MODEL=models/save-99328.bin
 
 # MODEL=model_dima/save-67584.bin
 # shift
