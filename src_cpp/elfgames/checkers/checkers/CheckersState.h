@@ -77,6 +77,31 @@ class CheckersState {
   //   return _history;
   // }
 
+  // delete!!!!!!
+  std::array<std::array<int, 8>, 8> getObservationByPlayer() const {
+    int currentPlayer = this->getCurrentPlayer();
+    return (GetObservation(_board, currentPlayer));
+  }
+
+  std::string getBoard() const {
+    std::stringstream ss;
+    std::string board = "";
+    std::array<std::array<int, 8>, 8> state = GetTrueState(_board);
+
+    for (int y = 0; y < 8; y++) {
+      for (int x = 0; x < 8; x++) {
+        board += std::to_string(state[y][x]) + " ";
+      }
+      board += "\n";
+    }
+    ss << board;
+    return (ss.str());
+  }
+
+  int getCurrentPlayer() const {
+    return (this->currentPlayer() == BLACK_PLAYER ? 1 : 0);
+  }
+
  protected:
   CheckersBoard _board;
 

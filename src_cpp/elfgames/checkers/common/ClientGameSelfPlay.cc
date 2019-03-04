@@ -361,3 +361,58 @@ void ClientGameSelfPlay::act() {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+// DELETE DELETE DELETE DELETE DELETE DELETE DELETE DELETE 
+// DELETE DELETE DELETE DELETE DELETE DELETE DELETE DELETE 
+std::string ClientGameSelfPlay::getBoard() const {
+  return _checkers_state_ext.state().getBoard();
+}
+
+int ClientGameSelfPlay::getCurrentPlayer() const {
+  int player = _checkers_state_ext.state().currentPlayer();
+  return player;
+}
+
+int ClientGameSelfPlay::isEnded() const {
+  return _checkers_state_ext.state().terminated();
+}
+
+std::vector<Coord> ClientGameSelfPlay::getAllMoves() const {
+  return _checkers_state_ext.state().getAllMoves();
+}
+
+std::array<std::array<int, 8>, 8> ClientGameSelfPlay::getObservationCurrentPlayer() {
+  return _checkers_state_ext.state().getObservationByPlayer();
+}
+
+std::array<int, TOTAL_NUM_ACTIONS> ClientGameSelfPlay::getValidMovesReverse() const {
+  return GetValidMovesBinary(_checkers_state_ext.state().board(),
+    1 - _checkers_state_ext.state().board().active);
+}
+
+void ClientGameSelfPlay::restart_game_on_server() {
+  _checkers_state_ext.restart();
+}
+
+void ClientGameSelfPlay::finish_game_for_server() {
+  _checkers_state_ext.setFinalValue();
+  _checkers_state_ext.showFinishInfo();
+  checkers_ai1->endGame(_checkers_state_ext.state());
+  if (checkers_ai2 != nullptr) {
+    checkers_ai2->endGame(_checkers_state_ext.state());
+  }
+  // сообщает клиенту, что игры окончена
+  if (checkers_notifier_ != nullptr){
+    checkers_notifier_->OnGameEnd(_checkers_state_ext);
+  }
+}
