@@ -6,7 +6,7 @@ MODEL=models/save-609280.bin
 game=elfgames.checkers.game \
 model=df_pred \
 model_file=elfgames.checkers.df_model_checkers \
-	python3 CheckersServerELF.py \
+	python3 gui/CheckersServerELF.py \
 	--server_addr localhost --port 1234 \
 	\
 	--batchsize 64 \
