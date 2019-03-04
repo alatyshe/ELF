@@ -6,7 +6,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-MODEL=models/save-99328.bin
+MODEL=models/save-609280.bin
 
 # MODEL=model_dima/save-67584.bin
 # shift
@@ -31,11 +31,11 @@ model_file=elfgames.checkers.df_model_checkers \
 	--use_mcts \
 	\
 	--mcts_virtual_loss 0 \
-	--mcts_persistent_tree \
+	--mcts_rollout_per_batch 3 \
+	--mcts_persistent_tree 	--mcts_verbose_time \
 	--mcts_use_prior				--mcts_puct 0.9 \
 	--mcts_threads 1				--mcts_rollout_per_thread 400 \
-	--mcts_rollout_per_batch 3 \
-	--mcts_verbose_time \
+	\
 	# "$@"
 	# --black_use_policy_network_only \
 

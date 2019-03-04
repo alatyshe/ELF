@@ -71,7 +71,7 @@ struct SelfPlayRecord {
 			move300_up++;
 
 		// shows info every 100 batches
-		if (counter_ - last_counter_shown_ >= 10) {
+		if (counter_ - last_counter_shown_ >= 500) {
 			logger_->info("\n{}", info());
 			last_counter_shown_ = counter_;
 		}
