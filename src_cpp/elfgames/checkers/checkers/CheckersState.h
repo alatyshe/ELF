@@ -78,11 +78,6 @@ class CheckersState {
   // }
 
   // delete!!!!!!
-  std::array<std::array<int, 8>, 8> getObservationByPlayer() const {
-    int currentPlayer = this->getCurrentPlayer();
-    return (GetObservation(_board, currentPlayer));
-  }
-
   std::string getBoard() const {
     std::stringstream ss;
     std::string board = "";
@@ -96,10 +91,6 @@ class CheckersState {
     }
     ss << board;
     return (ss.str());
-  }
-
-  int getCurrentPlayer() const {
-    return (this->currentPlayer() == BLACK_PLAYER ? 1 : 0);
   }
 
  protected:

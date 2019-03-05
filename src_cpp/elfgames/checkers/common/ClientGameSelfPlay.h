@@ -69,13 +69,8 @@ class ClientGameSelfPlay : public GameBase {
 
   // delete this
   std::string getBoard() const;
-  int getCurrentPlayer() const;
   int isEnded() const;
   std::vector<Coord> getAllMoves() const;
-  std::array<std::array<int, 8>, 8> getObservationCurrentPlayer();
-  std::array<int, TOTAL_NUM_ACTIONS> getValidMovesReverse() const;
-  void restart_game_on_server();
-  void finish_game_for_server();  
 
  private:
   MCTSCheckersAI* init_checkers_ai(

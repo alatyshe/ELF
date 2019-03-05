@@ -61,8 +61,6 @@ class CheckerMoves:
     total_moves_cod = all_moves_cod + all_jumps_cod
     total_moves_pos = all_moves_pos + all_jumps_pos
 
-    total_moves_cod = all_moves_cod + all_jumps_cod
-
     all_moves = []
 
     for move in total_moves_cod:
@@ -98,8 +96,7 @@ class CheckersConsole:
       if key.startswith("on_")
     }
 
-  def display_board(self, batch):
-    # print(batch.GC.getGame(0).showBoard())
+  def valid_moves(self, batch):
     valid = batch.GC.getGame(0).getValidMoves()
 
     for idx in range(len(valid)):
@@ -126,11 +123,8 @@ class CheckersConsole:
     msg = "\n".join(self.commands.keys())
     return True, msg
 
-  def print_msg(self, ret, msg):
-    print("\n%s %s\n\n" % (("=" if ret else "?"), msg))
-
   def prompt(self, prompt_str, batch):
-    self.display_board(batch)
+    self.valid_moves(batch)
 
     while True:
       cmd = input(prompt_str)
@@ -154,7 +148,7 @@ class CheckersConsole:
           else:
             print("")
         # if not self.exit:
-        self.display_board(batch)
+        self.valid_moves(batch)
 
       except Exception:
         ret, msg = self.list_commands(batch, items, reply)
