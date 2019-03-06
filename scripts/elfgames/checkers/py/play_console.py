@@ -11,7 +11,7 @@ import sys
 
 import torch
 
-from console_lib import CheckersConsole
+from CheckersConsole import CheckersConsole
 from rlpytorch import Evaluator, load_env
 
 def main():

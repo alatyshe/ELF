@@ -62,7 +62,6 @@ void registerPy(pybind11::module& m) {
       .def("getBoard", &ClientGameSelfPlay::getBoard)
       .def("isEnded", &ClientGameSelfPlay::isEnded)
 
-  
       .def("showBoard", &ClientGameSelfPlay::showBoard)
       // для игры в консоле
       .def("getValidMoves", &ClientGameSelfPlay::getValidMoves);

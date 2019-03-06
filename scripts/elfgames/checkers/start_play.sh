@@ -8,7 +8,7 @@
 
 # MODEL=models/save-609280.bin
 
-MODEL=models/save-0.bin
+MODEL=models/save-4096.bin
 # MODEL=model_dima/save-67584.bin
 # shift
 

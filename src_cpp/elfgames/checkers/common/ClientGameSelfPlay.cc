@@ -370,7 +370,3 @@ std::string ClientGameSelfPlay::getBoard() const {
   return _checkers_state_ext.state().getBoard();
 }
 
-int ClientGameSelfPlay::isEnded() const {
-  return _checkers_state_ext.state().terminated();
-}
-

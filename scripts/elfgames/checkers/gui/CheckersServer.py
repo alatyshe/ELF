@@ -61,13 +61,13 @@ class WebSocketServerClient(WebSocket):
 
     # console = ConsoleGTP(GC, evaluator)
 
-    console = self.gui
+    gui = self.gui
 
     def human_actor(batch):
-      return console.prompt("", batch)
+      return gui.prompt(batch)
 
     def actor(batch):
-      return console.actor(batch)
+      return gui.actor(batch)
 
     evaluator.setup(sampler=env["sampler"], mi=mi)
 
@@ -83,7 +83,7 @@ class WebSocketServerClient(WebSocket):
 
     while True:
       GC.run()
-      if console.exit:
+      if gui.exit:
         break
     # fix this for normal exit
     sys.exit()

@@ -63,14 +63,13 @@ class ClientGameSelfPlay : public GameBase {
 
   void act() override;
   std::string showBoard() const;
+  // returns all valid moves for current board
   std::array<int, TOTAL_NUM_ACTIONS> getValidMoves() const;
   float getScore();
 
 
   // delete this
   std::string getBoard() const;
-  int isEnded() const;
-  std::vector<Coord> getAllMoves() const;
 
  private:
   MCTSCheckersAI* init_checkers_ai(
