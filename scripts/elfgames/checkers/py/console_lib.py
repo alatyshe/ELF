@@ -96,7 +96,7 @@ class CheckersConsole:
       if key.startswith("on_")
     }
 
-  def valid_moves(self, batch):
+  def print_valid_moves(self, batch):
     valid = batch.GC.getGame(0).getValidMoves()
 
     for idx in range(len(valid)):
@@ -124,7 +124,7 @@ class CheckersConsole:
     return True, msg
 
   def prompt(self, prompt_str, batch):
-    self.valid_moves(batch)
+    self.print_valid_moves(batch)
 
     while True:
       cmd = input(prompt_str)
@@ -148,7 +148,7 @@ class CheckersConsole:
           else:
             print("")
         # if not self.exit:
-        self.valid_moves(batch)
+        self.print_valid_moves(batch)
 
       except Exception:
         ret, msg = self.list_commands(batch, items, reply)

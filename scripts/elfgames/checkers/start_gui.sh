@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MODEL=models/save-609280.bin
+MODEL=models/save-4096.bin
 # shift
 
 game=elfgames.checkers.game \
@@ -20,12 +20,11 @@ model_file=elfgames.checkers.df_model_checkers \
 	--verbose					--gpu 0 \
 	--num_block 10		--dim 128 \
 	\
-	--mcts_virtual_loss 1 \
 	--mcts_rollout_per_batch 1 \
-	--mcts_persistent_tree \
 	--use_mcts							--mcts_verbose_time \
-	--mcts_use_prior				--mcts_puct 0.9 \
-	--mcts_threads 1				--mcts_rollout_per_thread 100 \
+	--mcts_puct 1.5 				--mcts_use_prior \
+	--mcts_threads 8				--mcts_rollout_per_thread 100 \
+	--mcts_virtual_loss 1 	--mcts_persistent_tree \
 	\
 	# --dump_record_prefix mcts \
 

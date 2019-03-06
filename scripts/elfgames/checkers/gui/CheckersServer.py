@@ -12,66 +12,28 @@ from _thread import start_new_thread
 from CheckersGui import CheckersGui
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
-
-game_storage = {}
-
-additional_to_load = {
-  'evaluator': (
-    Evaluator.get_option_spec(),
-    lambda object_map: Evaluator(object_map, stats=None)),
-}
-
-env = load_env(
-  os.environ,
-  overrides={
-    'num_games': 1,
-    'greedy': True,
-    'T': 1,
-    'model': 'online',
-    'additional_labels': ['checkers_aug_code', 'checkers_move_idx'],
-  },
-  additional_to_load=additional_to_load)
-
-evaluator = env['evaluator']
-
-GC = env["game"].initialize()
-
-model_loader = env["model_loaders"][0]
-model = model_loader.load_model(GC.params)
-
-mi = env['mi']
-mi.add_model("model", model)
-mi.add_model("actor", model)
-mi["model"].eval()
-mi["actor"].eval()
-
-
 class WebSocketServerClient(WebSocket):
-  player = None
+  gui = None
   connection = None
 
   def handleMessage(self):
     print("handle message: ", self.data)
 
-    print(self.player)
+    print(self.gui)
 
-    if self.player is not None:
-      self.player.on_message(self.data)
+    if self.gui is not None:
+      self.gui.message_control(self.data)
       return
 
     if self.connection:
       json_message = json.loads(self.data)
-
-      debug = False
-      if "debug" in json_message:
-        debug = json_message["debug"]
 
       if json_message["type"] == "get_state":
         if "sid" in json_message:
           sid = json_message["sid"]
           if sid in game_storage:
             print("load game from game storage")
-            start_new_thread(self.build_game, (game_storage[sid], sid, debug,))
+            start_new_thread(self.build_game, (game_storage[sid], sid))
             return
 
         print("build new game")
@@ -79,7 +41,7 @@ class WebSocketServerClient(WebSocket):
         sid = self.generate_new_sid()
         game_storage[sid] = GC
 
-        start_new_thread(self.build_game, (GC, sid, debug,))
+        start_new_thread(self.build_game, (GC, sid))
 
   def generate_new_sid(self):
     return "sid_" + uuid.uuid4().hex[:8]
@@ -89,17 +51,17 @@ class WebSocketServerClient(WebSocket):
     self.connection = self
 
   def handleClose(self):
-    if self.player is not None:
-      self.player.interrupt()
+    if self.gui is not None:
+      self.gui.interrupt()
 
-  def build_game(self, GC, sid, debug):
+  def build_game(self, GC, sid):
     print("build game")
 
-    self.player = CheckersGui(GC, evaluator, self.connection, sid)
+    self.gui = CheckersGui(GC, evaluator, self.connection, sid)
 
     # console = ConsoleGTP(GC, evaluator)
 
-    console = self.player
+    console = self.gui
 
     def human_actor(batch):
       return console.prompt("", batch)
@@ -131,12 +93,39 @@ class WebSocketServerClient(WebSocket):
 
 
 if __name__ == "__main__":
+  game_storage = {}
+
+  additional_to_load = {
+    'evaluator': (
+      Evaluator.get_option_spec(),
+      lambda object_map: Evaluator(object_map, stats=None)),
+  }
+
+  env = load_env(
+    os.environ,
+    overrides={
+      'num_games': 1,
+      'greedy': True,
+      'T': 1,
+      'model': 'online',
+      'additional_labels': ['checkers_aug_code', 'checkers_move_idx'],
+    },
+    additional_to_load=additional_to_load)
+
+  evaluator = env['evaluator']
+
+  GC = env["game"].initialize()
+
+  model_loader = env["model_loaders"][0]
+  model = model_loader.load_model(GC.params)
+
+  mi = env['mi']
+  mi.add_model("model", model)
+  mi.add_model("actor", model)
+  mi["model"].eval()
+  mi["actor"].eval()
+
   port = 8888
-
-  # if len(sys.argv) > 1 and sys.argv[1] is not None:
-  #     port = int(sys.argv[1])
-
-
   try:
     server = SimpleWebSocketServer('', port, WebSocketServerClient)
 

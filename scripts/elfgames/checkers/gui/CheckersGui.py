@@ -83,46 +83,16 @@ class CheckerMoves:
 
 
 class CheckersGui():
-
   def on_genmove(self, batch, items, reply):
     reply["a"] = int(items[1])
     return True, reply
 
-  def on_play(self, batch, items, reply):
-    ret, msg = self.check_player(batch, items[1][0])
-    if ret:
-      return True, reply
-    else:
-      return False, msg
-
-  def valid_moves(self, batch):
-    valid = batch.GC.getGame(0).getValidMoves()
-
-    for idx in range(len(valid)):
-      if valid[idx]:
-        i = "{0:036b}".format(self.moves_for_human[idx][0])[::-1]
-        index = [pos for pos, char in enumerate(i) if char == "1"]
-        i1, i2 = index
-        buff1 = (1 + i1 - i1 // 9) - 1
-        buff2 = (1 + i2 - i2 // 9) - 1
-        x1, y1 = (6 - (buff1) % 4 * 2 + ((buff1) // 4) % 2, 7 - (buff1) // 4)
-        x2, y2 = (6 - (buff2) % 4 * 2 + ((buff2) // 4) % 2, 7 - (buff2) // 4)
-        if not self.moves_for_human[idx][1]:
-          x1, y1, x2, y2 = x2, y2, x1, y1
-
-        print("", idx, "\t: ", (x1 + y1 * 8), "=>", (x2 + y2 * 8))
-    print("")
-    return True, None
-
-  def on_quit(self, batch, items, reply):
-
+  def on_exit(self, batch, items, reply):
     self.exit = True
     return True, reply
 
-  def __init__(self, GC, evaluator, connection, sid,
-         send_mcts_stats_enabled=False):
+  def __init__(self, GC, evaluator, connection, sid):
 
-    # ELF PARAMS
     self.exit = False
     self.GC = GC
     self.checkers_board_size = GC.params["checkers_board_size"]
@@ -148,16 +118,31 @@ class CheckersGui():
 
     self.connection = connection
     self.sid = sid
-    self.send_mcts_stats_enabled = send_mcts_stats_enabled
 
-    self.victory = None
     self.RESET_GAME_CODE = -1
     self.INTERRUPT_GAME_CODE = -2
     self.interrupted = False
     self.message = None
-    self.last_player = None
-
     print("Connection was established")
+
+  def print_valid_moves(self, batch):
+    valid = batch.GC.getGame(0).getValidMoves()
+
+    for idx in range(len(valid)):
+      if valid[idx]:
+        i = "{0:036b}".format(self.moves_for_human[idx][0])[::-1]
+        index = [pos for pos, char in enumerate(i) if char == "1"]
+        i1, i2 = index
+        buff1 = (1 + i1 - i1 // 9) - 1
+        buff2 = (1 + i2 - i2 // 9) - 1
+        x1, y1 = (6 - (buff1) % 4 * 2 + ((buff1) // 4) % 2, 7 - (buff1) // 4)
+        x2, y2 = (6 - (buff2) % 4 * 2 + ((buff2) // 4) % 2, 7 - (buff2) // 4)
+        if not self.moves_for_human[idx][1]:
+          x1, y1, x2, y2 = x2, y2, x1, y1
+
+        print("", idx, "\t: ", (x1 + y1 * 8), "=>", (x2 + y2 * 8))
+    print("")
+    return True, None
 
   # ELF part
 
@@ -343,5 +328,5 @@ class CheckersGui():
   def interrupt(self):
     self.interrupted = True
 
-  def on_message(self, data):
+  def message_control(self, data):
     self.message = data
