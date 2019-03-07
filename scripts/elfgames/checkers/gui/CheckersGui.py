@@ -20,7 +20,7 @@ class CheckersGui():
     self.connection = connection
     self.sid = sid
     self.message = None
-    
+
     self.RESET_CODE = -1
     self.EXIT_CODE = -2
     print("Connection was established")
@@ -46,13 +46,12 @@ class CheckersGui():
         move_pairs_dict[idx] = [(x1, y1), (x2, y2)]
     print("")
     return move_pairs_dict
-  # ELF part
 
-  def actor(self, batch):
+  def act_model(self, batch):
     reply = self.evaluator.actor(batch)
     return reply
 
-  def prompt(self, batch):
+  def act_human(self, batch):
     valid_moves = batch.GC.getGame(0).getValidMoves()
     self.send_state(batch, None)
     while True:
