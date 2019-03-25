@@ -13,7 +13,6 @@ class CheckersGui():
   def __init__(self, GC, evaluator, connection, sid):
     self.exit = False
     self.GC = GC
-    self.checkers_board_size = GC.params["checkers_board_size"]
     self.evaluator = evaluator
     self.moves_for_human = get_all_moves()
 
@@ -53,27 +52,24 @@ class CheckersGui():
 
   def act_human(self, batch):
     valid_moves = batch.GC.getGame(0).getValidMoves()
-    self.send_state(batch, None)
-    while True:
-      if self.exit:
-        print("game interrupted!")
-        return self.EXIT_CODE
+    
+    self.send_state(batch)
 
+    while True:
       if self.message is None:
         sleep(0.2)
         continue
 
       try:
-        print("received message: \n", self.message)
         json_message = json.loads(self.message)
       except:
-        print("Could not parse json message")
         self.send_error("Could not parse json message")
         self.message = None
         continue
 
+      # 
       if json_message["type"] == "get_state":
-        self.send_state(batch, None)
+        self.send_state(batch)
       elif json_message["type"] == "action":
         data = json_message["data"]
         try:
@@ -81,6 +77,7 @@ class CheckersGui():
           if action_idx == self.RESET_CODE:
             break
           elif action_idx == self.EXIT_CODE:
+            return
             self.exit = True
             break
           elif valid_moves[action_idx]:
@@ -93,7 +90,7 @@ class CheckersGui():
         self.send_error("Could not parse move index")
 
       self.message = None
-    print("received action ", action_idx)
+    # print("received action ", action_idx)
     self.message = None
 
     # Fill our memmory
@@ -102,6 +99,8 @@ class CheckersGui():
     reply["a"] = int(action_idx)
     return reply
 
+  def exit(self):
+    self.exit = True
 
 
   # GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI
@@ -109,12 +108,12 @@ class CheckersGui():
   # GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI GUI
   def get_observation(self, batch):
     data = batch.GC.getGame(0).getBoard()
-    data = np.array(data.split()).astype(np.float).reshape(8,8)
+    print("data : ", data)
+    data = np.array(data).astype(np.float).reshape(8,8)
     return data
 
 
-  def send_state(self, batch, game_player):
-    print("sending game info...")
+  def send_state(self, batch):
     canonical_state = self.get_observation(batch)
     move_pairs_dict = self.get_valid_moves(batch)
 
@@ -126,21 +125,23 @@ class CheckersGui():
       },
       'sid': self.sid
     }
-
     json_data = json.dumps(data)
+
+    print("\n\nsend_state : ")
 
     self.send_message(json_data.encode("utf-8"))
 
-    print("game info sent!")
-
   def send_error(self, message):
+    print("\n\nsend_error : ", message)
+
     data = {'type': 'error', 'data': message, 'sid': self.sid}
     json_data = json.dumps(data)
     self.send_message(json_data.encode("utf-8"))
 
   def send_message(self, message):
-    print("send_message ", message)
+    print("\n\nsend_message :\t\t", message)
+
     self.connection.sendMessage(message)
 
-  def message_control(self, data):
+  def pass_message(self, data):
     self.message = data

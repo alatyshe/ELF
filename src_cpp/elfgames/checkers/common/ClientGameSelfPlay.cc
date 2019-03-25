@@ -272,11 +272,24 @@ void ClientGameSelfPlay::act() {
     std::cout << cs.showBoard() << std::endl;
 
 
-  if (_human_player != nullptr && cs.currentPlayer() == WHITE_PLAYER) {
+  if (_human_player != nullptr 
+        && cs.currentPlayer() == _game_options.human_plays_for) {
     do {
       CheckersFeature cf(cs);
       CheckersReply   creply(cf);
       _human_player->act(cf, &creply);
+
+      if (creply.c == -1) {
+        finish_game();
+        return;
+      } else if (creply.c == -2) {
+        if (_game_options.human_plays_for == BLACK_PLAYER)
+          _game_options.human_plays_for = WHITE_PLAYER;
+        else
+          _game_options.human_plays_for = BLACK_PLAYER;
+        finish_game();
+        return;
+      }
 
       if (_checkers_state_ext.forward(creply.c)) {
         if (cs.terminated()) {
@@ -360,13 +373,11 @@ void ClientGameSelfPlay::act() {
   }
 }
 
-
-
-
-
-// DELETE DELETE DELETE DELETE DELETE DELETE DELETE DELETE 
-// DELETE DELETE DELETE DELETE DELETE DELETE DELETE DELETE 
-std::string ClientGameSelfPlay::getBoard() const {
+// Gui
+std::array<std::array<int, 8>, 8> ClientGameSelfPlay::getBoard() const {
   return _checkers_state_ext.state().getBoard();
 }
 
+int ClientGameSelfPlay::getCurrentPlayer() const {
+  return _checkers_state_ext.state().currentPlayer();
+}

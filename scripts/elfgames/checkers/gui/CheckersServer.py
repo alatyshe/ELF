@@ -15,45 +15,44 @@ from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 class WebSocketServerClient(WebSocket):
   gui = None
   connection = None
+  game_storage = {}
+
+  def handleConnected(self):
+    self.connection = self
 
   def handleMessage(self):
-    print("handle message: ", self.data)
+    print("\n\nhandleMessage  :\t", self.data)
 
-    if self.gui is not None:
-      self.gui.message_control(self.data)
+    # Работающее в потоке gui, передаем ему таким способом дату
+    if self.gui:
+      self.gui.pass_message(self.data)
       return
 
     if self.connection:
+      print("self.connection != None")
       json_message = json.loads(self.data)
 
       if json_message["type"] == "get_state":
-        if "sid" in json_message:
-          sid = json_message["sid"]
-          if sid in game_storage:
-            print("load game from game storage")
-            start_new_thread(self.build_game, (game_storage[sid], sid))
-            return
+        # get id of game
+        if "sid" in json_message and json_message["sid"] in self.game_storage:
+          pass
 
         print("build new game")
-
-        sid = self.generate_new_sid()
-        game_storage[sid] = GC
-
+        sid = "sid_" + uuid.uuid4().hex[:8]
         start_new_thread(self.build_game, (GC, sid))
 
-  def generate_new_sid(self):
-    return "sid_" + uuid.uuid4().hex[:8]
-
-  def handleConnected(self):
-    print(self.address, ' connected')
-    self.connection = self
 
   def handleClose(self):
+    print("\n\nhandleClose")
+
     if self.gui is not None:
-      self.gui.interrupt()
+      print("self.gui is not None")
+      self.gui.exit()
+      print("fuck")
+
 
   def build_game(self, GC, sid):
-    print("build game")
+    print("\n\nbuild game")
 
     self.gui = CheckersGui(GC, evaluator, self.connection, sid)
 
@@ -68,6 +67,7 @@ class WebSocketServerClient(WebSocket):
     GC.reg_callback_if_exists("human_actor", human_actor)
     GC.reg_callback_if_exists("checkers_actor_black", actor)
     GC.start()
+
     # Tells the С++ side the model version
     GC.GC.getClient().setRequest(
       mi["actor"].step, -1, -1)
@@ -89,7 +89,6 @@ class WebSocketServerClient(WebSocket):
 
 
 if __name__ == "__main__":
-  game_storage = {}
 
   """
     Class Evaluator is a pure python class, 

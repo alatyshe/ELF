@@ -13,6 +13,8 @@ struct CheckersGameOptions {
   unsigned int seed;
   int checkers_num_future_actions = 0;
 
+  int human_plays_for = 0;
+
   // For offline training,
   //    This means how many games to open simultaneously per thread?
   //    When sending current situations, randomly select one to break any
@@ -231,5 +233,6 @@ struct CheckersGameOptions {
       white_mcts_rollout_per_thread,
       eval_thres,
       keep_prev_selfplay,
-      expected_num_clients);
+      expected_num_clients,
+      human_plays_for);
 };

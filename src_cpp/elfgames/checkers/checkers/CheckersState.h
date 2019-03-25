@@ -78,19 +78,19 @@ class CheckersState {
   // }
 
   // delete!!!!!!
-  std::string getBoard() const {
-    std::stringstream ss;
-    std::string board = "";
-    std::array<std::array<int, 8>, 8> state = GetTrueState(_board);
+  std::array<std::array<int, 8>, 8> getBoard() const {
+    // std::stringstream ss;
+    // std::string board = "";
+    return GetTrueState(_board);
 
-    for (int y = 0; y < 8; y++) {
-      for (int x = 0; x < 8; x++) {
-        board += std::to_string(state[y][x]) + " ";
-      }
-      board += "\n";
-    }
-    ss << board;
-    return (ss.str());
+    // for (int y = 0; y < 8; y++) {
+    //   for (int x = 0; x < 8; x++) {
+    //     board += std::to_string(state[y][x]) + " ";
+    //   }
+    //   board += "\n";
+    // }
+    // ss << board;
+    // return (ss.str());
   }
 
  protected:

@@ -208,7 +208,7 @@ def main():
 
   """
     This method is responsible for updating the model to the 
-    current one(received from the server) after starting . 
+    current one(received from the server) after starting. 
     Called by 'game_start' key from C++ side.
   """
   def game_start(batch):

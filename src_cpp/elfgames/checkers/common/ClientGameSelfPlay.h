@@ -68,8 +68,9 @@ class ClientGameSelfPlay : public GameBase {
   float getScore();
 
 
-  // delete this
-  std::string getBoard() const;
+  // Gui
+  std::array<std::array<int, 8>, 8> getBoard() const;
+  int getCurrentPlayer() const;
 
  private:
   MCTSCheckersAI* init_checkers_ai(

@@ -60,9 +60,9 @@ void registerPy(pybind11::module& m) {
   py::class_<ClientGameSelfPlay>(m, "ClientGameSelfPlay")
        // rl_checkers server methods
       .def("getBoard", &ClientGameSelfPlay::getBoard)
-      .def("isEnded", &ClientGameSelfPlay::isEnded)
 
       .def("showBoard", &ClientGameSelfPlay::showBoard)
+      .def("getCurrentPlayer", &ClientGameSelfPlay::getCurrentPlayer)
       // для игры в консоле
       .def("getValidMoves", &ClientGameSelfPlay::getValidMoves);
 }

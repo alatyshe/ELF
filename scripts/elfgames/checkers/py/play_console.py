@@ -125,7 +125,7 @@ def main():
       break
   
   # fix this for normal exit
-  sys.exit()
+  # sys.exit()
   
   GC.stop()
 

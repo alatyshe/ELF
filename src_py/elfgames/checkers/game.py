@@ -203,6 +203,10 @@ class Loader(object):
 			'When enabled, in selfplay mode the result of the game is random'
 			'This is used to test the framework',
 			False)
+		spec.addBoolOption(
+			'human_plays_for_black',
+			'',
+			False)
 		spec.addIntOption(
 			'suicide_after_n_games',
 			'return after n games have finished, -1 means it never ends',
@@ -279,6 +283,11 @@ class Loader(object):
 		game_opt.cheat_selfplay_random_result = \
 			self.options.cheat_selfplay_random_result
 
+		if self.options.human_plays_for_black:
+			game_opt.human_plays_for = 0
+		else:
+			game_opt.human_plays_for = 1
+
 		self.max_batchsize = max(
 			self.options.batchsize, self.options.batchsize2) \
 			if self.options.batchsize2 > 0 \
@@ -336,7 +345,6 @@ class Loader(object):
 						"checkers_black_ver"],
 				reply=None
 			)
-
 			# checkers
 			desc["checkers_actor_white"] = dict(
 				input=["checkers_s"],
