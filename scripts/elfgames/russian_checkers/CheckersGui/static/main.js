@@ -8,7 +8,7 @@ function DisplayBoard(boardData){
   $("#onLoad").css("z-index", "-1")
   $("#onLoad").css("background-color", "rgba(10, 10, 10, 0.0)")
 
-  if(boardData["rotate"]) {
+  if(boardData["rotate"] == 1) {
     $("#chessboard").css("transform","rotate(180deg)");
   } else {
     $("#chessboard").css("transform","rotate(0deg)");

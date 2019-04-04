@@ -1,6 +1,6 @@
 .PHONY: all
-all: elf elfgames/checkers
-# all: elf elfgames/russian_checkers
+# all: elf elfgames/checkers elfgames/russian_checkers
+all: elf elfgames/russian_checkers
 
 .PHONY: clean
 clean:

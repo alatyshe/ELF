@@ -7,8 +7,6 @@ import json
 from time import sleep
 
 sys.path.append('..')
-from py.CheckersMoves import get_all_moves
-
 
 def is_even(num):
     return num % 2 == 0

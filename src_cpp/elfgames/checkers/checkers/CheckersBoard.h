@@ -86,19 +86,16 @@ typedef struct {
 } CheckersBoard;
 
 bool CheckersTryPlay(CheckersBoard board, Coord c);
-bool CheckersPlay(CheckersBoard *board, int64_t action);
 bool CheckersIsOver(CheckersBoard board);
-float CheckersEvalBoard(CheckersBoard board, int player);
-
+bool CheckersPlay(CheckersBoard *board, int64_t action);
 void ClearBoard(CheckersBoard *board);
+
 void CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src);
 
-std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int player);
-std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoard board, int player);
-
-std::array<std::array<int, 8>, 8> GetTrueState(const CheckersBoard board);
-std::array<std::array<int, 8>, 8> GetObservation(const CheckersBoard board, int player);
-std::string GetTrueStateStr(const CheckersBoard board);
+std::array<int, TOTAL_NUM_ACTIONS>  GetValidMovesBinary(CheckersBoard board);
+std::array<std::array<int, 8>, 8>   GetTrueObservation(const CheckersBoard board);
+std::array<std::array<int, 8>, 8>   GetObservation(const CheckersBoard board, int player);
+std::string                         GetTrueObservationStr(const CheckersBoard board);
 // std::string get_state_str(const CheckersBoard *board, int player);
 
 // board logic

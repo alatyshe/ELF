@@ -6,50 +6,48 @@
   and each turn represent by a number. 
   Also take a look at HashAllMoves.h
 """
-def get_all_moves():
+def get_all_moves_russian_checkers():
   UNUSED_BITS = 0b100000000100000000100000000100000000
-
-  # jumps
-  # rfj - right front jump
-  rfj = 0b100000000111101110111101110111101110 ^ UNUSED_BITS
-  lfj = 0b100000000101110111101110111101110111 ^ UNUSED_BITS
-  rbj = 0b101110111101110111101110111100000000 ^ UNUSED_BITS
-  lbj = 0b111101110111101110111101110100000000 ^ UNUSED_BITS
+  
   # code of jump
-  rfj_cod = [-0x101 << i for (i, bit) in enumerate(bin(rfj)[::-1]) if bit == '1']
-  lfj_cod = [-0x401 << i for (i, bit) in enumerate(bin(lfj)[::-1]) if bit == '1']
-  rbj_cod = [-0x101 << i - 8 for (i, bit) in enumerate(bin(rbj)[::-1]) if bit == '1']
-  lbj_cod = [-0x401 << i - 10 for (i, bit) in enumerate(bin(lbj)[::-1]) if bit == '1']
-  # Save it in native coords
-  rfj_pos = [(1 + i - i // 9, 1 + (i + 8) - (i + 8) // 9) for (i, bit) in enumerate(bin(rfj)[::-1]) if bit == '1']
-  lfj_pos = [(1 + i - i // 9, 1 + (i + 10) - (1 + i + 8) // 9) for (i, bit) in enumerate(bin(lfj)[::-1]) if
-         bit == '1']
-  rbj_pos = [(1 + i - i // 9, 1 + (i - 8) - (i - 8) // 9) for (i, bit) in enumerate(bin(rbj)[::-1]) if bit == '1']
-  lbj_pos = [(1 + i - i // 9, 1 + (i - 10) - (i - 10) // 9) for (i, bit) in enumerate(bin(lbj)[::-1]) if bit == '1']
+  #      0b100000000100000000100000000100000000
+  rf_0 = 0b100001111111101111111101111111101111 ^ UNUSED_BITS
+  rf_1 = 0b100000000111101110111101110111101110 ^ UNUSED_BITS
+  rf_2 = 0b100000000100001110111001110111001110 ^ UNUSED_BITS
+  rf_3 = 0b100000000100000000111001100111001100 ^ UNUSED_BITS
+  rf_4 = 0b100000000100000000100001100110001100 ^ UNUSED_BITS
+  rf_5 = 0b100000000100000000100000000110001000 ^ UNUSED_BITS
+  rf_6 = 0b100000000100000000100000000100001000 ^ UNUSED_BITS
+  #            0b000100010001000100010001000100010001
+  rf_cod_0  = [0b000000000000000000000000000000010001 << i for (i, bit) in enumerate(bin(rf_0)[::-1]) if bit == '1']
+  rf_cod_1  = [0b000000000000000000000000000100000001 << i for (i, bit) in enumerate(bin(rf_1)[::-1]) if bit == '1']
+  rf_cod_2  = [0b000000000000000000000001000000000001 << i for (i, bit) in enumerate(bin(rf_2)[::-1]) if bit == '1']
+  rf_cod_3  = [0b000000000000000000010000000000000001 << i for (i, bit) in enumerate(bin(rf_3)[::-1]) if bit == '1']
+  rf_cod_4  = [0b000000000000000100000000000000000001 << i for (i, bit) in enumerate(bin(rf_4)[::-1]) if bit == '1']
+  rf_cod_5  = [0b000000000001000000000000000000000001 << i for (i, bit) in enumerate(bin(rf_5)[::-1]) if bit == '1']
+  rf_cod_6  = [0b000000010000000000000000000000000001 << i for (i, bit) in enumerate(bin(rf_6)[::-1]) if bit == '1']
 
-  # moves
-  rf = 0b100001111111101111111101111111101111 ^ UNUSED_BITS
-  lf = 0b100000111111110111111110111111110111 ^ UNUSED_BITS
-  rb = 0b111110111111110111111110111111110000 ^ UNUSED_BITS
-  lb = 0b111101111111101111111101111111100000 ^ UNUSED_BITS
-  # code of jump
-  rf_cod = [0x11 << i for (i, bit) in enumerate(bin(rf)[::-1]) if bit == '1']
-  lf_cod = [0x21 << i for (i, bit) in enumerate(bin(lf)[::-1]) if bit == '1']
-  rb_cod = [0x11 << i - 4 for (i, bit) in enumerate(bin(rb)[::-1]) if bit == '1']
-  lb_cod = [0x21 << i - 5 for (i, bit) in enumerate(bin(lb)[::-1]) if bit == '1']
-  # Save it in native coords
-  rf_pos = [(1 + i - i // 9, 1 + (i + 4) - (i + 4) // 9) for (i, bit) in enumerate(bin(rf)[::-1]) if bit == '1']
-  lf_pos = [(1 + i - i // 9, 1 + (i + 5) - (i + 5) // 9) for (i, bit) in enumerate(bin(lf)[::-1]) if bit == '1']
-  rb_pos = [(1 + i - i // 9, 1 + (i - 4) - (i - 4) // 9) for (i, bit) in enumerate(bin(rb)[::-1]) if bit == '1']
-  lb_pos = [(1 + i - i // 9, 1 + (i - 5) - (i - 5) // 9) for (i, bit) in enumerate(bin(lb)[::-1]) if bit == '1']
+  #      0b100000000100000000100000000100000000
+  lf_0 = 0b100000111111110111111110111111110111 ^ UNUSED_BITS
+  lf_1 = 0b100000000101110111101110111101110111 ^ UNUSED_BITS
+  lf_2 = 0b100000000100000011101110011101110011 ^ UNUSED_BITS
+  lf_3 = 0b100000000100000000100110011100110011 ^ UNUSED_BITS
+  lf_4 = 0b100000000100000000100000001100110001 ^ UNUSED_BITS
+  lf_5 = 0b100000000100000000100000000100010001 ^ UNUSED_BITS
+  #           0b000001000010000100001000010000100001
+  lf_cod_0 = [0b000000000000000000000000000000100001 << i for (i, bit) in enumerate(bin(lf_0)[::-1]) if bit == '1']
+  lf_cod_1 = [0b000000000000000000000000010000000001 << i for (i, bit) in enumerate(bin(lf_1)[::-1]) if bit == '1']
+  lf_cod_2 = [0b000000000000000000001000000000000001 << i for (i, bit) in enumerate(bin(lf_2)[::-1]) if bit == '1']
+  lf_cod_3 = [0b000000000000000100000000000000000001 << i for (i, bit) in enumerate(bin(lf_3)[::-1]) if bit == '1']
+  lf_cod_4 = [0b000000000010000000000000000000000001 << i for (i, bit) in enumerate(bin(lf_4)[::-1]) if bit == '1']
+  lf_cod_5 = [0b000001000000000000000000000000000001 << i for (i, bit) in enumerate(bin(lf_5)[::-1]) if bit == '1']
 
-  all_jumps_cod = rfj_cod + lfj_cod + rbj_cod + lbj_cod
-  all_jumps_pos = rfj_pos + lfj_pos + rbj_pos + lbj_pos
-  all_moves_cod = rf_cod + lf_cod + rb_cod + lb_cod
-  all_moves_pos = rf_pos + lf_pos + rb_pos + lb_pos
+  rb = rf_cod_0 + rf_cod_1 + rf_cod_2 + rf_cod_3 + rf_cod_4 + rf_cod_5 + rf_cod_6
+  lb = lf_cod_0 + lf_cod_1 + lf_cod_2 + lf_cod_3 + lf_cod_4 + lf_cod_5
+  rf = rf_cod_0 + rf_cod_1 + rf_cod_2 + rf_cod_3 + rf_cod_4 + rf_cod_5 + rf_cod_6
+  lf = lf_cod_0 + lf_cod_1 + lf_cod_2 + lf_cod_3 + lf_cod_4 + lf_cod_5
 
-  total_moves_cod = all_moves_cod + all_jumps_cod
-  total_moves_pos = all_moves_pos + all_jumps_pos
+  total_moves_cod = rf + lf + rb + lb
 
   all_moves = []
 

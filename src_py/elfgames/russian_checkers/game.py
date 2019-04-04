@@ -223,13 +223,13 @@ class Loader(object):
 
 
 	def _set_params(self):
-		co = checkers.ContextOptions()
+		co = russian_checkers.ContextOptions()
 		self.context_args.initialize(co)
 		co.job_id = os.environ.get("job_id", "local")
 		if self.options.parameter_print:
 			co.print()
 
-		game_opt = checkers.CheckersGameOptions()
+		game_opt = russian_checkers.CheckersGameOptions()
 
 		game_opt.seed = 0
 		game_opt.list_files = self.options.list_files
@@ -294,7 +294,7 @@ class Loader(object):
 			else self.options.batchsize
 		co.batchsize = self.max_batchsize
 
-		GC = checkers.GameContext(co, game_opt)
+		GC = russian_checkers.GameContext(co, game_opt)
 
 		if self.options.parameter_print:
 			print("************ CheckersGameOptions ************")

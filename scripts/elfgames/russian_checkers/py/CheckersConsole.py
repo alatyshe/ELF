@@ -8,7 +8,7 @@ import inspect
 import traceback
 from collections import Counter
 
-from CheckersMoves import get_all_moves
+from CheckersMoves import get_all_moves_russian_checkers
 
 class CheckersConsole:
   def on_genmove(self, batch, items, reply):
@@ -24,7 +24,7 @@ class CheckersConsole:
     self.exit = False
     self.GC = GC
     self.evaluator = evaluator
-    self.moves_for_human = get_all_moves()
+    self.moves_for_human = get_all_moves_russian_checkers()
 
     self.commands = {
       key[3:]: func

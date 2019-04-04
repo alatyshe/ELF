@@ -31,7 +31,7 @@ void CheckersState::reset() {
 std::string CheckersState::showBoard() const {
   std::stringstream ss;
 
-  ss  << GetTrueStateStr(_board);
+  ss  << GetTrueObservationStr(_board);
   ss  << "[" << _board.forward[0]
       << "][" << _board.forward[1]
       << "][" << _board.backward[0]

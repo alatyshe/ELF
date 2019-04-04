@@ -15,7 +15,7 @@ from time import sleep
 from _thread import start_new_thread
 from CheckersGui import boardToJsonCheckers
 from rlpytorch import Evaluator, load_env
-from py.CheckersMoves import get_all_moves
+from py.CheckersMoves import get_all_moves_russian_checkers
 
 from flask import Flask, session, redirect, url_for, request, render_template
 import json
@@ -42,7 +42,7 @@ env = load_env(
 all_session = {}
 
 
-moves_for_human = get_all_moves()
+moves_for_human = get_all_moves_russian_checkers()
 
 
 def init_observation(player_id):
@@ -251,98 +251,4 @@ def logout():
 
 
 if __name__ == '__main__':
-  app.run(host='188.163.246.34', debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# app = Flask(__name__)
-
-# @app.route('/')
-# def initRoute():
-#   return app.send_static_file('index.html')
-
-# @app.route('/resetBoard')
-# def resetBoard():
-#   global all_session[user_id]["response_filled"], status_ated, all_session[user_id]["reply"], all_session[user_id]["current_board"], all_session[user_id]["current_valid_moves"], all_session[user_id]["current_player"]
-
-#   start_new_thread(init_observation,())
-#   while not all_session[user_id]["status_updated"]:
-#     sleep(0.2)
-#   all_session[user_id]["status_updated"] = False
-#   return json.dumps(boardToJsonCheckers(all_session[user_id]["current_board"], all_session[user_id]["current_valid_moves"], all_session[user_id]["current_player"]))
-
-# # Получаем Message от index.html
-# # Получаем доску, делаем шаг и отправляем доску на js
-# @app.route('/getRequest', methods=['POST'])
-# def getRequest():
-#   global all_session[user_id]["response_filled"], all_session[user_id]["status_updated"], all_session[user_id]["reply"], all_session[user_id]["current_board"], all_session[user_id]["current_valid_moves"], all_session[user_id]["current_player"]
-
-#   result = request.get_json()
-
-#   # print("result['move_from'] :\t", result["move_from"])
-#   # print("result['move_to'] :\t", result["move_to"])
-
-#   # for key in all_session[user_id]["current_valid_moves"]
-#   if "reset" in result:
-#     all_session[user_id]["reply"]["a"] = result["reset"]
-#   elif "changeSide" in result:
-#     all_session[user_id]["reply"]["a"] = result["changeSide"]
-#   else:
-#     for i in all_session[user_id]["current_valid_moves"]:
-#       if all_session[user_id]["current_valid_moves"][i][0] == result["move_from"] \
-#         and all_session[user_id]["current_valid_moves"][i][1] == result["move_to"]:
-#         all_session[user_id]["reply"]["a"] = i
-#         break
-
-#   all_session[user_id]["response_filled"] = True
-  
-
-#   while not all_session[user_id]["status_updated"]:
-#     sleep(0.2)
-#   all_session[user_id]["status_updated"] = False
-
-#   # отправляем обратно доску
-#   return json.dumps(boardToJsonCheckers(all_session[user_id]["current_board"], all_session[user_id]["current_valid_moves"], all_session[user_id]["current_player"]))
-
-
-
-# if __name__ == '__main__':
-#   app.run(host='188.163.246.34', debug=True)
+  app.run(host='188.163.246.46', debug=True)

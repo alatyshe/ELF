@@ -251,7 +251,7 @@ def logout():
 
 
 if __name__ == '__main__':
-  app.run(host='188.163.246.34', debug=True)
+  app.run(host='188.163.246.46', debug=True)
 
 
 

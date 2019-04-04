@@ -323,7 +323,6 @@ class Model_PolicyValue(Model):
 
 	
 	def forward(self, x):
-		# print("FORWARD")
 		# приводим в нормальный вид
 		s = self._var(x["checkers_s"])
 		s = self.init_conv(s)
@@ -340,7 +339,6 @@ class Model_PolicyValue(Model):
 		V = self.relu(self.value_linear1(V.view(-1, d)))
 		V = self.value_linear2(V)
 		V = self.tanh(V)
-
 		return dict(logpi=logpi, pi=pi, checkers_V=V)
 
 

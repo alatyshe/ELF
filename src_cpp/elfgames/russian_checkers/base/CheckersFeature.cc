@@ -56,9 +56,13 @@ void CheckersFeature::extract(std::vector<float>* features) const {
 
 void CheckersFeature::extract(float* features) const {
   const CheckersBoard* _board = &s_.board();
+  int passive_player, active_player;
 
-  int active_player = _board->active;
-  int passive_player = _board->passive;
+  active_player = _board->current_player;
+  if (active_player == WHITE_PLAYER)
+    passive_player = BLACK_PLAYER;
+  else 
+    passive_player = WHITE_PLAYER;
 
   std::fill(features, features + CHECKERS_NUM_FEATURES * kBoardRegion, 0.0);
 

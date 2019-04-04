@@ -1,12 +1,29 @@
-#pragma once
+#pragma once 
 
+#include <iostream>
+#include <sstream>
 #include <queue>
 #include <vector>
 #include <memory.h>
 #include <iomanip>
 
-// checkers
 #include "HashAllMoves.h"
+
+#define UP 1
+#define DOWN -1
+#define LEFT -1
+#define RIGHT 1
+
+#define EMPTY 0
+
+#define WHITE_PLAYER  1
+#define WHITE_PAWN    1
+#define WHITE_KING    3
+
+#define BLACK_PLAYER  -1
+#define BLACK_PAWN    -1
+#define BLACK_KING    -3
+
 
 #define BLACK_C   "\u001b[30m"
 #define RED_C     "\u001b[31m"
@@ -28,19 +45,16 @@
 
 #define COLOR_END "\u001b[0m"
 
-
 // special moves
-# define M_INVALID 171
+# define M_INVALID 281
 
-# define MAX_CHECKERS_HISTORY 1
 # define CHECKERS_BOARD_SIZE 8
-# define TOTAL_PLAYERS 2
 
 // number of layers
 // (our pawns, our kings, enemy pawns, enemy kings, black move, white move)
 constexpr uint64_t CHECKERS_NUM_FEATURES = 6;
-// for american checkers total num of actions for board will be 170
-constexpr uint64_t TOTAL_NUM_ACTIONS = 170;
+// for american checkers total num of actions for board will be 280
+constexpr uint64_t TOTAL_NUM_ACTIONS = 280;
 // Max move for game
 constexpr int TOTAL_MAX_MOVE = 250;
 // max num of repeat moves for board
@@ -49,70 +63,57 @@ constexpr int REPEAT_MOVE = 4;
 // action index;
 typedef unsigned short  Coord;
 
-#define BLACK_PLAYER 0
-#define WHITE_PLAYER 1
-
-#define BLACK_KING 2
-#define WHITE_KING 3
-
-// mask for fill the board(board stores in 6 int64_t)
-#define UNUSED_BITS 0b100000000100000000100000000100000000
-#define MASK 0b111111111111111111111111111111111111
 
 typedef struct {
-  // board
-  std::array<int64_t, 2> forward;
-  std::array<int64_t, 2> backward;
-  std::array<int64_t, 2> pieces;
-  int64_t empty;
+  int   board[8][8];
+  int   current_player;
+  bool  game_ended;
 
-  // active player
-  int active;
-  int passive;
-  // beat
-  int jump;
+  int   next_bit_y;
+  int   next_bit_x;
 
-  int _last_move;
-  // move num
-  int _ply;
-
-  // last move for player(move, move direction)
-  std::array<int64_t, 2> _last_move_black;
-  std::array<int64_t, 2> _last_move_white;
-  bool _remove_step_black;
-  bool _remove_step_white;
-  int _black_repeats_step;
-  int _white_repeats_step;
+  // last move id
+  int   _last_move;
+  // move number
+  int   _ply;
 } CheckersBoard;
 
-bool CheckersTryPlay(CheckersBoard board, Coord c);
-bool CheckersPlay(CheckersBoard *board, int64_t action);
-bool CheckersIsOver(CheckersBoard board);
-float CheckersEvalBoard(CheckersBoard board, int player);
 
-void ClearBoard(CheckersBoard *board);
-void CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src);
 
-std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int player);
-std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoard board, int player);
 
-std::array<std::array<int, 8>, 8> GetTrueState(const CheckersBoard board);
-std::array<std::array<int, 8>, 8> GetObservation(const CheckersBoard board, int player);
-std::string GetTrueStateStr(const CheckersBoard board);
-// std::string get_state_str(const CheckersBoard *board, int player);
+bool  CheckersTryPlay(CheckersBoard board, Coord action);
+bool  CheckersIsOver(CheckersBoard board);
+void  CheckersPlay(CheckersBoard *board, Coord action_index);
+void  ClearBoard(CheckersBoard *board);
 
-// board logic
-int64_t _right_forward(CheckersBoard board);
-int64_t _left_forward(CheckersBoard board);
-int64_t _right_backward(CheckersBoard board);
-int64_t _left_backward(CheckersBoard board);
-int64_t _right_forward_jumps(CheckersBoard board);
-int64_t _left_forward_jumps(CheckersBoard board);
-int64_t _right_backward_jumps(CheckersBoard board);
-int64_t _left_backward_jumps(CheckersBoard board);
-int64_t _get_move_direction(CheckersBoard board, int64_t move, int player);
-std::vector<int64_t> _get_moves(CheckersBoard board);
-std::vector<int64_t> _get_jumps(CheckersBoard board);
-std::vector<int64_t> _jumps_from(CheckersBoard board, int64_t piece);
+void  CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src);
+
+std::vector<std::array<int, 2>> getAllMoves(CheckersBoard board);
+
+std::array<int, TOTAL_NUM_ACTIONS>  GetValidMovesBinary(CheckersBoard board);
+std::array<std::array<int, 8>, 8>   GetTrueObservation(const CheckersBoard board);
+std::array<std::array<int, 8>, 8>   GetObservation(const CheckersBoard board, int player);
+std::string GetTrueObservationStr(const CheckersBoard board);
+
+
+
+bool                            _coordOverflow(int num);
+std::vector<std::array<int, 2>> _pawnMoves(CheckersBoard board, int y, int x);
+
+std::vector<std::array<int, 2>> _kingMoves(CheckersBoard board, int y, int x);
+bool                            _kingJumpCheck(CheckersBoard board, int y, int x, int dir_y, int dir_x);
+std::vector<std::array<int, 2>> _kingJumpInDirection(CheckersBoard board, int y, int x, int dir_y, int dir_x);
+std::vector<std::array<int, 2>> _kingJumps(CheckersBoard board, int y, int x);
+
+std::vector<std::array<int, 2>> _pawnJumps(CheckersBoard board, int y, int x);
+std::array<int, 2>              _pawnJumpInDirection(CheckersBoard board, int y, int x, int dir_y, int dir_x);
+
+
+void                            _tryConvertIntoKing(CheckersBoard *board, int y, int x);
+
+
+
+
+
 
 

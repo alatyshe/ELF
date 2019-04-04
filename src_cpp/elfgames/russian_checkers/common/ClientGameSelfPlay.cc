@@ -31,8 +31,7 @@ std::string ClientGameSelfPlay::showBoard() const {
 }
 
 std::array<int, TOTAL_NUM_ACTIONS> ClientGameSelfPlay::getValidMoves() const {
-  return GetValidMovesBinary(_checkers_state_ext.state().board(), 
-    _checkers_state_ext.state().board().active);
+  return GetValidMovesBinary(_checkers_state_ext.state().board());
 }
 
 float ClientGameSelfPlay::getScore() {
@@ -247,6 +246,12 @@ bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* repl
   }
 }
 
+
+
+
+
+
+
 void ClientGameSelfPlay::act() {
   if (_online_counter % 5 == 0) {
     using std::placeholders::_1;
@@ -271,7 +276,6 @@ void ClientGameSelfPlay::act() {
   if (_human_player != nullptr)
     std::cout << cs.showBoard() << std::endl;
 
-
   if (_human_player != nullptr 
         && cs.currentPlayer() == _game_options.human_plays_for) {
     do {
@@ -280,6 +284,7 @@ void ClientGameSelfPlay::act() {
       _human_player->act(cf, &creply);
 
       if (creply.c == -1) {
+        std::cout << "yeah" << std::endl;
         finish_game();
         return;
       } else if (creply.c == -2) {
@@ -329,7 +334,6 @@ void ClientGameSelfPlay::act() {
       return;
     }
   }
-
   int current_player = cs.currentPlayer();
   Coord move = M_INVALID;
 
@@ -343,7 +347,7 @@ void ClientGameSelfPlay::act() {
   MCTSCheckersAI* curr_ai =
     ((checkers_ai2 != nullptr && current_player == WHITE_PLAYER) 
       ? checkers_ai2.get() : checkers_ai1.get());
-  
+
   // use_policy_network_only = true;
   if (use_policy_network_only) {
     // Then we only use policy network to move.
@@ -352,6 +356,7 @@ void ClientGameSelfPlay::act() {
     curr_ai->act(cs, &move);
     move = mcts_make_diverse_move(curr_ai, move);
   }
+
 
   move = mcts_update_info(curr_ai, move);
 

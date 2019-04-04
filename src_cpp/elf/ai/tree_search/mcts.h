@@ -107,8 +107,8 @@ class MCTSAI_T : public AI_T<typename Actor::State, typename Actor::Action> {
   bool actPolicyOnly(const State& s, Action* a) {
     align_state(s);
     lastResult_ = ts_->runPolicyOnly(s);
-
     *a = lastResult_.best_action;
+    
     return true;
   }
 
