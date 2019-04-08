@@ -199,7 +199,6 @@ std::vector<std::array<int, 2>> getJumps(CheckersBoard board) {
         if (board.board[y][x] == pawn) {
           tmp = _pawnJumps(board, y, x);
         } else {
-          std::cout << "KING JUMPS : " << std::endl;
           tmp = _kingJumps(board, y, x);
         }
 
@@ -514,7 +513,6 @@ std::vector<std::array<int, 2>> _kingJumpInDirection(CheckersBoard board, int y,
         || _kingJumpCheck(board, dest_y, dest_x, UP, RIGHT)
         || _kingJumpCheck(board, dest_y, dest_x, DOWN, LEFT)
         || _kingJumpCheck(board, dest_y, dest_x, DOWN, RIGHT)){
-      std::cout << "YEAH FUCK" << std::endl;
 
       jumps.clear();
       dest = dest_y * 8 + dest_x;
@@ -538,28 +536,24 @@ std::vector<std::array<int, 2>> _kingJumps(CheckersBoard board, int y, int x) {
   std::vector<std::array<int, 2>> buff;
 
   buff = _kingJumpInDirection(board, y, x, UP, LEFT);
-  std::cout << "1 : " << buff.size() << std::endl;
   moves.insert(
     moves.end(),
     std::make_move_iterator(buff.begin()),
     std::make_move_iterator(buff.end()));
   
   buff = _kingJumpInDirection(board, y, x, UP, RIGHT);
-  std::cout << "2 : " << buff.size() << std::endl;
   moves.insert(
     moves.end(),
     std::make_move_iterator(buff.begin()),
     std::make_move_iterator(buff.end()));
 
   buff = _kingJumpInDirection(board, y, x, DOWN, LEFT);
-  std::cout << "3 : " << buff.size() << std::endl;
   moves.insert(
     moves.end(),
     std::make_move_iterator(buff.begin()),
     std::make_move_iterator(buff.end()));
   
   buff = _kingJumpInDirection(board, y, x, DOWN, RIGHT);
-  std::cout << "4 : " << buff.size() << std::endl;
   moves.insert(
     moves.end(),
     std::make_move_iterator(buff.begin()),

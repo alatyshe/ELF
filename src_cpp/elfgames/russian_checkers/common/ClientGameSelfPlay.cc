@@ -284,7 +284,6 @@ void ClientGameSelfPlay::act() {
       _human_player->act(cf, &creply);
 
       if (creply.c == -1) {
-        std::cout << "yeah" << std::endl;
         finish_game();
         return;
       } else if (creply.c == -2) {

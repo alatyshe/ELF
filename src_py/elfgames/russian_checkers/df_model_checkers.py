@@ -14,8 +14,8 @@ import torch.distributed as dist
 from elf.options import auto_import_options, PyOptionSpec
 from rlpytorch import Model
 
-from elfgames.checkers.mcts_prediction import MCTSPrediction
-from elfgames.checkers.multiple_prediction import MultiplePrediction
+from elfgames.russian_checkers.mcts_prediction import MCTSPrediction
+from elfgames.russian_checkers.multiple_prediction import MultiplePrediction
 
 
 class Block(Model):
@@ -324,7 +324,9 @@ class Model_PolicyValue(Model):
 	
 	def forward(self, x):
 		# приводим в нормальный вид
+		
 		s = self._var(x["checkers_s"])
+		# print("state shape : ", s.shape)
 		s = self.init_conv(s)
 
 		s = self.resnet(s)
@@ -339,6 +341,7 @@ class Model_PolicyValue(Model):
 		V = self.relu(self.value_linear1(V.view(-1, d)))
 		V = self.value_linear2(V)
 		V = self.tanh(V)
+		# print("pi shape : ", pi.shape)
 		return dict(logpi=logpi, pi=pi, checkers_V=V)
 
 

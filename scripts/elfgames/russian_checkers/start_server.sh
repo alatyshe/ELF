@@ -42,17 +42,17 @@ model=df_kl model_file=elfgames.russian_checkers.df_model_checkers \
 	--keep_prev_selfplay \
 	\
 	--selfplay_async \
-	--q_min_size 200				--q_max_size 2000		--num_reader 50 \
+	--q_min_size 200				--q_max_size 2000		--num_reader 10 \
 	\
-	--selfplay_init_num 1000 \
+	--selfplay_init_num 5000 \
 	--selfplay_update_num 1000 \
 	\
 	--eval_winrate_thres 0.55 \
 	--eval_num_games 200 \
 	\
 	--verbose \
-
-	# 1>> server_log.log 2>&1 &
+	1>> server_log.log 2>&1 &
+	
 	# \
 	
 	# --tqdm \
