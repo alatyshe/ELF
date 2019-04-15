@@ -36,13 +36,18 @@ class ModelPerfomance {
 	ModelPerfomance(
 			const CheckersGameOptions& gameOptions,
 			const ClientManager& mgr,
-			const ModelPair& p)
+			const ModelPair& p,
+			int first_best,
+			int second_best)
 			: gameOptions_(gameOptions),
 				curr_pair_(p),
 				logger_(elf::logging::getIndexedLogger(
 							MAGENTA_B + std::string("|++|") + COLOR_END + 
 							"ModelPerfomance-", 
 							"")) {
+		first_best_ = first_best;
+		second_best_ = second_best;
+
 		const size_t cushion = 5;
 
 		// getExpectedNumEval() - returns number of clients who work in the eval mode.
@@ -113,7 +118,7 @@ class ModelPerfomance {
 		eval_result_ = eval_check();
 
 		if (n_done() > 0 && (sent_ % 50 == 0 || recv_ % 50 == 0)) {
-			logger_->info("{}EvalResult{}: {}\n", 
+			logger_->info("{}EvalStatus{}: {}\n", 
 				GREEN_C,
 				COLOR_END,
 				info());
@@ -121,7 +126,6 @@ class ModelPerfomance {
 
 		if (finished_ || eval_result_ == EVAL_INCOMPLETE)
 			return eval_result_;
-
 		set_finished();
 		return eval_result_;
 	}
@@ -174,7 +178,6 @@ class ModelPerfomance {
 		}
 		// number of requests sent 
 		sent_++;
-
 		if (sent_ % 50 == 0) {
 			logger_->info(
 					"{}Sending{} evaluation request #{}:  {}\n",
@@ -195,6 +198,9 @@ class ModelPerfomance {
 	}
 
  private:
+ 	int first_best_;
+ 	int second_best_;
+
 	const CheckersGameOptions&	gameOptions_;
 	const ModelPair							curr_pair_;
 
@@ -259,20 +265,22 @@ class ModelPerfomance {
 
 	void set_finished() {
 		// Save all games.
+		
 		finished_ = true;
+
 		logger_->info(
-				"{}Eval Finished{}[pass={}]{}\n Saved to file: {}\n\n",
+				"{}Eval Finished{}[pass={}]; first_best={}; second_best={} {}\n Saved to file: {}\n\n",
 				GREEN_B,
 				COLOR_END,
 				(eval_result_ == EVAL_BLACK_PASS),
+				first_best_,
+				second_best_,
 				info(),
 				record_.prefix_save_counter());
 		record_.saveCurrent();
 		record_.clear();
 	}
 };
-
-
 
 
 
@@ -292,14 +300,51 @@ class EvalSubCtrl {
 		mcts_opt_.root_alpha = 0.0;
 	}
 
+
+	// mutable std::mutex		=>	mutex_;
+	// CheckersGameOptions 	=>	gameOptions_;
+	// TSOptions						=>	mcts_opt_;
+	// int64_t							=>	best_baseline_model_ = -1;
+	// int64_t							=>	best_second_baseline_model_ = -1;
+	// std::vector<int64_t>	=>	models_to_eval_1_;
+	// std::unordered_map<ModelPair, std::unique_ptr<ModelPerfomance>> => perfs_;
+
 	int64_t updateState(const ClientManager& mgr) {
-		// Note that models_to_eval_ might change during the loop.
+		// Note that models_to_eval_1_ might change during the loop.
 		// So we need to make a copy.
 		std::lock_guard<std::mutex> lock(mutex_);
-		auto models_to_eval = models_to_eval_;
 
-		for (const auto& ver : models_to_eval) {
-			ModelPerfomance& perf = find_or_create(mgr, get_key(ver));
+		auto models_to_eval_1 = models_to_eval_1_;
+		for (const auto& ver : models_to_eval_1) {
+			ModelPerfomance& perf = find_or_create(mgr, get_key(ver, best_baseline_model_));
+
+			auto res = perf.updateState(mgr);
+			switch (res) {
+				case ModelPerfomance::EVAL_INVALID:
+					logger_->info("res cannot be EVAL_INVALID");
+					assert(false);
+				case ModelPerfomance::EVAL_INCOMPLETE:
+					break;
+				case ModelPerfomance::EVAL_BLACK_PASS:
+					if (best_second_baseline_model_ != -1){
+						remove_candidate_model(perf.Pair().black_ver);
+						models_to_eval_2_.push_back(ver);
+						break;
+					}
+					// Check whether we need to make a conclusion.
+					// Update reference.
+					return perf.Pair().black_ver;
+				case ModelPerfomance::EVAL_BLACK_NOTPASS:
+					// In any case, pick the next model to evaluate.
+					remove_candidate_model(perf.Pair().black_ver);
+					break;
+			}
+		}
+
+		// Сюда добавить второй цикл для второго этапа отбора
+		auto models_to_eval_2 = models_to_eval_2_;
+		for (const auto& ver : models_to_eval_2) {
+			ModelPerfomance& perf = find_or_create(mgr, get_key(ver, best_second_baseline_model_));
 
 			auto res = perf.updateState(mgr);
 			switch (res) {
@@ -348,33 +393,47 @@ class EvalSubCtrl {
 		// It uses the implicit heuristic that started from the oldest
 		// model first.
 		// Note that on_eval_status might change models_to_eval,
-		for (const auto& ver : models_to_eval_) {
-			ModelPerfomance& perf = find_or_create(info.getManager(), get_key(ver));
+		for (const auto& ver : models_to_eval_1_) {
+			ModelPerfomance& perf = find_or_create(info.getManager(), get_key(ver, best_baseline_model_));
 			perf.fillInRequest(info, msg);
 			if (!msg->vers.wait())
 				break;
 		}
+
+		// MY
+		for (const auto& ver : models_to_eval_2_) {
+			ModelPerfomance& perf = find_or_create(info.getManager(), get_key(ver, best_second_baseline_model_));
+			perf.fillInRequest(info, msg);
+			if (!msg->vers.wait())
+				break;
+		}
+
 	}
 
 	void setBaselineModel(int64_t ver) {
 		std::lock_guard<std::mutex> lock(mutex_);
-
+		
+		best_second_baseline_model_ = best_baseline_model_;
+		models_to_eval_2_.clear();
+		
 		best_baseline_model_ = ver;
-		models_to_eval_.clear();
+		models_to_eval_1_.clear();
+
 		// All perfs need to go away as well.
 		// perfs_.clear();
 	}
 
-	void addNewModelForEvaluation(int64_t selfplay_ver, int64_t new_version) {
+	void addNewModelForEvaluationEvalSubCtrl(int64_t selfplay_ver, int64_t new_version) {
 		std::lock_guard<std::mutex> lock(mutex_);
 
 		if (selfplay_ver == best_baseline_model_) {
 			if (selfplay_ver < new_version) {
 				logger_->info(
-						"Add new model for evaluation: {}, selfplay_ver: {}, baseline_ver: {}, eval_num_games={}\nTree Search Options :\n{}",
+						"Add new model for evaluation {} for comparison with {}; baseline_ver={}, second_baseline_ver={}, eval_num_games={}\nTree Search Options :\n{}",
 						new_version,
 						selfplay_ver,
 						best_baseline_model_,
+						best_second_baseline_model_,
 						gameOptions_.eval_num_games,
 						mcts_opt_.info(true));
 				add_candidate_model(new_version);
@@ -402,17 +461,20 @@ class EvalSubCtrl {
 	TSOptions							mcts_opt_;
 
 	int64_t								best_baseline_model_ = -1;
-	std::vector<int64_t>	models_to_eval_;
+	int64_t								best_second_baseline_model_ = -1;
+
+	std::vector<int64_t>	models_to_eval_1_;
+	std::vector<int64_t>	models_to_eval_2_;
 
 	std::unordered_map<ModelPair, std::unique_ptr<ModelPerfomance>> perfs_;
 
 	std::shared_ptr<spdlog::logger> logger_;
 
-	ModelPair get_key(int ver) {
+	ModelPair get_key(int ver, int best_vers) {
 		ModelPair p;
 		
 		p.black_ver = ver;
-		p.white_ver = best_baseline_model_;
+		p.white_ver = best_vers;
 		p.mcts_opt = mcts_opt_;
 		return p;
 	}
@@ -422,16 +484,26 @@ class EvalSubCtrl {
 		Returns false if the model for eval has been added earlier.
 	*/
 	bool add_candidate_model(int ver) {
-		auto it = perfs_.find(get_key(ver));
+		auto it = perfs_.find(get_key(ver, best_baseline_model_));
 		if (it == perfs_.end())
-			models_to_eval_.push_back(ver);
+			models_to_eval_1_.push_back(ver);
 		return it == perfs_.end();
 	}
 
 	bool remove_candidate_model(int ver) {
-		for (auto it = models_to_eval_.begin(); it != models_to_eval_.end(); ++it) {
+		// Удалаем из первого этапа сравнений
+		for (auto it = models_to_eval_1_.begin(); it != models_to_eval_1_.end(); ++it) {
 			if (*it == ver) {
-				models_to_eval_.erase(it);
+				models_to_eval_1_.erase(it);
+				// We don't remove records in perfs_.
+				return true;
+			}
+		}
+
+		// Удалаем из второго этапа сравнений
+		for (auto it = models_to_eval_2_.begin(); it != models_to_eval_2_.end(); ++it) {
+			if (*it == ver) {
+				models_to_eval_2_.erase(it);
 				// We don't remove records in perfs_.
 				return true;
 			}
@@ -444,7 +516,7 @@ class EvalSubCtrl {
 
 		if (it == perfs_.end()) {
 			auto& ptr = perfs_[mp];
-			ptr.reset(new ModelPerfomance(gameOptions_, mgr, mp));
+			ptr.reset(new ModelPerfomance(gameOptions_, mgr, mp, best_baseline_model_, best_second_baseline_model_));
 			return *ptr;
 		}
 		return *it->second;

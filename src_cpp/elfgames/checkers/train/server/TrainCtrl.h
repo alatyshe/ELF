@@ -58,15 +58,18 @@ class ThreadedCtrl : public ThreadedCtrlBase {
         client_(client),
         rng_(time(NULL)),
         logger_(elf::logging::getIndexedLogger(
-              MAGENTA_B + std::string("|++|") + COLOR_END + 
+              MAGENTA_B + std::string("|++|") + 
+              COLOR_END + 
               "ThreadedCtrl-", 
               "")) {
+
     selfplaySubCtrl_.reset(new SelfPlaySubCtrl(gameOptions_, mcts_opt));
     evalSubCtrl_.reset(new EvalSubCtrl(gameOptions_, mcts_opt));
 
     ctrl_.reg();
     ctrl_.addMailbox<_ModelUpdateStatus>();
   }
+
 
   void Start() {
     if (!ctrl_.isRegistered()) {
@@ -75,6 +78,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     ctrl_.addMailbox<_ModelUpdateStatus>();
     start<std::pair<Addr, int64_t>>();
   }
+
 
   void waitForSufficientSelfplay(int64_t selfplay_ver) {
     SelfPlaySubCtrl::CtrlResult res;
@@ -99,11 +103,13 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     }
   }
 
+
   void updateModel(int64_t new_model) {
     sendToThread(std::make_pair(ctrl_.getAddr(), new_model));
     _ModelUpdateStatus dummy;
     ctrl_.waitMail(&dummy);
   }
+
 
   bool checkNewModel(ClientManager* manager) {
     int64_t new_model = evalSubCtrl_->updateState(*manager);
@@ -117,8 +123,11 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     return false;
   }
 
+
   bool setInitialVersion(int64_t init_version) {
-    logger_->info("Setting init version: {}", init_version);
+    logger_->info("{}Setting init version: {}{}", 
+        MAGENTA_B, init_version, COLOR_END);
+
     evalSubCtrl_->setBaselineModel(init_version);
 
     if (selfplaySubCtrl_->getCurrModel() < 0) {
@@ -126,6 +135,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     }
     return true;
   }
+
 
   /* 
     Adds a new model for evaluation. 
@@ -142,8 +152,8 @@ class ThreadedCtrl : public ThreadedCtrlBase {
       //  selfplay_ver,
       //  new_version,
       //  gameOptions_.eval_num_games);
-      // eval_ - std::unique_ptr<EvalSubCtrl>
-      evalSubCtrl_->addNewModelForEvaluation(selfplay_ver, new_version);
+      // evalSubCtrl_ - std::unique_ptr<EvalSubCtrl>
+      evalSubCtrl_->addNewModelForEvaluationEvalSubCtrl(selfplay_ver, new_version);
       /*
         We expect the next batch from the client. 
         If it is offline_train, it means that we train on the data 
@@ -157,13 +167,16 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     }
   }
 
+
   void setEvalMode(int64_t new_ver, int64_t old_ver) {
-    logger_->info("setEvalMode old_ver:{}, new_ver:{}\n", old_ver, new_ver);
+    logger_->info("{}setEvalMode old_ver:{}, new_ver:{}{}\n", 
+        MAGENTA_B, old_ver, new_ver, COLOR_END);
 
     evalSubCtrl_->setBaselineModel(old_ver);
-    evalSubCtrl_->addNewModelForEvaluation(old_ver, new_ver);
+    evalSubCtrl_->addNewModelForEvaluationEvalSubCtrl(old_ver, new_ver);
     eval_mode_ = true;
   }
+
 
   // Call by writer thread.
   std::vector<FeedResult> onSelfplayGames(const std::vector<CheckersRecord>& records) {
@@ -178,6 +191,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     return res;
   }
 
+
   std::vector<FeedResult> onEvalGames(
       const ClientInfo& info,
       const std::vector<CheckersRecord>& records) {
@@ -190,6 +204,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     // std::cout << "onEvalGames len : " << res.size() << std::endl;
     return res;
   }
+
 
   void fillInRequest(const ClientInfo& info, MsgRequest* request) {
     request->vers.set_wait();
@@ -213,6 +228,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     }
   }
 
+
  protected:
   enum _ModelUpdateStatus { MODEL_UPDATED };
 
@@ -229,6 +245,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
  private:
   std::shared_ptr<spdlog::logger> logger_;
+
 
   /* 
     Reports python for a new, better model.
@@ -273,6 +290,11 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     client_->sendWait({"train_ctrl"}, &funcs);
   }
 };
+
+
+
+
+
 
 
 
@@ -324,6 +346,7 @@ class TrainCtrl : public DataInterface {
 
   }
 
+
   void OnStart() override {
     // Call by shared_rw thread or any thread that will call OnReceive.
     ctrl_.reg("train_ctrl");
@@ -331,13 +354,16 @@ class TrainCtrl : public DataInterface {
     threaded_ctrl_->Start();
   }
 
+
   ReplayBuffer* getReplayBuffer() {
     return replay_buffer_.get();
   }
 
+
   ThreadedCtrl* getThreadedCtrl() {
     return threaded_ctrl_.get();
   }
+
 
   bool setEvalMode(int64_t new_ver, int64_t old_ver) {
     logger_->info("Setting eval mode: new: {}, old: {}", new_ver, old_ver);
@@ -345,6 +371,7 @@ class TrainCtrl : public DataInterface {
     threaded_ctrl_->setEvalMode(new_ver, old_ver);
     return true;
   }
+
 
   /*
     Method for processing received messages(batches) from client.
@@ -413,6 +440,7 @@ class TrainCtrl : public DataInterface {
     return insert_info;
   }
 
+
   /*
     Tells the client which model to use 
     which mcts parameters to use 
@@ -432,6 +460,7 @@ class TrainCtrl : public DataInterface {
     info.incSeq();
     return true;
   }
+
 
  private:
   Ctrl& ctrl_;

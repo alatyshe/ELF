@@ -318,11 +318,11 @@ class Pick {
 	std::string info() const {
 		std::stringstream ss;
 
+		ss << "\nWin count:\t" << win_count_.info();
 		ss << "num_finished_layer: " << num_finished_layer_
 			 << ", [done_requests=" << (num_request_ - remaining_request_) << "]"
 			 << "[total_request=" << num_request_ << "]" 
 			 << ", max_request_per_layer: " << max_request_per_layer_;
-		ss << "\nWin count:\t" << win_count_.info();
 		// ss << "\nLast win count:\t\t" << request_->win_count().info();
 		// ss << ", " << request_->stuck_info();
 		return ss.str();

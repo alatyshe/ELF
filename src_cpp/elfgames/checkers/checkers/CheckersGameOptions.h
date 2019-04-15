@@ -72,7 +72,7 @@ struct CheckersGameOptions {
 
   bool keep_prev_selfplay = false;
 
-  int eval_num_threads = 1;
+  int eval_num_threads = 16;
   int expected_num_clients = -1;
 
   // A list file containing the files to load.

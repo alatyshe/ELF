@@ -42,16 +42,11 @@ def main():
   }
 
 
-
   env = load_env(os.environ, additional_to_load=additional_to_load)
-
-
-
 
 
   trainer = env['trainer']
   runner = env['runner']
-
 
 
   """
@@ -159,8 +154,8 @@ def main():
 
   def episode_summary(i):
     nonlocal checkers_selfplay_ver
-
     logger.info("Episode_summary")
+
     ver = trainer.episode_summary(i)
     # This might block (when evaluation does not catch up with training).
     GC.GC.getServer().notifyNewVersion(checkers_selfplay_ver, ver)
@@ -176,9 +171,9 @@ def main():
 
   # sys.exit(0)
 
-  runner.setup(GC, after_start=       after_start,
-          episode_summary=    episode_summary,
-          episode_start=      trainer.episode_start)
+  runner.setup(GC, after_start = after_start,
+          episode_summary = episode_summary,
+          episode_start = trainer.episode_start)
 
   runner.run_singe_process()
 

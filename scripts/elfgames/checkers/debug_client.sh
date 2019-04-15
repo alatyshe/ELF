@@ -18,7 +18,7 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	\
 	--mode selfplay \
 	--batchsize 64 \
-	--num_games 4							--keys_in_reply checkers_V checkers_rv \
+	--num_games 32						--keys_in_reply checkers_V checkers_rv \
 	--T 1 \
 	--dim0 128								--dim1 128 \
 	--num_block0 10						--num_block1 10 \
@@ -34,10 +34,11 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	\
 	--use_fp160								--use_fp161 \
 	--verbose \
+	--suicide_after_n_games 10000
 	
 	# --dump_record_prefix tree\
 	
-	# --suicide_after_n_games 120
+	# 
 
 
 	# --num_games - int, 'number of games'

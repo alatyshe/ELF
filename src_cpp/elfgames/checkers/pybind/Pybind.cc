@@ -10,7 +10,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include "GameContext.h"
+#include "../train/GameContext.h"
 
 namespace elfgames {
 namespace checkers {
