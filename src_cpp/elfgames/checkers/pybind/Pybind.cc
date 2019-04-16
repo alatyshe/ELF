@@ -10,7 +10,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include "GameContext.h"
+#include "../train/GameContext.h"
 
 namespace elfgames {
 namespace checkers {
@@ -52,9 +52,6 @@ void registerPy(pybind11::module& m) {
 
   py::class_<GameStats>(m, "GameStats")
       .def("getWinRateStats", &GameStats::getWinRateStats);
-      //.def("AllGamesFinished", &GameStats::AllGamesFinished)
-      //.def("restartAllGames", &GameStats::restartAllGames)
-      // .def("getPlayedGames", &GameStats::getPlayedGames);
 
 
   py::class_<ClientGameSelfPlay>(m, "ClientGameSelfPlay")

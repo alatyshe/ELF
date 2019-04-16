@@ -26,15 +26,6 @@ void ClearBoard(CheckersBoard* board) {
   board->empty = UNUSED_BITS ^ MASK ^ (board->pieces[BLACK_PLAYER] | board->pieces[WHITE_PLAYER]);
   board->jump = 0;
 
-  // test repeat moves
-  // board->forward[0] = 8589936704;
-  // board->forward[1] = 2147487744;
-  // board->backward[0] = 8589934592;
-  // board->backward[1] = 2183204864;
-  // board->pieces[0] = 8589936704;
-  // board->pieces[1] = 2183204864;
-  // board->empty = 23519356607;
-
   std::fill(std::begin(board->_last_move_black), 
     std::end(board->_last_move_black), -1);
   std::fill(std::begin(board->_last_move_white), 
@@ -137,7 +128,7 @@ bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
   return false;
 }
 
-std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int player) {
+std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board) {
   std::array<int, TOTAL_NUM_ACTIONS> result;
   std::vector<int64_t> moves;
   std::string move_buff;
@@ -145,42 +136,24 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board, int 
   int total_moves = 0;
 
   result.fill(0);
-  if (player != board.active) {
-    buffer = board.active;
-    board.active = board.passive;
-    board.passive = buffer;
 
-    moves = _get_moves(board);
-    for (auto i = moves.begin(); i != moves.end(); ++i) {
-      move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
-      // print moves      
-      // std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
-      result[moves::m_to_i.find(move_buff)->second] = 1;
-      total_moves += 1;
-    }
+  moves = _get_moves(board);
 
-    buffer = board.active;
-    board.active = board.passive;
-    board.passive = buffer;
-  } else {
-    moves = _get_moves(board);
-
-    for (auto i = moves.begin(); i != moves.end(); ++i) {
-      move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
-      // print moves
-      // std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
-      result[moves::m_to_i.find(move_buff)->second] = 1;
-      total_moves += 1;
-    }
-  } 
+  for (auto i = moves.begin(); i != moves.end(); ++i) {
+    move_buff = std::to_string(*i) + ", "  + std::to_string(_get_move_direction(board, *i, board.active));
+    // print moves
+    // std::cout << move_buff << " : |" << moves::m_to_i.find(move_buff)->second << "|" << std::endl;
+    result[moves::m_to_i.find(move_buff)->second] = 1;
+    total_moves += 1;
+  }
 
   // Repeat moves
   if (total_moves > 1
-      && player == WHITE_PLAYER 
+      && board.active == WHITE_PLAYER 
       && board._white_repeats_step >= REPEAT_MOVE) {
     result[board._last_move_white[1]] = 0;
   } else if (total_moves > 1
-      && player == BLACK_PLAYER
+      && board.active == BLACK_PLAYER
       && board._black_repeats_step >= REPEAT_MOVE) {
     result[board._last_move_black[1]] = 0;
   }
@@ -219,7 +192,7 @@ std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoar
 }
 
 bool CheckersTryPlay(CheckersBoard board, Coord c) {
-  std::array<int, TOTAL_NUM_ACTIONS> res = GetValidMovesBinary(board, board.active);
+  std::array<int, TOTAL_NUM_ACTIONS> res = GetValidMovesBinary(board);
   if (res[c])
     return true;
   return false;
@@ -228,60 +201,6 @@ bool CheckersTryPlay(CheckersBoard board, Coord c) {
 bool CheckersIsOver(CheckersBoard board) {
   return (_get_moves(board).size() == 0);
 }
-
-float CheckersEvalBoard(CheckersBoard board, int player) {
-  std::array<std::array<int, 8>, 8> observation = GetObservation(board, player);
-  float enemy_figures = 0;
-  float self_figures = 0;
-  float score = 0.0;
-  int total;
-
-  for (int y = 0; y < 8; y++) {
-    for (int x = 0; x < 8; x++) {
-      if (observation[y][x] == 3) {
-        self_figures += 2;
-      } else if (observation[y][x] == -3) {
-        enemy_figures += 2;
-      } else if (observation[y][x] == 1) {
-        self_figures += 1;
-      } else if (observation[y][x] == -1) {
-        enemy_figures += 1;
-      }
-    }
-  }
-  total = enemy_figures + self_figures;
-  score = self_figures / total - enemy_figures / total;
-  return score;
-}
-
-// std::string get_state_str(const Board board, int player) {
-//  std::array<std::array<int, 8>, 8> observation = GetObservation(board, player);
-//  std::string str = "";
-//  std::string id;
-//  std::string man;
-//  std::string king;
-
-//     for (int y = 0; y < 8; y++) {
-//         for (int x = 0; x < 8; x++) {
-//             id = " (" + std::to_string(x) + "," + std::to_string(y) + ")E";
-//             man = " (" + std::to_string(x) + "," + std::to_string(y) + ")M";
-//             king = " (" + std::to_string(x) + "," + std::to_string(y) + ")K";
-            
-//             if (observation[y][x] == -1) {
-//                 id = "\x1b[6;31;40m" + man + "\x1b[0m";
-//             } else if (observation[y][x] == -3) {
-//                 id = "\x1b[6;31;40m" + king + "\x1b[0m";
-//             } else if (observation[y][x] == 1) {
-//                 id = "\x1b[6;32;40m" + man + "\x1b[0m";
-//             } else if (observation[y][x] == 3) {
-//                 id = "\x1b[6;32;40m" + king + "\x1b[0m";
-//             }
-//             str = str + id;
-//         }
-//         str = str + "\n";
-//     }
-//     return(str);
-// }
 
 // translates the board in 8x8 format 
 //      3: our kings 

@@ -31,8 +31,7 @@ std::string ClientGameSelfPlay::showBoard() const {
 }
 
 std::array<int, TOTAL_NUM_ACTIONS> ClientGameSelfPlay::getValidMoves() const {
-  return GetValidMovesBinary(_checkers_state_ext.state().board(), 
-    _checkers_state_ext.state().board().active);
+  return GetValidMovesBinary(_checkers_state_ext.state().board());
 }
 
 float ClientGameSelfPlay::getScore() {
