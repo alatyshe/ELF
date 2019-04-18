@@ -56,7 +56,7 @@ class CheckersState {
   }
 
   int currentPlayer() const {
-    return _board.active;
+    return _board.current_player;
   }
 
   // Moves history in vector
@@ -79,18 +79,7 @@ class CheckersState {
 
   // delete!!!!!!
   std::array<std::array<int, 8>, 8> getBoard() const {
-    // std::stringstream ss;
-    // std::string board = "";
-    return GetTrueState(_board);
-
-    // for (int y = 0; y < 8; y++) {
-    //   for (int x = 0; x < 8; x++) {
-    //     board += std::to_string(state[y][x]) + " ";
-    //   }
-    //   board += "\n";
-    // }
-    // ss << board;
-    // return (ss.str());
+    return GetTrueObservation(_board);
   }
 
  protected:

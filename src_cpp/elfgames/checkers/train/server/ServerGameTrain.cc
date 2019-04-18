@@ -33,6 +33,7 @@ void ServerGameTrain::act() {
     while (true) {
       int q_idx;
       auto sampler = readerQueues_->getSamplerWithParity(&_rng, &q_idx);
+      std::cout << readerQueues_->info();
       const CheckersRecord* r = sampler.sample();
       if (r == nullptr) {
         continue;

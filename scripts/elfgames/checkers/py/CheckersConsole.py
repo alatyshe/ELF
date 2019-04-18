@@ -72,17 +72,8 @@ class CheckersConsole:
     valid_moves = batch.GC.getGame(0).getValidMoves()
     for idx in range(len(valid_moves)):
       if valid_moves[idx]:
-        i = "{0:036b}".format(self.moves_for_human[idx][0])[::-1]
-        index = [pos for pos, char in enumerate(i) if char == "1"]
-        i1, i2 = index
-        buff1 = (1 + i1 - i1 // 9) - 1
-        buff2 = (1 + i2 - i2 // 9) - 1
-        x1, y1 = (6 - (buff1) % 4 * 2 + ((buff1) // 4) % 2, 7 - (buff1) // 4)
-        x2, y2 = (6 - (buff2) % 4 * 2 + ((buff2) // 4) % 2, 7 - (buff2) // 4)
-        if not self.moves_for_human[idx][1]:
-          x1, y1, x2, y2 = x2, y2, x1, y1
-
-        print("", idx, "\t: ", (x1 + y1 * 8), "=>", (x2 + y2 * 8))
+        move = self.moves_for_human[idx]
+        print(f"{idx}\t: {move[0]} => {move[1]}")
     print("")
 
   def list_commands(self, batch, items, reply):

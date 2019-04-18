@@ -31,15 +31,8 @@ void CheckersState::reset() {
 std::string CheckersState::showBoard() const {
   std::stringstream ss;
 
-  ss  << GetTrueStateStr(_board);
-  ss  << "[" << _board.forward[0]
-      << "][" << _board.forward[1]
-      << "][" << _board.backward[0]
-      << "][" << _board.backward[1]
-      << "][" << _board.pieces[0]
-      << "][" << _board.pieces[1]
-      << "][" << _board.empty << "]"
-      << std::endl;
+  ss  << GetTrueObservationStr(_board);
+
   if (lastMove() != M_INVALID)
     ss  << "\nLast move\t: " << moves::m_to_h.find(lastMove())->second;
   else

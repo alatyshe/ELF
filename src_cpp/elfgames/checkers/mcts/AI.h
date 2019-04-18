@@ -47,30 +47,22 @@ struct StateTrait<CheckersState, Coord> {
     CheckersBoard b2 = s2.board();
 
     int res = 0;
-    res += (b1.forward[0] != b2.forward[0]);
-    res += (b1.forward[1] != b2.forward[1]);
-    res += (b1.backward[0] != b2.backward[0]);
-    res += (b1.backward[1] != b2.backward[1]);
-    res += (b1.pieces[0] != b2.pieces[0]);
-    res += (b1.pieces[1] != b2.pieces[1]);
-    res += (b1.empty != b2.empty);
-    res += (b1.active != b2.active);
-    res += (b1.passive != b2.passive);
-    res += (b1.jump != b2.jump);
+    
+    for (int y = 0; y < CHECKERS_BOARD_SIZE; y++) {
+      for (int x = 0; x < CHECKERS_BOARD_SIZE; x++)
+        res += (b1.board[y][x] != b1.board[y][x]);
+    }
+    res += (b1.current_player != b2.current_player);
+    res += (b1.game_ended != b2.game_ended);
+    res += (b1.jump_y != b2.jump_y);
+    res += (b1.jump_x != b2.jump_x);
+    res += (b1.white_must_leave_base != b2.white_must_leave_base);
+    res += (b1.black_must_leave_base != b2.black_must_leave_base);
     res += (b1._last_move != b2._last_move);
     res += (b1._ply != b2._ply);
 
-    // repeat moves
-    res += (b1._last_move_black[0] != b2._last_move_black[0]);
-    res += (b1._last_move_black[1] != b2._last_move_black[1]);
-    res += (b1._last_move_white[0] != b2._last_move_white[0]);
-    res += (b1._last_move_white[1] != b2._last_move_white[1]);
-    res += (b1._remove_step_black != b2._remove_step_black);
-    res += (b1._remove_step_white != b2._remove_step_white);
-    res += (b1._black_repeats_step != b2._black_repeats_step);
-    res += (b1._white_repeats_step != b2._white_repeats_step);
-
     return res == 0;
+
   }
 
   static bool moves_since(

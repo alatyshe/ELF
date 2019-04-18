@@ -18,7 +18,7 @@
 #include "elf/logging/IndexedLoggerFactory.h"
 // checkers
 #include "../mcts/AI.h"
-#include "../mcts/CheckersMCTSActor.h"
+#include "../mcts/MCTSCheckersActor.h"
 #include "../mcts/MCTSCheckersAI.h"
 #include "../sgf/sgf.h"
 #include "GameBase.h"

@@ -8,7 +8,7 @@
 
 # MODEL=models/save-609280.bin
 
-MODEL=models/save-4096.bin
+MODEL=models/save-0.bin
 # MODEL=model_dima/save-67584.bin
 # shift
 
@@ -35,7 +35,7 @@ model_file=elfgames.checkers.df_model_checkers \
 	--mcts_rollout_per_batch 3 \
 	--mcts_persistent_tree 	--mcts_verbose_time \
 	--mcts_use_prior				--mcts_puct 0.9 \
-	--mcts_threads 1				--mcts_rollout_per_thread 400 \
+	--mcts_threads 1				--mcts_rollout_per_thread 200 \
 	\
 	# "$@"
 	# --black_use_policy_network_only \

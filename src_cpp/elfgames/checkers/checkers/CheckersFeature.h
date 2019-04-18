@@ -7,23 +7,11 @@
 
 // Do not used yet
 struct CheckersBoardHistory {
-  std::array<int64_t, 2> forward;
-  std::array<int64_t, 2> backward;
-  std::array<int64_t, 2> pieces;
-  int64_t empty;
-  int active;
+  CheckersBoard board;
 
   // Copy position of the pawns and kings on the board.
   CheckersBoardHistory(const CheckersBoard& b) {
-    forward[BLACK_PLAYER] = b.forward[BLACK_PLAYER];
-    backward[BLACK_PLAYER] = b.backward[BLACK_PLAYER];
-    pieces[BLACK_PLAYER] = (forward[BLACK_PLAYER]) | (backward[BLACK_PLAYER]);
-    forward[WHITE_PLAYER] = b.forward[WHITE_PLAYER];
-    backward[WHITE_PLAYER] = b.backward[WHITE_PLAYER];
-    pieces[WHITE_PLAYER] = (forward[WHITE_PLAYER]) | (backward[WHITE_PLAYER]);
-    
-    empty = empty;
-    active = active;
+    CheckersCopyBoard(&board, &b);
   }
 };
 

@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 
-MODEL=models/save-14336.bin
+
+# MODEL=models/save-4096.bin
+# MODEL=models/save-14336.bin
+# MODEL=models/save-43008.bin
+# MODEL=models/save-47104.bin
+MODEL=models/save-609280.bin
 # shift
 
 game=elfgames.checkers.game \
 model=df_pred \
 model_file=elfgames.checkers.df_model_checkers \
-	python3 gui/CheckersServer.py \
+	python3 CheckersGui/play_gui.py \
 	--server_addr localhost --port 1234 \
 	\
 	--batchsize 64 \
@@ -26,6 +31,8 @@ model_file=elfgames.checkers.df_model_checkers \
 	--mcts_threads 8				--mcts_rollout_per_thread 100 \
 	--mcts_virtual_loss 1 	--mcts_persistent_tree \
 	\
+	# --human_plays_for_black
+	# \
 	# --dump_record_prefix mcts \
 
 	#

@@ -13,7 +13,7 @@
 // checkers
 #include "record.h"
 #include "../checkers/Record.h"
-#include "../mcts/CheckersMCTSActor.h"
+#include "../mcts/MCTSCheckersActor.h"
 
 
 /*
