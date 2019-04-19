@@ -33,13 +33,12 @@ void ServerGameTrain::act() {
     while (true) {
       int q_idx;
       auto sampler = readerQueues_->getSamplerWithParity(&_rng, &q_idx);
-      std::cout << readerQueues_->info();
+
       const CheckersRecord* r = sampler.sample();
       if (r == nullptr) {
         continue;
       }
       _checkers_state_ext[i]->fromRecord(*r);
-
       // Random pick one ply.
       if (_checkers_state_ext[i]->switchRandomMove(&_rng))
         break;

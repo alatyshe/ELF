@@ -13,7 +13,7 @@
 
 #include "HashAllMoves.h"
 
-#define CHECKERS_BOARD_SIZE 8
+#define BOARD_SIZE 8
 
 #define EMPTY 0
 #define TEMP 2
@@ -41,10 +41,10 @@
 
 #define COLOR_END "\u001b[0m"
 
-constexpr uint64_t CHECKERS_NUM_FEATURES = 2;
+constexpr uint64_t NUM_FEATURES = 2;
 constexpr uint64_t TOTAL_NUM_ACTIONS = 418;
-// // Max move for game
-constexpr int TOTAL_MAX_MOVE = 250;
+// Max move for game
+constexpr int TOTAL_MAX_MOVE = 50;
 
 # define M_INVALID 419
 

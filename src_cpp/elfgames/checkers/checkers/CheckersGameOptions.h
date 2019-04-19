@@ -11,7 +11,7 @@
 struct CheckersGameOptions {
   // Seed.
   unsigned int seed;
-  int checkers_num_future_actions = 0;
+  int num_future_actions = 0;
 
   int human_plays_for = 0;
 
@@ -100,7 +100,7 @@ struct CheckersGameOptions {
     ss << std::setw(30) << std::right;
     ss << "Client max delay in sec: " << client_max_delay_sec << std::endl;
     ss << std::setw(30) << std::right;
-    ss << "Num future actions: " << checkers_num_future_actions << std::endl;
+    ss << "Num future actions: " << num_future_actions << std::endl;
     ss << std::setw(30) << std::right;
     ss << "Games per thread: " << num_games_per_thread << std::endl;
     ss << std::setw(30) << std::right;
@@ -203,7 +203,7 @@ struct CheckersGameOptions {
   REGISTER_PYBIND_FIELDS(
       seed,
       mode,
-      checkers_num_future_actions,
+      num_future_actions,
       list_files,
       verbose,
       num_games_per_thread,

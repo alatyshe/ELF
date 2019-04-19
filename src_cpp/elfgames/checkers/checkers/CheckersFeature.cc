@@ -2,7 +2,7 @@
 #include "CheckersState.h"
 
 static float* board_plane(float* features, int idx) {
-  return features + idx * CHECKERS_BOARD_SIZE * CHECKERS_BOARD_SIZE;
+  return features + idx * BOARD_SIZE * BOARD_SIZE;
 }
 
 // features param will taken from parent function 
@@ -12,10 +12,10 @@ void CheckersFeature::getPawns(int player, float* data) const {
   std::array<std::array<int, 8>, 8> observation;
   observation = GetObservation(s_.board(), player);
   
-  for (int y = 0; y < CHECKERS_BOARD_SIZE; ++y) {
-    for (int x = 0; x < CHECKERS_BOARD_SIZE; ++x) {
+  for (int y = 0; y < BOARD_SIZE; ++y) {
+    for (int x = 0; x < BOARD_SIZE; ++x) {
       if (observation[y][x] == 1)
-        data[y * CHECKERS_BOARD_SIZE + x] = 1;
+        data[y * BOARD_SIZE + x] = 1;
     }
   }
 }
@@ -23,8 +23,8 @@ void CheckersFeature::getPawns(int player, float* data) const {
 // void CheckersFeature::getHistory(int player, float* data) const {
 //   const Board* _board = &s_.board();
 
-//   for (int i = 0; i < CHECKERS_BOARD_SIZE; ++i) {
-//     for (int j = 0; j < CHECKERS_BOARD_SIZE; ++j) {
+//   for (int i = 0; i < BOARD_SIZE; ++i) {
+//     for (int j = 0; j < BOARD_SIZE; ++j) {
 //     }
 //   }
 //   return true;
@@ -33,12 +33,12 @@ void CheckersFeature::getPawns(int player, float* data) const {
 // Extract game state, this method calls from GameFeature::extractState()
 // Filling the memory for submission to the assessment in the neural network.
 // vector features - depends on the number of features and size of the board.
-// For example we have 6 CHECKERS_NUM_FEATURES defined in checkersBoard.h
+// For example we have 6 NUM_FEATURES defined in checkersBoard.h
 // and board size 8 x 8 = 64, so we have 2 dim array 6 x 64
 // wich transform into 1d array 384 lenght.
 // From python side we get this information by the key "checkers_s".
 void CheckersFeature::extract(std::vector<float>* features) const {
-  features->resize(CHECKERS_NUM_FEATURES * kBoardRegion);
+  features->resize(NUM_FEATURES * kBoardRegion);
   extract(&(*features)[0]);
 }
 
@@ -48,7 +48,7 @@ void CheckersFeature::extract(float* features) const {
   int active_player = _board->current_player;
   int passive_player = (active_player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
 
-  std::fill(features, features + CHECKERS_NUM_FEATURES * kBoardRegion, 0.0);
+  std::fill(features, features + NUM_FEATURES * kBoardRegion, 0.0);
 
   // Save the current board state to game state.
   getPawns(active_player, LAYER(0));

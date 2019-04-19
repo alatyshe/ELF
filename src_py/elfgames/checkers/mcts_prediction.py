@@ -58,7 +58,7 @@ class MCTSPrediction(object):
         # print("batch : ", batch)
         # print("stats : ", stats)
         # print("state_curr keys : ", state_curr.keys())
-        # print("batch keys : ", batch["checkers_winner"])
+        # print("batch keys : ", batch["winner"])
         # print()
 
 
@@ -66,7 +66,7 @@ class MCTSPrediction(object):
             self.logger.debug(self.timer.print(1))
             return dict(backprop=False)
 
-        targets = batch["checkers_mcts_scores"]
+        targets = batch["mcts_scores"]
         logpi = state_curr["logpi"]
         pi = state_curr["pi"]
 
@@ -85,28 +85,28 @@ class MCTSPrediction(object):
         stats["entropy"].feed(float(entropy))
 
         stats["blackwin"].feed(
-            float((batch["checkers_winner"] > 0.0).float().sum()) /
-            batch["checkers_winner"].size(0))
+            float((batch["winner"] > 0.0).float().sum()) /
+            batch["winner"].size(0))
 
 
         # print("state_curr keys : ", state_curr.keys())
         # print("batch keys : ", batch.batch.keys())
-        # print("state_curr[V] : ", state_curr["checkers_V"])
-        # print("batch[winner] : ", batch["checkers_winner"])
+        # print("state_curr[V] : ", state_curr["V"])
+        # print("batch[winner] : ", batch["winner"])
         # print("\n\n")
-        # print("state_curr[V] : ", state_curr["checkers_V"].shape)
-        # print("batch[winner] : ", batch["checkers_winner"].shape)
+        # print("state_curr[V] : ", state_curr["V"].shape)
+        # print("batch[winner] : ", batch["winner"].shape)
         # print("\n\n")
-        # print("state_curr[V].squeeze() : ", state_curr["checkers_V"].squeeze())
-        # print("Variable(batch[winner]) : ", Variable(batch["checkers_winner"]))
+        # print("state_curr[V].squeeze() : ", state_curr["V"].squeeze())
+        # print("Variable(batch[winner]) : ", Variable(batch["winner"]))
         # print("===================================================")
         # print("===================================================")
 
 
         total_value_loss = None
-        if "checkers_V" in state_curr and "checkers_winner" in batch:
+        if "V" in state_curr and "winner" in batch:
             total_value_loss = self.value_loss(
-                state_curr["checkers_V"].squeeze(), Variable(batch["checkers_winner"]))
+                state_curr["V"].squeeze(), Variable(batch["winner"]))
 
         stats["total_policy_loss"].feed(float(total_policy_loss))
         if total_value_loss is not None:

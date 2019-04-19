@@ -83,7 +83,7 @@ class Loader(object):
 			-1
 		)
 		spec.addIntOption(
-			'checkers_num_future_actions',
+			'num_future_actions',
 			'TODO: fill this help message in',
 			1)
 		spec.addStrOption(
@@ -259,7 +259,7 @@ class Loader(object):
 		game_opt.q_min_size = self.options.q_min_size
 		game_opt.q_max_size = self.options.q_max_size
 		game_opt.num_reader = self.options.num_reader
-		game_opt.checkers_num_future_actions = self.options.checkers_num_future_actions
+		game_opt.num_future_actions = self.options.num_future_actions
 		game_opt.num_reset_ranking = self.options.num_reset_ranking
 		game_opt.policy_distri_cutoff = self.options.policy_distri_cutoff
 		game_opt.num_games_per_thread = self.options.num_games_per_thread
@@ -313,24 +313,24 @@ class Loader(object):
 
 		if self.options.parameter_print:
 			print("Mode: ", game_opt.mode)
-			print("checkers_num_action: ", params["checkers_num_action"])
+			print("num_action: ", params["num_action"])
 
 		desc = {}
 
 		if self.options.mode == "play":
 			desc["human_actor"] = dict(
-				input=["checkers_s"],
+				input=["s"],
 				reply=["pi", 
 						"a", 
-						"checkers_V"],
+						"V"],
 				batchsize=1,
 			)
-			desc["checkers_actor_black"] = dict(
-				input=["checkers_s"],
+			desc["actor_black"] = dict(
+				input=["s"],
 				reply=["pi", 
-						"checkers_V", 
+						"V", 
 						"a", 
-						"checkers_rv"],
+						"rv"],
 				timeout_usec=10,
 				batchsize=co.mcts_options.num_rollouts_per_batch
 			)
@@ -341,28 +341,28 @@ class Loader(object):
 			)
 			desc["game_start"] = dict(
 				batchsize=1,
-				input=["checkers_white_ver", 
-						"checkers_black_ver"],
+				input=["white_ver", 
+						"black_ver"],
 				reply=None
 			)
 			# checkers
-			desc["checkers_actor_white"] = dict(
-				input=["checkers_s"],
+			desc["actor_white"] = dict(
+				input=["s"],
 				reply=["pi", 
-						"checkers_V", 
+						"V", 
 						"a", 
-						"checkers_rv"],
+						"rv"],
 				batchsize=self.options.batchsize2
 				if self.options.batchsize2 > 0
 				else self.options.batchsize,
 				timeout_usec=self.options.selfplay_timeout_usec,
 			)            
-			desc["checkers_actor_black"] = dict(
-				input=["checkers_s"],
+			desc["actor_black"] = dict(
+				input=["s"],
 				reply=["pi", 
-						"checkers_V", 
+						"V", 
 						"a", 
-						"checkers_rv"],
+						"rv"],
 				batchsize=self.options.batchsize2
 				if self.options.batchsize2 > 0
 				else self.options.batchsize,
@@ -371,16 +371,16 @@ class Loader(object):
 
 		elif self.options.mode == "train" or self.options.mode == "offline_train":
 			desc["train"] = dict(
-				input=["checkers_s", 
-						"checkers_offline_a", 
-						"checkers_winner", 
-						"checkers_mcts_scores", 
-						"checkers_move_idx",
-						"checkers_selfplay_ver"],
+				input=["s", 
+						"offline_a", 
+						"winner", 
+						"mcts_scores", 
+						"move_idx",
+						"selfplay_ver"],
 				reply=None
 			)
 			desc["train_ctrl"] = dict(
-				input=["checkers_selfplay_ver"],
+				input=["selfplay_ver"],
 				reply=None,
 				batchsize=1
 			)
