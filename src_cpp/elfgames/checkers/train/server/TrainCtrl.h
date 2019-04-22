@@ -86,6 +86,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
           WHITE_B,
           COLOR_END,
           selfplay_ver);
+
       logger_->info("{}", replay_buffer_->info());
 
       std::this_thread::sleep_for(60s);
@@ -97,6 +98,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
           GREEN_B, 
           COLOR_END, 
           selfplay_ver);
+
       logger_->info("{}", replay_buffer_->info());
       
       selfplaySubCtrl_->notifyCurrentWeightUpdate();
@@ -178,7 +180,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     for (size_t i = 0; i < records.size(); ++i) {
       res[i] = selfplaySubCtrl_->feed(records[i]);
     }
-    // std::cout << "onSelfplayGames len : " << res.size() << std::endl;
     return res;
   }
 
@@ -191,7 +192,6 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     for (size_t i = 0; i < records.size(); ++i) {
       res[i] = evalSubCtrl_->feedStats(info, records[i]);
     }
-    // std::cout << "onEvalGames len : " << res.size() << std::endl;
     return res;
   }
 
@@ -404,15 +404,16 @@ class TrainCtrl : public DataInterface {
       }
 
       logger_->info(
-          "TrainCtrl: Receive data[{}] from {}, #state_update: {}, "
+          "Receive data[{}] from {}, #state_update: {}, "
           "#records: {}, #valid_selfplay: {}, #valid_eval: {}",
           recv_count_,
           rs.identity,
           rs.states.size(),
           rs.records.size(),
           valid_selfplay,
-          valid_eval); 
-      logger_->info("{}", replay_buffer_->info());
+          valid_eval);
+
+      // logger_->info("{}", replay_buffer_->info());
     }
 
     return insert_info;

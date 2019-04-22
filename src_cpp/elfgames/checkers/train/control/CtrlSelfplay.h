@@ -133,6 +133,8 @@ struct SelfPlayRecord {
 		if (game_options_.selfplay_update_num <= 0){
 			return false;
 		}
+
+		
 		return counter_ < game_options_.selfplay_init_num +
 				game_options_.selfplay_update_num * num_weight_update_;
 	}

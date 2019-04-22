@@ -113,7 +113,7 @@ class ModelPerfomance {
 		eval_result_ = eval_check();
 
 		if (n_done() > 0 && (sent_ % 50 == 0 || recv_ % 50 == 0)) {
-			logger_->info("{}EvalResult{}: {}\n", 
+			logger_->info("{}Eval Status{}: {}\n", 
 				GREEN_C,
 				COLOR_END,
 				info());
