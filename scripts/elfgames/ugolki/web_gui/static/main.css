@@ -57,6 +57,7 @@ table {
 
 #resetGame, 
 #changeSide,
+#skipMove,
 #endSession,
 #login {
 	display: inline-block;
@@ -71,6 +72,7 @@ table {
 #resetGame:hover,
 #changeSide:hover,
 #endSession:hover,
+#skipMove:hover,
 #login:hover {
 	cursor: pointer;
 	background-color: #f9f9f9;
@@ -78,6 +80,7 @@ table {
 
 #resetGame:active,
 #changeSide:active,
+#skipMove:active,
 #endSession:active,
 #login:active {
 	background-color: #f0f0f0;

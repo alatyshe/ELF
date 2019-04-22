@@ -6,7 +6,7 @@
   and each turn represent by a number. 
   Also take a look at HashAllMoves.h
 """
-def get_all_moves():
+def get_all_moves_ugolki():
   all_moves = []
   i = 0
 

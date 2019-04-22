@@ -39,6 +39,7 @@ function DisplayBoard(boardData){
     button = "<div class='buttonContainer'>";
     button +="<button id='resetGame' onclick='resetGame()'>Reset Game</button>";
     button += "<button id='changeSide' onclick='changeSide()'>Change Side</button>";
+    button += "<button id='skipMove' onclick='skipMove()'>Skip Move</button>";
     // button += "<button id='endSession' onclick='endSession()'>End Session</button>";
     button += "</div>";
     container.append(button);
@@ -47,6 +48,7 @@ function DisplayBoard(boardData){
 }
 
 function sendBoard(info){
+  console.log("here : ", info)
   // отправляем это все на falsk и ждем следующей борды
   $("#onLoad").css("z-index", "3")
   $("#onLoad").css("background-color", "rgba(10, 10, 10, 0.4)")
@@ -75,6 +77,12 @@ function endSession() {
   window.location = "logout";
 }
 
+
+function skipMove(){
+  var result = {};
+  result["skip_move"] = 1;
+  sendBoard(result)
+}
 
 
 function changeSide(){

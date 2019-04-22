@@ -191,9 +191,9 @@ class Model_PolicyValue(Model):
 	def __init__(self, option_map, params):
 		super().__init__(option_map, params)
 
-		self.board_size = params["checkers_board_size"]
-		self.num_planes = params["checkers_num_planes"]
-		self.checkers_num_action = params["checkers_num_action"]
+		self.board_size = params["board_size"]
+		self.num_planes = params["num_planes"]
+		self.num_action = params["num_action"]
 
 		# print("#num_planes: " + str(self.num_planes))
 
@@ -219,7 +219,7 @@ class Model_PolicyValue(Model):
 		d = self.board_size ** 2
 
 		# Plus 1 for pass.
-		self.pi_linear = nn.Linear(d, self.checkers_num_action)
+		self.pi_linear = nn.Linear(d, self.num_action)
 		self.value_linear1 = nn.Linear(d, 256)
 		self.value_linear2 = nn.Linear(256, 1)
 
@@ -325,7 +325,7 @@ class Model_PolicyValue(Model):
 	def forward(self, x):
 		# print("FORWARD")
 		# приводим в нормальный вид
-		s = self._var(x["checkers_s"])
+		s = self._var(x["s"])
 		s = self.init_conv(s)
 
 		s = self.resnet(s)
@@ -341,7 +341,7 @@ class Model_PolicyValue(Model):
 		V = self.value_linear2(V)
 		V = self.tanh(V)
 
-		return dict(logpi=logpi, pi=pi, checkers_V=V)
+		return dict(logpi=logpi, pi=pi, V=V)
 
 
 # Format: key, [model, method]

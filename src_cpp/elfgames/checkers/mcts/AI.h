@@ -48,8 +48,8 @@ struct StateTrait<CheckersState, Coord> {
 
     int res = 0;
     
-    for (int y = 0; y < CHECKERS_BOARD_SIZE; y++) {
-      for (int x = 0; x < CHECKERS_BOARD_SIZE; x++)
+    for (int y = 0; y < BOARD_SIZE; y++) {
+      for (int x = 0; x < BOARD_SIZE; x++)
         res += (b1.board[y][x] != b1.board[y][x]);
     }
     res += (b1.current_player != b2.current_player);

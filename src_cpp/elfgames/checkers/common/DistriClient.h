@@ -67,7 +67,7 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
     // We constantly expect to receive a message from the server
     if (!writer_->getReplyNoblock(&smsg)) {
       logger_->info(
-          "WriterCtrl: {}No message{}, seq={}, since_last_sec={}",
+          "{}No message{}, seq={}, since_last_sec={}",
           YELLOW_C,
           COLOR_END,
           seq_,
@@ -282,6 +282,8 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   void OnGameEnd(const CheckersStateExt& s) override {
     // Add state to records.
     guardedRecords_.feed(s);
+
+
 
     CheckersFinishReason reason = s.state().getPly() >= TOTAL_MAX_MOVE ? MAX_STEP : 
     (s.state().currentPlayer() == WHITE_PLAYER) ? BLACK_WIN : WHITE_WIN;

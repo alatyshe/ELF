@@ -7,16 +7,10 @@ import json
 from time import sleep
 
 sys.path.append('..')
-from py.CheckersMoves import get_all_moves
+from py.UgolkiMoves import get_all_moves_ugolki
 
 
-def is_even(num):
-    return num % 2 == 0
-
-def is_game_piece(y, x):
-    return (is_even(y) and (not is_even(x))) or ((not is_even(y)) and is_even(x))  
-
-def boardToJsonCheckers(curr_board, valid_moves_human, current_player):
+def boardToJson(curr_board, valid_moves_human, current_player):
   # valid_moves = board.get_legal_moves(current_player)
 
   result = {}
@@ -37,16 +31,10 @@ def boardToJsonCheckers(curr_board, valid_moves_human, current_player):
     for x, piece in enumerate(row):
       if piece == 1:
         res_row[x] = "piece white"
-      elif piece == 3:
-        res_row[x] = "piece white king"
       elif piece == -1:
         res_row[x] = "piece black"
-      elif piece == -3:
-        res_row[x] = "piece black king"
-      elif is_game_piece(y, x):
-        res_row[x] = "piece empty"
       else:
-        res_row[x] = "not_game"
+        res_row[x] = "piece empty"
 
       str_move = "y_" + str(y) + " x_" + str(x)
       if str_move in result["valid_moves"]:

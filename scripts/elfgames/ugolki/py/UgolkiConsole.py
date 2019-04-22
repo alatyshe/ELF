@@ -8,9 +8,9 @@ import inspect
 import traceback
 from collections import Counter
 
-from CheckersMoves import get_all_moves
+from UgolkiMoves import get_all_moves_ugolki
 
-class CheckersConsole:
+class UgolkiConsole:
   def on_genmove(self, batch, items, reply):
     reply["a"] = int(items[1])
     return True, reply
@@ -24,7 +24,7 @@ class CheckersConsole:
     self.exit = False
     self.GC = GC
     self.evaluator = evaluator
-    self.moves_for_human = get_all_moves()
+    self.moves_for_human = get_all_moves_ugolki()
 
     self.commands = {
       key[3:]: func
@@ -48,7 +48,7 @@ class CheckersConsole:
         continue
 
       c = items[0]
-      reply = dict(pi=None, a=None, checkers_V=0)
+      reply = dict(pi=None, a=None, V=0)
 
       try:
         ret, msg = self.commands[c](batch, items, reply)

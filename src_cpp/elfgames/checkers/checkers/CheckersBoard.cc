@@ -22,16 +22,87 @@ void          ClearBoard(CheckersBoard* board) {
   board->_last_move = M_INVALID;
 
   // Заполнение начальной позиции шашек
-  for (int y = 0; y < 8; y++) {
-    for (int x = 0; x < 8; x++) {
-      if (y < 4 && x < 4)
-        board->board[y][x] = WHITE_PLAYER;
-      else if (y > 3 && x > 3)        // Три нижних ряда черных клеток - белые шашки
-        board->board[y][x] = BLACK_PLAYER;
-      else                   // Остальные черные клетки - пустые
-        board->board[y][x] = EMPTY;
-    }
-  }
+  // for (int y = 0; y < 8; y++) {
+  //   for (int x = 0; x < 8; x++) {
+  //     if (y < 4 && x < 4)
+  //       board->board[y][x] = WHITE_PLAYER;
+  //     else if (y > 3 && x > 3)        // Три нижних ряда черных клеток - белые шашки
+  //       board->board[y][x] = BLACK_PLAYER;
+  //     else                   // Остальные черные клетки - пустые
+  //       board->board[y][x] = EMPTY;
+  //   }
+  // }
+  board->board[0][0] = BLACK_PLAYER;
+  board->board[0][1] = BLACK_PLAYER;
+  board->board[0][2] = BLACK_PLAYER;
+  board->board[0][3] = BLACK_PLAYER;
+  board->board[0][4] = 0;
+  board->board[0][5] = 0;
+  board->board[0][6] = 0;
+  board->board[0][7] = 0;
+  
+  board->board[1][0] = BLACK_PLAYER;
+  board->board[1][1] = BLACK_PLAYER;
+  board->board[1][2] = BLACK_PLAYER;
+  board->board[1][3] = BLACK_PLAYER;
+  board->board[1][4] = 0;
+  board->board[1][5] = 0;
+  board->board[1][6] = 0;
+  board->board[1][7] = 0;
+
+  board->board[2][0] = BLACK_PLAYER;
+  board->board[2][1] = BLACK_PLAYER;
+  board->board[2][2] = BLACK_PLAYER;
+  board->board[2][3] = BLACK_PLAYER;
+  board->board[2][4] = 0;
+  board->board[2][5] = 0;
+  board->board[2][6] = 0;
+  board->board[2][7] = 0;
+
+  board->board[3][0] = 0;
+  board->board[3][1] = 0;
+  board->board[3][2] = BLACK_PLAYER;
+  board->board[3][3] = BLACK_PLAYER;
+  board->board[3][4] = 0;
+  board->board[3][5] = 0;
+  board->board[3][6] = WHITE_PLAYER;
+  board->board[3][7] = WHITE_PLAYER;
+
+  board->board[4][0] = BLACK_PLAYER;
+  board->board[4][1] = BLACK_PLAYER;
+  board->board[4][2] = 0;
+  board->board[4][3] = 0;
+  board->board[4][4] = WHITE_PLAYER;
+  board->board[4][5] = WHITE_PLAYER;
+  board->board[4][6] = 0;
+  board->board[4][7] = 0;
+
+  board->board[5][0] = 0;
+  board->board[5][1] = 0;
+  board->board[5][2] = 0;
+  board->board[5][3] = 0;
+  board->board[5][4] = WHITE_PLAYER;
+  board->board[5][5] = WHITE_PLAYER;
+  board->board[5][6] = WHITE_PLAYER;
+  board->board[5][7] = WHITE_PLAYER;
+
+  board->board[6][0] = 0;
+  board->board[6][1] = 0;
+  board->board[6][2] = 0;
+  board->board[6][3] = 0;
+  board->board[6][4] = WHITE_PLAYER;
+  board->board[6][5] = WHITE_PLAYER;
+  board->board[6][6] = WHITE_PLAYER;
+  board->board[6][7] = WHITE_PLAYER;
+
+  board->board[7][0] = 0;
+  board->board[7][1] = 0;
+  board->board[7][2] = 0;
+  board->board[7][3] = 0;
+  board->board[7][4] = WHITE_PLAYER;
+  board->board[7][5] = WHITE_PLAYER;
+  board->board[7][6] = WHITE_PLAYER;
+  board->board[7][7] = WHITE_PLAYER;
 }
   
 

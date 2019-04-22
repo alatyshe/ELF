@@ -44,7 +44,7 @@ model_file=elfgames.checkers.df_model_checkers python3 ./py/selfplay.py \
 	\
 	--mode selfplay \
 	--num_games 1 \
-	--keys_in_reply checkers_V checkers_rv\
+	--keys_in_reply V rv\
 	\
 	--batchsize $BATCHSIZE \
 	--mcts_rollout_per_batch $BATCHSIZE \

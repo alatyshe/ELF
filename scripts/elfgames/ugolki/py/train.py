@@ -97,7 +97,7 @@ def main():
   def train(batch, *args, **kwargs):
     # Check whether the version match.
     if keep_prev_selfplay or \
-        (batch["checkers_selfplay_ver"] != checkers_selfplay_ver).sum() == 0:
+        (batch["selfplay_ver"] != checkers_selfplay_ver).sum() == 0:
       trainer.train(batch, *args, **kwargs)
     else:
       print(f'Get batch whose selfplay ver is different from '
@@ -109,9 +109,9 @@ def main():
     nonlocal checkers_selfplay_ver
     
     old_selfplay_ver = checkers_selfplay_ver
-    checkers_selfplay_ver = int(batch["checkers_selfplay_ver"][0])
+    checkers_selfplay_ver = int(batch["selfplay_ver"][0])
     logger.info(
-      f'Train ctrl: checkers_selfplay_ver: {old_selfplay_ver} -> {checkers_selfplay_ver}')
+      f'Train ctrl: selfplay_ver: {old_selfplay_ver} -> {checkers_selfplay_ver}')
     
     # ожидаем нормально запоненого батча от клиентов
     GC.GC.getServer().ServerWaitForSufficientSelfplay(checkers_selfplay_ver)

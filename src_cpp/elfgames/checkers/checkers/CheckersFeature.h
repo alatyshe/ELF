@@ -31,7 +31,7 @@ class CheckersFeature {
 
  private:
   const CheckersState& s_;
-  static constexpr int64_t kBoardRegion = CHECKERS_BOARD_SIZE * CHECKERS_BOARD_SIZE;
+  static constexpr int64_t kBoardRegion = BOARD_SIZE * BOARD_SIZE;
 
   // Compute features.
   void getPawns(int player, float* data) const;

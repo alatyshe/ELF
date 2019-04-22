@@ -6,10 +6,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
-# MODEL=models/save-609280.bin
-
-MODEL=models/save-0.bin
-# MODEL=model_dima/save-67584.bin
+MODEL=models/save-609280.bin
 # shift
 
 game=elfgames.checkers.game \
@@ -19,7 +16,7 @@ model_file=elfgames.checkers.df_model_checkers \
 	--server_addr localhost --port 1234 \
 	\
 	--batchsize 64 \
-	--mode play			--keys_in_reply checkers_V checkers_rv \
+	--mode online			--keys_in_reply V rv \
 	--load $MODEL \
 	\
 	--replace_prefix resnet.module,resnet init_conv.module,init_conv \
@@ -29,15 +26,16 @@ model_file=elfgames.checkers.df_model_checkers \
 	--verbose					--gpu 0 \
 	--num_block 10		--dim 128 \
 	\
-	--use_mcts \
-	\
-	--mcts_virtual_loss 0 \
-	--mcts_rollout_per_batch 3 \
-	--mcts_persistent_tree 	--mcts_verbose_time \
+	--mcts_virtual_loss 1 \
+	--mcts_rollout_per_batch 1 \
+	--mcts_persistent_tree \
+	--use_mcts							--mcts_verbose_time \
 	--mcts_use_prior				--mcts_puct 0.9 \
-	--mcts_threads 1				--mcts_rollout_per_thread 200 \
+	--mcts_threads 1				--mcts_rollout_per_thread 100 \
 	\
+	# --dump_record_prefix mcts \
+	
+	# 
 	# "$@"
-	# --black_use_policy_network_only \
 
 	# --replace_prefix resnet.module,resnet \

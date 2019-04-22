@@ -11,7 +11,7 @@ import sys
 
 import torch
 
-from CheckersConsole import CheckersConsole
+from UgolkiConsole import UgolkiConsole
 from rlpytorch import Evaluator, load_env
 
 def main():
@@ -56,7 +56,7 @@ def main():
       'num_games': 1,
       'greedy': True,
       'T': 1,
-      'additional_labels': ['checkers_aug_code', 'checkers_move_idx'],
+      'additional_labels': ['aug_code', 'move_idx'],
     },
     additional_to_load=additional_to_load)
 
@@ -84,7 +84,7 @@ def main():
   mi["actor"].eval()
 
   # Describe more!
-  console = CheckersConsole(GC, evaluator)
+  console = UgolkiConsole(GC, evaluator)
 
   def human_actor(batch):
     return console.prompt("", batch)
@@ -106,11 +106,11 @@ def main():
       same method on the python side. 
       When our AIClientT calls method act(it takes 2 parameters: state, and key)
       act connect to python and transmits the state by 
-      key("human_actor", "checkers_actor_black")
+      key("human_actor", "actor_black")
       to these methods
   """
   GC.reg_callback_if_exists("human_actor", human_actor)
-  GC.reg_callback_if_exists("checkers_actor_black", actor)
+  GC.reg_callback_if_exists("actor_black", actor)
   GC.start()
   # Tells the С++ side the model version
   GC.GC.getClient().setRequest(

@@ -165,17 +165,17 @@ class CheckersStateExtOffline {
 
   bool switchRandomMove(std::mt19937* rng) {
     // Random sample one move
-    if ((int)_offline_all_moves.size() <= _game_options.checkers_num_future_actions - 1) {
+    if ((int)_offline_all_moves.size() <= _game_options.num_future_actions - 1) {
       _logger->warn(
           "[{}] #moves {} smaller than {} - 1",
           _game_idx,
           _offline_all_moves.size(),
-          _game_options.checkers_num_future_actions);
+          _game_options.num_future_actions);
       exit(0);
       return false;
     }
     size_t move_to = (*rng)() %
-        (_offline_all_moves.size() - _game_options.checkers_num_future_actions + 1);
+        (_offline_all_moves.size() - _game_options.num_future_actions + 1);
     switchBeforeMove(move_to);
     return true;
   }

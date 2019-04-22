@@ -160,7 +160,7 @@ void ClientGameSelfPlay::restart() {
   checkers_ai2.reset(nullptr);
   if (_game_options.mode == "selfplay") {
     checkers_ai1.reset(init_checkers_ai(
-        "checkers_actor_black",
+        "actor_black",
         checkers_request.vers.mcts_opt,
         -1.0,
         -1,
@@ -168,7 +168,7 @@ void ClientGameSelfPlay::restart() {
         checkers_async ? -1 : checkers_request.vers.black_ver));
     if (checkers_request.vers.white_ver >= 0) {
       checkers_ai2.reset(init_checkers_ai(
-          "checkers_actor_white",
+          "actor_white",
           checkers_request.vers.mcts_opt,
           _checkers_state_ext.gameOptions().white_puct,
           _checkers_state_ext.gameOptions().white_mcts_rollout_per_batch,
@@ -181,7 +181,7 @@ void ClientGameSelfPlay::restart() {
     }
   } else if (_game_options.mode == "play") {
     checkers_ai1.reset(init_checkers_ai(
-        "checkers_actor_black",
+        "actor_black",
         checkers_request.vers.mcts_opt,
         -1.0,
         -1,
@@ -307,13 +307,13 @@ void ClientGameSelfPlay::act() {
       CheckersFeature cf(cs);
       CheckersReply   creply(cf);
       
-      AIClientT ai_black(client_, {"checkers_actor_black"});
+      AIClientT ai_black(client_, {"actor_black"});
       ai_black.act(cf, &creply);
 
       if (client_->DoStopGames())
         return;
 
-      AIClientT ai_white(client_, {"checkers_actor_white"});
+      AIClientT ai_white(client_, {"actor_white"});
       ai_white.act(cf, &creply);
 
       elf::FuncsWithState funcs = client_->BindStateToFunctions(
