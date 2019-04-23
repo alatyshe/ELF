@@ -13,13 +13,13 @@ ClientGameSelfPlay::ClientGameSelfPlay(
     int game_idx,
     elf::GameClient* client,
     const ContextOptions& context_options,
-    const CheckersGameOptions& game_options,
+    const GameOptions& game_options,
     ThreadedDispatcher* dispatcher,
     CheckersGameNotifierBase* checkers_notifier)
     : GameBase(game_idx, client, context_options, game_options),
       dispatcher_(dispatcher),
       checkers_notifier_(checkers_notifier),
-      _checkers_state_ext(game_idx, game_options),
+      _game_state_ext(game_idx, game_options),
       logger_(elf::logging::getIndexedLogger(
           MAGENTA_B + std::string("|++|") + COLOR_END + 
           "ClientGameSelfPlay-" + std::to_string(game_idx) + "-",
@@ -27,15 +27,15 @@ ClientGameSelfPlay::ClientGameSelfPlay(
 }
 
 std::string ClientGameSelfPlay::showBoard() const {
-  return _checkers_state_ext.state().showBoard();
+  return _game_state_ext.state().showBoard();
 }
 
 std::array<int, TOTAL_NUM_ACTIONS> ClientGameSelfPlay::getValidMoves() const {
-  return GetValidMovesBinary(_checkers_state_ext.state().board());
+  return GetValidMovesBinary(_game_state_ext.state().board());
 }
 
 float ClientGameSelfPlay::getScore() {
-  return _checkers_state_ext.state().evaluateGame();
+  return _game_state_ext.state().evaluateGame();
 }
 
 MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
@@ -96,7 +96,7 @@ Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_a
 
   // make random move if diverse_policy == true
   bool diverse_policy =
-      _checkers_state_ext.state().getPly() <= _game_options.policy_distri_cutoff;
+      _game_state_ext.state().getPly() <= _game_options.policy_distri_cutoff;
   if (diverse_policy) {
     // Sample from the policy.
     c = policy.sampleAction(&_rng);
@@ -104,7 +104,7 @@ Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_a
 
   if (_game_options.policy_distri_training_for_all || diverse_policy) {
     // [TODO]: Warning: MCTS Policy might not correspond to move idx.
-    _checkers_state_ext.addMCTSPolicy(policy);
+    _game_state_ext.addMCTSPolicy(policy);
   }
 
   return c;
@@ -113,35 +113,35 @@ Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_a
 Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
   float predicted_value = mcts_checkers_ai->getValue();
 
-  _checkers_state_ext.addPredictedValue(predicted_value);
+  _game_state_ext.addPredictedValue(predicted_value);
 
   if (!_game_options.dump_record_prefix.empty()) {
-    _checkers_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
+    _game_state_ext.saveCurrentTree(mcts_checkers_ai->getCurrentTree());
   }
   return c;
 }
 
 void ClientGameSelfPlay::finish_game() {
   // My code
-  _checkers_state_ext.setFinalValue();
+  _game_state_ext.setFinalValue();
   // show board
-  _checkers_state_ext.showFinishInfo();
+  _game_state_ext.showFinishInfo();
 
   // if (!_game_options.dump_record_prefix.empty()) {
   //   _state_ext.dumpSgf();
   // }
 
   // reset tree if MCTS_AI, otherwise just do nothing
-  checkers_ai1->endGame(_checkers_state_ext.state());
+  checkers_ai1->endGame(_game_state_ext.state());
   if (checkers_ai2 != nullptr) {
-    checkers_ai2->endGame(_checkers_state_ext.state());
+    checkers_ai2->endGame(_game_state_ext.state());
   }
   // Says python that game is over.
   if (checkers_notifier_ != nullptr){
-    checkers_notifier_->OnGameEnd(_checkers_state_ext);
+    checkers_notifier_->OnGameEnd(_game_state_ext);
   }
   // My code
-  _checkers_state_ext.restart();
+  _game_state_ext.restart();
 }
 
 void ClientGameSelfPlay::setAsync() {
@@ -149,11 +149,11 @@ void ClientGameSelfPlay::setAsync() {
   if (checkers_ai2 != nullptr)
     checkers_ai2->setRequiredVersion(-1);
 
-  _checkers_state_ext.addCurrentModel();
+  _game_state_ext.addCurrentModel();
 }
 
 void ClientGameSelfPlay::restart() {
-  const MsgRequest& checkers_request = _checkers_state_ext.currRequest();
+  const MsgRequest& checkers_request = _game_state_ext.currRequest();
   bool checkers_async = checkers_request.client_ctrl.async;
 
   checkers_ai1.reset(nullptr);
@@ -170,9 +170,9 @@ void ClientGameSelfPlay::restart() {
       checkers_ai2.reset(init_checkers_ai(
           "actor_white",
           checkers_request.vers.mcts_opt,
-          _checkers_state_ext.gameOptions().white_puct,
-          _checkers_state_ext.gameOptions().white_mcts_rollout_per_batch,
-          _checkers_state_ext.gameOptions().white_mcts_rollout_per_thread,
+          _game_state_ext.gameOptions().white_puct,
+          _game_state_ext.gameOptions().white_mcts_rollout_per_batch,
+          _game_state_ext.gameOptions().white_mcts_rollout_per_thread,
           checkers_async ? -1 : checkers_request.vers.white_ver));
     }
     if (!checkers_request.vers.is_selfplay() && checkers_request.client_ctrl.player_swap) {
@@ -192,7 +192,7 @@ void ClientGameSelfPlay::restart() {
     logger_->critical("Unknown mode! {}", _game_options.mode);
     throw std::range_error("Unknown mode");
   }
-  _checkers_state_ext.restart();
+  _game_state_ext.restart();
 }
 
 bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* reply) {
@@ -201,19 +201,19 @@ bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* repl
     return false;
 
   bool is_waiting = request.vers.wait();
-  bool is_prev_waiting = _checkers_state_ext.currRequest().vers.wait();
+  bool is_prev_waiting = _game_state_ext.currRequest().vers.wait();
 
   if (_game_options.verbose && !(is_waiting && is_prev_waiting)) {
     logger_->debug(
         "Receive request: {}, old: {}",
         (!is_waiting ? request.info() : "[wait]"),
-        (!is_prev_waiting ? _checkers_state_ext.currRequest().info() : "[wait]"));
+        (!is_prev_waiting ? _game_state_ext.currRequest().info() : "[wait]"));
   }
 
-  bool same_vers = (request.vers == _checkers_state_ext.currRequest().vers);
+  bool same_vers = (request.vers == _game_state_ext.currRequest().vers);
   bool same_player_swap =
       (request.client_ctrl.player_swap ==
-       _checkers_state_ext.currRequest().client_ctrl.player_swap);
+       _game_state_ext.currRequest().client_ctrl.player_swap);
 
   bool async = request.client_ctrl.async;
 
@@ -221,7 +221,7 @@ bool ClientGameSelfPlay::OnReceive(const MsgRequest& request, RestartReply* repl
       (same_vers || async) && same_player_swap && !is_prev_waiting;
 
   // Then we need to reset everything.
-  _checkers_state_ext.setRequest(request);
+  _game_state_ext.setRequest(request);
 
   if (is_waiting) {
     *reply = RestartReply::ONLY_WAIT;
@@ -253,19 +253,19 @@ void ClientGameSelfPlay::act() {
     auto f = std::bind(&ClientGameSelfPlay::OnReceive, this, _1, _2);
 
     do {
-      dispatcher_->checkMessage(_checkers_state_ext.currRequest().vers.wait(), f);
-    } while (_checkers_state_ext.currRequest().vers.wait());
+      dispatcher_->checkMessage(_game_state_ext.currRequest().vers.wait(), f);
+    } while (_game_state_ext.currRequest().vers.wait());
 
     // Check request every 5 times.
     // Update current state.
     if (checkers_notifier_ != nullptr) {
-      checkers_notifier_->OnStateUpdate(_checkers_state_ext.getThreadState());
+      checkers_notifier_->OnStateUpdate(_game_state_ext.getThreadState());
     }
   }
   _online_counter++;
 
 
-  const CheckersState& cs = _checkers_state_ext.state();
+  const CheckersState& cs = _game_state_ext.state();
   // just display board on every move
   if (_human_player != nullptr)
     std::cout << cs.showBoard() << std::endl;
@@ -274,7 +274,7 @@ void ClientGameSelfPlay::act() {
   if (_human_player != nullptr 
         && cs.currentPlayer() == _game_options.human_plays_for) {
     do {
-      CheckersFeature cf(cs);
+      BoardFeature cf(cs);
       CheckersReply   creply(cf);
       _human_player->act(cf, &creply);
 
@@ -290,7 +290,7 @@ void ClientGameSelfPlay::act() {
         return;
       }
 
-      if (_checkers_state_ext.forward(creply.c)) {
+      if (_game_state_ext.forward(creply.c)) {
         if (cs.terminated()) {
           finish_game();
         }
@@ -304,7 +304,7 @@ void ClientGameSelfPlay::act() {
 
     if (client_->checkPrepareToStop()) {
       // [TODO] A lot of hack here. We need to fix it later.
-      CheckersFeature cf(cs);
+      BoardFeature cf(cs);
       CheckersReply   creply(cf);
       
       AIClientT ai_black(client_, {"actor_black"});
@@ -317,10 +317,10 @@ void ClientGameSelfPlay::act() {
       ai_white.act(cf, &creply);
 
       elf::FuncsWithState funcs = client_->BindStateToFunctions(
-          {"game_start"}, &_checkers_state_ext.currRequest().vers);
+          {"game_start"}, &_game_state_ext.currRequest().vers);
       client_->sendWait({"game_start"}, &funcs);
 
-      funcs = client_->BindStateToFunctions({"game_end"}, &_checkers_state_ext.state());
+      funcs = client_->BindStateToFunctions({"game_end"}, &_game_state_ext.state());
       client_->sendWait({"game_end"}, &funcs);
 
       logger_->info("Received command to prepare to stop");
@@ -332,7 +332,7 @@ void ClientGameSelfPlay::act() {
   int current_player = cs.currentPlayer();
   Coord move = M_INVALID;
 
-  CheckersFeature cf(cs);
+  BoardFeature cf(cs);
   CheckersReply   creply(cf);
 
   bool use_policy_network_only =
@@ -355,7 +355,7 @@ void ClientGameSelfPlay::act() {
   move = mcts_update_info(curr_ai, move);
 
   // make move
-  if (!_checkers_state_ext.forward(move)) {
+  if (!_game_state_ext.forward(move)) {
     logger_->error(
         "Something is wrong! Move {} cannot be applied\nCurrent board: "
         "{}\n[{}] Propose move {}\n",
@@ -373,9 +373,9 @@ void ClientGameSelfPlay::act() {
 
 // Gui
 std::array<std::array<int, 8>, 8> ClientGameSelfPlay::getBoard() const {
-  return _checkers_state_ext.state().getBoard();
+  return _game_state_ext.state().getBoard();
 }
 
 int ClientGameSelfPlay::getCurrentPlayer() const {
-  return _checkers_state_ext.state().currentPlayer();
+  return _game_state_ext.state().currentPlayer();
 }

@@ -9,14 +9,14 @@
 // elf
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
-// checkers
+
 #include "../common/record.h"
 #include "../checkers/Record.h"
 #include "data_loader.h"
 
 inline elf::shared::Options getNetOptions(
     const ContextOptions& context_options,
-    const CheckersGameOptions& game_options) {
+    const GameOptions& game_options) {
   elf::shared::Options netOptions;
   
   netOptions.addr =

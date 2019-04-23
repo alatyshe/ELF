@@ -1,8 +1,8 @@
 #pragma once
 
 // checkers
-#include "CheckersBoard.h"
-#include "CheckersFeature.h"
+#include "GameBoard.h"
+#include "BoardFeature.h"
 
 class CheckersState {
  public:
@@ -33,7 +33,7 @@ class CheckersState {
     return _final_value;
   }
 
-  const CheckersBoard& board() const {
+  const GameBoard& board() const {
     return _board;
   }
 
@@ -83,10 +83,10 @@ class CheckersState {
   }
 
  protected:
-  CheckersBoard _board;
+  GameBoard _board;
 
   // History for our net(dont use now)
-  std::deque<CheckersBoardHistory> _history;
+  std::deque<GameBoardHistory> _history;
   // history of moves for current board
   std::vector<Coord> _moves;
 

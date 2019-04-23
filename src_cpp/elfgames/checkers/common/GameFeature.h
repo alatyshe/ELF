@@ -10,23 +10,23 @@
 
 // elf
 #include "elf/base/extractor.h"
-// checkers
+
 #include "../checkers/CheckersState.h"
-#include "../checkers/CheckersStateExt.h"
+#include "../checkers/GameStateExt.h"
 
 /*
   This Class responsible for data exchange between C++ and python.
 */
 class GameFeature {
  public:
-  GameFeature(const CheckersGameOptions& game_options) : 
+  GameFeature(const GameOptions& game_options) : 
       game_options_(game_options) {
     num_plane_ = NUM_FEATURES;
   }
   // Inference part.
   // Write the state of the game board in the memory cell
   static void extractCheckersState(
-      const CheckersFeature& bf, 
+      const BoardFeature& bf, 
       float* f) {
     bf.extract(f);
   }
@@ -60,33 +60,33 @@ class GameFeature {
   // /////////////
   // // Training part.
   static void extractCheckersMoveIdx(
-      const CheckersStateExtOffline& s, 
+      const GameStateExtOffline& s, 
       int* move_idx) {
     // Current move number
     *move_idx = s._state.getPly() - 1;
   }
 
   static void extractCheckersNumMove(
-      const CheckersStateExtOffline& s, 
+      const GameStateExtOffline& s, 
       int* num_move) {
     // Total move number
     *num_move = s.getNumMoves();
   }
 
   static void extractCheckersPredictedValue(
-      const CheckersStateExtOffline& s, 
+      const GameStateExtOffline& s, 
       float* predicted_value) {
     *predicted_value = s.getPredictedValue(s._state.getPly() - 1);
   }
 
   static void extractCheckersWinner(
-      const CheckersStateExtOffline& s, 
+      const GameStateExtOffline& s, 
       float* winner) {
     *winner = s._offline_winner;
   }
 
-  static void extractCheckersStateExt(
-      const CheckersStateExtOffline& s, 
+  static void GameStateExt(
+      const GameStateExtOffline& s, 
       float* f) {
     // Then send the data to the server.
     extractCheckersState(s._bf, f);
@@ -94,7 +94,7 @@ class GameFeature {
 
   // check it
   static void extractCheckersMCTSPi(
-      const CheckersStateExtOffline& s, 
+      const GameStateExtOffline& s, 
       float* mcts_scores) {
 
     const size_t move_to = s._state.getPly() - 1;
@@ -121,9 +121,9 @@ class GameFeature {
   }
 
   static void extractCheckersOfflineAction(
-      const CheckersStateExtOffline& s, 
+      const GameStateExtOffline& s, 
       int64_t* offline_a) {
-    const CheckersFeature& bf = s._bf;
+    const BoardFeature& bf = s._bf;
 
     std::fill(offline_a, offline_a + s._game_options.num_future_actions, 0);
     const size_t move_to = s._state.getPly() - 1;
@@ -134,7 +134,7 @@ class GameFeature {
   }
 
   static void extractCheckersStateSelfplayVersion(
-      const CheckersStateExtOffline& s, 
+      const GameStateExtOffline& s, 
       int64_t* ver) {
     *ver = s._curr_request.vers.black_ver;
   }
@@ -164,8 +164,8 @@ class GameFeature {
       batchsize, {batchsize, num_plane_, BOARD_SIZE, BOARD_SIZE});
     // Binds methods to this key.
     // We use these methods to fill the memory and pass this info to the Python.
-    s.addFunction<CheckersFeature>(extractCheckersState)
-      .addFunction<CheckersStateExtOffline>(extractCheckersStateExt);
+    s.addFunction<BoardFeature>(extractCheckersState)
+      .addFunction<GameStateExtOffline>(GameStateExt);
 
 
     // Register the rest of the keys 
@@ -192,7 +192,7 @@ class GameFeature {
         .addFunction<float>("V", CheckersReplyValue)
         .addFunction<int64_t>("rv", CheckersReplyVersion);
 
-    e.addClass<CheckersStateExtOffline>()
+    e.addClass<GameStateExtOffline>()
         .addFunction<int32_t>("move_idx", extractCheckersMoveIdx)
         .addFunction<int32_t>("num_move", extractCheckersNumMove)
         .addFunction<float>("predicted_value", extractCheckersPredictedValue)
@@ -222,7 +222,7 @@ class GameFeature {
   }
 
  private:
-  CheckersGameOptions game_options_;
+  GameOptions game_options_;
   // number of characteristics.
   int                 num_plane_;
 };

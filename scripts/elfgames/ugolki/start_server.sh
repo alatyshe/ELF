@@ -51,8 +51,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--eval_num_games 50 \
 	\
 	--verbose \
-
-	# 1>> server_log.log 2>&1 &
+	1>> server_log.log 2>&1 &
 
 	# \
 	

@@ -13,7 +13,7 @@
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elf/utils/utils.h"
-// checkers
+
 #include "GameFeature.h"
 
 /*
@@ -31,7 +31,7 @@ class GameBase {
       int game_idx,
       elf::GameClient* client,
       const ContextOptions& context_options,
-      const CheckersGameOptions& game_options)
+      const GameOptions& game_options)
       : client_(client),
         _game_idx(game_idx),
         _game_options(game_options),
@@ -77,7 +77,7 @@ class GameBase {
 
   int _game_idx = -1;
 
-  CheckersGameOptions _game_options;
+  GameOptions _game_options;
   ContextOptions _context_options;
 
  private:

@@ -229,7 +229,7 @@ class Loader(object):
 		if self.options.parameter_print:
 			co.print()
 
-		game_opt = checkers.CheckersGameOptions()
+		game_opt = checkers.GameOptions()
 
 		game_opt.seed = 0
 		game_opt.list_files = self.options.list_files
@@ -297,7 +297,7 @@ class Loader(object):
 		GC = checkers.GameContext(co, game_opt)
 
 		if self.options.parameter_print:
-			print("************ CheckersGameOptions ************")
+			print("**************** GameOptions ****************")
 			print(game_opt.info())
 			print("*********************************************")
 			print("Version: ", GC.ctx().version())

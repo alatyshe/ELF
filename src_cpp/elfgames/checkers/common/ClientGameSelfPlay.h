@@ -26,8 +26,8 @@
 #include "GameStats.h"
 #include "Notifier.h"
 
-#include "../checkers/CheckersStateExt.h"
-#include "../checkers/CheckersFeature.h"
+#include "../checkers/GameStateExt.h"
+#include "../checkers/BoardFeature.h"
 #include "../checkers/CheckersState.h"
 
 /*
@@ -36,7 +36,7 @@
   ThreadedDispatcher - checks messages from server(update model version, eval 2 models etc).
   CheckersGameNotifierBase - Used to call the game_end python function from selfplay.py
       Displays statistics about the game from python side and contain records of finished games.
-  CheckersStateExt - Generates batches, dumps finished games to records(json) etc.
+  GameStateExt - Generates batches, dumps finished games to records(json) etc.
   checkers_ai1 - uses MCTS for searching best action. Responsible for
       generating batches for training the neural network.
   checkers_ai2 - also uses MCTS. Initialized only when the client receives
@@ -55,7 +55,7 @@ class ClientGameSelfPlay : public GameBase {
       int game_idx,
       elf::GameClient* client,
       const ContextOptions& context_options,
-      const CheckersGameOptions& game_options,
+      const GameOptions& game_options,
       ThreadedDispatcher* dispatcher,
       CheckersGameNotifierBase* checkers_notifier = nullptr);
 
@@ -89,7 +89,7 @@ class ClientGameSelfPlay : public GameBase {
  private:
   ThreadedDispatcher* dispatcher_ = nullptr;
   CheckersGameNotifierBase* checkers_notifier_ = nullptr;
-  CheckersStateExt _checkers_state_ext;
+  GameStateExt _game_state_ext;
 
   int _online_counter = 0;
   std::unique_ptr<MCTSCheckersAI> checkers_ai1;

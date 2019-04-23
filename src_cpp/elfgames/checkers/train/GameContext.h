@@ -44,7 +44,7 @@ class GameContext {
  	using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
 
 	GameContext(const ContextOptions& contextOptions, 
-							const CheckersGameOptions& gameOptions)
+							const GameOptions& gameOptions)
 			: gameFeature_(gameOptions),
 				logger_(elf::logging::getIndexedLogger(
 					MAGENTA_B + std::string("|++|") + COLOR_END + 

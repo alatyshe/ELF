@@ -50,7 +50,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
       Ctrl&             ctrl,
       elf::GameClient*  client,
       ReplayBuffer*     replay_buffer,
-      const CheckersGameOptions&  gameOptions,
+      const GameOptions&  gameOptions,
       const elf::ai::tree_search::TSOptions& mcts_opt)
       : ThreadedCtrlBase(ctrl, 10000),
         replay_buffer_(replay_buffer),
@@ -227,7 +227,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
   bool eval_mode_ = false;
 
-  const CheckersGameOptions gameOptions_;
+  const GameOptions gameOptions_;
   elf::GameClient* client_ = nullptr;
   std::mt19937 rng_;
 
@@ -290,10 +290,10 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 class TrainCtrl : public DataInterface {
  public:
   TrainCtrl(
-      Ctrl&                       ctrl,
-      int                         num_games,
-      elf::GameClient*            client,
-      const CheckersGameOptions&  gameOptions,
+      Ctrl&                   ctrl,
+      int                     num_games,
+      elf::GameClient*        client,
+      const GameOptions&      gameOptions,
       const elf::ai::tree_search::TSOptions& mcts_opt)
       : ctrl_(ctrl),
         rng_(time(NULL)),
@@ -381,8 +381,14 @@ class TrainCtrl : public DataInterface {
         const CheckersRecord& r = rs.records[i];
 
         bool black_win = r.result.reward > 0;
+        // fill records
+        // insert_info +=
+        //     replay_buffer_->Insert(CheckersRecord(r), &rng_);
         insert_info +=
             replay_buffer_->InsertWithParity(CheckersRecord(r), &rng_, black_win);
+
+
+
         selfplay_record_.feed(r);
         selfplay_record_.saveAndClean(1000);
       }
@@ -394,7 +400,7 @@ class TrainCtrl : public DataInterface {
     threaded_ctrl_->checkNewModel(client_mgr_.get());
     recv_count_++;
 
-    if (recv_count_ % 100 == 0) {
+    if (recv_count_ % 10 == 0) {
       int valid_selfplay = 0, valid_eval = 0;
       for (size_t i = 0; i < rs.records.size(); ++i) {
         if (selfplay_res[i] == FeedResult::FEEDED)
@@ -413,7 +419,7 @@ class TrainCtrl : public DataInterface {
           valid_selfplay,
           valid_eval);
 
-      // logger_->info("{}", replay_buffer_->info());
+      logger_->info("{}", replay_buffer_->info());
     }
 
     return insert_info;

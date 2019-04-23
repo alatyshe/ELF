@@ -34,7 +34,7 @@ class ModelPerfomance {
 	};
 
 	ModelPerfomance(
-			const CheckersGameOptions& gameOptions,
+			const GameOptions& gameOptions,
 			const ClientManager& mgr,
 			const ModelPair& p)
 			: gameOptions_(gameOptions),
@@ -195,7 +195,7 @@ class ModelPerfomance {
 	}
 
  private:
-	const CheckersGameOptions&	gameOptions_;
+	const GameOptions&	gameOptions_;
 	const ModelPair							curr_pair_;
 
 	// For each machine + game_id, the list of rewards.
@@ -278,7 +278,7 @@ class ModelPerfomance {
 
 class EvalSubCtrl {
  public:
-	EvalSubCtrl(const CheckersGameOptions& gameOptions, const TSOptions& mcts_options)
+	EvalSubCtrl(const GameOptions& gameOptions, const TSOptions& mcts_options)
 			: gameOptions_(gameOptions),
 				logger_(elf::logging::getIndexedLogger(
 							MAGENTA_B + std::string("|++|") + COLOR_END + 
@@ -398,7 +398,7 @@ class EvalSubCtrl {
  private:
 	mutable std::mutex		mutex_;
 
-	CheckersGameOptions 	gameOptions_;
+	GameOptions 					gameOptions_;
 	TSOptions							mcts_opt_;
 
 	int64_t								best_baseline_model_ = -1;

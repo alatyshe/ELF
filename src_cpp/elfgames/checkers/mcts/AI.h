@@ -14,10 +14,10 @@
 // elf
 #include "elf/ai/ai.h"
 #include "elf/ai/tree_search/tree_search_base.h"
-// checkers
+
 #include "../checkers/CheckersState.h"
 
-using AIClientT = elf::ai::AIClientT<CheckersFeature, CheckersReply>;
+using AIClientT = elf::ai::AIClientT<BoardFeature, CheckersReply>;
 
 namespace elf {
 namespace ai {
@@ -42,27 +42,9 @@ struct StateTrait<CheckersState, Coord> {
   static std::string to_string(const CheckersState& s) {
     return "Score Current Board: " + std::to_string(s.evaluateGame());
   }
+
   static bool equals(const CheckersState& s1, const CheckersState& s2) {
-    CheckersBoard b1 = s1.board();
-    CheckersBoard b2 = s2.board();
-
-    int res = 0;
-    
-    for (int y = 0; y < BOARD_SIZE; y++) {
-      for (int x = 0; x < BOARD_SIZE; x++)
-        res += (b1.board[y][x] != b1.board[y][x]);
-    }
-    res += (b1.current_player != b2.current_player);
-    res += (b1.game_ended != b2.game_ended);
-    res += (b1.jump_y != b2.jump_y);
-    res += (b1.jump_x != b2.jump_x);
-    res += (b1.white_must_leave_base != b2.white_must_leave_base);
-    res += (b1.black_must_leave_base != b2.black_must_leave_base);
-    res += (b1._last_move != b2._last_move);
-    res += (b1._ply != b2._ply);
-
-    return res == 0;
-
+    return compareBoards(s1.board(), s2.board());
   }
 
   static bool moves_since(

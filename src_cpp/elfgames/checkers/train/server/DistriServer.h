@@ -24,7 +24,7 @@ class DistriServer {
  public:
 	DistriServer(
 			const ContextOptions& 			contextOptions,
-			const CheckersGameOptions& 	gameOptions,
+			const GameOptions& 	gameOptions,
 			elf::GameClient* 						client)
 			: contextOptions_(contextOptions),
 				gameOptions_(gameOptions),
@@ -137,8 +137,8 @@ class DistriServer {
 	std::unique_ptr<TrainCtrl>				trainCtrl_;
 	std::unique_ptr<DataOnlineLoader>	onlineLoader_;
 
-	const ContextOptions							contextOptions_;
-	const CheckersGameOptions					gameOptions_;
+	const ContextOptions			contextOptions_;
+	const GameOptions					gameOptions_;
 
 	std::shared_ptr<spdlog::logger> 	logger_;
 };

@@ -41,11 +41,11 @@
 
 #define COLOR_END "\u001b[0m"
 
-constexpr uint64_t NUM_FEATURES = 2;
+constexpr uint64_t NUM_FEATURES = 4;
 constexpr uint64_t TOTAL_NUM_ACTIONS = 418;
 
 // Max move for game
-constexpr int TOTAL_MAX_MOVE = 150;
+constexpr int TOTAL_MAX_MOVE = 50;
 
 # define M_INVALID 419
 
@@ -53,7 +53,7 @@ typedef unsigned short Coord;
 
 
 typedef struct {
-  int    board[8][8];
+  std::array<std::array<int, 8>, 8>    board;
   int    current_player;
   bool   game_ended;
 
@@ -67,27 +67,28 @@ typedef struct {
   int    _last_move;
   // move number
   int    _ply;
-} CheckersBoard;
+} GameBoard;
 
 
 
 // Инициализация состояния игры
-bool    CheckersTryPlay(CheckersBoard board, int64_t c);
-void    CheckersPlay(CheckersBoard *board, int64_t action_index);
-bool    CheckersIsOver(CheckersBoard board);
+bool    CheckersTryPlay(GameBoard board, int64_t c);
+void    CheckersPlay(GameBoard *board, int64_t action_index);
+bool    CheckersIsOver(GameBoard board);
 
-void    ClearBoard(CheckersBoard *board);
-void    CheckersCopyBoard(CheckersBoard *dst, const CheckersBoard *src);
+void    ClearBoard(GameBoard *board);
+void    CheckersCopyBoard(GameBoard *dst, const GameBoard *src);
+bool    compareBoards(GameBoard b1, GameBoard b2);
 
-std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board);
-std::array<std::array<int, 8>, 8>  GetObservation(const CheckersBoard board, int player);
-std::array<std::array<int, 8>, 8>  GetTrueObservation(const CheckersBoard board);
-std::string                        GetTrueObservationStr(const CheckersBoard board);
+std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(GameBoard board);
+std::array<std::array<int, 8>, 8>  GetObservation(const GameBoard board, int player);
+std::array<std::array<int, 8>, 8>  GetTrueObservation(const GameBoard board);
+std::string                        GetTrueObservationStr(const GameBoard board);
 
 
-std::vector<std::array<int, 2>>   _getJump(CheckersBoard board, int y, int  x);
-std::vector<std::array<int, 2>>   _getJumps(CheckersBoard board);
-std::vector<std::array<int, 2>>   _getMoves(CheckersBoard board);
-std::vector<std::array<int, 2>>   _getAllMoves(CheckersBoard board);
+std::vector<std::array<int, 2>>   _getJump(GameBoard board, int y, int  x);
+std::vector<std::array<int, 2>>   _getJumps(GameBoard board);
+std::vector<std::array<int, 2>>   _getMoves(GameBoard board);
+std::vector<std::array<int, 2>>   _getAllMoves(GameBoard board);
 
 

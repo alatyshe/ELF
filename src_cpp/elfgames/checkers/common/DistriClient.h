@@ -28,7 +28,7 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
   ThreadedWriterCtrl(
       Ctrl& ctrl,
       const ContextOptions& contextOptions,
-      const CheckersGameOptions& game_options)
+      const GameOptions& game_options)
       : ThreadedCtrlBase(ctrl, 0),
         logger_(elf::logging::getIndexedLogger(
             MAGENTA_B + std::string("|++|") + COLOR_END + 
@@ -137,7 +137,7 @@ struct CheckersGuardedRecords {
             "")) {
   }
 
-  void feed(const CheckersStateExt& s) {
+  void feed(const GameStateExt& s) {
     std::lock_guard<std::mutex> lock(mutex_);
     checkersRecords_.addRecord(s.dumpRecord());
   }
@@ -266,7 +266,7 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   CheckersGameNotifier(
       Ctrl& ctrl,
       const std::string& identity,
-      const CheckersGameOptions& game_options,
+      const GameOptions& game_options,
       elf::GameClient* client)
       : ctrl_(ctrl), 
         guardedRecords_(identity), 
@@ -279,7 +279,7 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
         std::bind(&CheckersGameNotifier::dump_records, this, _1, _2));
   }
 
-  void OnGameEnd(const CheckersStateExt& s) override {
+  void OnGameEnd(const GameStateExt& s) override {
     // Add state to records.
     guardedRecords_.feed(s);
 
@@ -309,7 +309,7 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
   Ctrl&                     ctrl_;
   GameStats                 game_stats_;
   CheckersGuardedRecords    guardedRecords_;
-  const CheckersGameOptions gameOptions_;
+  const GameOptions gameOptions_;
   elf::GameClient*          client_ = nullptr;
 
   bool dump_records(const Addr&, std::pair<int, std::string>& data) {
@@ -325,7 +325,7 @@ class DistriClient {
  public:
   DistriClient(
       const ContextOptions& contextOptions,
-      const CheckersGameOptions& game_options,
+      const GameOptions& game_options,
       elf::GameClient* client)
       : contextOptions_(contextOptions),
         gameOptions_(game_options),
@@ -399,7 +399,7 @@ class DistriClient {
   std::unique_ptr<CheckersGameNotifier> checkersGameNotifier_;
 
   const ContextOptions                  contextOptions_;
-  const CheckersGameOptions             gameOptions_;
+  const GameOptions                     gameOptions_;
 
   std::shared_ptr<spdlog::logger>       logger_;
 };

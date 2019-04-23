@@ -11,7 +11,7 @@
 // elf
 #include "elf/distributed/shared_reader.h"
 #include "elf/distributed/shared_rw_buffer2.h"
-// checkers
+
 #include "../common/record.h"
 
 struct DataStats {

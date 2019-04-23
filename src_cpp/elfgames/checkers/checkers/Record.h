@@ -10,7 +10,7 @@
 
 // checkers
 #include "../common/ModelPair.h"
-#include "../checkers/CheckersBoard.h"
+#include "../checkers/GameBoard.h"
 
 using json = nlohmann::json;
 

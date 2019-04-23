@@ -1,6 +1,6 @@
-#include "CheckersStateExt.h"
+#include "GameStateExt.h"
 
-CheckersStateExt::CheckersStateExt(int game_idx, const CheckersGameOptions& game_options)
+GameStateExt::GameStateExt(int game_idx, const GameOptions& game_options)
     : _game_idx(game_idx),
       _last_move_for_the_game(M_INVALID),
       _last_value(0.0),
@@ -8,34 +8,34 @@ CheckersStateExt::CheckersStateExt(int game_idx, const CheckersGameOptions& game
       _logger(
           elf::logging::getIndexedLogger(
             MAGENTA_B + std::string("|++|") + COLOR_END + 
-            "CheckersStateExt-", 
+            "GameStateExt-", 
             "")) {
   restart();
 }
 
-void CheckersStateExt::setRequest(const MsgRequest& request) {
+void GameStateExt::setRequest(const MsgRequest& request) {
   _curr_request = request;
 }
 
-void CheckersStateExt::addCurrentModel() {
+void GameStateExt::addCurrentModel() {
   if (_curr_request.vers.black_ver >= 0)
     _using_models.insert(_curr_request.vers.black_ver);
   if (_curr_request.vers.white_ver >= 0)
     _using_models.insert(_curr_request.vers.white_ver);
 }
 
-const MsgRequest& CheckersStateExt::currRequest() const {
+const MsgRequest& GameStateExt::currRequest() const {
   return _curr_request;
 }
 
-Coord CheckersStateExt::lastMove() const {
+Coord GameStateExt::lastMove() const {
   if (_state.justStarted())
     return _last_move_for_the_game;
   else
     return _state.lastMove();
 }
 
-void CheckersStateExt::restart() {
+void GameStateExt::restart() {
   _last_value = _state.getFinalValue();
   _state.reset();
   _mcts_policies.clear();
@@ -46,7 +46,7 @@ void CheckersStateExt::restart() {
   addCurrentModel();
 }
 
-ThreadState CheckersStateExt::getThreadState() const {
+ThreadState GameStateExt::getThreadState() const {
   ThreadState s;
 
   s.thread_id = _game_idx;
@@ -58,29 +58,29 @@ ThreadState CheckersStateExt::getThreadState() const {
 }
 
 // reward for last game.
-float CheckersStateExt::getLastGameFinalValue() const {
+float GameStateExt::getLastGameFinalValue() const {
   return _last_value;
 }
 
 // Coord c - idx of our move(value between 0-170)
 // and make move
-bool CheckersStateExt::forward(Coord c) {
+bool GameStateExt::forward(Coord c) {
   return _state.forward(c);
 }
 
-int CheckersStateExt::seq() const {
+int GameStateExt::seq() const {
   return _seq;
 }
 
-const CheckersState& CheckersStateExt::state() const {
+const CheckersState& GameStateExt::state() const {
   return _state;
 }
 
-const CheckersGameOptions& CheckersStateExt::gameOptions() const {
+const GameOptions& GameStateExt::gameOptions() const {
   return _game_options;
 }
 
-void CheckersStateExt::showFinishInfo() const {
+void GameStateExt::showFinishInfo() const {
   _logger->info("\n{}", _state.showBoard());
 
   std::string used_model;
@@ -117,7 +117,7 @@ void CheckersStateExt::showFinishInfo() const {
 }
 
 // save tree if --dump_record_prefix not empty
-void CheckersStateExt::saveCurrentTree(const std::string& tree_info) const {
+void GameStateExt::saveCurrentTree(const std::string& tree_info) const {
   // Dump the tree as well.
   std::string filename = _game_options.dump_record_prefix + "_gameidx_" +
       std::to_string(_game_idx) + "_seq_" + std::to_string(_seq) + "_move_" +
@@ -128,7 +128,7 @@ void CheckersStateExt::saveCurrentTree(const std::string& tree_info) const {
   oo << tree_info;
 }
 
-void CheckersStateExt::setFinalValue() {
+void GameStateExt::setFinalValue() {
   float final_value = 0.0;
 
   final_value = _state.evaluateGame();

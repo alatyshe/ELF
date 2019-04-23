@@ -12,7 +12,7 @@ ServerGameTrain::ServerGameTrain(
     int game_idx,
     elf::GameClient* client,
     const ContextOptions& context_options,
-    const CheckersGameOptions& game_options,
+    const GameOptions& game_options,
     elf::shared::ReaderQueuesT<CheckersRecord>* readerQueues)
       : GameBase(game_idx, client, context_options, game_options), 
         readerQueues_(readerQueues),
@@ -21,7 +21,7 @@ ServerGameTrain::ServerGameTrain(
           "ServerGameTrain-" + std::to_string(game_idx) + "-",
           "")) {
   for (size_t i = 0; i < kNumState; ++i) {
-    _checkers_state_ext.emplace_back(new CheckersStateExtOffline(game_idx, game_options));
+    _game_state_ext.emplace_back(new GameStateExtOffline(game_idx, game_options));
   }
   logger_->info("Was succefully created");
 }
@@ -38,14 +38,14 @@ void ServerGameTrain::act() {
       if (r == nullptr) {
         continue;
       }
-      _checkers_state_ext[i]->fromRecord(*r);
+      _game_state_ext[i]->fromRecord(*r);
       // Random pick one ply.
-      if (_checkers_state_ext[i]->switchRandomMove(&_rng))
+      if (_game_state_ext[i]->switchRandomMove(&_rng))
         break;
     }
 
     funcsToSend.push_back(
-        client_->BindStateToFunctions({"train"}, _checkers_state_ext[i].get()));
+        client_->BindStateToFunctions({"train"}, _game_state_ext[i].get()));
   }
 
   // client_->sendWait({"train"}, &funcs);

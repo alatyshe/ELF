@@ -18,7 +18,7 @@
 // checkers
 #include "CtrlUtils.h"
 #include "../client_manager.h"
-#include "../../checkers/CheckersGameOptions.h"
+#include "../../checkers/GameOptions.h"
 
 
 using TSOptions = elf::ai::tree_search::TSOptions;
@@ -32,7 +32,7 @@ using TSOptions = elf::ai::tree_search::TSOptions;
 */
 struct SelfPlayRecord {
  public:
-	SelfPlayRecord(int ver, const CheckersGameOptions& game_options)
+	SelfPlayRecord(int ver, const GameOptions& game_options)
 			: ver_(ver),
 				game_options_(game_options),
 				logger_(elf::logging::getIndexedLogger(
@@ -175,7 +175,7 @@ struct SelfPlayRecord {
  private:
 	// statistics.
 	const int64_t ver_;
-	const CheckersGameOptions& game_options_;
+	const GameOptions& game_options_;
 
 	RecordBuffer recordBuffer_;
 
@@ -209,7 +209,7 @@ class SelfPlaySubCtrl {
 		SUFFICIENT_SAMPLE
 	};
 
-	SelfPlaySubCtrl(const CheckersGameOptions& game_options, const TSOptions& mcts_options)
+	SelfPlaySubCtrl(const GameOptions& game_options, const TSOptions& mcts_options)
 			: game_options_(game_options),
 				mcts_options_(mcts_options),
 				curr_ver_(-1),
@@ -310,9 +310,9 @@ class SelfPlaySubCtrl {
  private:
 	mutable std::mutex mutex_;
 
-	CheckersGameOptions			game_options_;
-	TSOptions								mcts_options_;
-	int64_t									curr_ver_;
+	GameOptions			game_options_;
+	TSOptions				mcts_options_;
+	int64_t					curr_ver_;
 	std::unordered_map<int64_t, std::unique_ptr<SelfPlayRecord>> perfs_;
 
 	int64_t total_selfplay_ = 0;

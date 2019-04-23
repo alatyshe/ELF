@@ -89,7 +89,7 @@ class CheckersMCTSActor {
 		auto& resps = *p_resps;
 
 		resps.resize(states.size());
-		std::vector<CheckersFeature> sel_bfs;
+		std::vector<BoardFeature> sel_bfs;
 		std::vector<size_t> sel_indices;
 
 		for (size_t i = 0; i < states.size(); i++) {
@@ -111,7 +111,7 @@ class CheckersMCTSActor {
 
 		// Get all pointers.
 		std::vector<CheckersReply*> p_replies;
-		std::vector<const CheckersFeature*> p_bfs;
+		std::vector<const BoardFeature*> p_bfs;
 
 		for (size_t i = 0; i < sel_bfs.size(); ++i) {
 			p_bfs.push_back(&sel_bfs[i]);
@@ -137,7 +137,7 @@ class CheckersMCTSActor {
 		PreEvalResult res = pre_evaluate(s, resp);
 
 		if (res == EVAL_NEED_NN) {
-			CheckersFeature bf = get_extractor(s);
+			BoardFeature bf = get_extractor(s);
 			// CheckersReply struct initialization
 			// members containing:
 			// Coord c, vector<float> pi, float v;
@@ -186,8 +186,8 @@ class CheckersMCTSActor {
  private:
 	std::shared_ptr<spdlog::logger> logger_;
 	
-	CheckersFeature get_extractor(const CheckersState& s) {
-		return CheckersFeature(s);
+	BoardFeature get_extractor(const CheckersState& s) {
+		return BoardFeature(s);
 	}
 
 	/*
@@ -254,7 +254,7 @@ class CheckersMCTSActor {
 	// with inv-transform considered, remove invalid moves, normalize
 	// output_pi
 	static void pi2response(
-			const CheckersFeature& bf,
+			const BoardFeature& bf,
 			const std::vector<float>& pi,
 			std::vector<std::pair<Coord, float>>* output_pi,
 			std::ostream* oo = nullptr) {

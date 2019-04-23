@@ -20,7 +20,7 @@ void registerPy(pybind11::module& m) {
   auto ref = py::return_value_policy::reference_internal;
 
   py::class_<GameContext>(m, "GameContext")
-      .def(py::init<const ContextOptions&, const CheckersGameOptions&>())
+      .def(py::init<const ContextOptions&, const GameOptions&>())
       .def("ctx", &GameContext::ctx, ref)
       .def("getParams", &GameContext::getParams)
       .def("getGame", &GameContext::getGame, ref)
@@ -44,9 +44,9 @@ void registerPy(pybind11::module& m) {
       .def(py::init<>())
       .def("print", &ContextOptions::print);
 
-  PYCLASS_WITH_FIELDS(m, CheckersGameOptions)
+  PYCLASS_WITH_FIELDS(m, GameOptions)
       .def(py::init<>())
-      .def("info", &CheckersGameOptions::info);
+      .def("info", &GameOptions::info);
 
   PYCLASS_WITH_FIELDS(m, WinRateStats).def(py::init<>());
 

@@ -3,24 +3,24 @@
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
 // checkers
-#include "CheckersBoard.h"
+#include "GameBoard.h"
 
 // Do not used yet
-struct CheckersBoardHistory {
-  CheckersBoard board;
+struct GameBoardHistory {
+  GameBoard board;
 
   // Copy position of the pawns and kings on the board.
-  CheckersBoardHistory(const CheckersBoard& b) {
+  GameBoardHistory(const GameBoard& b) {
     CheckersCopyBoard(&board, &b);
   }
 };
 
 class CheckersState;
 
-class CheckersFeature {
+class BoardFeature {
  public:
 
-  CheckersFeature(const CheckersState& s) 
+  BoardFeature(const CheckersState& s) 
       : s_(s) {
   }
   const CheckersState& state() const {
@@ -44,7 +44,7 @@ class CheckersFeature {
   and wait until fields will be filled by python side.
 */
 struct CheckersReply {
-  const CheckersFeature& bf;
+  const BoardFeature& bf;
   // Best action
   int c;
   // Policy prediction, representing the model’s priors 
@@ -56,7 +56,7 @@ struct CheckersReply {
   // Model version.
   int64_t version = -1;
 
-  CheckersReply(const CheckersFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
+  CheckersReply(const BoardFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
   }
   
   std::string   info() {

@@ -7,8 +7,8 @@
 #include "elf/logging/IndexedLoggerFactory.h"
 // checkers
 #include "CheckersState.h"
-#include "CheckersFeature.h"
-#include "CheckersGameOptions.h"
+#include "BoardFeature.h"
+#include "GameOptions.h"
 #include "../common/record.h"
 #include "../sgf/sgf.h"
 #include "Record.h"
@@ -24,9 +24,9 @@ enum CheckersFinishReason {
   calls from start_client.sh
   Generates batches for server
 */
-struct CheckersStateExt {
+struct GameStateExt {
  public:
-  CheckersStateExt(int game_idx, const CheckersGameOptions& game_options);
+  GameStateExt(int game_idx, const GameOptions& game_options);
 
   void setRequest(const MsgRequest& request);
   void addCurrentModel();
@@ -39,7 +39,7 @@ struct CheckersStateExt {
   bool forward(Coord c);
   int seq() const;
   const CheckersState& state() const;
-  const CheckersGameOptions& gameOptions() const;
+  const GameOptions& gameOptions() const;
   void saveCurrentTree(const std::string& tree_info) const;
   void setFinalValue();
 
@@ -114,7 +114,7 @@ struct CheckersStateExt {
   CheckersState _state;
   
   MsgRequest _curr_request;
-  CheckersGameOptions _game_options;
+  GameOptions _game_options;
 
   std::vector<CheckersCoordRecord> _mcts_policies;
   // board value
@@ -127,17 +127,17 @@ struct CheckersStateExt {
   Server Side
   calls from start_server.sh
 */
-class CheckersStateExtOffline {
+class GameStateExtOffline {
  public:
   friend class GameFeature;
 
-  CheckersStateExtOffline(int game_idx, const CheckersGameOptions& game_options)
+  GameStateExtOffline(int game_idx, const GameOptions& game_options)
       : _game_idx(game_idx),
         _bf(_state),
         _game_options(game_options),
         _logger(elf::logging::getIndexedLogger(
             MAGENTA_B + std::string("|++|") + COLOR_END + 
-            "CheckersStateExtOffline-",
+            "GameStateExtOffline-",
             "")) {
   }
 
@@ -200,8 +200,8 @@ class CheckersStateExtOffline {
  private:
   const int _game_idx;
   CheckersState _state;
-  CheckersFeature _bf;
-  CheckersGameOptions _game_options;
+  BoardFeature _bf;
+  GameOptions _game_options;
 
   int _seq;
   MsgRequest _curr_request;

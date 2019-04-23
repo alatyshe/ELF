@@ -326,6 +326,8 @@ class Model_PolicyValue(Model):
 		# print("FORWARD")
 		# приводим в нормальный вид
 		s = self._var(x["s"])
+
+		# print("s : ", s)
 		s = self.init_conv(s)
 
 		s = self.resnet(s)

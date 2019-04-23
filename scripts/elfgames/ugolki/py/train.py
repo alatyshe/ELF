@@ -17,6 +17,12 @@ import torch
 from elf import logging
 from rlpytorch import load_env, SingleProcessRun, Trainer
 
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
+
+
+
+
 matcher = re.compile(r"save-(\d+).bin")
 
 def main():

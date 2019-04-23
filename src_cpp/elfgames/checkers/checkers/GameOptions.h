@@ -8,7 +8,7 @@
 #include "elf/utils/utils.h"
 
 // Options filled in game.py
-struct CheckersGameOptions {
+struct GameOptions {
   // Seed.
   unsigned int seed;
   int num_future_actions = 0;
@@ -86,7 +86,7 @@ struct CheckersGameOptions {
 
   std::string time_signature;
 
-  CheckersGameOptions() {
+  GameOptions() {
     time_signature = elf_utils::time_signature();
   }
 
