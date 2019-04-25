@@ -15,7 +15,6 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-// checkers
 #include "ModelPair.h"
 #include "../sgf/sgf.h"
 

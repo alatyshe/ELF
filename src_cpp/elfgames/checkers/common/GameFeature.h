@@ -11,8 +11,8 @@
 // elf
 #include "elf/base/extractor.h"
 
-#include "../checkers/CheckersState.h"
-#include "../checkers/GameStateExt.h"
+#include "../game/GameState.h"
+#include "../game/GameStateExt.h"
 
 /*
   This Class responsible for data exchange between C++ and python.

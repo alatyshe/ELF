@@ -10,10 +10,10 @@
 
 // elf
 #include "elf/ai/tree_search/mcts.h"
-// checkers
+
 #include "record.h"
-#include "../checkers/Record.h"
-#include "../mcts/MCTSCheckersActor.h"
+#include "../game/Record.h"
+#include "../mcts/MCTSGameActor.h"
 
 
 /*

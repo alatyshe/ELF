@@ -72,7 +72,7 @@ int GameStateExt::seq() const {
   return _seq;
 }
 
-const CheckersState& GameStateExt::state() const {
+const GameState& GameStateExt::state() const {
   return _state;
 }
 

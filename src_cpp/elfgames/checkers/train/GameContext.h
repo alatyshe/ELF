@@ -17,7 +17,7 @@
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+
 #include "../common/ClientGameSelfPlay.h"
 #include "../common/DistriClient.h"
 #include "../common/record.h"

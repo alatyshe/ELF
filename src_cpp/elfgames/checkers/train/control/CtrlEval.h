@@ -14,7 +14,7 @@
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/logging/IndexedLoggerFactory.h"
 #include "elf/utils/utils.h"
-// checkers
+
 #include "CtrlUtils.h"
 #include "../client_manager.h"
 #include "../fair_pick.h"

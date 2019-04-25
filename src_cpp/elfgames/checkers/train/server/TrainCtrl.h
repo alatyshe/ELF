@@ -23,7 +23,7 @@
 #include "elf/concurrency/ConcurrentQueue.h"
 #include "elf/concurrency/Counter.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+
 #include "../data_loader.h"
 #include "../control/CtrlEval.h"
 #include "../control/CtrlSelfplay.h"

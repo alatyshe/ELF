@@ -11,7 +11,7 @@
 #include "elf/legacy/python_options_utils_cpp.h"
 
 #include "../common/record.h"
-#include "../checkers/Record.h"
+#include "../game/Record.h"
 #include "data_loader.h"
 
 inline elf::shared::Options getNetOptions(

@@ -48,7 +48,7 @@ void          ClearBoard(GameBoard* board) {
 	
 
 // делает шаг плучая индекс action
-void        CheckersPlay(GameBoard *board, int64_t action_index) {
+void        Play(GameBoard *board, int64_t action_index) {
 	bool jump = false;
 	board->white_must_leave_base = false;
 	board->black_must_leave_base = false;
@@ -122,7 +122,7 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(GameBoard board) {
 }
 
 
-bool CheckersTryPlay(GameBoard board, int64_t c) {
+bool TryPlay(GameBoard board, int64_t c) {
 	std::array<int, TOTAL_NUM_ACTIONS> res = GetValidMovesBinary(board);
 
 	if (res[c])
@@ -132,7 +132,7 @@ bool CheckersTryPlay(GameBoard board, int64_t c) {
 
 
 // Проверка - окончена ли игра
-bool          CheckersIsOver(GameBoard board) {
+bool          IsOver(GameBoard board) {
 	int   black_pawns_on_base = 0;
 	int   white_pawns_on_base = 0;
 
@@ -201,7 +201,7 @@ std::string   GetTrueObservationStr(const GameBoard board) {
 }
 
 
-void CheckersCopyBoard(GameBoard* dst, const GameBoard* src) {
+void CopyBoard(GameBoard* dst, const GameBoard* src) {
 	myassert(dst, "dst cannot be nullptr");
 	myassert(src, "src cannot be nullptr");
 
@@ -210,7 +210,7 @@ void CheckersCopyBoard(GameBoard* dst, const GameBoard* src) {
 
 
 
-bool compareBoards(GameBoard b1, GameBoard b2) {
+bool CompareBoards(GameBoard b1, GameBoard b2) {
 	int res = 0;
 	
 	for (int y = 0; y < BOARD_SIZE; y++) {

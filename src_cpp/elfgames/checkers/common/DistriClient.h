@@ -12,7 +12,7 @@
 
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+
 #include "DispatcherCallback.h"
 #include "../train/distri_base.h"
 

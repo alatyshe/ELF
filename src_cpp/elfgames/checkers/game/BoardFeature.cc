@@ -1,5 +1,5 @@
 #include "BoardFeature.h"
-#include "CheckersState.h"
+#include "GameState.h"
 
 static float* board_plane(float* features, int idx) {
   return features + idx * BOARD_SIZE * BOARD_SIZE;

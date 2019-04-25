@@ -17,7 +17,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--gpu 0 \
 	\
 	--mode train \
-	--num_games 64					--keys_in_reply V \
+	--num_games 1					--keys_in_reply V \
 	--T 1 \
 	--dim 128 \
 	--num_block 10 \

@@ -8,9 +8,8 @@
 
 #include <nlohmann/json.hpp>
 
-// checkers
 #include "../common/ModelPair.h"
-#include "../checkers/GameBoard.h"
+#include "GameBoard.h"
 
 using json = nlohmann::json;
 

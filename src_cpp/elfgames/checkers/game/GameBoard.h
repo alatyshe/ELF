@@ -72,13 +72,13 @@ typedef struct {
 
 
 // Инициализация состояния игры
-bool    CheckersTryPlay(GameBoard board, int64_t c);
-void    CheckersPlay(GameBoard *board, int64_t action_index);
-bool    CheckersIsOver(GameBoard board);
+void    Play(GameBoard *board, int64_t action_index);
+bool    TryPlay(GameBoard board, int64_t c);
+bool    IsOver(GameBoard board);
 
 void    ClearBoard(GameBoard *board);
-void    CheckersCopyBoard(GameBoard *dst, const GameBoard *src);
-bool    compareBoards(GameBoard b1, GameBoard b2);
+void    CopyBoard(GameBoard *dst, const GameBoard *src);
+bool    CompareBoards(GameBoard b1, GameBoard b2);
 
 std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(GameBoard board);
 std::array<std::array<int, 8>, 8>  GetObservation(const GameBoard board, int player);

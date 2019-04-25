@@ -16,19 +16,21 @@
 #include "elf/base/dispatcher.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+
 #include "../mcts/AI.h"
-#include "../mcts/MCTSCheckersActor.h"
-#include "../mcts/MCTSCheckersAI.h"
+#include "../mcts/MCTSGameActor.h"
+#include "../mcts/MCTSGameAI.h"
 #include "../sgf/sgf.h"
 #include "GameBase.h"
+
 #include "GameFeature.h"
 #include "GameStats.h"
 #include "Notifier.h"
 
-#include "../checkers/GameStateExt.h"
-#include "../checkers/BoardFeature.h"
-#include "../checkers/CheckersState.h"
+#include "../game/GameStateExt.h"
+#include "../game/BoardFeature.h"
+#include "../game/GameState.h"
+#include "../game/SimpleAgent.h"
 
 /*
   Running on the client side to generate batches.
@@ -37,11 +39,11 @@
   CheckersGameNotifierBase - Used to call the game_end python function from selfplay.py
       Displays statistics about the game from python side and contain records of finished games.
   GameStateExt - Generates batches, dumps finished games to records(json) etc.
-  checkers_ai1 - uses MCTS for searching best action. Responsible for
+  ai1_ - uses MCTS for searching best action. Responsible for
       generating batches for training the neural network.
-  checkers_ai2 - also uses MCTS. Initialized only when the client receives
+  ai2_ - also uses MCTS. Initialized only when the client receives
       a notification from the server to compare two models.
-  _human_player - The base class AIClientT that sends batch files from C++ to python 
+  human_player_ - The base class AIClientT that sends batch files from C++ to python 
       and expects to receive an answer. In our case, these are the keys that 
       we registered in the GameFeature.h and game.py files namely by 
       "pi", "a", "checkers_V".
@@ -73,7 +75,7 @@ class ClientGameSelfPlay : public GameBase {
   int getCurrentPlayer() const;
 
  private:
-  MCTSCheckersAI* init_checkers_ai(
+  MCTSGameAI* init_checkers_ai(
       const std::string& actor_name,
       const elf::ai::tree_search::TSOptions& mcts_opt,
       float second_puct,
@@ -82,8 +84,8 @@ class ClientGameSelfPlay : public GameBase {
       int64_t model_ver);
   void restart();
   void setAsync();
-  Coord mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c);
-  Coord mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c);
+  Coord mcts_make_diverse_move(MCTSGameAI* mcts_checkers_ai, Coord c);
+  Coord mcts_update_info(MCTSGameAI* mcts_checkers_ai, Coord c);
   void finish_game();
 
  private:
@@ -92,11 +94,15 @@ class ClientGameSelfPlay : public GameBase {
   GameStateExt _game_state_ext;
 
   int _online_counter = 0;
-  std::unique_ptr<MCTSCheckersAI> checkers_ai1;
+  std::unique_ptr<MCTSGameAI> ai1_;
   // Opponent ai (used for selfplay evaluation)
-  std::unique_ptr<MCTSCheckersAI> checkers_ai2;
+  std::unique_ptr<MCTSGameAI> ai2_;
+
+  std::unique_ptr<SimpleAgent> simple_agent_;
+  int ver_ = -1;
+  bool swap_ = true;
   
-  std::unique_ptr<AIClientT> _human_player;
+  std::unique_ptr<AIClientT> human_player_;
 
   std::shared_ptr<spdlog::logger> logger_;
 };

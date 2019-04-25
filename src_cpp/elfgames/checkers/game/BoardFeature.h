@@ -11,26 +11,26 @@ struct GameBoardHistory {
 
   // Copy position of the pawns and kings on the board.
   GameBoardHistory(const GameBoard& b) {
-    CheckersCopyBoard(&board, &b);
+    CopyBoard(&board, &b);
   }
 };
 
-class CheckersState;
+class GameState;
 
 class BoardFeature {
  public:
 
-  BoardFeature(const CheckersState& s) 
+  BoardFeature(const GameState& s) 
       : s_(s) {
   }
-  const CheckersState& state() const {
+  const GameState& state() const {
     return s_;
   }
   void extract(std::vector<float>* features) const;
   void extract(float* features) const;
 
  private:
-  const CheckersState& s_;
+  const GameState& s_;
   static constexpr int64_t kBoardRegion = BOARD_SIZE * BOARD_SIZE;
 
   // Compute features.

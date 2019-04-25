@@ -5,10 +5,11 @@ project(elfgames_checkers)
 set(ELFGAMES_CHECKERS_SOURCES
     common/ClientGameSelfPlay.cc
     
-    checkers/CheckersState.cc
-    checkers/GameBoard.cc
-    checkers/BoardFeature.cc
-    checkers/GameStateExt.cc
+    game/GameState.cc
+    game/GameBoard.cc
+    game/BoardFeature.cc
+    game/SimpleAgent.cc
+    game/GameStateExt.cc
     
     train/client_manager.cc
     train/server/ServerGameTrain.cc

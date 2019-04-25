@@ -1,21 +1,20 @@
 #pragma once
 
-// checkers
 #include "GameBoard.h"
 #include "BoardFeature.h"
 
-class CheckersState {
+class GameState {
  public:
 
-  CheckersState() {
+  GameState() {
     reset();
   }
   
-  CheckersState(const CheckersState& s)
+  GameState(const GameState& s)
       : _history(s._history),
         _moves(s._moves),
         _final_value(s._final_value) {
-    CheckersCopyBoard(&_board, &s._board);
+    CopyBoard(&_board, &s._board);
   }
 
   bool forward(const Coord& c);
@@ -48,7 +47,7 @@ class CheckersState {
   }
 
   bool terminated() const {
-    return CheckersIsOver(_board) || getPly() >= TOTAL_MAX_MOVE ;
+    return IsOver(_board) || getPly() >= TOTAL_MAX_MOVE ;
   }
 
   int lastMove() const {

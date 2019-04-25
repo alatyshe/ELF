@@ -15,10 +15,10 @@
 // elf
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+
 #include "CtrlUtils.h"
 #include "../client_manager.h"
-#include "../../checkers/GameOptions.h"
+#include "../../game/GameOptions.h"
 
 
 using TSOptions = elf::ai::tree_search::TSOptions;

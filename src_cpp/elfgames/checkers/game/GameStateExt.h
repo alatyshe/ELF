@@ -5,8 +5,8 @@
 // elf
 #include "elf/ai/tree_search/tree_search_base.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
-#include "CheckersState.h"
+
+#include "GameState.h"
 #include "BoardFeature.h"
 #include "GameOptions.h"
 #include "../common/record.h"
@@ -38,7 +38,7 @@ struct GameStateExt {
   void showFinishInfo() const;
   bool forward(Coord c);
   int seq() const;
-  const CheckersState& state() const;
+  const GameState& state() const;
   const GameOptions& gameOptions() const;
   void saveCurrentTree(const std::string& tree_info) const;
   void setFinalValue();
@@ -111,7 +111,7 @@ struct GameStateExt {
   float _last_value;
   std::set<int64_t> _using_models;
 
-  CheckersState _state;
+  GameState _state;
   
   MsgRequest _curr_request;
   GameOptions _game_options;
@@ -199,7 +199,7 @@ class GameStateExtOffline {
 
  private:
   const int _game_idx;
-  CheckersState _state;
+  GameState _state;
   BoardFeature _bf;
   GameOptions _game_options;
 

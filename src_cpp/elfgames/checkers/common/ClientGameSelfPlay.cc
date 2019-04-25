@@ -38,7 +38,7 @@ float ClientGameSelfPlay::getScore() {
   return _game_state_ext.state().evaluateGame();
 }
 
-MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
+MCTSGameAI* ClientGameSelfPlay::init_checkers_ai(
     const std::string& actor_name,
     const elf::ai::tree_search::TSOptions& mcts_options,
     float puct_override,
@@ -88,10 +88,10 @@ MCTSCheckersAI* ClientGameSelfPlay::init_checkers_ai(
     logger_->warn("Log prefix {}", mcts_opt.log_prefix);
   }
 
-  return new MCTSCheckersAI(mcts_opt, [&](int) { return new CheckersMCTSActor(client_, params); });
+  return new MCTSGameAI(mcts_opt, [&](int) { return new MCTSGameActor(client_, params); });
 }
 
-Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
+Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSGameAI* mcts_checkers_ai, Coord c) {
   auto policy = mcts_checkers_ai->getMCTSPolicy();
 
   // make random move if diverse_policy == true
@@ -110,7 +110,7 @@ Coord ClientGameSelfPlay::mcts_make_diverse_move(MCTSCheckersAI* mcts_checkers_a
   return c;
 }
 
-Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coord c) {
+Coord ClientGameSelfPlay::mcts_update_info(MCTSGameAI* mcts_checkers_ai, Coord c) {
   float predicted_value = mcts_checkers_ai->getValue();
 
   _game_state_ext.addPredictedValue(predicted_value);
@@ -122,6 +122,10 @@ Coord ClientGameSelfPlay::mcts_update_info(MCTSCheckersAI* mcts_checkers_ai, Coo
 }
 
 void ClientGameSelfPlay::finish_game() {
+  swap_ = swap_ ? false : true;
+  std::cout << "VER : " << ver_ << std::endl;
+  std::cout << "swap : " << swap_ << std::endl;
+  
   // My code
   _game_state_ext.setFinalValue();
   // show board
@@ -132,9 +136,9 @@ void ClientGameSelfPlay::finish_game() {
   // }
 
   // reset tree if MCTS_AI, otherwise just do nothing
-  checkers_ai1->endGame(_game_state_ext.state());
-  if (checkers_ai2 != nullptr) {
-    checkers_ai2->endGame(_game_state_ext.state());
+  ai1_->endGame(_game_state_ext.state());
+  if (ai2_ != nullptr) {
+    ai2_->endGame(_game_state_ext.state());
   }
   // Says python that game is over.
   if (checkers_notifier_ != nullptr){
@@ -145,9 +149,9 @@ void ClientGameSelfPlay::finish_game() {
 }
 
 void ClientGameSelfPlay::setAsync() {
-  checkers_ai1->setRequiredVersion(-1);
-  if (checkers_ai2 != nullptr)
-    checkers_ai2->setRequiredVersion(-1);
+  ai1_->setRequiredVersion(-1);
+  if (ai2_ != nullptr)
+    ai2_->setRequiredVersion(-1);
 
   _game_state_ext.addCurrentModel();
 }
@@ -156,10 +160,15 @@ void ClientGameSelfPlay::restart() {
   const MsgRequest& checkers_request = _game_state_ext.currRequest();
   bool checkers_async = checkers_request.client_ctrl.async;
 
-  checkers_ai1.reset(nullptr);
-  checkers_ai2.reset(nullptr);
+
+  ai1_.reset(nullptr);
+  ai2_.reset(nullptr);
+
+  simple_agent_.reset(new SimpleAgent());
+  ver_ = checkers_request.vers.black_ver;
+
   if (_game_options.mode == "selfplay") {
-    checkers_ai1.reset(init_checkers_ai(
+    ai1_.reset(init_checkers_ai(
         "actor_black",
         checkers_request.vers.mcts_opt,
         -1.0,
@@ -167,7 +176,7 @@ void ClientGameSelfPlay::restart() {
         -1,
         checkers_async ? -1 : checkers_request.vers.black_ver));
     if (checkers_request.vers.white_ver >= 0) {
-      checkers_ai2.reset(init_checkers_ai(
+      ai2_.reset(init_checkers_ai(
           "actor_white",
           checkers_request.vers.mcts_opt,
           _game_state_ext.gameOptions().white_puct,
@@ -177,17 +186,17 @@ void ClientGameSelfPlay::restart() {
     }
     if (!checkers_request.vers.is_selfplay() && checkers_request.client_ctrl.player_swap) {
       // Swap the two pointer.
-      swap(checkers_ai1, checkers_ai2);
+      swap(ai1_, ai2_);
     }
   } else if (_game_options.mode == "play") {
-    checkers_ai1.reset(init_checkers_ai(
+    ai1_.reset(init_checkers_ai(
         "actor_black",
         checkers_request.vers.mcts_opt,
         -1.0,
         -1,
         -1,
         checkers_request.vers.black_ver));
-    _human_player.reset(new AIClientT(client_, {"human_actor"}));
+    human_player_.reset(new AIClientT(client_, {"human_actor"}));
   } else {
     logger_->critical("Unknown mode! {}", _game_options.mode);
     throw std::range_error("Unknown mode");
@@ -265,18 +274,18 @@ void ClientGameSelfPlay::act() {
   _online_counter++;
 
 
-  const CheckersState& cs = _game_state_ext.state();
+  const GameState& cs = _game_state_ext.state();
   // just display board on every move
-  if (_human_player != nullptr)
+  if (human_player_ != nullptr)
     std::cout << cs.showBoard() << std::endl;
 
 
-  if (_human_player != nullptr 
+  if (human_player_ != nullptr 
         && cs.currentPlayer() == _game_options.human_plays_for) {
     do {
       BoardFeature cf(cs);
       CheckersReply   creply(cf);
-      _human_player->act(cf, &creply);
+      human_player_->act(cf, &creply);
 
       if (creply.c == -1) {
         finish_game();
@@ -332,16 +341,13 @@ void ClientGameSelfPlay::act() {
   int current_player = cs.currentPlayer();
   Coord move = M_INVALID;
 
-  BoardFeature cf(cs);
-  CheckersReply   creply(cf);
-
   bool use_policy_network_only =
       (current_player == WHITE_PLAYER && _game_options.white_use_policy_network_only) ||
       (current_player == BLACK_PLAYER && _game_options.black_use_policy_network_only);
 
-  MCTSCheckersAI* curr_ai =
-    ((checkers_ai2 != nullptr && current_player == WHITE_PLAYER) 
-      ? checkers_ai2.get() : checkers_ai1.get());
+  MCTSGameAI* curr_ai =
+    ((ai2_ != nullptr && current_player == WHITE_PLAYER) 
+      ? ai2_.get() : ai1_.get());
 
   // use_policy_network_only = true;
   if (use_policy_network_only) {
