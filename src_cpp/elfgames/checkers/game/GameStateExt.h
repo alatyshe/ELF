@@ -13,7 +13,7 @@
 #include "../sgf/sgf.h"
 #include "Record.h"
 
-enum CheckersFinishReason {
+enum FinishReason {
   MAX_STEP = 0,
   BLACK_WIN,
   WHITE_WIN,
@@ -44,8 +44,8 @@ struct GameStateExt {
   void setFinalValue();
 
   // packing the result of the game in json for sending to the server
-  CheckersRecord dumpRecord() const {
-    CheckersRecord r;
+  GameRecord dumpRecord() const {
+    GameRecord r;
 
     r.timestamp = elf_utils::sec_since_epoch_from_now();
     r.thread_id = _game_idx;
@@ -59,18 +59,6 @@ struct GameStateExt {
     r.result.policies = _mcts_policies;
     r.result.num_move = _state.getPly() - 1;
     r.result.values = _predicted_values;
-
-    // std::cout << "GoStateExtOffline::dumpRecord" << std::endl;
-    // std::cout << "Moves" << std::endl;
-    // std::cout << r.result.content << std::endl;
-    // std::cout << "r.info()" << std::endl;
-    // std::vector<Coord> _moves = _state.getAllMoves();
-    // for (const Coord& c : _moves) {
-    //   std::cout << "[" << c << "] ";
-    // }
-    // std::cout << std::endl;
-    // std::cout << r.info() << std::endl;
-    // std::cout << "=============================" << std::endl;
     _logger->info("Dump Record:{}\n", r.info());
     return r;
   }
@@ -116,7 +104,7 @@ struct GameStateExt {
   MsgRequest _curr_request;
   GameOptions _game_options;
 
-  std::vector<CheckersCoordRecord> _mcts_policies;
+  std::vector<GameCoordRecord> _mcts_policies;
   // board value
   std::vector<float> _predicted_values;
 
@@ -141,7 +129,7 @@ class GameStateExtOffline {
             "")) {
   }
 
-  void fromRecord(const CheckersRecord& r) {
+  void fromRecord(const GameRecord& r) {
     _offline_all_moves = str2coords(r.result.content);
     _offline_winner = r.result.reward > 0 ? 1.0 : -1.0;
 
@@ -209,7 +197,7 @@ class GameStateExtOffline {
   std::vector<Coord> _offline_all_moves;
   float _offline_winner;
 
-  std::vector<CheckersCoordRecord> _mcts_policies;
+  std::vector<GameCoordRecord> _mcts_policies;
   std::vector<float> _predicted_values;
 
   std::shared_ptr<spdlog::logger> _logger;

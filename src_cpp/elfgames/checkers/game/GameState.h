@@ -47,7 +47,7 @@ class GameState {
   }
 
   bool terminated() const {
-    return IsOver(_board) || getPly() >= TOTAL_MAX_MOVE ;
+    return IsOver(_board) || getPly() >= TOTAL_MAX_MOVE;
   }
 
   int lastMove() const {

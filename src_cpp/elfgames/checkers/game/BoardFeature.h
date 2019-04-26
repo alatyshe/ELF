@@ -2,7 +2,7 @@
 
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+
 #include "GameBoard.h"
 
 // Do not used yet
@@ -43,7 +43,7 @@ class BoardFeature {
   Sending info to the python side by this class 
   and wait until fields will be filled by python side.
 */
-struct CheckersReply {
+struct BoardReply {
   const BoardFeature& bf;
   // Best action
   int c;
@@ -56,7 +56,7 @@ struct CheckersReply {
   // Model version.
   int64_t version = -1;
 
-  CheckersReply(const BoardFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
+  BoardReply(const BoardFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
   }
   
   std::string   info() {

@@ -23,9 +23,9 @@
 class DistriServer {
  public:
 	DistriServer(
-			const ContextOptions& 			contextOptions,
-			const GameOptions& 	gameOptions,
-			elf::GameClient* 						client)
+			const ContextOptions& contextOptions,
+			const GameOptions& 		gameOptions,
+			elf::GameClient* 			client)
 			: contextOptions_(contextOptions),
 				gameOptions_(gameOptions),
 				logger_(elf::logging::getIndexedLogger(
@@ -106,7 +106,7 @@ class DistriServer {
 				logger_->info("Loading offline data, reading file {}", f);
 
 				std::string content;
-				if (!CheckersRecord::loadContent(f, &content)) {
+				if (!GameRecord::loadContent(f, &content)) {
 					logger_->error("Offline data loader: error reading {}", f);
 					return;
 				}

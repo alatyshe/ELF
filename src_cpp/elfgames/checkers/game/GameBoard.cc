@@ -24,26 +24,26 @@ void          ClearBoard(GameBoard* board) {
 	// Заполнение начальной позиции шашек
 	for (int y = 0; y < 8; y++) {
 		for (int x = 0; x < 8; x++) {
-			// if (y < 4 && x < 4)
-			//   board->board[y][x] = WHITE_PLAYER;
-			// else if (y > 3 && x > 3)        // Три нижних ряда черных клеток - белые шашки
-			//   board->board[y][x] = BLACK_PLAYER;
-			// else                   // Остальные черные клетки - пустые
+			if (y < 4 && x < 4)
+			  board->board[y][x] = WHITE_PLAYER;
+			else if (y > 3 && x > 3)        // Три нижних ряда черных клеток - белые шашки
+			  board->board[y][x] = BLACK_PLAYER;
+			else                   // Остальные черные клетки - пустые
 				board->board[y][x] = EMPTY;
 		}
 	}
-	std::array<std::array<int, 8>, 8> init_board = {{
-		{-1, -1, -1, -1, 0, 0, 0,	0},
-		{-1, -1, -1, -1, 0, 0, 0,	0},
-		{-1, -1, -1, -1, 1, 0, 1, 1},
-		{0, 0, 0, -1, 0, 0, 0, 0},
-		{0, 0, -1, 1, 0, 0, 0, 0},
-		{0, 0, 0, 0, 1, 1, 1, 1},
-		{-1, -1, 0, 0, 1, 1, 1, 1},
-		{0, 0, 0, 0, 1, 1, 1, 1}
-	}};
+	// std::array<std::array<int, 8>, 8> init_board = {{
+	// 	{-1, -1, -1, -1, 0, 0, 0,	0},
+	// 	{-1, -1, -1, -1, 0, 0, 0,	0},
+	// 	{-1, -1, -1, -1, 1, 0, 1, 1},
+	// 	{0, 0, 0, -1, 0, 0, 0, 0},
+	// 	{0, 0, -1, 1, 0, 0, 0, 0},
+	// 	{0, 0, 0, 0, 1, 1, 1, 1},
+	// 	{-1, -1, 0, 0, 1, 1, 1, 1},
+	// 	{0, 0, 0, 0, 1, 1, 1, 1}
+	// }};
 
-	board->board = init_board;
+	// board->board = init_board;
 }
 	
 
@@ -133,10 +133,14 @@ bool TryPlay(GameBoard board, int64_t c) {
 
 // Проверка - окончена ли игра
 bool          IsOver(GameBoard board) {
+	std::vector<std::array<int, 2>> valid_moves;
 	int   black_pawns_on_base = 0;
 	int   white_pawns_on_base = 0;
 
-	for (int y = 0; y < 8; y++){
+	valid_moves = _getAllMoves(board);
+	if (valid_moves.size() == 0)
+		return true;
+	for (int y = 0; y < 8; y++) {
 		for (int x = 0; x < 8; x++) {
 			if (y < 4 && x < 4 && board.board[y][x] == BLACK_PLAYER)
 				black_pawns_on_base++;

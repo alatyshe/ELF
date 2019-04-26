@@ -17,7 +17,7 @@
 
 #include "../game/GameState.h"
 
-using AIClientT = elf::ai::AIClientT<BoardFeature, CheckersReply>;
+using AIClientT = elf::ai::AIClientT<BoardFeature, BoardReply>;
 
 namespace elf {
 namespace ai {

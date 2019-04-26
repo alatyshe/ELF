@@ -31,7 +31,7 @@
 #include "../../common/Notifier.h"
 
 using namespace std::chrono_literals;
-using ReplayBuffer = elf::shared::ReaderQueuesT<CheckersRecord>;
+using ReplayBuffer = elf::shared::ReaderQueuesT<GameRecord>;
 using ThreadedCtrlBase = elf::ThreadedCtrlBase;
 using Ctrl = elf::Ctrl;
 using Addr = elf::Addr;
@@ -98,7 +98,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
           GREEN_B, 
           COLOR_END, 
           selfplay_ver);
-
+      
       logger_->info("{}", replay_buffer_->info());
       
       selfplaySubCtrl_->notifyCurrentWeightUpdate();
@@ -138,7 +138,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
     If --eval_num_games set to 0, then updates the previous model.
   */
   void addNewModelForEvaluation(int64_t selfplay_ver, int64_t new_version) {
-    if (gameOptions_.eval_num_games == 0) {
+    if (gameOptions_.eval_num_games == 0 || selfplay_ver == 0) {
       logger_->info("Update old model without evaluation; eval_num_games={}", gameOptions_.eval_num_games);
 
       // And send a message to start the process.
@@ -154,7 +154,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
         We expect the next batch from the client. 
         If it is offline_train, it means that we train on the data 
         that we have already prepared.
-        In the case of checkers, we are waiting for the next completed 
+        In this case, we are waiting for the next completed 
         batch from client for training on it.
       */
       if (gameOptions_.mode != "offline_train") {
@@ -172,7 +172,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
   }
 
   // Call by writer thread.
-  std::vector<FeedResult> onSelfplayGames(const std::vector<CheckersRecord>& records) {
+  std::vector<FeedResult> onSelfplayGames(const std::vector<GameRecord>& records) {
     // Receive selfplay/evaluation games.
     std::vector<FeedResult> res(records.size());
 
@@ -185,7 +185,7 @@ class ThreadedCtrl : public ThreadedCtrlBase {
 
   std::vector<FeedResult> onEvalGames(
       const ClientInfo& info,
-      const std::vector<CheckersRecord>& records) {
+      const std::vector<GameRecord>& records) {
     // Receive selfplay/evaluation games.
     std::vector<FeedResult> res(records.size());
 
@@ -357,7 +357,7 @@ class TrainCtrl : public DataInterface {
   */
   elf::shared::InsertInfo OnReceive(const std::string&, const std::string& s)
       override {
-    CheckersRecords rs = CheckersRecords::createFromJsonString(s);
+    GameRecords rs = GameRecords::createFromJsonString(s);
 
     // rs.identity  - client name from which we got the batch.
     // rs.states    - batch summary(thread_id, seq, move_idx, black/white ver)
@@ -378,14 +378,14 @@ class TrainCtrl : public DataInterface {
     for (size_t i = 0; i < rs.records.size(); ++i) {
       if (selfplay_res[i] == FeedResult::FEEDED ||
           selfplay_res[i] == FeedResult::VERSION_MISMATCH) {
-        const CheckersRecord& r = rs.records[i];
+        const GameRecord& r = rs.records[i];
 
         bool black_win = r.result.reward > 0;
         // fill records
         // insert_info +=
-        //     replay_buffer_->Insert(CheckersRecord(r), &rng_);
+        //     replay_buffer_->Insert(GameRecord(r), &rng_);
         insert_info +=
-            replay_buffer_->InsertWithParity(CheckersRecord(r), &rng_, black_win);
+            replay_buffer_->InsertWithParity(GameRecord(r), &rng_, black_win);
 
 
 

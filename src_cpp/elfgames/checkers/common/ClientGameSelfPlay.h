@@ -36,7 +36,7 @@
   Running on the client side to generate batches.
   Contains:
   ThreadedDispatcher - checks messages from server(update model version, eval 2 models etc).
-  CheckersGameNotifierBase - Used to call the game_end python function from selfplay.py
+  GameNotifierBase - Used to call the game_end python function from selfplay.py
       Displays statistics about the game from python side and contain records of finished games.
   GameStateExt - Generates batches, dumps finished games to records(json) etc.
   ai1_ - uses MCTS for searching best action. Responsible for
@@ -46,7 +46,7 @@
   human_player_ - The base class AIClientT that sends batch files from C++ to python 
       and expects to receive an answer. In our case, these are the keys that 
       we registered in the GameFeature.h and game.py files namely by 
-      "pi", "a", "checkers_V".
+      "pi", "a", "V".
   logger_ - displays log info in terminal.
 */
 class ClientGameSelfPlay : public GameBase {
@@ -59,7 +59,7 @@ class ClientGameSelfPlay : public GameBase {
       const ContextOptions& context_options,
       const GameOptions& game_options,
       ThreadedDispatcher* dispatcher,
-      CheckersGameNotifierBase* checkers_notifier = nullptr);
+      GameNotifierBase* gameNotifier = nullptr);
 
   bool OnReceive(const MsgRequest& request, RestartReply* reply);
 
@@ -75,7 +75,7 @@ class ClientGameSelfPlay : public GameBase {
   int getCurrentPlayer() const;
 
  private:
-  MCTSGameAI* init_checkers_ai(
+  MCTSGameAI* init_ai(
       const std::string& actor_name,
       const elf::ai::tree_search::TSOptions& mcts_opt,
       float second_puct,
@@ -84,16 +84,16 @@ class ClientGameSelfPlay : public GameBase {
       int64_t model_ver);
   void restart();
   void setAsync();
-  Coord mcts_make_diverse_move(MCTSGameAI* mcts_checkers_ai, Coord c);
-  Coord mcts_update_info(MCTSGameAI* mcts_checkers_ai, Coord c);
+  Coord mcts_make_diverse_move(MCTSGameAI* mcts_ai, Coord c);
+  Coord mcts_update_info(MCTSGameAI* mcts_ai, Coord c);
   void finish_game();
 
  private:
   ThreadedDispatcher* dispatcher_ = nullptr;
-  CheckersGameNotifierBase* checkers_notifier_ = nullptr;
-  GameStateExt _game_state_ext;
+  GameNotifierBase* gameNotifier_ = nullptr;
+  GameStateExt game_state_ext_;
 
-  int _online_counter = 0;
+  int online_counter_ = 0;
   std::unique_ptr<MCTSGameAI> ai1_;
   // Opponent ai (used for selfplay evaluation)
   std::unique_ptr<MCTSGameAI> ai2_;
@@ -101,6 +101,7 @@ class ClientGameSelfPlay : public GameBase {
   std::unique_ptr<SimpleAgent> simple_agent_;
   int ver_ = -1;
   bool swap_ = true;
+  int model_update_ = 0;
   
   std::unique_ptr<AIClientT> human_player_;
 

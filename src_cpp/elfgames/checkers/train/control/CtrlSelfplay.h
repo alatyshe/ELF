@@ -45,8 +45,8 @@ struct SelfPlayRecord {
 	}
 
 	// Takes new batch and update info, also add Record to our vector.
-	void feed(const CheckersRecord& record) {
-		const CheckersMsgResult& r = record.result;
+	void feed(const GameRecord& record) {
+		const GameMsgResult& r = record.result;
 
 		const bool didBlackWin = r.reward > 0;
 		if (r.num_move >= TOTAL_MAX_MOVE - 1)
@@ -163,9 +163,10 @@ struct SelfPlayRecord {
 				<< std::endl;
 
 		ss  << "Game finished in N moves: " << std::endl
-				<< "[  0, 100) = "    << move0_100 << std::endl
-				<< "[100, 200) = "  << move100_200 << std::endl
-				<< "[200, 300)="  << move200_300 << std::endl;
+				<< "[  0, 100) = " << move0_100 << std::endl
+				<< "[100, 200) = " << move100_200 << std::endl
+				<< "[200, 300) = " << move200_300 << std::endl
+				<< "[300,  up) = " << move300_up << std::endl;
 
 		ss << "====== End Record Stats =======" << std::endl;
 
@@ -195,10 +196,10 @@ struct SelfPlayRecord {
 	Contains Records for all models. Those records don't use for training!
 
 	The logic is simple: 
-		We get a CheckersRecord, extract a version of the model from this
+		We get a GameRecord, extract a version of the model from this
 		(also checking type of this record), then perform a SelfPlayRecord 
 		search in perfs_ for a specific model and add a 
-		CheckersRecord to SelfPlayRecord.
+		GameRecord to SelfPlayRecord.
 */
 class SelfPlaySubCtrl {
  public:
@@ -219,7 +220,7 @@ class SelfPlaySubCtrl {
 						"")) {
 	}
 
-	FeedResult feed(const CheckersRecord& r) {
+	FeedResult feed(const GameRecord& r) {
 		std::lock_guard<std::mutex> lock(mutex_);
 		// checks for second player(white)
 		if (!r.request.vers.is_selfplay())

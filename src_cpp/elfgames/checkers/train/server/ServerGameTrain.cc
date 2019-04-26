@@ -13,7 +13,7 @@ ServerGameTrain::ServerGameTrain(
     elf::GameClient* client,
     const ContextOptions& context_options,
     const GameOptions& game_options,
-    elf::shared::ReaderQueuesT<CheckersRecord>* readerQueues)
+    elf::shared::ReaderQueuesT<GameRecord>* readerQueues)
       : GameBase(game_idx, client, context_options, game_options), 
         readerQueues_(readerQueues),
         logger_(elf::logging::getIndexedLogger(
@@ -34,7 +34,7 @@ void ServerGameTrain::act() {
       int q_idx;
       auto sampler = readerQueues_->getSamplerWithParity(&_rng, &q_idx);
 
-      const CheckersRecord* r = sampler.sample();
+      const GameRecord* r = sampler.sample();
       if (r == nullptr) {
         continue;
       }

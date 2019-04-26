@@ -11,6 +11,9 @@ bool GameState::forward(const Coord& c) {
 
   Play(&_board, c);
   _moves.push_back(c);
+
+  if (_getAllMoves(board()).size() == 0)
+    _board._ply = TOTAL_MAX_MOVE;
   // _history.emplace_back(_board);
   // if (_history.size() > MAX_CHECKERS_HISTORY)
   //   _history.pop_front();

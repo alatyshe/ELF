@@ -17,9 +17,9 @@
 
 
 /*
-  from this class inherit CheckersGameNotifier.
+  from this class inherit GameNotifier.
 */
-class CheckersGameNotifierBase {
+class GameNotifierBase {
  public:
   using MCTSResult = elf::ai::tree_search::MCTSResultT<Coord>;
   virtual void OnGameEnd(const GameStateExt&) {}

@@ -17,7 +17,7 @@
 #include "AI.h"
 
 struct MCTSActorParams {
-	// "checkers_actor_black", "checkers_actor_white"
+	// "actor_black", "actor_white"
 	std::string		actor_name;
 
 	uint64_t			seed = 0;
@@ -104,13 +104,13 @@ class MCTSGameActor {
 		if (sel_bfs.empty())
 			return;
 
-		std::vector<CheckersReply> replies;
+		std::vector<BoardReply> replies;
 		for (size_t i = 0; i < sel_bfs.size(); ++i) {
 			replies.emplace_back(sel_bfs[i]);
 		}
 
 		// Get all pointers.
-		std::vector<CheckersReply*> p_replies;
+		std::vector<BoardReply*> p_replies;
 		std::vector<const BoardFeature*> p_bfs;
 
 		for (size_t i = 0; i < sel_bfs.size(); ++i) {
@@ -138,10 +138,10 @@ class MCTSGameActor {
 
 		if (res == EVAL_NEED_NN) {
 			BoardFeature bf = get_extractor(s);
-			// CheckersReply struct initialization
+			// BoardReply struct initialization
 			// members containing:
 			// Coord c, vector<float> pi, float v;
-			CheckersReply reply(bf);
+			BoardReply reply(bf);
 
 			// AI-Client will run a one-step neural network
 			// will call neural net
@@ -218,7 +218,7 @@ class MCTSGameActor {
 	}
 
 	
-	void post_nn_result(const CheckersReply& reply, NodeResponse* resp) {
+	void post_nn_result(const BoardReply& reply, NodeResponse* resp) {
 		if (params_.required_version >= 0 &&
 				reply.version != params_.required_version) {
 			const std::string msg = "model version " + std::to_string(reply.version) +

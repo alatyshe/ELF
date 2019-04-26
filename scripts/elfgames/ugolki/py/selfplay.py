@@ -248,7 +248,7 @@ def main():
   """
   def game_end(batch):
     nonlocal loop_end
-    wr = batch.GC.getClient().getCheckersGameStats().getWinRateStats()
+    wr = batch.GC.getClient().getGameStats().getWinRateStats()
     win_rate = (100.0 * wr.black_wins / (wr.black_wins + wr.white_wins)
           if (wr.black_wins + wr.white_wins) > 0 else 0.0)
 

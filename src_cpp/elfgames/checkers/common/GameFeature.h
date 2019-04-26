@@ -25,32 +25,32 @@ class GameFeature {
   }
   // Inference part.
   // Write the state of the game board in the memory cell
-  static void extractCheckersState(
+  static void extractGameState(
       const BoardFeature& bf, 
       float* f) {
     bf.extract(f);
   }
 
-  static void CheckersReplyValue(
-      CheckersReply& reply, 
+  static void ReplyValue(
+      BoardReply& reply, 
       const float* value) {
     reply.value = *value;
   }
 
-  static void CheckersReplyPolicy(
-      CheckersReply& reply, 
+  static void ReplyPolicy(
+      BoardReply& reply, 
       const float* pi) {
     copy(pi, pi + reply.pi.size(), reply.pi.begin());
   }
 
-  static void CheckersReplyAction(
-      CheckersReply& reply, 
+  static void ReplyAction(
+      BoardReply& reply, 
       const int64_t* action) {
     reply.c = *action;
   }
 
-  static void CheckersReplyVersion(
-      CheckersReply& reply, 
+  static void ReplyVersion(
+      BoardReply& reply, 
       const int64_t* ver) {
     reply.version = *ver;
   }
@@ -59,27 +59,27 @@ class GameFeature {
 
   // /////////////
   // // Training part.
-  static void extractCheckersMoveIdx(
+  static void extractMoveIdx(
       const GameStateExtOffline& s, 
       int* move_idx) {
     // Current move number
     *move_idx = s._state.getPly() - 1;
   }
 
-  static void extractCheckersNumMove(
+  static void extractNumMove(
       const GameStateExtOffline& s, 
       int* num_move) {
     // Total move number
     *num_move = s.getNumMoves();
   }
 
-  static void extractCheckersPredictedValue(
+  static void extractPredictedValue(
       const GameStateExtOffline& s, 
       float* predicted_value) {
     *predicted_value = s.getPredictedValue(s._state.getPly() - 1);
   }
 
-  static void extractCheckersWinner(
+  static void extractWinner(
       const GameStateExtOffline& s, 
       float* winner) {
     *winner = s._offline_winner;
@@ -89,11 +89,11 @@ class GameFeature {
       const GameStateExtOffline& s, 
       float* f) {
     // Then send the data to the server.
-    extractCheckersState(s._bf, f);
+    extractGameState(s._bf, f);
   }
 
   // check it
-  static void extractCheckersMCTSPi(
+  static void extractMCTSPi(
       const GameStateExtOffline& s, 
       float* mcts_scores) {
 
@@ -120,7 +120,7 @@ class GameFeature {
     }
   }
 
-  static void extractCheckersOfflineAction(
+  static void extractOfflineAction(
       const GameStateExtOffline& s, 
       int64_t* offline_a) {
     const BoardFeature& bf = s._bf;
@@ -133,25 +133,25 @@ class GameFeature {
     }
   }
 
-  static void extractCheckersStateSelfplayVersion(
+  static void extractGameStateSelfplayVersion(
       const GameStateExtOffline& s, 
       int64_t* ver) {
     *ver = s._curr_request.vers.black_ver;
   }
 
-  static void extractCheckersAIModelBlackVersion(
+  static void extractAIModelBlackVersion(
       const ModelPair& msg, 
       int64_t* ver) {
     *ver = msg.black_ver;
   }
 
-  static void extractCheckersAIModelWhiteVersion(
+  static void extractAIModelWhiteVersion(
       const ModelPair& msg, 
       int64_t* ver) {
     *ver = msg.white_ver;
   }
 
-  static void extractCheckersSelfplayVersion(
+  static void extractSelfplayVersion(
       const MsgVersion& msg, 
       int64_t* ver) {
     *ver = msg.model_ver;
@@ -164,7 +164,7 @@ class GameFeature {
       batchsize, {batchsize, num_plane_, BOARD_SIZE, BOARD_SIZE});
     // Binds methods to this key.
     // We use these methods to fill the memory and pass this info to the Python.
-    s.addFunction<BoardFeature>(extractCheckersState)
+    s.addFunction<BoardFeature>(extractGameState)
       .addFunction<GameStateExtOffline>(GameStateExt);
 
 
@@ -186,28 +186,28 @@ class GameFeature {
 
 
     // Binds on each key its own method for transferring information inside C++ from python.
-    e.addClass<CheckersReply>()
-        .addFunction<int64_t>("a", CheckersReplyAction)
-        .addFunction<float>("pi", CheckersReplyPolicy)
-        .addFunction<float>("V", CheckersReplyValue)
-        .addFunction<int64_t>("rv", CheckersReplyVersion);
+    e.addClass<BoardReply>()
+        .addFunction<int64_t>("a", ReplyAction)
+        .addFunction<float>("pi", ReplyPolicy)
+        .addFunction<float>("V", ReplyValue)
+        .addFunction<int64_t>("rv", ReplyVersion);
 
     e.addClass<GameStateExtOffline>()
-        .addFunction<int32_t>("move_idx", extractCheckersMoveIdx)
-        .addFunction<int32_t>("num_move", extractCheckersNumMove)
-        .addFunction<float>("predicted_value", extractCheckersPredictedValue)
-        .addFunction<float>("winner", extractCheckersWinner)
-        .addFunction<float>("mcts_scores", extractCheckersMCTSPi)
-        .addFunction<int64_t>("offline_a", extractCheckersOfflineAction)
-        .addFunction<int64_t>("selfplay_ver", extractCheckersStateSelfplayVersion)
+        .addFunction<int32_t>("move_idx", extractMoveIdx)
+        .addFunction<int32_t>("num_move", extractNumMove)
+        .addFunction<float>("predicted_value", extractPredictedValue)
+        .addFunction<float>("winner", extractWinner)
+        .addFunction<float>("mcts_scores", extractMCTSPi)
+        .addFunction<int64_t>("offline_a", extractOfflineAction)
+        .addFunction<int64_t>("selfplay_ver", extractGameStateSelfplayVersion)
         ;
 
     e.addClass<ModelPair>()
-        .addFunction<int64_t>("black_ver", extractCheckersAIModelBlackVersion)
-        .addFunction<int64_t>("white_ver", extractCheckersAIModelWhiteVersion);
+        .addFunction<int64_t>("black_ver", extractAIModelBlackVersion)
+        .addFunction<int64_t>("white_ver", extractAIModelWhiteVersion);
 
     e.addClass<MsgVersion>().addFunction<int64_t>(
-        "selfplay_ver", extractCheckersSelfplayVersion);
+        "selfplay_ver", extractSelfplayVersion);
 
   }
 

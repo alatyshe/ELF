@@ -86,6 +86,32 @@ class ModelPerfomance {
 		return eval_result_;
 	}
 
+	void dumpWinRate() const {
+		std::stringstream ss;
+		std::ofstream oo;
+
+		oo.open("Evaluations.log", std::ios::app);
+		ss 	<< curr_pair_.black_ver << ", " // Candidate model 
+				<< curr_pair_.white_ver << ", " // Baseline model
+				<< winrate() << ", "						// winrate in %
+				<< n_win() << ", "							// total win games
+				<< n_done() - n_win() << ", " 	// total lost games
+				<< n_done() << ", " 						// total walid games
+				<< draw_ << ", " 								// draw games
+				// Games without swaps
+				<< games_->win_count().n_win() / games_->win_count().n_done() // winrate 
+				<< games_->win_count().n_win() 	// total win games
+				<< games_->win_count().n_done() - games_->win_count().n_win() // total lost games
+				<< games_->win_count().n_done() // total games
+				// Games swaps games
+			 	<< swap_games_->win_count().n_win() / swap_games_->win_count().n_done() // winrate 
+				<< swap_games_->win_count().n_win() 	// total win games
+				<< swap_games_->win_count().n_done() - swap_games_->win_count().n_win() // total lost games
+				<< swap_games_->win_count().n_done(); // total games
+		oo << ss.str();
+		oo.close();
+	}
+
 	std::string info() const {
 		std::stringstream ss;
 		ss 	<< curr_pair_.info() << "\n" 
@@ -129,7 +155,7 @@ class ModelPerfomance {
 	/*
 		Fills rewards for our model_perfomance and add to records pool.
 	*/
-	void feedInfo(const ClientInfo& c, const CheckersRecord& r) {
+	void feedInfo(const ClientInfo& c, const GameRecord& r) {
 		// мое
 		if (r.result.num_move >= TOTAL_MAX_MOVE - 1) {
 			draw_++;
@@ -196,7 +222,7 @@ class ModelPerfomance {
 
  private:
 	const GameOptions&	gameOptions_;
-	const ModelPair							curr_pair_;
+	const ModelPair			curr_pair_;
 
 	// For each machine + game_id, the list of rewards.
 	// Note that game_id decides whether we swap the player or not.
@@ -267,6 +293,8 @@ class ModelPerfomance {
 				(eval_result_ == EVAL_BLACK_PASS),
 				info(),
 				record_.prefix_save_counter());
+
+		dumpWinRate();
 		record_.saveCurrent();
 		record_.clear();
 	}
@@ -322,7 +350,7 @@ class EvalSubCtrl {
 		return -1;
 	}
 
-	FeedResult feedStats(const ClientInfo& info, const CheckersRecord& r) {
+	FeedResult feedStats(const ClientInfo& info, const GameRecord& r) {
 		if (r.request.vers.is_selfplay())
 			return NOT_EVAL;
 

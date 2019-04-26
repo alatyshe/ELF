@@ -75,7 +75,7 @@ class GameContext {
 		const int batchsize = contextOptions.batchsize;
 
 		/* 
-			Register all keys "checkers_s", "checkers_V" etc.
+			Register all keys "s", "V" etc.
 		*/
 		gameFeature_.registerExtractor(batchsize, context_->getExtractor());
 
@@ -118,7 +118,7 @@ class GameContext {
 						contextOptions,
 						gameOptions,
 						dispatcher,
-						client_->getCheckersNotifier()));
+						client_->getNotifier()));
 			}
 			logger_->info("{} ClientGameSelfPlay was created", numGames);
 		}
