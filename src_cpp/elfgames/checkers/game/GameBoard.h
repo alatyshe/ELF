@@ -45,7 +45,7 @@ constexpr uint64_t NUM_FEATURES = 4;
 constexpr uint64_t TOTAL_NUM_ACTIONS = 418;
 
 // Max move for game
-constexpr int TOTAL_MAX_MOVE = 450;
+constexpr int TOTAL_MAX_MOVE = 500;
 
 # define M_INVALID 419
 

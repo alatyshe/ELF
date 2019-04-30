@@ -19,11 +19,11 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--mode train \
 	--num_games 16					--keys_in_reply V \
 	--T 1 \
-	--dim 128 \
-	--num_block 10 \
+	--dim 256 \
+	--num_block 6 \
 	\
-	--batchsize 128 \
-	--num_minibatch 1024 		--num_cooldown=64 \
+	--batchsize 512 \
+	--num_minibatch 1024 		--num_cooldown=128 \
 	--bn_momentum=0					--momentum 0.9 \
 	--weight_decay 0.0002		--opt_method sgd \
 	--lr 0.01	\
@@ -43,21 +43,20 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--keep_prev_selfplay \
 	\
 	--selfplay_async \
-	--q_min_size 1					--q_max_size 2000		--num_reader 2 \
+	--q_min_size 1					--q_max_size 2000		--num_reader 10 \
 	\
-	--selfplay_init_num 10 \
-	--selfplay_update_num 100 \
+	--selfplay_init_num 100 \
+	--selfplay_update_num 200 \
 	\
 	--eval_winrate_thres 0.55 \
-	--eval_num_games 40 \
+	--eval_num_games 10 \
 	\
 	--verbose \
 	--tqdm \
-	# 1>> server_log.log 2>&1 &
+	1>> server_log.log 2>&1 &
 	# --load models/save-512.bin \
 	\
-	# --batchsize 512 \
-	# --num_minibatch 1024 		--num_cooldown=128 \
+
 
 	# --mcts_verbose
 	# 1>> server_log.log 2>&1 &

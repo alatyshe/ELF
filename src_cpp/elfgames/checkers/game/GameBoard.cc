@@ -24,9 +24,9 @@ void          ClearBoard(GameBoard* board) {
 	// Заполнение начальной позиции шашек
 	for (int y = 0; y < 8; y++) {
 		for (int x = 0; x < 8; x++) {
-			if (y < 4 && x < 4)
+			if (y < 3 && x < 3)
 			  board->board[y][x] = WHITE_PLAYER;
-			else if (y > 3 && x > 3)        // Три нижних ряда черных клеток - белые шашки
+			else if (y > 4 && x > 4)        // Три нижних ряда черных клеток - белые шашки
 			  board->board[y][x] = BLACK_PLAYER;
 			else                   // Остальные черные клетки - пустые
 				board->board[y][x] = EMPTY;
@@ -79,9 +79,9 @@ void        Play(GameBoard *board, int64_t action_index) {
 			for (int x = 0; x < 8; x++) {
 				if (board->board[y][x] == TEMP)
 					board->board[y][x] = EMPTY;
-				if (y < 4 && x < 4 && board->board[y][x] == WHITE_PLAYER)
+				if (y < 3 && x < 3 && board->board[y][x] == WHITE_PLAYER)
 					white_pawns_on_base++;
-				else if (y > 3 && x > 3 && board->board[y][x] == BLACK_PLAYER)
+				else if (y > 4 && x > 4 && board->board[y][x] == BLACK_PLAYER)
 					black_pawns_on_base++;
 			}
 		}
@@ -142,13 +142,13 @@ bool          IsOver(GameBoard board) {
 		return true;
 	for (int y = 0; y < 8; y++) {
 		for (int x = 0; x < 8; x++) {
-			if (y < 4 && x < 4 && board.board[y][x] == BLACK_PLAYER)
+			if (y < 3 && x < 3 && board.board[y][x] == BLACK_PLAYER)
 				black_pawns_on_base++;
-			else if (y > 3 && x > 3 && board.board[y][x] == WHITE_PLAYER)
+			else if (y > 4 && x > 4 && board.board[y][x] == WHITE_PLAYER)
 				white_pawns_on_base++;
 		}
 	}
-	if (black_pawns_on_base == 16 || white_pawns_on_base == 16)
+	if (black_pawns_on_base == 9 || white_pawns_on_base == 9)
 		return true;
 	
 	return false;

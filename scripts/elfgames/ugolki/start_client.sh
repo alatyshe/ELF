@@ -17,11 +17,11 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--gpu 0 --gpu0 0 --gpu1 0\
 	\
 	--mode selfplay \
-	--batchsize 128 \
+	--batchsize 512 \
 	--num_games 8							--keys_in_reply V rv \
 	--T 1 \
-	--dim0 128								--dim1 128 \
-	--num_block0 10						--num_block1 10 \
+	--dim0 256								--dim1 256 \
+	--num_block0 5						--num_block1 5 \
 	\
 	--use_mcts								--use_mcts_ai2 \
 	--policy_distri_cutoff 5	--policy_distri_training_for_all \

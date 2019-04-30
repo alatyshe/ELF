@@ -348,7 +348,7 @@ void ClientGameSelfPlay::act() {
     move = agent->GetBestMove(gameState.board(), swap_);
   } else if (model_update_ == 1) {
     SimpleAgent *agent = simple_agent_.get();
-    usleep(50000);
+    usleep(100000);
 
     if ((current_player == BLACK_PLAYER && swap_ == true) 
         || (current_player == WHITE_PLAYER && swap_ == false)) {
