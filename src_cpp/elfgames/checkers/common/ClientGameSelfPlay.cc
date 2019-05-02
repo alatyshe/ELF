@@ -187,7 +187,9 @@ void ClientGameSelfPlay::restart() {
         -1,
         -1,
         checkers_request.vers.black_ver));
-    _human_player.reset(new AIClientT(client_, {"human_actor"}));
+
+    
+    _human_player.reset(new AIClientT(client_, {"checkers_actor_white"}));
   } else {
     logger_->critical("Unknown mode! {}", _game_options.mode);
     throw std::range_error("Unknown mode");

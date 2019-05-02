@@ -43,7 +43,7 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(PYBIND11_CPP_STANDARD -std=c++17)
 set(CMAKE_CXX_FLAGS
-    "${CMAKE_CXX_FLAGS} -g -Wno-deprecated-declarations -fPIC -march=native")
+    "${CMAKE_CXX_FLAGS} -g -pthread -Wno-deprecated-declarations -fPIC -march=native")
 # -g
 # set(CMAKE_CXX_FLAGS
 #     "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -Wno-register -Wno-deprecated-declarations -fPIC -march=native")

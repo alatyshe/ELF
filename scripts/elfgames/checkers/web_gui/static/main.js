@@ -4,6 +4,7 @@ function DisplayBoard(boardData){
   var fieldClass;
 
   // чистим код html
+  $("#user_id").empty();
   $("#chessboard").empty();
   $("#onLoad").css("z-index", "-1")
   $("#onLoad").css("background-color", "rgba(10, 10, 10, 0.0)")
@@ -39,11 +40,15 @@ function DisplayBoard(boardData){
     button = "<div class='buttonContainer'>";
     button +="<button id='resetGame' onclick='resetGame()'>Reset Game</button>";
     button += "<button id='changeSide' onclick='changeSide()'>Change Side</button>";
-    // button += "<button id='endSession' onclick='endSession()'>End Session</button>";
+    button += "<button id='closeSession' onclick='closeSession()'>Close Session</button>";
     button += "</div>";
     container.append(button);
   }
   board.append(table);
+
+  // console.log("here ", boardData["user_id"])
+  var user_session = $("#user_id");
+  user_session.append("Session <b>#" + boardData["user_id"] + "</b>");
 }
 
 function sendBoard(info){
@@ -63,16 +68,18 @@ function sendBoard(info){
     },
 
     success: function(data){
-      console.log("Data successfully Recieved");
-      console.log(JSON.stringify(data));
+      // console.log("Data successfully Recieved");
+      // console.log(JSON.stringify(data));
       DisplayBoard(data);
       subscribeEvents($('#chessboard'), data);
     }
   });
 }
 
-function endSession() {
-  window.location = "logout";
+function closeSession() {
+  var result = {};
+  result["closeSession"] = true;
+  sendBoard(result)
 }
 
 
@@ -108,7 +115,7 @@ function getCoordFromClasses(classes){
 
 // ивенты для ходов 
 function subscribeEvents(board, data){
-  console.log("subscribeEvents : ", data["valid_moves"])
+  // console.log("subscribeEvents : ", data["valid_moves"])
 
   $("html").click(
     function () {
@@ -132,10 +139,10 @@ function subscribeEvents(board, data){
         result["move_to"] = move_to;
         // DisplayBoard(nextmoves[index].next_state);
         // subscribeEvents($("#chessboard"));
-        console.log(result)
+        // console.log(result)
         sendBoard(result);
       } else {
-        console.log("shit : ")
+        // console.log("shit : ")
 
         board.find("td").removeClass("move-selected move-possible");
         coord = getCoordFromClasses($(this).attr('class').split(/\s+/));

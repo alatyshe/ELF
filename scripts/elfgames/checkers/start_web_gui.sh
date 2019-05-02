@@ -5,7 +5,7 @@
 # MODEL=models/save-14336.bin
 # MODEL=models/save-43008.bin
 # MODEL=models/save-47104.bin
-MODEL=models/save-0.bin
+MODEL=models/save-36864.bin
 # shift
 
 game=elfgames.checkers.game \

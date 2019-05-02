@@ -36,14 +36,8 @@ env = load_env(
   },
   additional_to_load=additional_to_load)
 
-
-
-
 all_session = {}
-
-
 moves_for_human = get_all_moves()
-
 
 def init_observation(player_id):
   global env
@@ -52,7 +46,6 @@ def init_observation(player_id):
   model = env["model_loaders"][0].load_model(GC.params)
 
   mi = env['mi']
-  # mi.add_model("actor", model)
 
   if "actor" not in mi:
     mi.add_model("actor", model)
@@ -62,7 +55,15 @@ def init_observation(player_id):
   mi["actor"].eval()
 
   user_id = player_id
-  # Describe more!
+  # def game_start(batch):
+  #   pass
+  # def game_end(batch):
+  #   pass
+
+  # тут описание действий игрока(человека), если у actor_black нужно просто 
+  # отправить observation на оценку нейронки, то в данном случени мы отправляем
+  # сперва доску и валидные шаги и пр инфу на front-end и ожидаем ее заполнения
+  # после чего передаем заполненные данные в фреймвокр
   def human_actor(batch):
     global all_session
 
@@ -91,12 +92,12 @@ def init_observation(player_id):
 
         all_session[user_id]["current_valid_moves"][idx] = [str_move_from, str_move_to]
 
-    all_session[user_id]["status_updated"] = True
 
     all_session[user_id]["reply"]["a"] = None
     all_session[user_id]["reply"]["pi"] = None
     all_session[user_id]["reply"]["checkers_V"] = None
 
+    all_session[user_id]["status_updated"] = True
     while not all_session[user_id]["response_filled"]:
       sleep(0.2)
     all_session[user_id]["response_filled"] = False
@@ -108,22 +109,18 @@ def init_observation(player_id):
 
   evaluator.setup(sampler=env["sampler"], mi=mi)
 
-
-  GC.reg_callback_if_exists("human_actor", human_actor)
+  GC.reg_callback_if_exists("checkers_actor_white", human_actor)
   GC.reg_callback_if_exists("checkers_actor_black", actor_black)
+  # GC.reg_callback_if_exists("game_start", game_start)
+  # GC.reg_callback_if_exists("game_end", game_end)
   GC.start()
   GC.GC.getClient().setRequest(
     mi["actor"].step, -1, -1)
 
   evaluator.episode_start(0)
 
-  while True:
+  while not all_session[user_id]["closeSession"]:
     GC.run()
-
-    if all_session[user_id]["game_exit"]:
-      break
-  # fix this for normal exit
-  # sys.exit()
   GC.stop()
 
 
@@ -170,7 +167,11 @@ def sendRequest():
       ):
       sleep(0.2)
     all_session[user_id]["status_updated"] = False
-    return json.dumps(boardToJsonCheckers(all_session[user_id]["current_board"], all_session[user_id]["current_valid_moves"], all_session[user_id]["current_player"]))
+    return json.dumps(
+        boardToJsonCheckers(all_session[user_id]["current_board"], \
+          all_session[user_id]["current_valid_moves"], \
+          all_session[user_id]["current_player"],
+          user_id))
   else:
     return redirect(url_for('login'))
 
@@ -185,7 +186,11 @@ def getRequest():
 
   if user_id in all_session:
     result = request.get_json()
-    if "reset" in result:
+    if "closeSession" in result:
+      print("closeSession")
+      all_session[user_id]["closeSession"] = True
+      all_session[user_id]["reply"]["a"] = -1
+    elif "reset" in result:
       all_session[user_id]["reply"]["a"] = result["reset"]
     elif "changeSide" in result:
       all_session[user_id]["reply"]["a"] = result["changeSide"]
@@ -200,8 +205,11 @@ def getRequest():
     while not all_session[user_id]["status_updated"]:
       sleep(0.2)
     all_session[user_id]["status_updated"] = False
-    return json.dumps(boardToJsonCheckers(all_session[user_id]["current_board"],\
-          all_session[user_id]["current_valid_moves"], all_session[user_id]["current_player"]))
+    return json.dumps(
+            boardToJsonCheckers(all_session[user_id]["current_board"], \
+              all_session[user_id]["current_valid_moves"], \
+              all_session[user_id]["current_player"],
+              user_id))
   else:
     return redirect(url_for('login'))
 
@@ -211,26 +219,30 @@ def getRequest():
 def login():
   global all_session
 
+  # если нажали кноку login
   if request.method == 'POST':
     # создаем сессию
-    # присваиваем рандомный номер нашей сессии
-    user_id = random.randint(1, 10000)
+    # присваиваем рандомный номер для нашей сессии
+    user_id = random.randint(1, 1000000)
+    while user_id in all_session:
+      user_id = random.randint(1, 1000000)
+
     session['user_id'] = user_id
-    # инициализируем окружения для этой сессии
+    # инициализируем переменные в pool всех сессий для работы новой.
     all_session[user_id] = {}
     all_session[user_id]["status_updated"] = False
     all_session[user_id]["current_valid_moves"] = None
     all_session[user_id]["current_player"] = None
     all_session[user_id]["current_board"] = None
     all_session[user_id]["game_exit"] = False
-
-
-    all_session[user_id]["response_filled"] = False
+    all_session[user_id]["closeSession"] = False
+    
     all_session[user_id]["reply"] = dict(pi=None, a=None, checkers_V=0)
-
- 
-
-    game_thread = start_new_thread(init_observation,((user_id, )))
+    # переставляем значeние от webclient(сайт) в false пока не получим от него ответ в виде action
+    all_session[user_id]["response_filled"] = False
+    
+    # инициализируем 1 экземплар elf для нашей сессии
+    start_new_thread(init_observation,((user_id, )))
     return redirect(url_for('main'))
 
   return app.send_static_file("login.html")
@@ -252,5 +264,5 @@ def logout():
 
 
 if __name__ == '__main__':
-  app.run(host='188.163.246.59', debug=True)
+  app.run(host='188.163.246.34', debug=True)
 

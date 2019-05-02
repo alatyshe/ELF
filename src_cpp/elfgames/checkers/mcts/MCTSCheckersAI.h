@@ -7,7 +7,7 @@
  */
 
 // checkers
-#include "../mcts/CheckersMCTSActor.h"
+#include "../mcts/MCTSCheckersActor.h"
 
 namespace elf {
 namespace ai {

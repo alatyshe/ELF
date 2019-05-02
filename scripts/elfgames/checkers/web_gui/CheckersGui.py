@@ -16,11 +16,12 @@ def is_even(num):
 def is_game_piece(y, x):
     return (is_even(y) and (not is_even(x))) or ((not is_even(y)) and is_even(x))  
 
-def boardToJsonCheckers(curr_board, valid_moves_human, current_player):
+def boardToJsonCheckers(curr_board, valid_moves_human, current_player, user_id):
   # valid_moves = board.get_legal_moves(current_player)
 
   result = {}
 
+  result["user_id"] = user_id
   result["rotate"] = current_player
 
   result["valid_moves"] = {}

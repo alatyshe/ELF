@@ -57,7 +57,7 @@ table {
 
 #resetGame, 
 #changeSide,
-#endSession,
+#closeSession,
 #login {
 	display: inline-block;
   padding: 8px 15px;
@@ -70,7 +70,7 @@ table {
 
 #resetGame:hover,
 #changeSide:hover,
-#endSession:hover,
+#closeSession:hover,
 #login:hover {
 	cursor: pointer;
 	background-color: #f9f9f9;
@@ -78,7 +78,7 @@ table {
 
 #resetGame:active,
 #changeSide:active,
-#endSession:active,
+#closeSession:active,
 #login:active {
 	background-color: #f0f0f0;
 }
@@ -106,7 +106,7 @@ table {
 
 #chessboard{
 	border: 3px solid black;
-	margin: 4rem auto .5rem auto;
+	margin: 0rem auto .5rem auto;
 }
 
 #container{
@@ -166,7 +166,13 @@ span.piece{
 
 
 
-
+#user_id {
+	padding: 1em;
+	text-align: center;
+	font-size: 1.2rem;
+	font-weight: 500;
+	color: #3b3b3b;
+}
 
 
 
