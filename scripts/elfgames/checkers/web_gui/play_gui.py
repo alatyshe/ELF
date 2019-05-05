@@ -156,7 +156,7 @@ def login():
     for i in range(num_games):
       if not all_sessions[i]["free_session"]:
         delta = datetime.now() - all_sessions[i]["last_move"]
-        if delta.seconds > 20 * 1:
+        if delta.seconds > 60 * 20:
           game_pass = random.randint(1, 10000000)
           all_sessions[i]["game_pass"] = game_pass
           all_sessions[i]["free_session"] = True
@@ -257,7 +257,7 @@ def getRequest():
 
     delta = datetime.now() - all_sessions[game_id]["last_move"]
 
-    if delta.seconds > 20 * 1:
+    if delta.seconds > 60 * 20:
       all_sessions[game_id]["free_session"] = True
       all_sessions[game_id]["action"] = -1
       all_sessions[game_id]["action_filled"] = True
