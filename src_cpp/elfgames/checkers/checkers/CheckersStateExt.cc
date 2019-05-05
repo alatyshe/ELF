@@ -2,6 +2,7 @@
 
 CheckersStateExt::CheckersStateExt(int game_idx, const CheckersGameOptions& game_options)
     : _game_idx(game_idx),
+      _state(game_idx),
       _last_move_for_the_game(M_INVALID),
       _last_value(0.0),
       _game_options(game_options),

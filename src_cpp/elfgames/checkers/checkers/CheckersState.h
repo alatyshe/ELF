@@ -7,7 +7,8 @@
 class CheckersState {
  public:
 
-  CheckersState() {
+  CheckersState(int id)
+      : _game_idx(id) {
     reset();
   }
   
@@ -73,6 +74,10 @@ class CheckersState {
     return ss.str();
   }
 
+  int getGameIdx() const {
+    return _game_idx;
+  }
+
   // const std::deque<BoardHistory>& getHistory() const {
   //   return _history;
   // }
@@ -95,6 +100,7 @@ class CheckersState {
 
  protected:
   CheckersBoard _board;
+  int _game_idx;
 
   // History for our net(dont use now)
   std::deque<CheckersBoardHistory> _history;

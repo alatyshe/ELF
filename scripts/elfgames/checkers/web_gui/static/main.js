@@ -1,5 +1,13 @@
 
 
+
+
+
+
+
+
+
+
 function DisplayBoard(boardData){
   var fieldClass;
 
@@ -40,7 +48,7 @@ function DisplayBoard(boardData){
     button = "<div class='buttonContainer'>";
     button +="<button id='resetGame' onclick='resetGame()'>Reset Game</button>";
     button += "<button id='changeSide' onclick='changeSide()'>Change Side</button>";
-    button += "<button id='closeSession' onclick='closeSession()'>Close Session</button>";
+    button += "<a href='logout'>Logout</a>";
     button += "</div>";
     container.append(button);
   }
@@ -49,9 +57,13 @@ function DisplayBoard(boardData){
   // console.log("here ", boardData["user_id"])
   var user_session = $("#user_id");
   user_session.append("Session <b>#" + boardData["user_id"] + "</b>");
+
+  // var Minutes = 60 * 20;
+  // var display = document.querySelector('#timer');
+  // startTimer(Minutes, display);
 }
 
-function sendBoard(info){
+function sendReply(info){
   // отправляем это все на falsk и ждем следующей борды
   $("#onLoad").css("z-index", "3")
   $("#onLoad").css("background-color", "rgba(10, 10, 10, 0.4)")
@@ -63,8 +75,8 @@ function sendBoard(info){
     dataType: "json",
     contentType: "application/json; charset=utf-8",
     
-    error: function(){ 
-        alert("Oops, server error. Game was lost."); 
+    error: function(){
+      window.location.href = "login";
     },
 
     success: function(data){
@@ -76,26 +88,20 @@ function sendBoard(info){
   });
 }
 
-function closeSession() {
-  var result = {};
-  result["closeSession"] = true;
-  sendBoard(result)
-}
 
-
-
-function changeSide(){
+function changeSide() {
   var result = {};
   result["changeSide"] = -2;
-  sendBoard(result)
+  sendReply(result)
 }
 
 
 function resetGame(){
   var result = {};
   result["reset"] = -1;
-  sendBoard(result)
+  sendReply(result)
 }
+
 
 function getCoordFromClasses(classes){
   var x = 0;
@@ -140,7 +146,7 @@ function subscribeEvents(board, data){
         // DisplayBoard(nextmoves[index].next_state);
         // subscribeEvents($("#chessboard"));
         // console.log(result)
-        sendBoard(result);
+        sendReply(result);
       } else {
         // console.log("shit : ")
 

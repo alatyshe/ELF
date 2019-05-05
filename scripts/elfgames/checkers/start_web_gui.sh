@@ -5,7 +5,9 @@
 # MODEL=models/save-14336.bin
 # MODEL=models/save-43008.bin
 # MODEL=models/save-47104.bin
-MODEL=models/save-36864.bin
+# MODEL=models/save-36864.bin
+# MODEL=models/save-40960.bin
+MODEL=models/save-43008.bin
 # shift
 
 game=elfgames.checkers.game \
@@ -16,6 +18,7 @@ model_file=elfgames.checkers.df_model_checkers \
 	\
 	--batchsize 64 \
 	--mode play			--keys_in_reply checkers_V checkers_rv \
+	--num_games 1 \
 	--load $MODEL \
 	\
 	--replace_prefix resnet.module,resnet init_conv.module,init_conv \

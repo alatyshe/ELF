@@ -269,8 +269,8 @@ void ClientGameSelfPlay::act() {
 
   const CheckersState& cs = _checkers_state_ext.state();
   // just display board on every move
-  if (_human_player != nullptr)
-    std::cout << cs.showBoard() << std::endl;
+  // if (_human_player != nullptr)
+  //   std::cout << cs.showBoard() << std::endl;
 
 
   if (_human_player != nullptr 
@@ -280,7 +280,10 @@ void ClientGameSelfPlay::act() {
       CheckersReply   creply(cf);
       _human_player->act(cf, &creply);
 
-      if (creply.c == -1) {
+      if (creply.c == -100) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        return;
+      } else if (creply.c == -1) {
         finish_game();
         return;
       } else if (creply.c == -2) {

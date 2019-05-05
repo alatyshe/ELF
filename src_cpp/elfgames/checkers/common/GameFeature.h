@@ -31,6 +31,12 @@ class GameFeature {
     bf.extract(f);
   }
 
+  static void extractGameIdx(
+      const CheckersFeature& bf, 
+      int* idx) {
+    *idx = bf.state().getGameIdx();
+  }
+
   static void CheckersReplyValue(
       CheckersReply& reply, 
       const float* value) {
@@ -166,6 +172,10 @@ class GameFeature {
     // We use these methods to fill the memory and pass this info to the Python.
     checkers_s.addFunction<CheckersFeature>(extractCheckersState)
       .addFunction<CheckersStateExtOffline>(extractCheckersStateExt);
+
+    auto& game_idx = e.addField<int32_t>("game_idx").addExtent(batchsize);
+    game_idx.addFunction<CheckersFeature>(extractGameIdx);
+
 
 
     // Register the rest of the keys 

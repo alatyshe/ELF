@@ -133,6 +133,7 @@ class CheckersStateExtOffline {
 
   CheckersStateExtOffline(int game_idx, const CheckersGameOptions& game_options)
       : _game_idx(game_idx),
+        _state(game_idx),
         _bf(_state),
         _game_options(game_options),
         _logger(elf::logging::getIndexedLogger(

@@ -319,10 +319,11 @@ class Loader(object):
 
 		if self.options.mode == "play":
 			desc["checkers_actor_white"] = dict(
-				input=["checkers_s"],
+				input=["checkers_s", "game_idx"],
 				reply=["pi", 
 						"a", 
-						"checkers_V"],
+						"checkers_V",
+						],
 				batchsize=1,
 			)
 			desc["checkers_actor_black"] = dict(
@@ -334,18 +335,6 @@ class Loader(object):
 				timeout_usec=10,
 				batchsize=co.mcts_options.num_rollouts_per_batch
 			)
-
-			# desc["game_end"] = dict(
-			# 	batchsize=1,
-			# )
-			
-			# desc["game_start"] = dict(
-			# 	batchsize=1,
-			# 	input=["checkers_white_ver", 
-			# 			"checkers_black_ver"],
-			# 	reply=None
-			# )
-
 		elif self.options.mode == "selfplay":
 			desc["game_end"] = dict(
 				batchsize=1,
