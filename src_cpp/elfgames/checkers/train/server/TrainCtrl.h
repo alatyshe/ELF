@@ -293,7 +293,7 @@ class TrainCtrl : public DataInterface {
       const elf::ai::tree_search::TSOptions& mcts_opt)
       : ctrl_(ctrl),
         rng_(time(NULL)),
-        selfplay_record_("tc_selfplay"),
+        recordBufferSimple_(gameOptions.records_buffer_directory + "tc_selfplay"),
         logger_(elf::logging::getIndexedLogger(
               MAGENTA_B + std::string("|++|") + COLOR_END + 
               "TrainCtrl-", 
@@ -379,8 +379,8 @@ class TrainCtrl : public DataInterface {
         bool black_win = r.result.reward > 0;
         insert_info +=
             replay_buffer_->InsertWithParity(CheckersRecord(r), &rng_, black_win);
-        selfplay_record_.feed(r);
-        selfplay_record_.saveAndClean(1000);
+        recordBufferSimple_.feed(r);
+        recordBufferSimple_.saveAndClean(1000);
       }
     }
     // threaded_ctrl_ -> std::unique_ptr<ThreadedCtrl>
@@ -444,7 +444,7 @@ class TrainCtrl : public DataInterface {
   std::mt19937 rng_;
 
   // SelfCtrl has its own record buffer to save EVERY game it has received.
-  RecordBufferSimple selfplay_record_;
+  RecordBufferSimple recordBufferSimple_;
 
   std::shared_ptr<spdlog::logger> logger_;
 };

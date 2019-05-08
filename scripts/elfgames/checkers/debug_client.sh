@@ -34,7 +34,7 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	\
 	--use_fp160								--use_fp161 \
 	--verbose \
-	--suicide_after_n_games 2
+	--suicide_after_n_games 30
 	# --dump_record_prefix tree\
 	
 	# --suicide_after_n_games 120

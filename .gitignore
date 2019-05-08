@@ -9,6 +9,9 @@
 *.pyc
 *.so
 build/
+SelfplayRecords/
+EvalRecords/
+SimpleBufferRecords/
 __pycache__/
 
 # Random junk

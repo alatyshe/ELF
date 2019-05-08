@@ -21,7 +21,7 @@ bool CheckersState::checkMove(const Coord& c) const {
   return CheckersTryPlay(_board, c);
 }
 
-void CheckersState::reset() {  
+void CheckersState::reset() {
   ClearBoard(&_board);
   _moves.clear();
   // _history.clear();

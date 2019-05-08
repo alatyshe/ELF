@@ -39,9 +39,13 @@ struct SelfPlayRecord {
 						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"SelfPlayRecord-",
 						"")) {
-		std::string selfplay_prefix =
+
+		std::string selfplay_prefix = game_options.selfplay_records_directory + 
 				"SelfPlayRecord-" + game_options_.server_id + "-" + game_options_.time_signature;
 		recordBuffer_.resetPrefix(selfplay_prefix + "-ver_" + std::to_string(ver_));
+		
+		if (game_options.list_files.size() > 0)
+			counter_ = game_options_.selfplay_init_num;
 	}
 
 	// Takes new batch and update info, also add Record to our vector.

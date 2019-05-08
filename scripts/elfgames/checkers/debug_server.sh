@@ -43,14 +43,17 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--keep_prev_selfplay \
 	\
 	--selfplay_async \
-	--q_min_size 1					--q_max_size 20		--num_reader 2 \
+	--q_min_size 1					--q_max_size 50		--num_reader 20 \
 	\
-	--selfplay_init_num 5 \
-	--selfplay_update_num 5 \
+	--selfplay_init_num 20 \
+	--selfplay_update_num 20 \
 	\
 	--eval_winrate_thres 0.55 \
 	--eval_num_games 9 \
 	\
+	--selfplay_records_directory "./GameRecords/" \
+	--eval_records_directory "./EvalRecords" \
+	--records_buffer_directory "./SimpleBufferRecords" \
 	--verbose \
 	--tqdm \
 	\

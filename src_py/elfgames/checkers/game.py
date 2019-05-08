@@ -125,6 +125,18 @@ class Loader(object):
 			'dump_record_prefix',
 			'TODO: fill this help message in',
 			'')
+		spec.addStrOption(
+			'selfplay_records_directory',
+			'TODO: fill this help message in',
+			'')
+		spec.addStrOption(
+			'eval_records_directory',
+			'TODO: fill this help message in',
+			'')
+		spec.addStrOption(
+			'records_buffer_directory',
+			'TODO: fill this help message in',
+			'')
 		spec.addIntOption(
 			'policy_distri_cutoff',
 			'first N moves will be randomly',
@@ -249,6 +261,20 @@ class Loader(object):
 		game_opt.use_mcts = self.options.use_mcts
 		game_opt.use_mcts_ai2 = self.options.use_mcts_ai2
 		game_opt.dump_record_prefix = self.options.dump_record_prefix
+
+		game_opt.selfplay_records_directory = self.options.selfplay_records_directory
+		if len(self.options.selfplay_records_directory) != 0 and not os.path.exists(self.options.selfplay_records_directory):
+			os.mkdir(self.options.selfplay_records_directory)
+
+		game_opt.eval_records_directory = self.options.eval_records_directory
+		if len(self.options.eval_records_directory) != 0 and not os.path.exists(self.options.eval_records_directory):
+			os.mkdir(self.options.eval_records_directory)
+
+		game_opt.records_buffer_directory = self.options.records_buffer_directory
+		if len(self.options.records_buffer_directory) != 0 and not os.path.exists(self.options.records_buffer_directory):
+			os.mkdir(self.options.records_buffer_directory)
+			
+
 		game_opt.policy_distri_training_for_all = \
 			self.options.policy_distri_training_for_all
 		game_opt.verbose = self.options.verbose

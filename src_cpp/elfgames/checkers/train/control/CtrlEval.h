@@ -57,7 +57,7 @@ class ModelPerfomance {
 		swap_games_.reset(
 				new fair_pick::Pick(num_request, num_eval_machine_per_layer));
 
-		record_.resetPrefix(
+		record_.resetPrefix(gameOptions.eval_records_directory + 
 				eval_prefix() + "-" + std::to_string(p.black_ver) + "-" +
 				std::to_string(p.white_ver));
 
