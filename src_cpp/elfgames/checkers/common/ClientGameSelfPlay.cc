@@ -186,9 +186,7 @@ void ClientGameSelfPlay::restart() {
         -1.0,
         -1,
         -1,
-        checkers_request.vers.black_ver));
-
-    
+        checkers_request.vers.black_ver));    
     _human_player.reset(new AIClientT(client_, {"checkers_actor_white"}));
   } else {
     logger_->critical("Unknown mode! {}", _game_options.mode);
@@ -269,8 +267,8 @@ void ClientGameSelfPlay::act() {
 
   const CheckersState& cs = _checkers_state_ext.state();
   // just display board on every move
-  // if (_human_player != nullptr)
-  //   std::cout << cs.showBoard() << std::endl;
+  if (_human_player != nullptr)
+    std::cout << cs.showBoard() << std::endl;
 
 
   if (_human_player != nullptr 

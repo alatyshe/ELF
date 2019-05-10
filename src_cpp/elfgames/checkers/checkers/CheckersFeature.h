@@ -5,28 +5,6 @@
 // checkers
 #include "CheckersBoard.h"
 
-// Do not used yet
-struct CheckersBoardHistory {
-  std::array<int64_t, 2> forward;
-  std::array<int64_t, 2> backward;
-  std::array<int64_t, 2> pieces;
-  int64_t empty;
-  int active;
-
-  // Copy position of the pawns and kings on the board.
-  CheckersBoardHistory(const CheckersBoard& b) {
-    forward[BLACK_PLAYER] = b.forward[BLACK_PLAYER];
-    backward[BLACK_PLAYER] = b.backward[BLACK_PLAYER];
-    pieces[BLACK_PLAYER] = (forward[BLACK_PLAYER]) | (backward[BLACK_PLAYER]);
-    forward[WHITE_PLAYER] = b.forward[WHITE_PLAYER];
-    backward[WHITE_PLAYER] = b.backward[WHITE_PLAYER];
-    pieces[WHITE_PLAYER] = (forward[WHITE_PLAYER]) | (backward[WHITE_PLAYER]);
-    
-    empty = empty;
-    active = active;
-  }
-};
-
 class CheckersState;
 
 class CheckersFeature {
@@ -46,9 +24,8 @@ class CheckersFeature {
   static constexpr int64_t kBoardRegion = CHECKERS_BOARD_SIZE * CHECKERS_BOARD_SIZE;
 
   // Compute features.
-  void getPawns(int player, float* data) const;
-  void getKings(int player, float* data) const;
-  // void getHistory(int player, float* data) const;
+  void getPawns(CheckersBoard board, int player, float* data) const;
+  void getKings(CheckersBoard board, int player, float* data) const;
 };
 
 /* 

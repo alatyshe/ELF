@@ -17,7 +17,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--gpu 0 \
 	\
 	--mode train \
-	--num_games 1						--keys_in_reply checkers_V \
+	--num_games 8						--keys_in_reply checkers_V \
 	--T 1 \
 	--dim 128 \
 	--num_block 10 \
@@ -43,10 +43,10 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--keep_prev_selfplay \
 	\
 	--selfplay_async \
-	--q_min_size 1					--q_max_size 50		--num_reader 20 \
+	--q_min_size 1					--q_max_size 50		--num_reader 2 \
 	\
-	--selfplay_init_num 20 \
-	--selfplay_update_num 20 \
+	--selfplay_init_num 10 \
+	--selfplay_update_num 10 \
 	\
 	--eval_winrate_thres 0.55 \
 	--eval_num_games 9 \
@@ -87,7 +87,7 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	# 			посылает сигнал elf::base::Context-3 для остановки
 	# 				
 	# 
-	# --eval_num_games 20		- после добавления модели ее можно сравнить с предидущей
+	# --eval_num_games 20		- после добавления модели ее можно сравнить с предыдущей
 	# 		eval_winrate_thres по этому параметру(выбирается лучшая)
 	# 
 	# 

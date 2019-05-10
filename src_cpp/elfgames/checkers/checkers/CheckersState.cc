@@ -11,9 +11,9 @@ bool CheckersState::forward(const Coord& c) {
 
   CheckersPlay(&_board, c);
   _moves.push_back(c);
-  // _history.emplace_back(_board);
-  // if (_history.size() > MAX_CHECKERS_HISTORY)
-  //   _history.pop_front();
+  _history.emplace_back(_board);
+  if (_history.size() > MAX_CHECKERS_HISTORY)
+    _history.pop_front();
   return true;
 }
 
@@ -24,12 +24,18 @@ bool CheckersState::checkMove(const Coord& c) const {
 void CheckersState::reset() {
   ClearBoard(&_board);
   _moves.clear();
-  // _history.clear();
+  _history.clear();
+  _history.emplace_back(_board);
   _final_value = 0.0;
 }
 
 std::string CheckersState::showBoard() const {
   std::stringstream ss;
+
+  // for (int i = 0; i < _history.size(); i++) {
+  //   ss << "======================" << i << "======================" << std::endl;
+  //   ss << GetTrueStateStr(_history[i]) << std::endl;
+  // }
 
   ss  << GetTrueStateStr(_board);
   ss  << "[" << _board.forward[0]

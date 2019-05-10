@@ -78,32 +78,21 @@ class CheckersState {
     return _game_idx;
   }
 
-  // const std::deque<BoardHistory>& getHistory() const {
-  //   return _history;
-  // }
+  const std::deque<CheckersBoard>& getHistory() const {
+    return _history;
+  }
 
   // delete!!!!!!
   std::array<std::array<int, 8>, 8> getBoard() const {
-    // std::stringstream ss;
-    // std::string board = "";
     return GetTrueState(_board);
-
-    // for (int y = 0; y < 8; y++) {
-    //   for (int x = 0; x < 8; x++) {
-    //     board += std::to_string(state[y][x]) + " ";
-    //   }
-    //   board += "\n";
-    // }
-    // ss << board;
-    // return (ss.str());
   }
 
  protected:
   CheckersBoard _board;
   int _game_idx;
 
-  // History for our net(dont use now)
-  std::deque<CheckersBoardHistory> _history;
+  // History of states
+  std::deque<CheckersBoard> _history;
   // history of moves for current board
   std::vector<Coord> _moves;
 

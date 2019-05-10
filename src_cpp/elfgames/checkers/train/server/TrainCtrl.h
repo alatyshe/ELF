@@ -86,6 +86,8 @@ class ThreadedCtrl : public ThreadedCtrlBase {
           WHITE_B,
           COLOR_END,
           selfplay_ver);
+      logger_->info("{}", replay_buffer_->info());
+
       std::this_thread::sleep_for(60s);
     }
 
@@ -95,6 +97,8 @@ class ThreadedCtrl : public ThreadedCtrlBase {
           GREEN_B, 
           COLOR_END, 
           selfplay_ver);
+      logger_->info("{}", replay_buffer_->info());
+      
       selfplaySubCtrl_->notifyCurrentWeightUpdate();
     }
   }

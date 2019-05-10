@@ -97,7 +97,7 @@ class DistriServer {
 			return;
 
 		std::atomic<int> count(0);
-		const size_t numThreads = 16;
+		const size_t numThreads = 4;
 
 		auto thread_main = [this, &count] (size_t idx) {
 			for (size_t k = 0; k * numThreads + idx < gameOptions_.list_files.size();

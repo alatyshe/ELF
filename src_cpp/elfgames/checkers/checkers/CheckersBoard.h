@@ -32,13 +32,14 @@
 // special moves
 # define M_INVALID 171
 
-# define MAX_CHECKERS_HISTORY 1
+# define MAX_CHECKERS_HISTORY 6
 # define CHECKERS_BOARD_SIZE 8
 # define TOTAL_PLAYERS 2
 
 // number of layers
-// (our pawns, our kings, enemy pawns, enemy kings, black move, white move)
-constexpr uint64_t CHECKERS_NUM_FEATURES = 6;
+// (our pawns + our kings + enemy pawns + enemy kings) 
+//            * MAX_CHECKERS_HISTORY + black move + white move
+constexpr uint64_t CHECKERS_NUM_FEATURES = 6 * MAX_CHECKERS_HISTORY;
 // for american checkers total num of actions for board will be 170
 constexpr uint64_t TOTAL_NUM_ACTIONS = 170;
 // Max move for game
@@ -57,7 +58,7 @@ typedef unsigned short  Coord;
 
 // mask for fill the board(board stores in 6 int64_t)
 #define UNUSED_BITS 0b100000000100000000100000000100000000
-#define MASK 0b111111111111111111111111111111111111
+#define MASK        0b111111111111111111111111111111111111
 
 typedef struct {
   // board
@@ -98,6 +99,7 @@ std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoar
 std::array<std::array<int, 8>, 8> GetTrueState(const CheckersBoard board);
 std::array<std::array<int, 8>, 8> GetObservation(const CheckersBoard board, int player);
 std::string GetTrueStateStr(const CheckersBoard board);
+// std::string get_state_str(const CheckersBoard *board, int player);
 
 // board logic
 int64_t _right_forward(CheckersBoard board);
@@ -112,5 +114,4 @@ int64_t _get_move_direction(CheckersBoard board, int64_t move, int player);
 std::vector<int64_t> _get_moves(CheckersBoard board);
 std::vector<int64_t> _get_jumps(CheckersBoard board);
 std::vector<int64_t> _jumps_from(CheckersBoard board, int64_t piece);
-
 

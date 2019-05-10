@@ -326,6 +326,14 @@ class Model_PolicyValue(Model):
 		# print("FORWARD")
 		# приводим в нормальный вид
 		s = self._var(x["checkers_s"])
+		
+		# for i in range(len(s[0])):
+		# 	print(i + 1, " : ")
+		# 	for k in s[0][i]:
+		# 		print(k)
+		# 	if (i + 1) % 6 == 0:
+		# 		print("\n")
+		# print("================================================")
 		s = self.init_conv(s)
 
 		s = self.resnet(s)

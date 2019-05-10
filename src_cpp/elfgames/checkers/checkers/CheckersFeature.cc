@@ -8,9 +8,9 @@ static float* board_plane(float* features, int idx) {
 // features param will taken from parent function 
 #define LAYER(idx) board_plane(features, idx)
 
-void CheckersFeature::getKings(int player, float* data) const {
+void CheckersFeature::getKings(CheckersBoard board, int player, float* data) const {
   std::array<std::array<int, 8>, 8> observation;
-  observation = GetObservation(s_.board(), player);
+  observation = GetObservation(board, player);
   
   for (int y = 0; y < CHECKERS_BOARD_SIZE; ++y) {
     for (int x = 0; x < CHECKERS_BOARD_SIZE; ++x) {
@@ -20,9 +20,9 @@ void CheckersFeature::getKings(int player, float* data) const {
   }
 }
 
-void CheckersFeature::getPawns(int player, float* data) const {
+void CheckersFeature::getPawns(CheckersBoard board, int player, float* data) const {
   std::array<std::array<int, 8>, 8> observation;
-  observation = GetObservation(s_.board(), player);
+  observation = GetObservation(board, player);
   
   for (int y = 0; y < CHECKERS_BOARD_SIZE; ++y) {
     for (int x = 0; x < CHECKERS_BOARD_SIZE; ++x) {
@@ -31,16 +31,6 @@ void CheckersFeature::getPawns(int player, float* data) const {
     }
   }
 }
-
-// void CheckersFeature::getHistory(int player, float* data) const {
-//   const Board* _board = &s_.board();
-
-//   for (int i = 0; i < CHECKERS_BOARD_SIZE; ++i) {
-//     for (int j = 0; j < CHECKERS_BOARD_SIZE; ++j) {
-//     }
-//   }
-//   return true;
-// }
 
 // Extract game state, this method calls from GameFeature::extractState()
 // Filling the memory for submission to the assessment in the neural network.
@@ -55,24 +45,47 @@ void CheckersFeature::extract(std::vector<float>* features) const {
 }
 
 void CheckersFeature::extract(float* features) const {
-  const CheckersBoard* _board = &s_.board();
-
-  int active_player = _board->active;
-  int passive_player = _board->passive;
+  int active_player;
+  int passive_player;
+  CheckersBoard _board;
 
   std::fill(features, features + CHECKERS_NUM_FEATURES * kBoardRegion, 0.0);
+  int history_size = s_.getHistory().size();
+  int i = 0;
+  for (int j = history_size; j < MAX_CHECKERS_HISTORY; j++)
+    i++;
 
-  // Save the current board state to game state.
-  getPawns(active_player, LAYER(0));
-  getKings(active_player, LAYER(1));
-  getPawns(passive_player, LAYER(2));
-  getKings(passive_player, LAYER(3));
+  for (int k = 0; i < MAX_CHECKERS_HISTORY; i++, k++) {
+    _board = s_.getHistory()[k];
 
-  // the player on move
-  float* black_indicator = LAYER(4);
-  float* white_indicator = LAYER(5);
-  if (active_player == BLACK_PLAYER)
-    std::fill(black_indicator, black_indicator + kBoardRegion, 1.0);
-  else
-    std::fill(white_indicator, white_indicator + kBoardRegion, 1.0);
+    active_player = _board.active;
+    passive_player = _board.passive;
+
+    getPawns(_board, active_player, LAYER(6 * i + 0));
+    getKings(_board, active_player, LAYER(6 * i + 1));
+    getPawns(_board, passive_player, LAYER(6 * i + 2));
+    getKings(_board, passive_player, LAYER(6 * i + 3));
+    // the player on move
+    float* black_indicator = LAYER(6 * i + 4);
+    float* white_indicator = LAYER(6 * i + 5);
+    if (active_player == BLACK_PLAYER)
+      std::fill(black_indicator, black_indicator + kBoardRegion, 1.0);
+    else
+      std::fill(white_indicator, white_indicator + kBoardRegion, 1.0);
+
+  }
+
+
+  // _board = s_.board();
+  
+  // active_player = _board.active;
+  // passive_player = _board.passive;
+
+  // // the player on move
+  // float* black_indicator = LAYER(CHECKERS_NUM_FEATURES - 2);
+  // float* white_indicator = LAYER(CHECKERS_NUM_FEATURES - 1);
+  // if (active_player == BLACK_PLAYER)
+  //   std::fill(black_indicator, black_indicator + kBoardRegion, 1.0);
+  // else
+  //   std::fill(white_indicator, white_indicator + kBoardRegion, 1.0);
 }
