@@ -8,7 +8,7 @@
 
 
 
-save=./models \
+save=./new_models \
 game=elfgames.checkers.game \
 model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	stdbuf -o 0 -e 0 python3 -u ./py/train.py \
@@ -17,12 +17,12 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--gpu 0 \
 	\
 	--mode train \
-	--num_games 8						--keys_in_reply V \
+	--num_games 16					--keys_in_reply V \
 	--T 1 \
-	--dim 128 \
+	--dim 256 \
 	--num_block 10 \
 	\
-	--batchsize 1024 \
+	--batchsize 512 \
 	--num_minibatch 1024		--num_cooldown=128 \
 	--bn_momentum=0					--momentum 0.9 \
 	--weight_decay 0.0002		--opt_method sgd \
@@ -42,20 +42,43 @@ model=df_kl model_file=elfgames.checkers.df_model_checkers \
 	--keep_prev_selfplay \
 	\
 	--selfplay_async \
-	--q_min_size 1					--q_max_size 200000		--num_reader 2 \
+	--q_min_size 1					--q_max_size 200000		--num_reader 18 \
 	\
 	--selfplay_init_num 200 \
-	--selfplay_update_num 300 \
+	--selfplay_update_num 200 \
 	\
 	--eval_winrate_thres 0.55 \
-	--eval_num_games 50 \
+	--eval_num_games 20 \
 	\
 	--verbose \
+	--tqdm \
 	1>> server_log.log 2>&1 &
-
-	# \
 	
-	# --tqdm \
+	# \c
+	
+	# --list_files \
+	# "OldRecords/SelfPlayRecord-myserver-190429-224254-ver_0-0-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_0-0-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_1024-0-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-0-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-1-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-10-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-2-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-3-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-4-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-5-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-6-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-7-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-8-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_10240-9-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_2048-0-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_2048-1-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_2048-2-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_5120-0-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_6144-0-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_7168-0-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_7168-1-0.json"\
+	# "OldRecords/SelfPlayRecord-myserver-190429-231803-ver_9216-0-0.json"\
 	
 	# --expected_num_client 10 \
 	

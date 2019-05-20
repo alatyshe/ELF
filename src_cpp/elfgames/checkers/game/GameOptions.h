@@ -55,6 +55,7 @@ struct GameOptions {
 
   int eval_num_games = 400;
   float eval_thres = 0.55;
+  int eval_num_threads = 4;
 
   // Default it is 20 min. During intergration test we could make it shorter.
   int client_max_delay_sec = 1200;
@@ -72,7 +73,7 @@ struct GameOptions {
 
   bool keep_prev_selfplay = false;
 
-  int eval_num_threads = 1;
+  
   int expected_num_clients = -1;
 
   // A list file containing the files to load.

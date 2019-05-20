@@ -5,7 +5,7 @@
 # MODEL=models/save-14336.bin
 # MODEL=models/save-43008.bin
 # MODEL=models/save-47104.bin
-MODEL=models/save-512.bin
+MODEL=new_models/save-10240.bin
 # shift
 
 game=elfgames.checkers.game \
@@ -14,7 +14,7 @@ model_file=elfgames.checkers.df_model_checkers \
 	python3 web_gui/play_gui.py \
 	--server_addr localhost --port 1234 \
 	\
-	--batchsize 64 \
+	--batchsize 512 \
 	--mode play			--keys_in_reply V rv \
 	--load $MODEL \
 	\
@@ -22,8 +22,8 @@ model_file=elfgames.checkers.df_model_checkers \
 	--no_check_loaded_options \
 	--no_parameter_print \
 	\
-	--verbose					--gpu 0 \
-	--num_block 10		--dim 128 \
+	--verbose					--gpu 0 	\
+	--num_block 10		--dim 256 \
 	\
 	--mcts_rollout_per_batch 1 \
 	--use_mcts							--mcts_verbose_time \

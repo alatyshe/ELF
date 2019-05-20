@@ -27,17 +27,17 @@ SimpleAgent::SimpleAgent() {
   go_second_base = board_1;
 
 
-  std::array<std::array<int, 8>, 8> board_2 = {{
-    {7,  6,  5,  4,  3,  2,  1,  1},
-    {6,  6,  5,  4,  3,  2,  1,  1},
-    {5,  5,  5,  4,  3,  2,  2,  2},
-    {4,  4,  4,  4,  3,  3,  3,  3},
-    {3,  3,  3,  3,  4,  4,  4,  4},
-    {2,  2,  2,  3,  4,  5,  5,  5},
-    {1,  1,  2,  3,  4,  5,  7,  6},
-    {1,  1,  2,  3,  4,  5,  6,  7}
-  }};
-  leave_own_base = board_2;
+  // std::array<std::array<int, 8>, 8> board_2 = {{
+  //   {7,  6,  5,  4,  3,  2,  1,  1},
+  //   {6,  6,  5,  4,  3,  2,  1,  1},
+  //   {5,  5,  5,  4,  3,  2,  2,  2},
+  //   {4,  4,  4,  4,  3,  3,  3,  3},
+  //   {3,  3,  3,  3,  4,  4,  4,  4},
+  //   {2,  2,  2,  3,  4,  5,  5,  5},
+  //   {1,  1,  2,  3,  4,  5,  7,  6},
+  //   {1,  1,  2,  3,  4,  5,  6,  7}
+  // }};
+  // leave_own_base = board_2;
 
   srand(time(0));
 }
@@ -49,15 +49,15 @@ int SimpleAgent::getBoardValue(GameBoard board, bool swap) {
   for (int y = 0; y < BOARD_SIZE; y++) {
     for (int x = 0; x < BOARD_SIZE; x++) {
       if (board.board[y][x] == board.current_player) {
-        if ((board.white_must_leave_base || board.black_must_leave_base) 
-            || board._ply > 200) {
+        // if ((board.white_must_leave_base || board.black_must_leave_base) 
+        //     || board._ply > 200) {
           if (swap)
             res += go_first_base[y][x];
           else 
             res += go_second_base[y][x];
-        } else {
-          res += leave_own_base[y][x];
-        }
+        // } else {
+        //   res += leave_own_base[y][x];
+        // }
       }
     }
   }

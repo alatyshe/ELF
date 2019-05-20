@@ -8,7 +8,7 @@
 
 echo $PYTHONPATH $SLURMD_NODENAME $CUDA_VISIBLE_DEVICES
 
-root=./models \
+root=./new_models \
 game=elfgames.checkers.game \
 model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	stdbuf -o 0 -e 0 python3 ./py/selfplay.py \
@@ -17,11 +17,11 @@ model=df_pred model_file=elfgames.checkers.df_model_checkers \
 	--gpu 0 --gpu0 0 --gpu1 0\
 	\
 	--mode selfplay \
-	--batchsize 512 \
-	--num_games 8							--keys_in_reply V rv \
+	--batchsize 1024 \
+	--num_games 16						--keys_in_reply V rv \
 	--T 1 \
 	--dim0 256								--dim1 256 \
-	--num_block0 5						--num_block1 5 \
+	--num_block0 10						--num_block1 10 \
 	\
 	--use_mcts								--use_mcts_ai2 \
 	--policy_distri_cutoff 5	--policy_distri_training_for_all \
