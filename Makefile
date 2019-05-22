@@ -1,5 +1,5 @@
 .PHONY: all
-all: elf elfgames/checkers
+all: elf elfgames/american_checkers elfgames/russian_checkers elfgames/ugolki
 
 .PHONY: clean
 clean:
@@ -27,6 +27,14 @@ elf: build/Makefile
 test_cpp_elf:
 	(cd build/elf && GTEST_COLOR=1 ctest --output-on-failure)
 
-.PHONY: elfgames/checkers
-elfgames/checkers: build/Makefile
-	(cd build && cmake --build elfgames/checkers -- -j)
+.PHONY: elfgames/american_checkers
+elfgames/american_checkers: build/Makefile
+	(cd build && cmake --build elfgames/american_checkers -- -j)
+
+.PHONY: elfgames/russian_checkers
+elfgames/russian_checkers: build/Makefile
+	(cd build && cmake --build elfgames/russian_checkers -- -j)
+
+.PHONY: elfgames/ugolki
+elfgames/ugolki: build/Makefile
+	(cd build && cmake --build elfgames/ugolki -- -j)

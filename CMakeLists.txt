@@ -78,5 +78,13 @@ add_subdirectory(
 
 # ELF games
 add_subdirectory(
-    src_cpp/elfgames/checkers
-    ${CMAKE_CURRENT_BINARY_DIR}/elfgames/checkers)
+    src_cpp/elfgames/ugolki
+    ${CMAKE_CURRENT_BINARY_DIR}/elfgames/ugolki)
+
+add_subdirectory(
+    src_cpp/elfgames/american_checkers
+    ${CMAKE_CURRENT_BINARY_DIR}/elfgames/american_checkers)
+
+add_subdirectory(
+    src_cpp/elfgames/russian_checkers
+    ${CMAKE_CURRENT_BINARY_DIR}/elfgames/russian_checkers)
