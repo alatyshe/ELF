@@ -20,7 +20,7 @@ from rlpytorch import \
   Evaluator, load_env, ModelInterface
 
 logger = logging.getIndexedLogger(
-  '\u001b[31;1m|py|\u001b[0melfgames.checkers.selfplay-',
+  '\u001b[31;1m|py|\u001b[0melfgames.american_checkers.selfplay-',
   '')
 
 class Stats(object):
@@ -29,7 +29,7 @@ class Stats(object):
     self.total_sel_batchsize = 0
     self.actor_count = 0
     logger = logging.getIndexedLogger(
-      '\u001b[31;1m|py|\u001b[0melfgames.checkers.Stats-',
+      '\u001b[31;1m|py|\u001b[0melfgames.american_checkers.Stats-',
       '')
 
   def feed(self, batch):
@@ -41,7 +41,7 @@ class Stats(object):
       logger.info("")
 
       batch_usage = self.total_sel_batchsize / self.total_batchsize
-      # wr = batch.GC.getClient().getCheckersGameStats().getWinRateStats()
+      # wr = batch.GC.getClient().getGameStats().getWinRateStats()
       # win_rate = (100.0 * wr.black_wins / (wr.black_wins + wr.white_wins)
       #       if (wr.black_wins + wr.white_wins) > 0
       #       else 0.0)
@@ -102,13 +102,13 @@ def main():
   print('Conda env:', os.environ.get("CONDA_DEFAULT_ENV", ""))
 
   # Register player names
-  actors = ["checkers_actor_white", "checkers_actor_black"]
+  actors = ["actor_white", "actor_black"]
 
   """
     Class Evaluator is a pure python class, 
     which run neural network in eval mode and get 
     return results and update some stat info.
-    Will creates 'eval_checkers_actor_white', 'eval_checkers_actor_black'.
+    Will creates 'eval_actor_white', 'eval_actor_black'.
   """
   additional_to_load = {
     ("eval_" + actor_name): (
@@ -125,7 +125,7 @@ def main():
   """
     class ModelInterface is a python class saving network models.
     Its member models is a key-value store to call a CNN model by name.
-    Will creates 'mi_checkers_actor_white', 'mi_checkers_actor_black'.
+    Will creates 'mi_actor_white', 'mi_actor_black'.
   """
   additional_to_load.update({
     ("mi_" + name): (
@@ -136,15 +136,15 @@ def main():
 
   """
     load_env:
-    game - load file game elfgames.checkers.game
+    game - load file game elfgames.american_checkers.game
     method - load "method" passed via params:
-        file df_model_checkers.py return array with [model, method]
-        model_file=elfgames.checkers.df_model_checkers
+        file model_american_checkers.py return array with [model, method]
+        model_file=elfgames.american_checkers.model_american_checkers
         model=df_pred 
     model_loaders - prepare to load(returns instance of class ModelLoader)
         "model" passed via params:
-        file df_model_checkers.py return array with [model, method]
-        model_file=elfgames.checkers.df_model_checkers
+        file model_american_checkers.py return array with [model, method]
+        model_file=elfgames.american_checkers.model_american_checkers
         model=df_pred
     
     sampler - Used to sample an action from policy.
@@ -160,7 +160,7 @@ def main():
     additional_to_load=additional_to_load)
 
   """
-    Initializes keys('game_end', 'game_start', 'checkers_actor_white', 'checkers_actor_black')
+    Initializes keys('game_end', 'game_start', 'actor_white', 'actor_black')
     for communication Python and C++ code, defined in Game.py and GameFeature.h.
     Also, initializes GameContext from C++ library wrapped by GC from python side
     + sets mode that parsed from options like play/selfplay/train/offline_train.
@@ -178,7 +178,7 @@ def main():
       same method on the python side. 
       When AIClientT calls method act(it takes 2 parameters: state, and key)
       act connect to python and transmits the state by 
-      key("human_actor", "checkers_actor_black")
+      key("human_actor", "actor_black")
       to these methods(actor() func defined below).
   """
   # Some statistic about batch usage, also we can add more info about games stats.
@@ -216,8 +216,8 @@ def main():
     logger.info(info)
 
     vers = [
-        int(batch["checkers_white_ver"][0]),
-        int(batch["checkers_black_ver"][0])
+        int(batch["white_ver"][0]),
+        int(batch["black_ver"][0])
         ]
 
     # Use the version number to load models.
@@ -242,7 +242,7 @@ def main():
   """
   def game_end(batch):
     nonlocal loop_end
-    wr = batch.GC.getClient().getCheckersGameStats().getWinRateStats()
+    wr = batch.GC.getClient().getGameStats().getWinRateStats()
     win_rate = (100.0 * wr.black_wins / (wr.black_wins + wr.white_wins)
           if (wr.black_wins + wr.white_wins) > 0 else 0.0)
 

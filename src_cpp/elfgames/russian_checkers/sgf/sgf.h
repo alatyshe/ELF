@@ -17,7 +17,7 @@
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
 // checkers
-#include "../base/CheckersBoard.h"
+#include "../game/CheckersBoard.h"
 
 /*
   Translates data into a string and vice versa

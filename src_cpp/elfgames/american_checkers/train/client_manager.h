@@ -11,7 +11,7 @@
 
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+// game
 #include "../common/record.h"
 
 class ClientManager;

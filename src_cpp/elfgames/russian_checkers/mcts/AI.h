@@ -15,7 +15,7 @@
 #include "elf/ai/ai.h"
 #include "elf/ai/tree_search/tree_search_base.h"
 // checkers
-#include "../base/CheckersState.h"
+#include "../game/CheckersState.h"
 
 using AIClientT = elf::ai::AIClientT<CheckersFeature, CheckersReply>;
 

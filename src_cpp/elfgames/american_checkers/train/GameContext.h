@@ -17,7 +17,7 @@
 #include "elf/base/context.h"
 #include "elf/legacy/python_options_utils_cpp.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+// game
 #include "../common/ClientGameSelfPlay.h"
 #include "../common/DistriClient.h"
 #include "../common/record.h"
@@ -44,7 +44,7 @@ class GameContext {
  	using ThreadedDispatcher = elf::ThreadedDispatcherT<MsgRequest, RestartReply>;
 
 	GameContext(const ContextOptions& contextOptions, 
-							const CheckersGameOptions& gameOptions)
+							const GameOptions& gameOptions)
 			: gameFeature_(gameOptions),
 				logger_(elf::logging::getIndexedLogger(
 					MAGENTA_B + std::string("|++|") + COLOR_END + 
@@ -75,7 +75,7 @@ class GameContext {
 		const int batchsize = contextOptions.batchsize;
 
 		/* 
-			Register all keys "checkers_s", "checkers_V" etc.
+			Register all keys "s", "V" etc.
 		*/
 		gameFeature_.registerExtractor(batchsize, context_->getExtractor());
 
@@ -118,7 +118,7 @@ class GameContext {
 						contextOptions,
 						gameOptions,
 						dispatcher,
-						client_->getCheckersNotifier()));
+						client_->getGameNotifier()));
 			}
 			logger_->info("{} ClientGameSelfPlay was created", numGames);
 		}

@@ -8,7 +8,7 @@
 #include "elf/utils/utils.h"
 
 // Options filled in game.py
-struct CheckersGameOptions {
+struct GameOptions {
   // Seed.
   unsigned int seed;
   int checkers_num_future_actions = 0;
@@ -90,7 +90,7 @@ struct CheckersGameOptions {
 
   std::string time_signature;
 
-  CheckersGameOptions() {
+  GameOptions() {
     time_signature = elf_utils::time_signature();
   }
 
@@ -179,18 +179,18 @@ struct CheckersGameOptions {
     }
     
     if (!eval_records_directory.empty()) {
-      ss << std::setw(30) << std::right;
+      ss << std::setw(60) << std::right;
       ss << "Eval Records dump directory : " << eval_records_directory << std::endl;      
     }
 
     if (!selfplay_records_directory.empty()) {
-      ss << std::setw(30) << std::right;
+      ss << std::setw(60) << std::right;
       ss << "SelfPlay Records dump directory : " << selfplay_records_directory << std::endl;
     }
 
     if (!records_buffer_directory.empty()) {
-      ss << std::setw(30) << std::right;
-      ss << "SelfPlay Records dump directory : " << records_buffer_directory << std::endl;
+      ss << std::setw(60) << std::right;
+      ss << "Simple buffer Records dump directory : " << records_buffer_directory << std::endl;
     }
 
 

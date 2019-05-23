@@ -241,7 +241,7 @@ class Loader(object):
 		if self.options.parameter_print:
 			co.print()
 
-		game_opt = american_checkers.CheckersGameOptions()
+		game_opt = american_checkers.GameOptions()
 
 		game_opt.seed = 0
 		game_opt.list_files = self.options.list_files
@@ -323,7 +323,7 @@ class Loader(object):
 		GC = american_checkers.GameContext(co, game_opt)
 
 		if self.options.parameter_print:
-			print("************ CheckersGameOptions ************")
+			print("**************** GameOptions ****************")
 			print(game_opt.info())
 			print("*********************************************")
 			print("Version: ", GC.ctx().version())
@@ -344,20 +344,20 @@ class Loader(object):
 		desc = {}
 
 		if self.options.mode == "play":
-			desc["checkers_actor_white"] = dict(
-				input=["checkers_s", "game_idx"],
+			desc["actor_white"] = dict(
+				input=["s", "game_idx"],
 				reply=["pi", 
 						"a", 
-						"checkers_V",
+						"V",
 						],
 				batchsize=1,
 			)
-			desc["checkers_actor_black"] = dict(
-				input=["checkers_s"],
+			desc["actor_black"] = dict(
+				input=["s"],
 				reply=["pi", 
-						"checkers_V", 
+						"V", 
 						"a", 
-						"checkers_rv"],
+						"rv"],
 				timeout_usec=10,
 				batchsize=co.mcts_options.num_rollouts_per_batch
 			)
@@ -367,29 +367,29 @@ class Loader(object):
 			)
 			desc["game_start"] = dict(
 				batchsize=1,
-				input=["checkers_white_ver", 
-						"checkers_black_ver"],
+				input=["white_ver", 
+						"black_ver"],
 				reply=None
 			)
 
 			# checkers
-			desc["checkers_actor_white"] = dict(
-				input=["checkers_s"],
+			desc["actor_white"] = dict(
+				input=["s"],
 				reply=["pi", 
-						"checkers_V", 
-						"a", 
-						"checkers_rv"],
+						"V",
+						"a",
+						"rv"],
 				batchsize=self.options.batchsize2
 				if self.options.batchsize2 > 0
 				else self.options.batchsize,
 				timeout_usec=self.options.selfplay_timeout_usec,
 			)            
-			desc["checkers_actor_black"] = dict(
-				input=["checkers_s"],
+			desc["actor_black"] = dict(
+				input=["s"],
 				reply=["pi", 
-						"checkers_V", 
+						"V", 
 						"a", 
-						"checkers_rv"],
+						"rv"],
 				batchsize=self.options.batchsize2
 				if self.options.batchsize2 > 0
 				else self.options.batchsize,
@@ -398,16 +398,16 @@ class Loader(object):
 
 		elif self.options.mode == "train" or self.options.mode == "offline_train":
 			desc["train"] = dict(
-				input=["checkers_s", 
-						"checkers_offline_a", 
-						"checkers_winner", 
-						"checkers_mcts_scores", 
-						"checkers_move_idx",
-						"checkers_selfplay_ver"],
+				input=["s", 
+						"offline_a", 
+						"winner", 
+						"mcts_scores", 
+						"move_idx",
+						"selfplay_ver"],
 				reply=None
 			)
 			desc["train_ctrl"] = dict(
-				input=["checkers_selfplay_ver"],
+				input=["selfplay_ver"],
 				reply=None,
 				batchsize=1
 			)

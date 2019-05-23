@@ -14,7 +14,7 @@
 #include "elf/ai/tree_search/tree_search_options.h"
 #include "elf/utils/json_utils.h"
 // checkers
-#include "../base/CheckersBoard.h"
+#include "../game/CheckersBoard.h"
 
 /* 
   Model pair used for evaluation 2 models on the client with EVAL_THAN_SELFPLAY type.

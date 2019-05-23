@@ -322,15 +322,15 @@ class Loader(object):
 				input=["checkers_s"],
 				reply=["pi", 
 						"a", 
-						"checkers_V"],
+						"V"],
 				batchsize=1,
 			)
 			desc["checkers_actor_black"] = dict(
 				input=["checkers_s"],
 				reply=["pi", 
-						"checkers_V", 
+						"V", 
 						"a", 
-						"checkers_rv"],
+						"rv"],
 				timeout_usec=10,
 				batchsize=co.mcts_options.num_rollouts_per_batch
 			)
@@ -349,9 +349,9 @@ class Loader(object):
 			desc["checkers_actor_white"] = dict(
 				input=["checkers_s"],
 				reply=["pi", 
-						"checkers_V", 
+						"V", 
 						"a", 
-						"checkers_rv"],
+						"rv"],
 				batchsize=self.options.batchsize2
 				if self.options.batchsize2 > 0
 				else self.options.batchsize,
@@ -360,9 +360,9 @@ class Loader(object):
 			desc["checkers_actor_black"] = dict(
 				input=["checkers_s"],
 				reply=["pi", 
-						"checkers_V", 
+						"V", 
 						"a", 
-						"checkers_rv"],
+						"rv"],
 				batchsize=self.options.batchsize2
 				if self.options.batchsize2 > 0
 				else self.options.batchsize,

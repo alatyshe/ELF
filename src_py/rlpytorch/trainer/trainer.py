@@ -149,9 +149,6 @@ class Evaluator(object):
 		if "V" in self.keys_in_reply:
 			reply_msg["V"] = state_curr["V"].data
 
-		if "checkers_rv" in self.keys_in_reply:
-			reply_msg["checkers_rv"] = self.mi[self.actor_name].step
-
 		if "checkers_V" in self.keys_in_reply:
 			reply_msg["checkers_V"] = state_curr["checkers_V"].data
 

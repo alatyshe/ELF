@@ -1,22 +1,22 @@
 #pragma once
 
-// checkers
-#include "CheckersBoard.h"
-#include "CheckersFeature.h"
+// game
+#include "GameBoard.h"
+#include "BoardFeature.h"
 
-class CheckersState {
+class GameState {
  public:
 
-  CheckersState(int id)
+  GameState(int id)
       : _game_idx(id) {
     reset();
   }
   
-  CheckersState(const CheckersState& s)
+  GameState(const GameState& s)
       : _history(s._history),
         _moves(s._moves),
         _final_value(s._final_value) {
-    CheckersCopyBoard(&_board, &s._board);
+    GameCopyBoard(&_board, &s._board);
   }
 
   bool forward(const Coord& c);
@@ -34,7 +34,7 @@ class CheckersState {
     return _final_value;
   }
 
-  const CheckersBoard& board() const {
+  const GameBoard& board() const {
     return _board;
   }
 
@@ -78,7 +78,7 @@ class CheckersState {
     return _game_idx;
   }
 
-  const std::deque<CheckersBoard>& getHistory() const {
+  const std::deque<GameBoard>& getHistory() const {
     return _history;
   }
 
@@ -88,11 +88,11 @@ class CheckersState {
   }
 
  protected:
-  CheckersBoard _board;
+  GameBoard _board;
   int _game_idx;
 
   // History of states
-  std::deque<CheckersBoard> _history;
+  std::deque<GameBoard> _history;
   // history of moves for current board
   std::vector<Coord> _moves;
 

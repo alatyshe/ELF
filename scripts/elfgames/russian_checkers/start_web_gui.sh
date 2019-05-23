@@ -10,11 +10,11 @@ MODEL=models/save-0.bin
 game=elfgames.russian_checkers.game \
 model=df_pred \
 model_file=elfgames.russian_checkers.model_russian_checkers \
-	python3 CheckersGui/play_gui.py \
+	python3 web_gui/play_gui.py \
 	--server_addr localhost --port 1234 \
 	\
 	--batchsize 64 \
-	--mode play			--keys_in_reply checkers_V checkers_rv \
+	--mode play			--keys_in_reply V rv \
 	--load $MODEL \
 	\
 	--replace_prefix resnet.module,resnet init_conv.module,init_conv \

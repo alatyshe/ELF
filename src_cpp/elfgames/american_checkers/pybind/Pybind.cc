@@ -13,14 +13,14 @@
 #include "../train/GameContext.h"
 
 namespace elfgames {
-namespace checkers {
+namespace american_checkers {
 
 void registerPy(pybind11::module& m) {
   namespace py = pybind11;
   auto ref = py::return_value_policy::reference_internal;
 
   py::class_<GameContext>(m, "GameContext")
-      .def(py::init<const ContextOptions&, const CheckersGameOptions&>())
+      .def(py::init<const ContextOptions&, const GameOptions&>())
       .def("ctx", &GameContext::ctx, ref)
       .def("getParams", &GameContext::getParams)
       .def("getGame", &GameContext::getGame, ref)
@@ -37,16 +37,16 @@ void registerPy(pybind11::module& m) {
 
   py::class_<DistriClient>(m, "DistriClient")
       .def("setRequest", &DistriClient::setRequest)
-      .def("getCheckersGameStats", &DistriClient::getCheckersGameStats, ref);
+      .def("getGameStats", &DistriClient::getGameStats, ref);
 
   // Also register other objects.
   PYCLASS_WITH_FIELDS(m, ContextOptions)
       .def(py::init<>())
       .def("print", &ContextOptions::print);
 
-  PYCLASS_WITH_FIELDS(m, CheckersGameOptions)
+  PYCLASS_WITH_FIELDS(m, GameOptions)
       .def(py::init<>())
-      .def("info", &CheckersGameOptions::info);
+      .def("info", &GameOptions::info);
 
   PYCLASS_WITH_FIELDS(m, WinRateStats).def(py::init<>());
 
@@ -64,5 +64,5 @@ void registerPy(pybind11::module& m) {
       .def("getValidMoves", &ClientGameSelfPlay::getValidMoves);
 }
 
-} // namespace go
-} // namespace elfgames
+}
+}

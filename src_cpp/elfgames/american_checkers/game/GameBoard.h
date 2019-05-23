@@ -84,34 +84,34 @@ typedef struct {
   bool _remove_step_white;
   int _black_repeats_step;
   int _white_repeats_step;
-} CheckersBoard;
+} GameBoard;
 
-bool CheckersTryPlay(CheckersBoard board, Coord c);
-bool CheckersPlay(CheckersBoard *board, int64_t action);
-bool CheckersIsOver(CheckersBoard board);
+bool CheckersTryPlay(GameBoard board, Coord c);
+bool CheckersPlay(GameBoard *board, int64_t action);
+bool CheckersIsOver(GameBoard board);
 
-void ClearBoard(CheckersBoard *board);
-void CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src);
+void ClearBoard(GameBoard *board);
+void GameCopyBoard(GameBoard* dst, const GameBoard* src);
 
-std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board);
-std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoard board, int player);
+std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(GameBoard board);
+std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(GameBoard board, int player);
 
-std::array<std::array<int, 8>, 8> GetTrueState(const CheckersBoard board);
-std::array<std::array<int, 8>, 8> GetObservation(const CheckersBoard board, int player);
-std::string GetTrueStateStr(const CheckersBoard board);
-// std::string get_state_str(const CheckersBoard *board, int player);
+std::array<std::array<int, 8>, 8> GetTrueState(const GameBoard board);
+std::array<std::array<int, 8>, 8> GetObservation(const GameBoard board, int player);
+std::string GetTrueStateStr(const GameBoard board);
+// std::string get_state_str(const GameBoard *board, int player);
 
 // board logic
-int64_t _right_forward(CheckersBoard board);
-int64_t _left_forward(CheckersBoard board);
-int64_t _right_backward(CheckersBoard board);
-int64_t _left_backward(CheckersBoard board);
-int64_t _right_forward_jumps(CheckersBoard board);
-int64_t _left_forward_jumps(CheckersBoard board);
-int64_t _right_backward_jumps(CheckersBoard board);
-int64_t _left_backward_jumps(CheckersBoard board);
-int64_t _get_move_direction(CheckersBoard board, int64_t move, int player);
-std::vector<int64_t> _get_moves(CheckersBoard board);
-std::vector<int64_t> _get_jumps(CheckersBoard board);
-std::vector<int64_t> _jumps_from(CheckersBoard board, int64_t piece);
+int64_t _right_forward(GameBoard board);
+int64_t _left_forward(GameBoard board);
+int64_t _right_backward(GameBoard board);
+int64_t _left_backward(GameBoard board);
+int64_t _right_forward_jumps(GameBoard board);
+int64_t _left_forward_jumps(GameBoard board);
+int64_t _right_backward_jumps(GameBoard board);
+int64_t _left_backward_jumps(GameBoard board);
+int64_t _get_move_direction(GameBoard board, int64_t move, int player);
+std::vector<int64_t> _get_moves(GameBoard board);
+std::vector<int64_t> _get_jumps(GameBoard board);
+std::vector<int64_t> _jumps_from(GameBoard board, int64_t piece);
 

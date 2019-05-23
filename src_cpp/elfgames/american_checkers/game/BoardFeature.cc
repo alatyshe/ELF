@@ -1,5 +1,5 @@
-#include "CheckersFeature.h"
-#include "CheckersState.h"
+#include "BoardFeature.h"
+#include "GameState.h"
 
 static float* board_plane(float* features, int idx) {
   return features + idx * CHECKERS_BOARD_SIZE * CHECKERS_BOARD_SIZE;
@@ -8,7 +8,7 @@ static float* board_plane(float* features, int idx) {
 // features param will taken from parent function 
 #define LAYER(idx) board_plane(features, idx)
 
-void CheckersFeature::getKings(CheckersBoard board, int player, float* data) const {
+void BoardFeature::getKings(GameBoard board, int player, float* data) const {
   std::array<std::array<int, 8>, 8> observation;
   observation = GetObservation(board, player);
   
@@ -20,7 +20,7 @@ void CheckersFeature::getKings(CheckersBoard board, int player, float* data) con
   }
 }
 
-void CheckersFeature::getPawns(CheckersBoard board, int player, float* data) const {
+void BoardFeature::getPawns(GameBoard board, int player, float* data) const {
   std::array<std::array<int, 8>, 8> observation;
   observation = GetObservation(board, player);
   
@@ -35,19 +35,19 @@ void CheckersFeature::getPawns(CheckersBoard board, int player, float* data) con
 // Extract game state, this method calls from GameFeature::extractState()
 // Filling the memory for submission to the assessment in the neural network.
 // vector features - depends on the number of features and size of the board.
-// For example we have 6 CHECKERS_NUM_FEATURES defined in checkersBoard.h
+// For example we have 6 CHECKERS_NUM_FEATURES defined in GameBoard.h
 // and board size 8 x 8 = 64, so we have 2 dim array 6 x 64
 // wich transform into 1d array 384 lenght.
-// From python side we get this information by the key "checkers_s".
-void CheckersFeature::extract(std::vector<float>* features) const {
+// From python side we get this information by the key "s".
+void BoardFeature::extract(std::vector<float>* features) const {
   features->resize(CHECKERS_NUM_FEATURES * kBoardRegion);
   extract(&(*features)[0]);
 }
 
-void CheckersFeature::extract(float* features) const {
+void BoardFeature::extract(float* features) const {
   int active_player;
   int passive_player;
-  CheckersBoard _board;
+  GameBoard _board;
 
   std::fill(features, features + CHECKERS_NUM_FEATURES * kBoardRegion, 0.0);
   int history_size = s_.getHistory().size();
@@ -74,18 +74,4 @@ void CheckersFeature::extract(float* features) const {
       std::fill(white_indicator, white_indicator + kBoardRegion, 1.0);
 
   }
-
-
-  // _board = s_.board();
-  
-  // active_player = _board.active;
-  // passive_player = _board.passive;
-
-  // // the player on move
-  // float* black_indicator = LAYER(CHECKERS_NUM_FEATURES - 2);
-  // float* white_indicator = LAYER(CHECKERS_NUM_FEATURES - 1);
-  // if (active_player == BLACK_PLAYER)
-  //   std::fill(black_indicator, black_indicator + kBoardRegion, 1.0);
-  // else
-  //   std::fill(white_indicator, white_indicator + kBoardRegion, 1.0);
 }

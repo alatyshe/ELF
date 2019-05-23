@@ -10,10 +10,10 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include "GameContext.h"
+#include "../train/GameContext.h"
 
 namespace elfgames {
-namespace checkers {
+namespace russian_checkers {
 
 void registerPy(pybind11::module& m) {
   namespace py = pybind11;
@@ -67,5 +67,5 @@ void registerPy(pybind11::module& m) {
       .def("getValidMoves", &ClientGameSelfPlay::getValidMoves);
 }
 
-} // namespace go
-} // namespace elfgames
+}
+}

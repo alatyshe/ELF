@@ -6,17 +6,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// checkers
-#include "../mcts/MCTSCheckersActor.h"
+// game
+#include "../mcts/MCTSGameActor.h"
 
 namespace elf {
 namespace ai {
 namespace tree_search {
 
 template <>
-struct ActorTrait<CheckersMCTSActor> {
+struct ActorTrait<MCTSGameActor> {
  public:
-	static std::string to_string(const CheckersMCTSActor& a) {
+	static std::string to_string(const MCTSGameActor& a) {
 		return a.info();
 	}
 };
@@ -29,12 +29,12 @@ struct ActorTrait<CheckersMCTSActor> {
 /*
 	Tree search logic.
 */
-class MCTSCheckersAI : public elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor> {
+class MCTSGameAI : public elf::ai::tree_search::MCTSAI_T<MCTSGameActor> {
  public:
-	MCTSCheckersAI(
+	MCTSGameAI(
 			const elf::ai::tree_search::TSOptions& options,
-			std::function<CheckersMCTSActor*(int)> gen)
-			: elf::ai::tree_search::MCTSAI_T<CheckersMCTSActor>(options, gen) {
+			std::function<MCTSGameActor*(int)> gen)
+			: elf::ai::tree_search::MCTSAI_T<MCTSGameActor>(options, gen) {
 	}
 
 	float getValue() const {

@@ -31,7 +31,7 @@ model_file=elfgames.russian_checkers.model_russian_checkers \
 	\
 	--mode selfplay \
 	--num_games 1 \
-	--keys_in_reply checkers_V checkers_rv\
+	--keys_in_reply V rv\
 	\
 	--batchsize $BATCHSIZE \
 	--mcts_rollout_per_batch $BATCHSIZE \

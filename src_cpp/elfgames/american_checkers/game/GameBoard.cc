@@ -1,4 +1,4 @@
-#include "CheckersBoard.h"
+#include "GameBoard.h"
 
 #define myassert(p, text) \
   do {                    \
@@ -7,7 +7,7 @@
     }                     \
   } while (0)
 
-void ClearBoard(CheckersBoard* board) {
+void ClearBoard(GameBoard* board) {
   board->active = BLACK_PLAYER;
   board->passive = WHITE_PLAYER;
 
@@ -34,7 +34,7 @@ void ClearBoard(CheckersBoard* board) {
   board->_white_repeats_step = 0;
 }
 
-bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
+bool CheckersPlay(GameBoard *board, int64_t action_index) {
   /*
     Updates the game state to reflect the effects of the input
     move.
@@ -128,7 +128,7 @@ bool CheckersPlay(CheckersBoard *board, int64_t action_index) {
   return false;
 }
 
-std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board) {
+std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(GameBoard board) {
   std::array<int, TOTAL_NUM_ACTIONS> result;
   std::vector<int64_t> moves;
   std::string move_buff;
@@ -161,7 +161,7 @@ std::array<int, TOTAL_NUM_ACTIONS> GetValidMovesBinary(CheckersBoard board) {
   return result;
 }
 
-std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoard board, int player) {
+std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(GameBoard board, int player) {
   std::vector<std::array<int64_t, 2>> result;
   std::array<int64_t, 2> move_buff;
   std::vector<int64_t> moves;
@@ -191,14 +191,14 @@ std::vector<std::array<int64_t, 2>> GetValidMovesNumberAndDirection(CheckersBoar
   return result;
 }
 
-bool CheckersTryPlay(CheckersBoard board, Coord c) {
+bool CheckersTryPlay(GameBoard board, Coord c) {
   std::array<int, TOTAL_NUM_ACTIONS> res = GetValidMovesBinary(board);
   if (res[c])
     return true;
   return false;
 }
 
-bool CheckersIsOver(CheckersBoard board) {
+bool CheckersIsOver(GameBoard board) {
   return (_get_moves(board).size() == 0);
 }
 
@@ -207,7 +207,7 @@ bool CheckersIsOver(CheckersBoard board) {
 //      1: our pawns 
 //      -3: enemy kings 
 //      -1: enemy pawns
-std::array<std::array<int, 8>, 8> GetObservation(CheckersBoard board, int player) {
+std::array<std::array<int, 8>, 8> GetObservation(GameBoard board, int player) {
   std::array<std::array<int, 8>, 8> board_out;
   int64_t bin_black_pawn;
   int64_t bin_black_king;
@@ -276,12 +276,12 @@ std::array<std::array<int, 8>, 8> GetObservation(CheckersBoard board, int player
   return (board_out);
 }
 
-std::array<std::array<int, 8>, 8> GetTrueState(CheckersBoard board) {
+std::array<std::array<int, 8>, 8> GetTrueState(GameBoard board) {
   return (GetObservation(board, BLACK_PLAYER));
 }
 
 // for display in terminal
-std::string GetTrueStateStr(const CheckersBoard board) {
+std::string GetTrueStateStr(const GameBoard board) {
   std::array<std::array<int, 8>, 8> observation = GetTrueState(board);
   std::string str = "";
   std::string buff = "";
@@ -310,53 +310,53 @@ std::string GetTrueStateStr(const CheckersBoard board) {
   return(str);
 }
 
-void CheckersCopyBoard(CheckersBoard* dst, const CheckersBoard* src) {
+void GameCopyBoard(GameBoard* dst, const GameBoard* src) {
   myassert(dst, "dst cannot be nullptr");
   myassert(src, "src cannot be nullptr");
 
-  memcpy(dst, src, sizeof(CheckersBoard));
+  memcpy(dst, src, sizeof(GameBoard));
 }
 
 // just board logic
-int64_t _right_forward(CheckersBoard board) {
+int64_t _right_forward(GameBoard board) {
   return ((board.empty >> 4) & board.forward[board.active]);
 }
 
-int64_t _left_forward(CheckersBoard board) {
+int64_t _left_forward(GameBoard board) {
   return ((board.empty >> 5) & board.forward[board.active]);
 }
 
-int64_t _right_backward(CheckersBoard board) {
+int64_t _right_backward(GameBoard board) {
   return ((board.empty << 4) & board.backward[board.active]);
 }
 
-int64_t _left_backward(CheckersBoard board) {
+int64_t _left_backward(GameBoard board) {
   return ((board.empty << 5) & board.backward[board.active]);
 }
 
-int64_t _right_forward_jumps(CheckersBoard board) {
+int64_t _right_forward_jumps(GameBoard board) {
   return ((board.empty >> 8) & (board.pieces[board.passive] >> 4) & board.forward[board.active]);
 }
 
-int64_t _left_forward_jumps(CheckersBoard board) {
+int64_t _left_forward_jumps(GameBoard board) {
   return ((board.empty >> 10) & (board.pieces[board.passive] >> 5) & board.forward[board.active]);
 }
 
-int64_t _right_backward_jumps(CheckersBoard board) {
+int64_t _right_backward_jumps(GameBoard board) {
   return ((board.empty << 8) & (board.pieces[board.passive] << 4) & board.backward[board.active]);
 }
 
-int64_t _left_backward_jumps(CheckersBoard board) {
+int64_t _left_backward_jumps(GameBoard board) {
   return ((board.empty << 10) & (board.pieces[board.passive] << 5) & board.backward[board.active]);
 }
 
-int64_t _get_move_direction(CheckersBoard board, int64_t move, int player) {
+int64_t _get_move_direction(GameBoard board, int64_t move, int player) {
   if (move < 0)
     move = -move;
   return (board.pieces[player] < (board.pieces[player] ^ move));
 }
 
-std::vector<int64_t> _get_moves(CheckersBoard board) {
+std::vector<int64_t> _get_moves(GameBoard board) {
   /*
     Returns a list of all possible moves.
 
@@ -413,7 +413,7 @@ std::vector<int64_t> _get_moves(CheckersBoard board) {
   }
 }
 
-std::vector<int64_t> _get_jumps(CheckersBoard board) {
+std::vector<int64_t> _get_jumps(GameBoard board) {
   /*
     Returns a list of all possible jumps.
 
@@ -462,7 +462,7 @@ std::vector<int64_t> _get_jumps(CheckersBoard board) {
   return (moves);
 }
 
-std::vector<int64_t> _jumps_from(CheckersBoard board, int64_t piece) {
+std::vector<int64_t> _jumps_from(GameBoard board, int64_t piece) {
   /*
       Returns list of all possible jumps from the piece indicated.
 

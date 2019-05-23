@@ -12,7 +12,7 @@
 #include "elf/ai/tree_search/mcts.h"
 // checkers
 #include "record.h"
-#include "../base/Record.h"
+#include "../game/Record.h"
 #include "../mcts/CheckersMCTSActor.h"
 
 

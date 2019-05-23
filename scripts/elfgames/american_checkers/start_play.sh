@@ -19,7 +19,7 @@ model_file=elfgames.american_checkers.model_american_checkers \
 	--server_addr localhost --port 1234 \
 	\
 	--batchsize 64 \
-	--mode play			--keys_in_reply checkers_V checkers_rv \
+	--mode play			--keys_in_reply V rv \
 	--load $MODEL \
 	\
 	--replace_prefix resnet.module,resnet init_conv.module,init_conv \

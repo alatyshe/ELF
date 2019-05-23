@@ -12,7 +12,7 @@
 #include "elf/base/context.h"
 #include "elf/base/dispatcher.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+// game
 #include "record.h"
 
 using Ctrl = elf::Ctrl;

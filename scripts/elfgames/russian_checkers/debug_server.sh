@@ -17,13 +17,23 @@ model=df_kl model_file=elfgames.russian_checkers.model_russian_checkers \
 	--gpu 0 \
 	\
 	--mode train \
-	--batchsize 64					--num_minibatch 128 \
-	--num_games 4						--keys_in_reply checkers_V \
+	--num_games 1						--keys_in_reply V \
 	--T 1 \
 	--dim 128 \
 	--num_block 10 \
 	\
+	--batchsize 64 \
+	--num_minibatch 128 		--num_cooldown=10 \
+	--bn_momentum=0					--momentum 0.9 \
+	--weight_decay 0.0002		--opt_method sgd \
+	--lr 0.01	\
+	\
 	--use_mcts							--use_mcts_ai2 \
+	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
+	--mcts_puct 1.5					--mcts_use_prior \
+	--mcts_threads 8				--mcts_rollout_per_thread 100 \
+	--mcts_virtual_loss 1		--mcts_persistent_tree \
+	--mcts_rollout_per_batch 5 \
 	\
 	--save_first \
 	\
@@ -32,27 +42,24 @@ model=df_kl model_file=elfgames.russian_checkers.model_russian_checkers \
 	--num_episode 10 \
 	--keep_prev_selfplay \
 	\
-	--weight_decay 0.0002		--opt_method sgd \
-	--bn_momentum=0					--num_cooldown=10 \
-	\
 	--selfplay_async \
-	--q_min_size 1					--q_max_size 20		--num_reader 2 \
+	--q_min_size 1					--q_max_size 50		--num_reader 2 \
 	\
-	--selfplay_init_num 5 \
-	--selfplay_update_num 5 \
+	--selfplay_init_num 10 \
+	--selfplay_update_num 10 \
 	\
 	--eval_winrate_thres 0.55 \
 	--eval_num_games 9 \
 	\
-	--lr 0.01								--momentum 0.9 \
 	--verbose \
 	--tqdm \
 	\
-	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
-	--mcts_puct 0.9					--mcts_use_prior \
-	--mcts_threads 4				--mcts_rollout_per_thread 200 \
-	--mcts_virtual_loss 3		--mcts_persistent_tree \
-	--mcts_rollout_per_batch 5 \
+	# Not added yet
+	# --selfplay_records_directory "./GameRecords/" \
+	# --eval_records_directory "./EvalRecords" \
+	# --records_buffer_directory "./SimpleBufferRecords" \
+
+
 
 	# --mcts_verbose
 	# 1>> server_log.log 2>&1 &
@@ -82,7 +89,7 @@ model=df_kl model_file=elfgames.russian_checkers.model_russian_checkers \
 	# 			посылает сигнал elf::base::Context-3 для остановки
 	# 				
 	# 
-	# --eval_num_games 20		- после добавления модели ее можно сравнить с предидущей
+	# --eval_num_games 20		- после добавления модели ее можно сравнить с предыдущей
 	# 		eval_winrate_thres по этому параметру(выбирается лучшая)
 	# 
 	# 

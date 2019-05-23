@@ -18,7 +18,7 @@
 // checkers
 #include "CtrlUtils.h"
 #include "../client_manager.h"
-#include "../../base/CheckersGameOptions.h"
+#include "../../game/CheckersGameOptions.h"
 
 
 using TSOptions = elf::ai::tree_search::TSOptions;

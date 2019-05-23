@@ -1,9 +1,9 @@
-#include "CheckersState.h"
+#include "GameState.h"
 
-///////////// CheckersState ////////////////////
-bool CheckersState::forward(const Coord& c) {
+///////////// GameState ////////////////////
+bool GameState::forward(const Coord& c) {
   if (c == M_INVALID)
-    throw std::range_error("CheckersState::forward(): move is M_INVALID");
+    throw std::range_error("GameState::forward(): move is M_INVALID");
   if (terminated() || c > TOTAL_NUM_ACTIONS)
     return false;
   if (!CheckersTryPlay(_board, c))
@@ -17,11 +17,11 @@ bool CheckersState::forward(const Coord& c) {
   return true;
 }
 
-bool CheckersState::checkMove(const Coord& c) const {
+bool GameState::checkMove(const Coord& c) const {
   return CheckersTryPlay(_board, c);
 }
 
-void CheckersState::reset() {
+void GameState::reset() {
   ClearBoard(&_board);
   _moves.clear();
   _history.clear();
@@ -29,7 +29,7 @@ void CheckersState::reset() {
   _final_value = 0.0;
 }
 
-std::string CheckersState::showBoard() const {
+std::string GameState::showBoard() const {
   std::stringstream ss;
 
   // for (int i = 0; i < _history.size(); i++) {
@@ -62,7 +62,7 @@ std::string CheckersState::showBoard() const {
 // Eval game call on each node in tree.
 // Should return 0 if state is not terminate,
 // because we eval current state by value func on each step
-float CheckersState::evaluateGame() const {
+float GameState::evaluateGame() const {
   float final_score = 0.0;
 
   if (terminated()) {
@@ -77,7 +77,7 @@ float CheckersState::evaluateGame() const {
 }
 
 
-bool CheckersState::moves_since(size_t* next_move_number, 
+bool GameState::moves_since(size_t* next_move_number, 
     std::vector<Coord>* moves) const {
   if (*next_move_number > _moves.size()) {
     // The move number is not right.

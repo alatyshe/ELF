@@ -16,7 +16,7 @@ model_file=elfgames.russian_checkers.model_russian_checkers \
 	--server_addr localhost --port 1234 \
 	\
 	--batchsize 64 \
-	--mode online			--keys_in_reply checkers_V checkers_rv \
+	--mode online			--keys_in_reply V rv \
 	--load $MODEL \
 	\
 	--replace_prefix resnet.module,resnet init_conv.module,init_conv \

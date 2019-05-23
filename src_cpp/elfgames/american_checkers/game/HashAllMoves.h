@@ -2,7 +2,7 @@
 # include <map>
 
 /*
-  all possible moves for checkers
+  all possible moves for american checkers
 
   Since the board is represented by six numbers(forward, backward, pieces),
   the pattern of transition from one state to another is changing.

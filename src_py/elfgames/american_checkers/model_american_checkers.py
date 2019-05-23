@@ -323,10 +323,7 @@ class Model_PolicyValue(Model):
 
 	
 	def forward(self, x):
-		# print("FORWARD")
-		# приводим в нормальный вид
-		s = self._var(x["checkers_s"])
-		
+		s = self._var(x["s"])
 		# for i in range(len(s[0])):
 		# 	print(i + 1, " : ")
 		# 	for k in s[0][i]:
@@ -349,7 +346,7 @@ class Model_PolicyValue(Model):
 		V = self.value_linear2(V)
 		V = self.tanh(V)
 
-		return dict(logpi=logpi, pi=pi, checkers_V=V)
+		return dict(logpi=logpi, pi=pi, V=V)
 
 
 # Format: key, [model, method]

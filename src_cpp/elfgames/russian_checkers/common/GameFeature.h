@@ -11,8 +11,8 @@
 // elf
 #include "elf/base/extractor.h"
 // checkers
-#include "../base/CheckersState.h"
-#include "../base/CheckersStateExt.h"
+#include "../game/CheckersState.h"
+#include "../game/CheckersStateExt.h"
 
 /*
   This Class responsible for data exchange between C++ and python.
@@ -170,11 +170,11 @@ class GameFeature {
 
     // Register the rest of the keys 
     e.addField<int64_t>("a").addExtent(batchsize);
-    e.addField<int64_t>("checkers_rv").addExtent(batchsize);
+    e.addField<int64_t>("rv").addExtent(batchsize);
     e.addField<int64_t>("checkers_offline_a")
         .addExtents(batchsize, {batchsize, game_options_.checkers_num_future_actions});
     e.addField<float>({
-      "checkers_V", 
+      "V", 
       "checkers_winner", 
       "checkers_predicted_value"}).addExtent(batchsize);
     e.addField<float>({"pi", "checkers_mcts_scores"})
@@ -189,8 +189,8 @@ class GameFeature {
     e.addClass<CheckersReply>()
         .addFunction<int64_t>("a", CheckersReplyAction)
         .addFunction<float>("pi", CheckersReplyPolicy)
-        .addFunction<float>("checkers_V", CheckersReplyValue)
-        .addFunction<int64_t>("checkers_rv", CheckersReplyVersion);
+        .addFunction<float>("V", CheckersReplyValue)
+        .addFunction<int64_t>("rv", CheckersReplyVersion);
 
     e.addClass<CheckersStateExtOffline>()
         .addFunction<int32_t>("checkers_move_idx", extractCheckersMoveIdx)

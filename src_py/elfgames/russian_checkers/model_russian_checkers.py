@@ -342,7 +342,7 @@ class Model_PolicyValue(Model):
 		V = self.value_linear2(V)
 		V = self.tanh(V)
 		# print("pi shape : ", pi.shape)
-		return dict(logpi=logpi, pi=pi, checkers_V=V)
+		return dict(logpi=logpi, pi=pi, V=V)
 
 
 # Format: key, [model, method]

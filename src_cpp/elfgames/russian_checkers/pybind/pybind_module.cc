@@ -11,5 +11,5 @@
 #include "Pybind.h"
 
 PYBIND11_MODULE(_elfgames_russian_checkers, m) {
-  elfgames::checkers::registerPy(m);
+  elfgames::russian_checkers::registerPy(m);
 }

@@ -10,18 +10,18 @@
 
 // elf
 #include "elf/ai/tree_search/mcts.h"
-// checkers
+// game
 #include "record.h"
-#include "../checkers/Record.h"
-#include "../mcts/MCTSCheckersActor.h"
+#include "../game/Record.h"
+#include "../mcts/MCTSGameActor.h"
 
 
 /*
-  from this class inherit CheckersGameNotifier.
+  from this class inherit GameGameNotifier.
 */
-class CheckersGameNotifierBase {
+class GameNotifierBase {
  public:
   using MCTSResult = elf::ai::tree_search::MCTSResultT<Coord>;
-  virtual void OnGameEnd(const CheckersStateExt&) {}
+  virtual void OnGameEnd(const GameStateExt&) {}
   virtual void OnStateUpdate(const ThreadState&) {}
 };

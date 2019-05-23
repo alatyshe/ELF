@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
 
-
-# MODEL=models/save-4096.bin
-# MODEL=models/save-14336.bin
-# MODEL=models/save-43008.bin
-# MODEL=models/save-47104.bin
-# MODEL=models/save-36864.bin
-# MODEL=models/save-40960.bin
 MODEL=models/save-43008.bin
-# shift
 
 game=elfgames.american_checkers.game \
 model=df_pred \
@@ -17,7 +9,7 @@ model_file=elfgames.american_checkers.model_american_checkers \
 	--server_addr localhost --port 1234 \
 	\
 	--batchsize 64 \
-	--mode play			--keys_in_reply checkers_V checkers_rv \
+	--mode play			--keys_in_reply V rv \
 	--num_games 1 \
 	--load $MODEL \
 	\

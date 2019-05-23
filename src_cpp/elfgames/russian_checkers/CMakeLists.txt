@@ -3,16 +3,16 @@ project(elfgames_russian_checkers)
 
 # Source files
 set(ELFGAMES_RUSSIAN_CHECKERS_SOURCES
-    base/CheckersState.cc
-    base/CheckersBoard.cc
-    base/CheckersFeature.cc
-    base/CheckersStateExt.cc
+    game/CheckersState.cc
+    game/CheckersBoard.cc
+    game/CheckersFeature.cc
+    game/CheckersStateExt.cc
 
     common/ClientGameSelfPlay.cc
     train/server/ServerGameTrain.cc
     train/client_manager.cc
     
-    train/Pybind.cc
+    pybind/Pybind.cc
 )
 
 # Main Checkers library
@@ -23,7 +23,7 @@ target_link_libraries(elfgames_russian_checkers PUBLIC
 )
 
 # Python bindings
-pybind11_add_module(_elfgames_russian_checkers train/pybind_module.cc)
+pybind11_add_module(_elfgames_russian_checkers pybind/pybind_module.cc)
 target_link_libraries(_elfgames_russian_checkers PRIVATE
     elfgames_russian_checkers
     zmq

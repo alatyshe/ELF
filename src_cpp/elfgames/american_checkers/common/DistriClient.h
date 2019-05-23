@@ -12,7 +12,7 @@
 
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+// game
 #include "DispatcherCallback.h"
 #include "../train/distri_base.h"
 
@@ -28,7 +28,7 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
   ThreadedWriterCtrl(
       Ctrl& ctrl,
       const ContextOptions& contextOptions,
-      const CheckersGameOptions& game_options)
+      const GameOptions& game_options)
       : ThreadedCtrlBase(ctrl, 0),
         logger_(elf::logging::getIndexedLogger(
             MAGENTA_B + std::string("|++|") + COLOR_END + 
@@ -127,22 +127,22 @@ class ThreadedWriterCtrl : public ThreadedCtrlBase {
   Stores information about the game states 
   also collects records of all completed games for send records on the server.
 */
-struct CheckersGuardedRecords {
+struct GuardedRecords {
  public:
-  CheckersGuardedRecords(const std::string& identity)
-      : checkersRecords_(identity),
+  GuardedRecords(const std::string& identity)
+      : gameRecords_(identity),
         logger_(elf::logging::getIndexedLogger(
             MAGENTA_B + std::string("|++|") + COLOR_END + 
-            "CheckersGuardedRecords",
+            "GuardedRecords",
             "")) {
   }
 
-  void feed(const CheckersStateExt& s) {
+  void feed(const GameStateExt& s) {
     std::lock_guard<std::mutex> lock(mutex_);
-    checkersRecords_.addRecord(s.dumpRecord());
+    gameRecords_.addRecord(s.dumpRecord());
   }
 
-  // call from CheckersGameNotifier::OnStateUpdate
+  // call from GameNotifier::OnStateUpdate
   void updateState(const ThreadState& ts) {
     /*
       Information about the game, saved in ThreadState:
@@ -156,7 +156,7 @@ struct CheckersGuardedRecords {
 
     auto now = elf_utils::sec_since_epoch_from_now();
 
-    checkersRecords_.updateState(ts);
+    gameRecords_.updateState(ts);
 
     last_states_.push_back(std::make_pair(now, ts));
     if (last_states_.size() > 100) {
@@ -186,7 +186,7 @@ struct CheckersGuardedRecords {
 
   size_t size() {
     std::lock_guard<std::mutex> lock(mutex_);
-    return checkersRecords_.records.size();
+    return gameRecords_.records.size();
   }
 
   std::string dumpAndClear() {
@@ -196,17 +196,17 @@ struct CheckersGuardedRecords {
         "{}DumpAndClear(dump all states to JSON and clean){}, #records: {}, {}",
         YELLOW_B,
         COLOR_END,
-        checkersRecords_.records.size(),
-        visStates(checkersRecords_.states));
+        gameRecords_.records.size(),
+        visStates(gameRecords_.states));
 
-    std::string s = checkersRecords_.dumpJsonString();
-    checkersRecords_.clear();
+    std::string s = gameRecords_.dumpJsonString();
+    gameRecords_.clear();
     return s;
   }
 
  private:
   std::mutex mutex_;
-  CheckersRecords checkersRecords_;
+  GameRecords gameRecords_;
   std::deque<std::pair<uint64_t, ThreadState>> last_states_;
   uint64_t last_state_vis_time_ = 0;
   std::shared_ptr<spdlog::logger> logger_;
@@ -261,12 +261,12 @@ struct CheckersGuardedRecords {
   Display statistics about the game from python side
   and contain records of finished games.
 */
-class CheckersGameNotifier : public CheckersGameNotifierBase {
+class GameNotifier : public GameNotifierBase {
  public:
-  CheckersGameNotifier(
+  GameNotifier(
       Ctrl& ctrl,
       const std::string& identity,
-      const CheckersGameOptions& game_options,
+      const GameOptions& game_options,
       elf::GameClient* client)
       : ctrl_(ctrl), 
         guardedRecords_(identity), 
@@ -276,14 +276,14 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
     using std::placeholders::_2;
 
     ctrl.RegCallback<std::pair<int, std::string>>(
-        std::bind(&CheckersGameNotifier::dump_records, this, _1, _2));
+        std::bind(&GameNotifier::dump_records, this, _1, _2));
   }
 
-  void OnGameEnd(const CheckersStateExt& s) override {
+  void OnGameEnd(const GameStateExt& s) override {
     // Add state to records.
     guardedRecords_.feed(s);
 
-    CheckersFinishReason reason = s.state().getPly() >= TOTAL_MAX_MOVE ? MAX_STEP : 
+    GameFinishReason reason = s.state().getPly() >= TOTAL_MAX_MOVE ? MAX_STEP : 
     (s.state().currentPlayer() == WHITE_PLAYER) ? BLACK_WIN : WHITE_WIN;
 
     game_stats_.feedWinRate(reason, s.state().getFinalValue());
@@ -306,8 +306,8 @@ class CheckersGameNotifier : public CheckersGameNotifierBase {
  private:
   Ctrl&                     ctrl_;
   GameStats                 game_stats_;
-  CheckersGuardedRecords    guardedRecords_;
-  const CheckersGameOptions gameOptions_;
+  GuardedRecords    guardedRecords_;
+  const GameOptions gameOptions_;
   elf::GameClient*          client_ = nullptr;
 
   bool dump_records(const Addr&, std::pair<int, std::string>& data) {
@@ -323,7 +323,7 @@ class DistriClient {
  public:
   DistriClient(
       const ContextOptions& contextOptions,
-      const CheckersGameOptions& game_options,
+      const GameOptions& game_options,
       elf::GameClient* client)
       : contextOptions_(contextOptions),
         gameOptions_(game_options),
@@ -342,8 +342,8 @@ class DistriClient {
       writerCtrl_.reset(
           new ThreadedWriterCtrl(ctrl_, contextOptions, game_options));
 
-      checkersGameNotifier_.reset(
-          new CheckersGameNotifier(ctrl_, writerCtrl_->identity(), game_options, client));
+      GameNotifier_.reset(
+          new GameNotifier(ctrl_, writerCtrl_->identity(), game_options, client));
 
     } else if (gameOptions_.mode == "play") {
     } else {
@@ -356,7 +356,7 @@ class DistriClient {
   }
 
   ~DistriClient() {
-    checkersGameNotifier_.reset(nullptr);
+    GameNotifier_.reset(nullptr);
     thereadedDispatcher_.reset(nullptr);
     writerCtrl_.reset(nullptr);
   }
@@ -365,13 +365,13 @@ class DistriClient {
     return thereadedDispatcher_.get();
   }
 
-  CheckersGameNotifier* getCheckersNotifier() {
-    return checkersGameNotifier_.get();
+  GameNotifier* getGameNotifier() {
+    return GameNotifier_.get();
   }
 
-  const GameStats& getCheckersGameStats() const {
-    assert(checkersGameNotifier_ != nullptr);
-    return checkersGameNotifier_->getGameStats();
+  const GameStats& getGameStats() const {
+    assert(GameNotifier_ != nullptr);
+    return GameNotifier_->getGameStats();
   }
 
   // Transfers to all streams the models versions for black and white players.
@@ -394,10 +394,10 @@ class DistriClient {
   std::unique_ptr<ThreadedWriterCtrl>   writerCtrl_;
 
   std::unique_ptr<DispatcherCallback>   dispatcherCallback_;
-  std::unique_ptr<CheckersGameNotifier> checkersGameNotifier_;
+  std::unique_ptr<GameNotifier> GameNotifier_;
 
   const ContextOptions                  contextOptions_;
-  const CheckersGameOptions             gameOptions_;
+  const GameOptions             gameOptions_;
 
   std::shared_ptr<spdlog::logger>       logger_;
 };

@@ -2,38 +2,38 @@
 
 // elf
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
-#include "CheckersBoard.h"
+// game
+#include "GameBoard.h"
 
-class CheckersState;
+class GameState;
 
-class CheckersFeature {
+class BoardFeature {
  public:
 
-  CheckersFeature(const CheckersState& s) 
+  BoardFeature(const GameState& s) 
       : s_(s) {
   }
-  const CheckersState& state() const {
+  const GameState& state() const {
     return s_;
   }
   void extract(std::vector<float>* features) const;
   void extract(float* features) const;
 
  private:
-  const CheckersState& s_;
+  const GameState& s_;
   static constexpr int64_t kBoardRegion = CHECKERS_BOARD_SIZE * CHECKERS_BOARD_SIZE;
 
   // Compute features.
-  void getPawns(CheckersBoard board, int player, float* data) const;
-  void getKings(CheckersBoard board, int player, float* data) const;
+  void getPawns(GameBoard board, int player, float* data) const;
+  void getKings(GameBoard board, int player, float* data) const;
 };
 
 /* 
   Sending info to the python side by this class 
   and wait until fields will be filled by python side.
 */
-struct CheckersReply {
-  const CheckersFeature& bf;
+struct BoardReply {
+  const BoardFeature& bf;
   // Best action
   int c;
   // Policy prediction, representing the model’s priors 
@@ -45,7 +45,7 @@ struct CheckersReply {
   // Model version.
   int64_t version = -1;
 
-  CheckersReply(const CheckersFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
+  BoardReply(const BoardFeature& bf) : bf(bf), pi(TOTAL_NUM_ACTIONS, 0.0) {
   }
   
   std::string   info() {

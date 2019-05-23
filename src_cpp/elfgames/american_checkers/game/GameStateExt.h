@@ -5,15 +5,15 @@
 // elf
 #include "elf/ai/tree_search/tree_search_base.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
-#include "CheckersState.h"
-#include "CheckersFeature.h"
-#include "CheckersGameOptions.h"
+// game
+#include "GameState.h"
+#include "BoardFeature.h"
+#include "GameOptions.h"
 #include "../common/record.h"
 #include "../sgf/sgf.h"
 #include "Record.h"
 
-enum CheckersFinishReason {
+enum GameFinishReason {
   MAX_STEP = 0,
   BLACK_WIN,
   WHITE_WIN,
@@ -24,9 +24,9 @@ enum CheckersFinishReason {
   calls from start_client.sh
   Generates batches for server
 */
-struct CheckersStateExt {
+struct GameStateExt {
  public:
-  CheckersStateExt(int game_idx, const CheckersGameOptions& game_options);
+  GameStateExt(int game_idx, const GameOptions& game_options);
 
   void setRequest(const MsgRequest& request);
   void addCurrentModel();
@@ -38,14 +38,14 @@ struct CheckersStateExt {
   void showFinishInfo() const;
   bool forward(Coord c);
   int seq() const;
-  const CheckersState& state() const;
-  const CheckersGameOptions& gameOptions() const;
+  const GameState& state() const;
+  const GameOptions& gameOptions() const;
   void saveCurrentTree(const std::string& tree_info) const;
   void setFinalValue();
 
   // packing the result of the game in json for sending to the server
-  CheckersRecord dumpRecord() const {
-    CheckersRecord r;
+  GameRecord dumpRecord() const {
+    GameRecord r;
 
     r.timestamp = elf_utils::sec_since_epoch_from_now();
     r.thread_id = _game_idx;
@@ -111,12 +111,12 @@ struct CheckersStateExt {
   float _last_value;
   std::set<int64_t> _using_models;
 
-  CheckersState _state;
+  GameState _state;
   
   MsgRequest _curr_request;
-  CheckersGameOptions _game_options;
+  GameOptions _game_options;
 
-  std::vector<CheckersCoordRecord> _mcts_policies;
+  std::vector<GameCoordRecord> _mcts_policies;
   // board value
   std::vector<float> _predicted_values;
 
@@ -127,22 +127,22 @@ struct CheckersStateExt {
   Server Side
   calls from start_server.sh
 */
-class CheckersStateExtOffline {
+class GameStateExtOffline {
  public:
   friend class GameFeature;
 
-  CheckersStateExtOffline(int game_idx, const CheckersGameOptions& game_options)
+  GameStateExtOffline(int game_idx, const GameOptions& game_options)
       : _game_idx(game_idx),
         _state(game_idx),
         _bf(_state),
         _game_options(game_options),
         _logger(elf::logging::getIndexedLogger(
             MAGENTA_B + std::string("|++|") + COLOR_END + 
-            "CheckersStateExtOffline-",
+            "GameStateExtOffline-",
             "")) {
   }
 
-  void fromRecord(const CheckersRecord& r) {
+  void fromRecord(const GameRecord& r) {
     _offline_all_moves = str2coords(r.result.content);
     _offline_winner = r.result.reward > 0 ? 1.0 : -1.0;
 
@@ -200,9 +200,9 @@ class CheckersStateExtOffline {
 
  private:
   const int _game_idx;
-  CheckersState _state;
-  CheckersFeature _bf;
-  CheckersGameOptions _game_options;
+  GameState _state;
+  BoardFeature _bf;
+  GameOptions _game_options;
 
   int _seq;
   MsgRequest _curr_request;
@@ -210,7 +210,7 @@ class CheckersStateExtOffline {
   std::vector<Coord> _offline_all_moves;
   float _offline_winner;
 
-  std::vector<CheckersCoordRecord> _mcts_policies;
+  std::vector<GameCoordRecord> _mcts_policies;
   std::vector<float> _predicted_values;
 
   std::shared_ptr<spdlog::logger> _logger;

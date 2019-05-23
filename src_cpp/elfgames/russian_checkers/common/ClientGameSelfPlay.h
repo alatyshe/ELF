@@ -26,9 +26,9 @@
 #include "GameStats.h"
 #include "Notifier.h"
 
-#include "../base/CheckersStateExt.h"
-#include "../base/CheckersFeature.h"
-#include "../base/CheckersState.h"
+#include "../game/CheckersStateExt.h"
+#include "../game/CheckersFeature.h"
+#include "../game/CheckersState.h"
 
 /*
   Running on the client side to generate batches.

@@ -26,7 +26,7 @@ struct WinRateStats {
   float sum_reward = 0.0;
   uint64_t total_games = 0;
 
-  void feed(CheckersFinishReason reason, float reward) {
+  void feed(GameFinishReason reason, float reward) {
     if (reason == MAX_STEP)
       both_lost++;
     else if (reward > 0)
@@ -57,7 +57,7 @@ class GameStats {
             "GameStats-", 
             "")) {}
 
-  void feedWinRate(CheckersFinishReason reason, float final_value) {
+  void feedWinRate(GameFinishReason reason, float final_value) {
     std::lock_guard<std::mutex> lock(_mutex);
     _win_rate_stats.feed(reason, final_value);
   }

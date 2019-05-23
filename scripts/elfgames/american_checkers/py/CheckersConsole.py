@@ -48,7 +48,7 @@ class CheckersConsole:
         continue
 
       c = items[0]
-      reply = dict(pi=None, a=None, checkers_V=0)
+      reply = dict(pi=None, a=None, V=0)
 
       try:
         ret, msg = self.commands[c](batch, items, reply)

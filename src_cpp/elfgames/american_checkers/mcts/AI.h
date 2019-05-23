@@ -14,10 +14,10 @@
 // elf
 #include "elf/ai/ai.h"
 #include "elf/ai/tree_search/tree_search_base.h"
-// checkers
-#include "../checkers/CheckersState.h"
+// game
+#include "../game/GameState.h"
 
-using AIClientT = elf::ai::AIClientT<CheckersFeature, CheckersReply>;
+using AIClientT = elf::ai::AIClientT<BoardFeature, BoardReply>;
 
 namespace elf {
 namespace ai {
@@ -37,14 +37,14 @@ struct ActionTrait<Coord> {
 
 
 template <>
-struct StateTrait<CheckersState, Coord> {
+struct StateTrait<GameState, Coord> {
  public:
-  static std::string to_string(const CheckersState& s) {
+  static std::string to_string(const GameState& s) {
     return "Score Current Board: " + std::to_string(s.evaluateGame());
   }
-  static bool equals(const CheckersState& s1, const CheckersState& s2) {
-    CheckersBoard b1 = s1.board();
-    CheckersBoard b2 = s2.board();
+  static bool equals(const GameState& s1, const GameState& s2) {
+    GameBoard b1 = s1.board();
+    GameBoard b2 = s2.board();
 
     int res = 0;
     res += (b1.forward[0] != b2.forward[0]);
@@ -74,7 +74,7 @@ struct StateTrait<CheckersState, Coord> {
   }
 
   static bool moves_since(
-      const CheckersState& s,
+      const GameState& s,
       size_t* next_move_number,
       std::vector<Coord>* moves) {
     return s.moves_since(next_move_number, moves);

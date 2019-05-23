@@ -13,11 +13,11 @@
 // elf
 #include "elf/ai/tree_search/mcts.h"
 #include "elf/logging/IndexedLoggerFactory.h"
-// checkers
+// game
 #include "AI.h"
 
 struct MCTSActorParams {
-	// "checkers_actor_black", "checkers_actor_white"
+	// "actor_black", "actor_white"
 	std::string		actor_name;
 
 	uint64_t			seed = 0;
@@ -39,20 +39,20 @@ struct MCTSActorParams {
 	Only agent. used to send states to neural network for evaluation
 	and other methods for MCTS.
 */
-class CheckersMCTSActor {
+class MCTSGameActor {
  public:
 	using Action = Coord;
-	using State	= CheckersState;
+	using State	= GameState;
 	using NodeResponse = elf::ai::tree_search::NodeResponseT<Coord>;
 
 	enum PreEvalResult { EVAL_DONE, EVAL_NEED_NN };
 
-	CheckersMCTSActor(elf::GameClient* client, const MCTSActorParams& params)
+	MCTSGameActor(elf::GameClient* client, const MCTSActorParams& params)
 			: params_(params),
 				rng_(params.seed),
 				logger_(elf::logging::getIndexedLogger(
 					MAGENTA_B + std::string("|++|") + COLOR_END + 
-					"CheckersMCTSActor-", 
+					"MCTSGameActor-", 
 					"")) {
 		ai_.reset(new AIClientT(client, {params_.actor_name}));
 
@@ -77,7 +77,7 @@ class CheckersMCTSActor {
 	}
 
 	void evaluate(
-			const std::vector<const CheckersState*>& states,
+			const std::vector<const GameState*>& states,
 			std::vector<NodeResponse>* p_resps) {
 		if (states.empty())
 			return;
@@ -89,7 +89,7 @@ class CheckersMCTSActor {
 		auto& resps = *p_resps;
 
 		resps.resize(states.size());
-		std::vector<CheckersFeature> sel_bfs;
+		std::vector<BoardFeature> sel_bfs;
 		std::vector<size_t> sel_indices;
 
 		for (size_t i = 0; i < states.size(); i++) {
@@ -104,14 +104,14 @@ class CheckersMCTSActor {
 		if (sel_bfs.empty())
 			return;
 
-		std::vector<CheckersReply> replies;
+		std::vector<BoardReply> replies;
 		for (size_t i = 0; i < sel_bfs.size(); ++i) {
 			replies.emplace_back(sel_bfs[i]);
 		}
 
 		// Get all pointers.
-		std::vector<CheckersReply*> p_replies;
-		std::vector<const CheckersFeature*> p_bfs;
+		std::vector<BoardReply*> p_replies;
+		std::vector<const BoardFeature*> p_bfs;
 
 		for (size_t i = 0; i < sel_bfs.size(); ++i) {
 			p_bfs.push_back(&sel_bfs[i]);
@@ -127,7 +127,7 @@ class CheckersMCTSActor {
 			}
 		}
 	}
-	void evaluate(const CheckersState& s, NodeResponse* resp) {
+	void evaluate(const GameState& s, NodeResponse* resp) {
 		if (oo_ != nullptr)
 			*oo_ 	<< std::endl << std::endl << "Evaluating state at " 
 						<< std::hex << &s << std::dec << std::endl;
@@ -137,11 +137,11 @@ class CheckersMCTSActor {
 		PreEvalResult res = pre_evaluate(s, resp);
 
 		if (res == EVAL_NEED_NN) {
-			CheckersFeature bf = get_extractor(s);
-			// CheckersReply struct initialization
+			BoardFeature bf = get_extractor(s);
+			// BoardReply struct initialization
 			// members containing:
 			// Coord c, vector<float> pi, float v;
-			CheckersReply reply(bf);
+			BoardReply reply(bf);
 
 			// AI-Client will run a one-step neural network
 			// will call neural net
@@ -161,7 +161,7 @@ class CheckersMCTSActor {
 	}
 
 
-	bool forward(CheckersState& s, Coord a) {
+	bool forward(GameState& s, Coord a) {
 		return s.forward(a);
 	}
 
@@ -171,7 +171,7 @@ class CheckersMCTSActor {
 	}
 
 
-	float reward(const CheckersState& /*s*/, float value) const {
+	float reward(const GameState& /*s*/, float value) const {
 		return value;
 	}
 
@@ -186,8 +186,8 @@ class CheckersMCTSActor {
  private:
 	std::shared_ptr<spdlog::logger> logger_;
 	
-	CheckersFeature get_extractor(const CheckersState& s) {
-		return CheckersFeature(s);
+	BoardFeature get_extractor(const GameState& s) {
+		return BoardFeature(s);
 	}
 
 	/*
@@ -195,7 +195,7 @@ class CheckersMCTSActor {
 		Whether we need to call the neural network to evaluate 
 		the next state of the board, or we can already get a reward.
 	*/
-	PreEvalResult pre_evaluate(const CheckersState& s, NodeResponse* resp) {
+	PreEvalResult pre_evaluate(const GameState& s, NodeResponse* resp) {
 		resp->q_flip = s.currentPlayer() == WHITE_PLAYER;
 
 		if (s.terminated()) {
@@ -218,7 +218,7 @@ class CheckersMCTSActor {
 	}
 
 	
-	void post_nn_result(const CheckersReply& reply, NodeResponse* resp) {
+	void post_nn_result(const BoardReply& reply, NodeResponse* resp) {
 		if (params_.required_version >= 0 &&
 				reply.version != params_.required_version) {
 			const std::string msg = "model version " + std::to_string(reply.version) +
@@ -232,7 +232,7 @@ class CheckersMCTSActor {
 			*oo_ << "Got information from neural network" << std::endl;
 		resp->value = reply.value;
 
-		const CheckersState& s = reply.bf.state();
+		const GameState& s = reply.bf.state();
 		pi2response(reply.bf, reply.pi, &resp->pi, oo_);
 	}
 
@@ -254,11 +254,11 @@ class CheckersMCTSActor {
 	// with inv-transform considered, remove invalid moves, normalize
 	// output_pi
 	static void pi2response(
-			const CheckersFeature& bf,
+			const BoardFeature& bf,
 			const std::vector<float>& pi,
 			std::vector<std::pair<Coord, float>>* output_pi,
 			std::ostream* oo = nullptr) {
-		const CheckersState& s = bf.state();
+		const GameState& s = bf.state();
 
 		if (oo != nullptr) {
 			*oo << "In get_last_pi, #move returned: " << pi.size() << std::endl;
