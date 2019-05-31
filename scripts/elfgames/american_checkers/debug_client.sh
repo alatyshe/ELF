@@ -6,14 +6,24 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+# --server_id myserver			--port 1234 \
+# --server_id cluster				--port 2000 \
+
 echo $PYTHONPATH $SLURMD_NODENAME $CUDA_VISIBLE_DEVICES
 
-root=./models \
+# Local directory
+# MODEL_DIR=./models
+
+# Cluster directory
+MODEL_DIR=/home/ubuntu/elf_models/american_checkers_
+
+root=$MODEL_DIR \
 game=elfgames.american_checkers.game \
 model=df_pred model_file=elfgames.american_checkers.model_american_checkers \
 	stdbuf -o 0 -e 0 python3 ./py/selfplay.py \
 	\
-	--server_id myserver			--port 1234 \
+	--server_id cluster				--port 2000 \
+	\
 	--gpu 0 --gpu0 0 --gpu1 0\
 	\
 	--mode selfplay \

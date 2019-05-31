@@ -6,33 +6,43 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+# --server_id myserver			--port 1234 \
+# --server_id cluster				--port 2000 \
 
+echo $PYTHONPATH $SLURMD_NODENAME $CUDA_VISIBLE_DEVICES
 
-save=./models \
+# Local directory
+# MODEL_DIR=./models
+
+# Cluster directory
+MODEL_DIR=/home/ubuntu/elf_models/american_checkers_
+
+save=$MODEL_DIR \
 game=elfgames.american_checkers.game \
 model=df_kl model_file=elfgames.american_checkers.model_american_checkers \
 	stdbuf -o 0 -e 0 python3 -u ./py/train.py \
 	\
-	--server_id myserver		--port 1234 \
+	--server_id cluster				--port 2000 \
+	\
 	--gpu 0 \
 	\
 	--mode train \
-	--num_games 1						--keys_in_reply V \
+	--num_games 1							--keys_in_reply V \
 	--T 1 \
 	--dim 128 \
 	--num_block 10 \
 	\
 	--batchsize 64 \
-	--num_minibatch 128 		--num_cooldown=10 \
-	--bn_momentum=0					--momentum 0.9 \
-	--weight_decay 0.0002		--opt_method sgd \
+	--num_minibatch 128 			--num_cooldown=10 \
+	--bn_momentum=0						--momentum 0.9 \
+	--weight_decay 0.0002			--opt_method sgd \
 	--lr 0.01	\
 	\
-	--use_mcts							--use_mcts_ai2 \
-	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
-	--mcts_puct 1.5					--mcts_use_prior \
-	--mcts_threads 8				--mcts_rollout_per_thread 100 \
-	--mcts_virtual_loss 1		--mcts_persistent_tree \
+	--use_mcts								--use_mcts_ai2 \
+	--mcts_epsilon 0.25				--mcts_alpha 0.03 \
+	--mcts_puct 1.5						--mcts_use_prior \
+	--mcts_threads 8					--mcts_rollout_per_thread 100 \
+	--mcts_virtual_loss 1			--mcts_persistent_tree \
 	--mcts_rollout_per_batch 5 \
 	\
 	--save_first \
@@ -43,7 +53,7 @@ model=df_kl model_file=elfgames.american_checkers.model_american_checkers \
 	--keep_prev_selfplay \
 	\
 	--selfplay_async \
-	--q_min_size 1					--q_max_size 50		--num_reader 2 \
+	--q_min_size 1						--q_max_size 50		--num_reader 2 \
 	\
 	--selfplay_init_num 10 \
 	--selfplay_update_num 10 \
@@ -52,8 +62,8 @@ model=df_kl model_file=elfgames.american_checkers.model_american_checkers \
 	--eval_num_games 9 \
 	\
 	--selfplay_records_directory "./GameRecords/" \
-	--eval_records_directory "./EvalRecords" \
-	--records_buffer_directory "./SimpleBufferRecords" \
+	--eval_records_directory "./EvalRecords/" \
+	--records_buffer_directory "./SimpleBufferRecords/" \
 	--verbose \
 	--tqdm \
 	\
