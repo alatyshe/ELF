@@ -39,9 +39,11 @@ struct SelfPlayRecord {
 						MAGENTA_B + std::string("|++|") + COLOR_END + 
 						"SelfPlayRecord-",
 						"")) {
-		std::string selfplay_prefix =
-				"SelfPlayRecord-" + game_options_.server_id + "-" + game_options_.time_signature;
-		recordBuffer_.resetPrefix(selfplay_prefix + "-ver_" + std::to_string(ver_));
+		
+    std::string selfplay_prefix = game_options.selfplay_records_directory + 
+        "SelfPlayRecord-" + game_options_.server_id + "-" + game_options_.time_signature;
+    recordBuffer_.resetPrefix(selfplay_prefix + "-ver_" + std::to_string(ver_));
+		
 		if (game_options.list_files.size() > 0)
 			counter_ = game_options_.selfplay_init_num;
 
@@ -52,7 +54,7 @@ struct SelfPlayRecord {
 		const GameMsgResult& r = record.result;
 
 		const bool didBlackWin = r.reward > 0;
-		if (r.num_move >= TOTAL_MAX_MOVE - 1)
+		if (r.draw)
 			draw_++;
 		else if (didBlackWin) {
 			black_win_++;

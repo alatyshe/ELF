@@ -15,6 +15,7 @@
 
 enum FinishReason {
   MAX_STEP = 0,
+  BOTH_REACHED_BASE,
   BLACK_WIN,
   WHITE_WIN,
 };

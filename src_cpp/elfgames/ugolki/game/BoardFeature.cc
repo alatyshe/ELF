@@ -45,7 +45,7 @@ void BoardFeature::extract(std::vector<float>* features) const {
 void BoardFeature::extract(float* features) const {
   const GameBoard* _board = &s_.board();
 
-  int active_player = _board->current_player;
+  int active_player = _board->active;
   int passive_player = (active_player == BLACK_PLAYER) ? WHITE_PLAYER : BLACK_PLAYER;
 
   std::fill(features, features + NUM_FEATURES * kBoardRegion, 0.0);

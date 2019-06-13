@@ -6,33 +6,43 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+# --server_id myserver			--port 1234 \
+# --server_id cluster				--port 2000 \
 
+echo $PYTHONPATH $SLURMD_NODENAME $CUDA_VISIBLE_DEVICES
 
-save=./models \
+# Local directory
+# MODEL_DIR=./models
+
+# Cluster directory
+MODEL_DIR=/home/ubuntu/elf_models/ugolki
+
+save=$MODEL_DIR \
 game=elfgames.ugolki.game \
 model=df_kl model_file=elfgames.ugolki.model_ugolki \
 	stdbuf -o 0 -e 0 python3 -u ./py/train.py \
 	\
-	--server_id myserver		--port 1234 \
+	--server_id myserver				--port 2000 \
+	\
 	--gpu 0 \
 	\
 	--mode train \
-	--num_games 16					--keys_in_reply V \
+	--num_games 1							--keys_in_reply V \
 	--T 1 \
-	--dim 256 \
-	--num_block 6 \
+	--dim 128 \
+	--num_block 10 \
 	\
-	--batchsize 512 \
-	--num_minibatch 1024 		--num_cooldown=128 \
-	--bn_momentum=0					--momentum 0.9 \
-	--weight_decay 0.0002		--opt_method sgd \
+	--batchsize 64 \
+	--num_minibatch 128 			--num_cooldown=10 \
+	--bn_momentum=0						--momentum 0.9 \
+	--weight_decay 0.0002			--opt_method sgd \
 	--lr 0.01	\
 	\
-	--use_mcts							--use_mcts_ai2 \
-	--mcts_epsilon 0.25			--mcts_alpha 0.03 \
-	--mcts_puct 1.5					--mcts_use_prior \
-	--mcts_threads 16				--mcts_rollout_per_thread 100 \
-	--mcts_virtual_loss 1		--mcts_persistent_tree \
+	--use_mcts								--use_mcts_ai2 \
+	--mcts_epsilon 0.25				--mcts_alpha 0.03 \
+	--mcts_puct 1.5						--mcts_use_prior \
+	--mcts_threads 8					--mcts_rollout_per_thread 100 \
+	--mcts_virtual_loss 1			--mcts_persistent_tree \
 	--mcts_rollout_per_batch 5 \
 	\
 	--save_first \
@@ -43,19 +53,19 @@ model=df_kl model_file=elfgames.ugolki.model_ugolki \
 	--keep_prev_selfplay \
 	\
 	--selfplay_async \
-	--q_min_size 1					--q_max_size 2000		--num_reader 10 \
+	--q_min_size 1						--q_max_size 50		--num_reader 2 \
 	\
 	--selfplay_init_num 100 \
-	--selfplay_update_num 200 \
+	--selfplay_update_num 100 \
 	\
 	--eval_winrate_thres 0.55 \
-	--eval_num_games 10 \
+	--eval_num_games 9 \
 	\
+	--selfplay_records_directory "./GameRecords/" \
+	--eval_records_directory "./EvalRecords/" \
+	--records_buffer_directory "./SimpleBufferRecords/" \
 	--verbose \
 	--tqdm \
-	
-	# 1>> server_log.log 2>&1 &
-	# --load models/save-512.bin \
 	\
 
 
@@ -87,7 +97,7 @@ model=df_kl model_file=elfgames.ugolki.model_ugolki \
 	# 			посылает сигнал elf::base::Context-3 для остановки
 	# 				
 	# 
-	# --eval_num_games 20		- после добавления модели ее можно сравнить с предидущей
+	# --eval_num_games 20		- после добавления модели ее можно сравнить с предыдущей
 	# 		eval_winrate_thres по этому параметру(выбирается лучшая)
 	# 
 	# 

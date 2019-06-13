@@ -253,6 +253,7 @@ def main():
           if (wr.black_wins + wr.white_wins) > 0 else 0.0)
 
     info =  f'game_end()\tB/W: {wr.black_wins}/{wr.white_wins}, '
+    info += f"Both reach base: {wr.both_reach_base}, "
     info += f'Draw: {wr.both_lost}, '
     info += f'Black winrate: {win_rate:.2f}, '
     info += f'Total Games: {wr.total_games}'

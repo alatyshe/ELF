@@ -22,6 +22,7 @@
 struct WinRateStats {
   uint64_t black_wins = 0;
   uint64_t white_wins = 0;
+  uint64_t both_reach_base = 0;
   uint64_t both_lost = 0;
   float sum_reward = 0.0;
   uint64_t total_games = 0;
@@ -29,6 +30,8 @@ struct WinRateStats {
   void feed(FinishReason reason, float reward) {
     if (reason == MAX_STEP)
       both_lost++;
+    else if (reason == BOTH_REACHED_BASE)
+      both_reach_base++;
     else if (reward > 0)
       black_wins++;
     else
@@ -41,11 +44,12 @@ struct WinRateStats {
     black_wins = 0;
     white_wins = 0;
     both_lost = 0;
+    both_reach_base = 0;
     sum_reward = 0.0;
     total_games = 0;
   }
 
-  REGISTER_PYBIND_FIELDS(black_wins, white_wins, both_lost, sum_reward, total_games);
+  REGISTER_PYBIND_FIELDS(black_wins, white_wins, both_reach_base, both_lost, sum_reward, total_games);
 };
 
 

@@ -57,9 +57,9 @@ class ModelPerfomance {
 		swap_games_.reset(
 				new fair_pick::Pick(num_request, num_eval_machine_per_layer));
 
-		record_.resetPrefix(
-				eval_prefix() + "-" + std::to_string(p.black_ver) + "-" +
-				std::to_string(p.white_ver));
+    record_.resetPrefix(gameOptions.eval_records_directory + 
+        eval_prefix() + "-" + std::to_string(p.black_ver) + "-" +
+        std::to_string(p.white_ver));
 
 		logger_->info("{}ModelPerfomance was created{}", GREEN_B, COLOR_END);
 	}
@@ -84,32 +84,6 @@ class ModelPerfomance {
 
 	EvalResult eval_result() const {
 		return eval_result_;
-	}
-
-	void dumpWinRate() const {
-		std::stringstream ss;
-		std::ofstream oo;
-
-		oo.open("Evaluations.log", std::ios::app);
-		ss 	<< curr_pair_.black_ver << ", " // Candidate model 
-				<< curr_pair_.white_ver << ", " // Baseline model
-				<< winrate() << ", "						// winrate in %
-				<< n_win() << ", "							// total win games
-				<< n_done() - n_win() << ", " 	// total lost games
-				<< n_done() << ", " 						// total walid games
-				<< draw_ << ", " 								// draw games
-				// Games without swaps
-				<< games_->win_count().n_win() / games_->win_count().n_done() // winrate 
-				<< games_->win_count().n_win() 	// total win games
-				<< games_->win_count().n_done() - games_->win_count().n_win() // total lost games
-				<< games_->win_count().n_done() // total games
-				// Games swaps games
-			 	<< swap_games_->win_count().n_win() / swap_games_->win_count().n_done() // winrate 
-				<< swap_games_->win_count().n_win() 	// total win games
-				<< swap_games_->win_count().n_done() - swap_games_->win_count().n_win() // total lost games
-				<< swap_games_->win_count().n_done(); // total games
-		oo << ss.str();
-		oo.close();
 	}
 
 	std::string info() const {
@@ -157,7 +131,7 @@ class ModelPerfomance {
 	*/
 	void feedInfo(const ClientInfo& c, const GameRecord& r) {
 		// мое
-		if (r.result.num_move >= TOTAL_MAX_MOVE - 1) {
+		if (r.result.draw) {
 			draw_++;
 		}
 		else if (r.request.client_ctrl.player_swap) {
@@ -294,7 +268,6 @@ class ModelPerfomance {
 				info(),
 				record_.prefix_save_counter());
 
-		dumpWinRate();
 		record_.saveCurrent();
 		record_.clear();
 	}

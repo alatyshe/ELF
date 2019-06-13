@@ -94,17 +94,21 @@ void GameStateExt::showFinishInfo() const {
       _seq,
       used_model);
 
-  if (_state.getPly() >= TOTAL_MAX_MOVE) {
+
+  if (_state.board().black_win > 0 && _state.board().white_win > 0) {
+    _logger->info(
+      "Ply: {}. Both Players reached their bases", 
+      _state.getPly());
+  } else if (_state.getPly() >= TOTAL_MAX_MOVE) {
     _logger->info(
       "Ply: {} exceeds thread_state. Restarting the game(Draw++)", 
       _state.getPly());
-  } else if (_state.currentPlayer() == WHITE_PLAYER) {
+  } else if (_state.board().black_win == 2) {
     _logger->info("{}Black{} win at {} move", 
       GREEN_C, 
       COLOR_END, 
       _state.getPly());
-  }
-  else if (_state.currentPlayer() == BLACK_PLAYER) {
+  } else if (_state.board().white_win == 2) {
     _logger->info("{}White{} win at {} move", 
       RED_C, 
       COLOR_END, 

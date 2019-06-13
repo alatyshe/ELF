@@ -11,9 +11,6 @@ bool GameState::forward(const Coord& c) {
 
   Play(&_board, c);
   _moves.push_back(c);
-
-  if (_getAllMoves(board()).size() == 0)
-    _board._ply = TOTAL_MAX_MOVE;
   // _history.emplace_back(_board);
   // if (_history.size() > MAX_CHECKERS_HISTORY)
   //   _history.pop_front();
@@ -34,8 +31,12 @@ void GameState::reset() {
 std::string GameState::showBoard() const {
   std::stringstream ss;
 
-  ss  << GetTrueObservationStr(_board);
+  ss << GetTrueObservationStr(_board);
 
+  ss << "BLACK_PLAYER : " << std::hex << _board.pieces[BLACK_PLAYER] << std::endl;
+  ss << "WHITE_PLAYER : " << std::hex << _board.pieces[WHITE_PLAYER] << std::endl;
+
+  ss << std::dec;
   if (lastMove() != M_INVALID)
     ss  << "\nLast move\t: " << moves::m_to_h.find(lastMove())->second;
   else
@@ -58,10 +59,12 @@ float GameState::evaluateGame() const {
   if (terminated()) {
     if (getPly() >= TOTAL_MAX_MOVE)
       final_score = -1;
-    else if (this->currentPlayer() == BLACK_PLAYER)
+    else if (_board.black_win > 0 && _board.white_win > 0)
       final_score = -1;
-    else
+    else if (_board.black_win == 2)
       final_score = 1;
+    else
+      final_score = -1;
   }
   return final_score;
 }

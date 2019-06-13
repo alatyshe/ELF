@@ -85,6 +85,10 @@ struct GameOptions {
   bool verbose = false;
   std::string dump_record_prefix;
 
+  std::string selfplay_records_directory;
+  std::string eval_records_directory;
+  std::string records_buffer_directory;
+
   std::string time_signature;
 
   GameOptions() {
@@ -175,6 +179,21 @@ struct GameOptions {
       ss << "dumpRecord: " << dump_record_prefix << std::endl;
     }
 
+    if (!eval_records_directory.empty()) {
+      ss << std::setw(60) << std::right;
+      ss << "Eval Records dump directory : " << eval_records_directory << std::endl;      
+    }
+
+    if (!selfplay_records_directory.empty()) {
+      ss << std::setw(60) << std::right;
+      ss << "SelfPlay Records dump directory : " << selfplay_records_directory << std::endl;
+    }
+
+    if (!records_buffer_directory.empty()) {
+      ss << std::setw(60) << std::right;
+      ss << "Simple buffer Records dump directory : " << records_buffer_directory << std::endl;
+    }
+
     ss << std::setw(30) << std::right;
     ss << "Reset move ranking after: " << num_reset_ranking << " actions"
        << std::endl;
@@ -218,6 +237,9 @@ struct GameOptions {
       q_max_size,
       num_reader,
       dump_record_prefix,
+      selfplay_records_directory,
+      eval_records_directory,
+      records_buffer_directory,
       use_mcts_ai2,
       num_reset_ranking,
       policy_distri_training_for_all,

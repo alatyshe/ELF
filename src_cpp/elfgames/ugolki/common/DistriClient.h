@@ -283,9 +283,16 @@ class GameNotifier : public GameNotifierBase {
     // Add state to records.
     guardedRecords_.feed(s);
 
-    FinishReason reason = s.state().getPly() >= TOTAL_MAX_MOVE ? MAX_STEP : 
-    (s.state().currentPlayer() == WHITE_PLAYER) ? BLACK_WIN : WHITE_WIN;
-
+    FinishReason reason;
+    if (s.state().getPly() >= TOTAL_MAX_MOVE)
+      reason = MAX_STEP;
+    else if (s.state().board().black_win > 0 && s.state().board().white_win > 0 )
+      reason = BOTH_REACHED_BASE;
+    else if (s.state().board().black_win == 2)
+      reason = BLACK_WIN;
+    else
+      reason = WHITE_WIN;
+  
     game_stats_.feedWinRate(reason, s.state().getFinalValue());
 
     // Report win rate(so that Python side could know).

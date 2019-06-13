@@ -6,25 +6,35 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+# --server_id myserver			--port 1234 \
+# --server_id cluster				--port 2000 \
+
 echo $PYTHONPATH $SLURMD_NODENAME $CUDA_VISIBLE_DEVICES
 
-root=./models \
+# Local directory
+# MODEL_DIR=./models
+
+# Cluster directory
+MODEL_DIR=/home/ubuntu/elf_models/ugolki
+
+root=$MODEL_DIR \
 game=elfgames.ugolki.game \
 model=df_pred model_file=elfgames.ugolki.model_ugolki \
 	stdbuf -o 0 -e 0 python3 ./py/selfplay.py \
 	\
-	--server_id myserver			--port 1234 \
+	--server_id myserver				--port 2000 \
+	\
 	--gpu 0 --gpu0 0 --gpu1 0\
 	\
 	--mode selfplay \
-	--batchsize 512 \
-	--num_games 16						--keys_in_reply V rv \
+	--batchsize 64 \
+	--num_games 1							--keys_in_reply V rv \
 	--T 1 \
-	--dim0 256								--dim1 256 \
-	--num_block0 6						--num_block1 6 \
+	--dim0 128								--dim1 128 \
+	--num_block0 10						--num_block1 10 \
 	\
 	--use_mcts								--use_mcts_ai2 \
-	--policy_distri_cutoff 3	--policy_distri_training_for_all \
+	--policy_distri_cutoff 5	--policy_distri_training_for_all \
 	\
 	--no_check_loaded_options0 \
 	--no_check_loaded_options1 \
@@ -34,10 +44,11 @@ model=df_pred model_file=elfgames.ugolki.model_ugolki \
 	\
 	--use_fp160								--use_fp161 \
 	--verbose \
-
-	# --suicide_after_n_games 20
 	
+	# --suicide_after_n_games 40
 	# --dump_record_prefix tree\
+	
+	# --suicide_after_n_games 120
 
 
 	# --num_games - int, 'number of games'

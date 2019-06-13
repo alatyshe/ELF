@@ -158,7 +158,6 @@ void ClientGameSelfPlay::restart() {
   const MsgRequest& request = game_state_ext_.currRequest();
   bool async = request.client_ctrl.async;
 
-
   ai1_.reset(nullptr);
   ai2_.reset(nullptr);
 
@@ -284,7 +283,7 @@ void ClientGameSelfPlay::act() {
         && gameState.currentPlayer() == _game_options.human_plays_for) {
     do {
       BoardFeature    boardFeature(gameState);
-      BoardReply       boardReply(boardFeature);
+      BoardReply      boardReply(boardFeature);
       human_player_->act(boardFeature, &boardReply);
 
       if (boardReply.c == -1) {
@@ -345,17 +344,11 @@ void ClientGameSelfPlay::act() {
         && ((current_player == BLACK_PLAYER && swap_ == true) 
         ||  (current_player == WHITE_PLAYER && swap_ == false))) {
     SimpleAgent *agent = simple_agent_.get();
-    move = agent->GetBestMove(gameState.board(), swap_);
+    move = agent->GetBestMove(gameState.board());
   } else if (model_update_ == 1) {
     SimpleAgent *agent = simple_agent_.get();
     usleep(100000);
-
-    if ((current_player == BLACK_PLAYER && swap_ == true) 
-        || (current_player == WHITE_PLAYER && swap_ == false)) {
-      move = agent->GetBestMove(gameState.board(), swap_);
-    } else {
-      move = agent->GetBestMove(gameState.board(), !swap_);
-    }
+    move = agent->GetBestMove(gameState.board());
   } else {
     bool use_policy_network_only =
         (current_player == WHITE_PLAYER && _game_options.white_use_policy_network_only) ||
@@ -379,15 +372,17 @@ void ClientGameSelfPlay::act() {
   // make move
   if (!game_state_ext_.forward(move)) {
     logger_->error(
-        "Something is wrong! Move {} cannot be applied\nCurrent board: "
+        "Something is wrong! Move {} cannot be applied\nCurrent board: \n"
         "{}\n[{}] Propose move {}\n",
         move,
         gameState.showBoard(),
         gameState.getPly(),
-        std::to_string(move)
+        (*moves::m_to_h.find(move)).second
         );
+    exit(0);
     return;
   }
+
   if (gameState.terminated()) {
     finish_game();
   }

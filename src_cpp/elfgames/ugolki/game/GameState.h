@@ -55,7 +55,7 @@ class GameState {
   }
 
   int currentPlayer() const {
-    return _board.current_player;
+    return _board.active;
   }
 
   // Moves history in vector
