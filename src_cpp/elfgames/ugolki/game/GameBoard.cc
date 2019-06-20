@@ -165,13 +165,13 @@ bool TryPlay(GameBoard board, Coord c) {
     all_pieces = board.pieces[BLACK_PLAYER] | board.pieces[WHITE_PLAYER] | old_pawn_place;
     empty_pieces = 0xFFFFFFFFFFFFFFFF ^ all_pieces;
   } else if ((board.active == BLACK_PLAYER)
-      && !(board.pieces[WHITE_PLAYER] & WHITE_BASE)
-      && (board.pieces[BLACK_PLAYER] & BLACK_BASE)) {
-    active_pieces = board.pieces[board.active] & BLACK_BASE;
-  } else if ((board.active == WHITE_PLAYER)
-      && !(board.pieces[BLACK_PLAYER] & BLACK_BASE)
-      && (board.pieces[WHITE_PLAYER] & WHITE_BASE)) {
+      && !(board.pieces[WHITE_PLAYER] & BLACK_BASE)
+      && (board.pieces[BLACK_PLAYER] & WHITE_BASE)) {
     active_pieces = board.pieces[board.active] & WHITE_BASE;
+  } else if ((board.active == WHITE_PLAYER)
+      && !(board.pieces[BLACK_PLAYER] & WHITE_BASE)
+      && (board.pieces[WHITE_PLAYER] & BLACK_BASE)) {
+    active_pieces = board.pieces[board.active] & BLACK_BASE;
   } else {
     active_pieces = board.pieces[board.active];
   }
@@ -362,6 +362,8 @@ uint64_t _ugolki_get_move_direction(uint64_t move, uint64_t pieces) {
 }
 
 
+  // board->pieces[BLACK_PLAYER] = WHITE_BASE;
+  // board->pieces[WHITE_PLAYER] = BLACK_BASE;
 std::vector<std::array<uint64_t, 2>> get_legal_moves(GameBoard board) {
   int active = board.active;
   int passive = board.passive;
@@ -370,13 +372,13 @@ std::vector<std::array<uint64_t, 2>> get_legal_moves(GameBoard board) {
   if (board.jump_action != 0) {
     return _jumps_from(board, board.pieces[active], board.jump_action);
   } else if ((active == BLACK_PLAYER)
-      && !(board.pieces[WHITE_PLAYER] & WHITE_BASE)
-      && (board.pieces[BLACK_PLAYER] & BLACK_BASE)) {
-    return _get_all_moves(board, board.pieces[BLACK_PLAYER] & BLACK_BASE);
+      && !(board.pieces[WHITE_PLAYER] & BLACK_BASE)
+      && (board.pieces[BLACK_PLAYER] & WHITE_BASE)) {
+    return _get_all_moves(board, board.pieces[BLACK_PLAYER] & WHITE_BASE);
   } else if ((active == WHITE_PLAYER)
-      && !(board.pieces[BLACK_PLAYER] & BLACK_BASE)
-      && (board.pieces[WHITE_PLAYER] & WHITE_BASE)) {
-    return _get_all_moves(board, board.pieces[WHITE_PLAYER] & WHITE_BASE);
+      && !(board.pieces[BLACK_PLAYER] & WHITE_BASE)
+      && (board.pieces[WHITE_PLAYER] & BLACK_BASE)) {
+    return _get_all_moves(board, board.pieces[WHITE_PLAYER] & BLACK_BASE);
   }
   return _get_all_moves(board, board.pieces[active]);
 }

@@ -72,7 +72,7 @@ def init_observation(player_id):
 
     valid_moves_binary = batch.GC.getGame(0).getValidMoves()
 
-
+    print("len valid_moves_binary : ", len(valid_moves_binary))
     for idx in range(len(valid_moves_binary)):
       if valid_moves_binary[idx]:
         move = moves_for_human[idx]
@@ -237,7 +237,7 @@ def logout():
 
 
 if __name__ == '__main__':
-  app.run(host='188.163.246.102', debug=True)
+  app.run(host='188.163.246.59', debug=True)
 
 
 

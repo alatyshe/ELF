@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MODEL=new_models/save-10240.bin
+MODEL=models/save-2000.bin
 
 game=elfgames.ugolki.game \
 model=df_pred \
@@ -17,7 +17,7 @@ model_file=elfgames.ugolki.model_ugolki \
 	--no_parameter_print \
 	\
 	--verbose					--gpu 0 	\
-	--num_block 10		--dim 256 \
+	--num_block 14		--dim 256 \
 	\
 	--mcts_rollout_per_batch 1 \
 	--use_mcts							--mcts_verbose_time \
