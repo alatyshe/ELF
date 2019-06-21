@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MODEL=models/save-2000.bin
+MODEL=newModels/save-0.bin
 
 game=elfgames.ugolki.game \
 model=df_pred \

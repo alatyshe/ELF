@@ -19,12 +19,6 @@ from elf import logging
 from rlpytorch import \
   Evaluator, load_env, ModelInterface
 
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
-
-
-
-
-
 logger = logging.getIndexedLogger(
   '\u001b[31;1m|py|\u001b[0melfgames.checkers.selfplay-',
   '')
