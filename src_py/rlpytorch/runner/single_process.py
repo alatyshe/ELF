@@ -13,168 +13,168 @@ from elf.options import auto_import_options, PyOptionSpec
 
 
 class SingleProcessRun(object):
-	@classmethod
-	def get_option_spec(cls):
-		spec = PyOptionSpec()
-		spec.addIntOption(
-			'num_minibatch',
-			'number of minibatches',
-			5000)
-		spec.addIntOption(
-			'num_cooldown',
-			'Last #minibatches to refresh running mean/std for batchnorm '
-			'in addition to the training stage',
-			0)
-		spec.addIntOption(
-			'num_episode',
-			'number of episodes',
-			10000)
-		spec.addBoolOption(
-			'tqdm',
-			'toggle tqdm visualization',
-			False)
-		return spec
+    @classmethod
+    def get_option_spec(cls):
+        spec = PyOptionSpec()
+        spec.addIntOption(
+            'num_minibatch',
+            'number of minibatches',
+            5000)
+        spec.addIntOption(
+            'num_cooldown',
+            'Last #minibatches to refresh running mean/std for batchnorm '
+            'in addition to the training stage',
+            0)
+        spec.addIntOption(
+            'num_episode',
+            'number of episodes',
+            10000)
+        spec.addBoolOption(
+            'tqdm',
+            'toggle tqdm visualization',
+            False)
+        return spec
 
 
-	@auto_import_options
-	def __init__(self, option_map):
-		"""Initialization for SingleProcessRun."""
-		self.logger = logging.getIndexedLogger(
-			'\u001b[31;1m|py|\u001b[0mrlpytorch.runner.SingleProcessRun-',
-			'')
-		pass
+    @auto_import_options
+    def __init__(self, option_map):
+        """Initialization for SingleProcessRun."""
+        self.logger = logging.getIndexedLogger(
+            '\u001b[31;1m|py|\u001b[0mrlpytorch.runner.SingleProcessRun-',
+            '')
+        pass
 
 
-	def setup(self, GC, episode_start=None, episode_summary=None,
-			  after_start=None, before_stop=None):
-		''' Setup for SingleProcessRun.
+    def setup(self, GC, episode_start=None, episode_summary=None,
+              after_start=None, before_stop=None):
+        ''' Setup for SingleProcessRun.
 
-		Args:
-			GC(`GameContext`): Game Context
-			episode_start(func): operations to perform before each episode
-			episode_summary(func): operations to summarize after each episode
-			after_start(func): operations called after GC.start() but
-							   before the main loop.
-		'''
-		self.GC = GC
-		self.episode_summary = episode_summary
-		self.episode_start = episode_start
-		self.after_start = after_start
-		self.before_stop = before_stop
-
-
-	def run_singe_process(self):
-		"""Main training loop. Initialize Game Context and looping the
-		required episodes.
-
-		Call episode_start and episode_summary before and after each episode
-		if necessary.
-
-		Visualize with a progress bar if ``tqdm`` is set.
-
-		Print training stats after each episode.
-
-		In the end, print summary for game context and stop it.
-		"""
-
-		print("")
-		self.GC.start()
-		if self.after_start is not None:
-			# запускаем эту штуку
-			# GC.GC.getServer().waitForSufficientSelfplay(selfplay_ver)
-			# она ждет нормального батча от клиента
-			self.after_start()
-
-		for k in range(self.options.num_episode):
-			self.logger.info(f'\u001b[36;1m{k + 1} episode of {self.options.num_episode} started\u001b[0m, minibatch={self.options.num_minibatch}')
-
-			if self.episode_start is not None:
-				self.episode_start(k)
-			if self.options.tqdm:
-				import tqdm
-				tq = tqdm.tqdm(total=self.options.num_minibatch, ncols=100, leave=False)
-			else:
-				tq = None
-
-			self.episode_counter = 0
-
-			while self.episode_counter < self.options.num_minibatch:
-				old_counter = self.episode_counter
-				# Make sure if the callback function in GC.run() change the
-				# counter, then the set value will not be added by 1.
-				self.GC.run()
-				self.episode_counter += 1
-				diff = self.episode_counter - old_counter
-				if tq is not None:
-					if diff < 0:
-						tq = tqdm.tqdm(
-							total=self.options.num_minibatch, ncols=100, leave=False)
-						tq.update(self.episode_counter)
-					else:
-						tq.update(diff)
-
-			if self.options.tqdm:
-				tq.close()
-				print("")
-
-			if self.options.num_cooldown > 0:
-				self.logger.info(f'Starting {self.options.num_cooldown} cooldown passes')
-
-				self.cooldown_counter = 0
-				while self.cooldown_counter < self.options.num_cooldown:
-					self.GC.run(
-						use_cooldown=True,
-						cooldown_count=self.cooldown_counter)
-					self.cooldown_counter += 1
+        Args:
+            GC(`GameContext`): Game Context
+            episode_start(func): operations to perform before each episode
+            episode_summary(func): operations to summarize after each episode
+            after_start(func): operations called after GC.start() but
+                               before the main loop.
+        '''
+        self.GC = GC
+        self.episode_summary = episode_summary
+        self.episode_start = episode_start
+        self.after_start = after_start
+        self.before_stop = before_stop
 
 
-			if self.episode_summary is not None:
-				self.episode_summary(k)
+    def run_singe_process(self):
+        """Main training loop. Initialize Game Context and looping the
+        required episodes.
 
-			print("")
+        Call episode_start and episode_summary before and after each episode
+        if necessary.
 
-		if self.before_stop is not None:
-			self.before_stop()
-		self.GC.stop()
+        Visualize with a progress bar if ``tqdm`` is set.
+
+        Print training stats after each episode.
+
+        In the end, print summary for game context and stop it.
+        """
+
+        print("")
+        self.GC.start()
+        if self.after_start is not None:
+            # запускаем эту штуку
+            # GC.GC.getServer().waitForSufficientSelfplay(selfplay_ver)
+            # она ждет нормального батча от клиента
+            self.after_start()
+
+        for k in range(self.options.num_episode):
+            self.logger.info(f'\u001b[36;1m{k + 1} episode of {self.options.num_episode} started\u001b[0m, minibatch={self.options.num_minibatch}')
+
+            if self.episode_start is not None:
+                self.episode_start(k)
+            if self.options.tqdm:
+                import tqdm
+                tq = tqdm.tqdm(total=self.options.num_minibatch, ncols=100, leave=False)
+            else:
+                tq = None
+
+            self.episode_counter = 0
+
+            while self.episode_counter < self.options.num_minibatch:
+                old_counter = self.episode_counter
+                # Make sure if the callback function in GC.run() change the
+                # counter, then the set value will not be added by 1.
+                self.GC.run()
+                self.episode_counter += 1
+                diff = self.episode_counter - old_counter
+                if tq is not None:
+                    if diff < 0:
+                        tq = tqdm.tqdm(
+                            total=self.options.num_minibatch, ncols=100, leave=False)
+                        tq.update(self.episode_counter)
+                    else:
+                        tq.update(diff)
+
+            if self.options.tqdm:
+                tq.close()
+                print("")
+
+            if self.options.num_cooldown > 0:
+                self.logger.info(f'Starting {self.options.num_cooldown} cooldown passes')
+
+                self.cooldown_counter = 0
+                while self.cooldown_counter < self.options.num_cooldown:
+                    self.GC.run(
+                        use_cooldown=True,
+                        cooldown_count=self.cooldown_counter)
+                    self.cooldown_counter += 1
 
 
-	def set_episode_counter(self, counter):
-		self.episode_counter = counter
+            if self.episode_summary is not None:
+                self.episode_summary(k)
+
+            print("")
+
+        if self.before_stop is not None:
+            self.before_stop()
+        self.GC.stop()
 
 
-	def inc_episode_counter(self, delta):
-		self.episode_counter += delta
+    def set_episode_counter(self, counter):
+        self.episode_counter = counter
 
 
-	def run_multithread(self):
-		''' Start training in a multithreaded environment '''
-		def train_thread():
+    def inc_episode_counter(self, delta):
+        self.episode_counter += delta
 
-			for i in range(self.options.num_episode):
-				for k in range(self.options.num_minibatch):
-					if self.episode_start is not None:
-						self.episode_start(k)
 
-					if k % 500 == 0:
-						print(
-							"Receive minibatch %d/%d" %
-							(k, self.options.num_minibatch))
+    def run_multithread(self):
+        ''' Start training in a multithreaded environment '''
+        def train_thread():
 
-					self.GC.runGroup("train")
+            for i in range(self.options.num_episode):
+                for k in range(self.options.num_minibatch):
+                    if self.episode_start is not None:
+                        self.episode_start(k)
 
-				# Print something.
-				self.episode_summary(i)
+                    if k % 500 == 0:
+                        print(
+                            "Receive minibatch %d/%d" %
+                            (k, self.options.num_minibatch))
 
-		def actor_thread():
-			while True:
-				self.GC.runGroup("actor")
+                    self.GC.runGroup("train")
 
-		self.GC.start()
+                # Print something.
+                self.episode_summary(i)
 
-		# Start the two threads.
-		train_th = threading.Thread(target=train_thread)
-		actor_th = threading.Thread(target=actor_thread)
-		train_th.start()
-		actor_th.start()
-		train_th.join()
-		actor_th.join()
+        def actor_thread():
+            while True:
+                self.GC.runGroup("actor")
+
+        self.GC.start()
+
+        # Start the two threads.
+        train_th = threading.Thread(target=train_thread)
+        actor_th = threading.Thread(target=actor_thread)
+        train_th.start()
+        actor_th.start()
+        train_th.join()
+        actor_th.join()

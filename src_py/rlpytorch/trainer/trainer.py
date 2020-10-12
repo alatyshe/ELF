@@ -22,172 +22,172 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'elf'))
 
 
 class Evaluator(object):
-	@classmethod
-	def get_option_spec(cls, name='eval'):
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+    @classmethod
+    def get_option_spec(cls, name='eval'):
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		spec = PyOptionSpec()
-		spec.addStrListOption(
-			'keys_in_reply',
-			'keys in reply',
-			[])
-		spec.addIntOption(
-			'num_minibatch',
-			'number of minibatches',
-			5000)
-		spec.addStrListOption(
-			'parsed_args',
-			'dummy option',
-			'')
+        spec = PyOptionSpec()
+        spec.addStrListOption(
+            'keys_in_reply',
+            'keys in reply',
+            [])
+        spec.addIntOption(
+            'num_minibatch',
+            'number of minibatches',
+            5000)
+        spec.addStrListOption(
+            'parsed_args',
+            'dummy option',
+            '')
 
-		spec.merge(Stats.get_option_spec(name))
+        spec.merge(Stats.get_option_spec(name))
 
-		return spec
+        return spec
 
-	def __init__(
-			self,
-			option_map,
-			name='eval',
-			stats=True,
-			verbose=False,
-			actor_name="actor"):
-		"""Initialization for Evaluator."""
+    def __init__(
+            self,
+            option_map,
+            name='eval',
+            stats=True,
+            verbose=False,
+            actor_name="actor"):
+        """Initialization for Evaluator."""
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		import_options(self, option_map, self.get_option_spec(name))
+        import_options(self, option_map, self.get_option_spec(name))
 
-		if stats:
-			self.stats = Stats(option_map, name)
-		else:
-			self.stats = None
-		if self.stats is not None and not self.stats.is_valid():
-			self.stats = None
+        if stats:
+            self.stats = Stats(option_map, name)
+        else:
+            self.stats = None
+        if self.stats is not None and not self.stats.is_valid():
+            self.stats = None
 
-		self.name = name
-		self.actor_name = actor_name
-		# verbose = option_map.get("verbose")
-		self.verbose = verbose
-		self.keys_in_reply = set(self.options.keys_in_reply)
-		self.logger = logging.getIndexedLogger(
-      		'\u001b[31;1m|py|\u001b[0mrlpytorch.trainer.Evaluator-',
-      		'')
+        self.name = name
+        self.actor_name = actor_name
+        # verbose = option_map.get("verbose")
+        self.verbose = verbose
+        self.keys_in_reply = set(self.options.keys_in_reply)
+        self.logger = logging.getIndexedLogger(
+              '\u001b[31;1m|py|\u001b[0mrlpytorch.trainer.Evaluator-',
+              '')
 
-		print("name : ", name)
-		print("actor_name : ", actor_name)
-
-
-	def episode_start(self, i):
-		''' Called before each episode. Reset ``actor_count`` to 0.
-
-		Args:
-			i(int): index in the minibatch
-		'''
-
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
-
-		self.actor_count = 0
-
-	def actor(self, batch):
-		"""Actor.
-
-		Get the model, forward the batch and get a distribution.
-
-		Sample from it and act.
-
-		Reply the message to game engine.
-
-		Args:
-			batch(dict): batch data
-
-		Returns:
-			reply_msg(dict):
-				``pi``: policy, ``a``: action,
-				``V``: value, `rv`: reply version,
-				signatured by step
-		"""
-
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
-
-		if self.verbose:
-			self.logger.info(f"In Evaluator[{self.actor_name}]::actor")
-
-		# actor model.
-		m = self.mi[self.actor_name]
-
-		m.set_volatile(True)
-		state_curr = m.forward(batch)
-		m.set_volatile(False)
-
-		if self.sampler is not None:
-			reply_msg = self.sampler.sample(state_curr)
-		else:
-			reply_msg = dict(pi=state_curr["pi"].data)
-
-		if self.stats is not None:
-			self.stats.feed_batch(batch)
+        print("name : ", name)
+        print("actor_name : ", actor_name)
 
 
-		# print("\n\n\n\n")
-		# print("keys_in_reply\t: ", self.keys_in_reply)
-		# print("\n\nself.mi[self.actor_name] : ", self.mi[self.actor_name])
-		# print("\n\nstate_curr['V']\t: ", state_curr["V"])
-		# print("\n\nself.mi[self.actor_name].step - ", self.mi[self.actor_name].step)
-		# print("\n\nself.mi[self.actor_name].step - ", self.mi[self.actor_name].step)
-		# print("\n\nstate_curr\t\t: ", state_curr)
-		# print("\n\nself.mi\t\t: ", self.mi)
+    def episode_start(self, i):
+        ''' Called before each episode. Reset ``actor_count`` to 0.
 
-		# print("\n\nstate_curr['V'].data\t: ", state_curr["V"].data)
-		
-		if "rv" in self.keys_in_reply:
-			reply_msg["rv"] = self.mi[self.actor_name].step
+        Args:
+            i(int): index in the minibatch
+        '''
 
-		if "V" in self.keys_in_reply:
-			reply_msg["V"] = state_curr["V"].data
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		if "checkers_V" in self.keys_in_reply:
-			reply_msg["checkers_V"] = state_curr["checkers_V"].data
+        self.actor_count = 0
 
-		self.actor_count += 1
-		return reply_msg
+    def actor(self, batch):
+        """Actor.
 
-	def episode_summary(self, i):
-		''' Called after each episode. Print stats and summary
+        Get the model, forward the batch and get a distribution.
 
-		Args:
-			i(int): index in the minibatch
-		'''
+        Sample from it and act.
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        Reply the message to game engine.
 
-		self.logger.info(f"[{self.name}] actor count: {self.actor_count}/{self.options.num_minibatch}")
+        Args:
+            batch(dict): batch data
 
-		if self.stats is not None:
-			self.stats.print_summary()
-			if self.stats.count_completed() > 10000:
-				self.stats.reset()
+        Returns:
+            reply_msg(dict):
+                ``pi``: policy, ``a``: action,
+                ``V``: value, `rv`: reply version,
+                signatured by step
+        """
 
-	def setup(self, mi=None, sampler=None):
-		''' Setup `ModelInterface` and `Sampler`. Resetting stats.
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		Args:
-			mi(`ModelInterface`)
-			sample(`Sampler`)
-		'''
+        if self.verbose:
+            self.logger.info(f"In Evaluator[{self.actor_name}]::actor")
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        # actor model.
+        m = self.mi[self.actor_name]
 
-		self.mi = mi
-		self.sampler = sampler
+        m.set_volatile(True)
+        state_curr = m.forward(batch)
+        m.set_volatile(False)
 
-		if self.stats is not None:
-			self.stats.reset()
+        if self.sampler is not None:
+            reply_msg = self.sampler.sample(state_curr)
+        else:
+            reply_msg = dict(pi=state_curr["pi"].data)
+
+        if self.stats is not None:
+            self.stats.feed_batch(batch)
+
+
+        # print("\n\n\n\n")
+        # print("keys_in_reply\t: ", self.keys_in_reply)
+        # print("\n\nself.mi[self.actor_name] : ", self.mi[self.actor_name])
+        # print("\n\nstate_curr['V']\t: ", state_curr["V"])
+        # print("\n\nself.mi[self.actor_name].step - ", self.mi[self.actor_name].step)
+        # print("\n\nself.mi[self.actor_name].step - ", self.mi[self.actor_name].step)
+        # print("\n\nstate_curr\t\t: ", state_curr)
+        # print("\n\nself.mi\t\t: ", self.mi)
+
+        # print("\n\nstate_curr['V'].data\t: ", state_curr["V"].data)
+        
+        if "rv" in self.keys_in_reply:
+            reply_msg["rv"] = self.mi[self.actor_name].step
+
+        if "V" in self.keys_in_reply:
+            reply_msg["V"] = state_curr["V"].data
+
+        if "checkers_V" in self.keys_in_reply:
+            reply_msg["checkers_V"] = state_curr["checkers_V"].data
+
+        self.actor_count += 1
+        return reply_msg
+
+    def episode_summary(self, i):
+        ''' Called after each episode. Print stats and summary
+
+        Args:
+            i(int): index in the minibatch
+        '''
+
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+
+        self.logger.info(f"[{self.name}] actor count: {self.actor_count}/{self.options.num_minibatch}")
+
+        if self.stats is not None:
+            self.stats.print_summary()
+            if self.stats.count_completed() > 10000:
+                self.stats.reset()
+
+    def setup(self, mi=None, sampler=None):
+        ''' Setup `ModelInterface` and `Sampler`. Resetting stats.
+
+        Args:
+            mi(`ModelInterface`)
+            sample(`Sampler`)
+        '''
+
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Evaluator::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+
+        self.mi = mi
+        self.sampler = sampler
+
+        if self.stats is not None:
+            self.stats.reset()
 
 
 
@@ -215,186 +215,186 @@ class Evaluator(object):
 
 
 class Trainer(object):
-	@classmethod
-	def get_option_spec(cls):
-		spec = PyOptionSpec()
-		spec.addIntOption(
-			'freq_update',
-			'frequency of model update',
-			1)
-		spec.addBoolOption(
-			'save_first',
-			'save first model',
-			False)
-		spec.addIntOption(
-			'num_games',
-			'number of games',
-			1024)
-		spec.addIntOption(
-			'batchsize',
-			'batch size',
-			128)
+    @classmethod
+    def get_option_spec(cls):
+        spec = PyOptionSpec()
+        spec.addIntOption(
+            'freq_update',
+            'frequency of model update',
+            1)
+        spec.addBoolOption(
+            'save_first',
+            'save first model',
+            False)
+        spec.addIntOption(
+            'num_games',
+            'number of games',
+            1024)
+        spec.addIntOption(
+            'batchsize',
+            'batch size',
+            128)
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		spec.merge(Evaluator.get_option_spec('trainer'))
-		spec.merge(ModelSaver.get_option_spec())
+        spec.merge(Evaluator.get_option_spec('trainer'))
+        spec.merge(ModelSaver.get_option_spec())
 
-		return spec
+        return spec
 
-	@auto_import_options
-	def __init__(self, option_map, verbose=False, actor_name="actor"):
-		"""Initialization for Trainer."""
+    @auto_import_options
+    def __init__(self, option_map, verbose=False, actor_name="actor"):
+        """Initialization for Trainer."""
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		self.timer = RLTimer()
-		# verbose = option_map.get("verbose")
-		self.verbose = verbose
-		self.last_time = None
-		self.evaluator = Evaluator(
-			option_map,
-			'trainer',
-			verbose=verbose,
-			actor_name=actor_name)
-		self.saver = ModelSaver(option_map)
+        self.timer = RLTimer()
+        # verbose = option_map.get("verbose")
+        self.verbose = verbose
+        self.last_time = None
+        self.evaluator = Evaluator(
+            option_map,
+            'trainer',
+            verbose=verbose,
+            actor_name=actor_name)
+        self.saver = ModelSaver(option_map)
 
-		self.counter = MultiCounter(verbose=verbose)
-		self.just_update = False
+        self.counter = MultiCounter(verbose=verbose)
+        self.just_update = False
 
-		self.logger = logging.getIndexedLogger(
-			'\u001b[31;1m|py|\u001b[0mrlpytorch.trainer.Trainer-',
-			'')
+        self.logger = logging.getIndexedLogger(
+            '\u001b[31;1m|py|\u001b[0mrlpytorch.trainer.Trainer-',
+            '')
 
-	def actor(self, batch):
-		"""Actor.
+    def actor(self, batch):
+        """Actor.
 
-		Get the model, forward the batch and get a distribution.
+        Get the model, forward the batch and get a distribution.
 
-		Sample from it and act.
+        Sample from it and act.
 
-		Reply the message to game engine.
+        Reply the message to game engine.
 
-		Args:
-			batch(dict): batch data
+        Args:
+            batch(dict): batch data
 
-		Returns:
-			reply_msg(dict):
-				``pi``: policy, ``a``: action, ``V``: value,
-				`rv`: reply version, signatured by step
-		"""
+        Returns:
+            reply_msg(dict):
+                ``pi``: policy, ``a``: action, ``V``: value,
+                `rv`: reply version, signatured by step
+        """
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		self.counter.inc("actor")
-		return self.evaluator.actor(batch)
+        self.counter.inc("actor")
+        return self.evaluator.actor(batch)
 
-	def train(self, batch, *args, **kwargs):
-		''' Trainer.
-		Get the model, forward the batch and update the weights.
+    def train(self, batch, *args, **kwargs):
+        ''' Trainer.
+        Get the model, forward the batch and update the weights.
 
-		Args:
-			batch(dict): batch data
-		'''
+        Args:
+            batch(dict): batch data
+        '''
 
-		# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		# inf = ""
-		# for k in batch.batch.keys():
-		#     inf += f"{k} : {batch.batch[k].shape}\n"
-		# self.logger.info(f"batch.batch.keys: \n{inf}\n\n")
-
-
-		mi = self.evaluator.mi
-
-		self.counter.inc("train")
-		self.timer.record("batch_train")
-
-		mi.zero_grad()
-		res = self.rl_method.update(mi, batch,
-									self.counter.stats, *args, **kwargs)
-		if res["backprop"]:
-			mi.update_weights()
-
-		self.timer.record("compute_train")
-
-		if self.counter.counts["train"] % self.options.freq_update == 0:
-			# Update actor model
-			# print("Update actor model")
-			# Save the current model.
-			if "actor" in mi:
-				mi.update_model("actor", mi["model"])
-			self.just_updated = True
-
-		self.just_updated = False
+        # inf = ""
+        # for k in batch.batch.keys():
+        #     inf += f"{k} : {batch.batch[k].shape}\n"
+        # self.logger.info(f"batch.batch.keys: \n{inf}\n\n")
 
 
-	def episode_reset(self):
-		''' Reset stats '''
+        mi = self.evaluator.mi
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        self.counter.inc("train")
+        self.timer.record("batch_train")
 
-		self.counter.reset()
-		self.timer.restart()
+        mi.zero_grad()
+        res = self.rl_method.update(mi, batch,
+                                    self.counter.stats, *args, **kwargs)
+        if res["backprop"]:
+            mi.update_weights()
 
-	def episode_start(self, i):
-		''' Called before each episode.
+        self.timer.record("compute_train")
 
-		Args:
-			i(int): index in the minibatch
-		'''
+        if self.counter.counts["train"] % self.options.freq_update == 0:
+            # Update actor model
+            # print("Update actor model")
+            # Save the current model.
+            if "actor" in mi:
+                mi.update_model("actor", mi["model"])
+            self.just_updated = True
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        self.just_updated = False
 
-		self.evaluator.episode_start(i)
 
-	def episode_summary(self, i, save=True):
-		"""Called after each episode. Print stats and summary.
+    def episode_reset(self):
+        ''' Reset stats '''
 
-		Also print arguments passed in.
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		Args:
-			i(int): index in the minibatch
-		"""
+        self.counter.reset()
+        self.timer.restart()
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+    def episode_start(self, i):
+        ''' Called before each episode.
 
-		self.logger.info(f"batchsize[{self.options.batchsize}], minibatch[{self.options.num_minibatch}] Iter[{i + 1}]")
+        Args:
+            i(int): index in the minibatch
+        '''
 
-		if self.counter.counts["train"] > 0 and save:
-			self.saver.feed(self.evaluator.mi["model"])
-		self.counter.summary(global_counter=i)
-		self.evaluator.episode_summary(i)
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		self.episode_reset()
+        self.evaluator.episode_start(i)
 
-		return self.evaluator.mi["model"].step
+    def episode_summary(self, i, save=True):
+        """Called after each episode. Print stats and summary.
 
-	def setup(self, rl_method=None, mi=None, sampler=None):
-		''' Setup `RLMethod`, ModelInterface` and `Sampler`
+        Also print arguments passed in.
 
-		Args:
-			rl_method(RLmethod)
-			mi(`ModelInterface`)
-			sample(`Sampler`)
-		'''
+        Args:
+            i(int): index in the minibatch
+        """
 
-		# print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
-		# print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
 
-		self.rl_method = rl_method
-		self.evaluator.setup(mi=mi, sampler=sampler)
-		if self.options.save_first:
-			# print("Save first: ")
-			self.saver.feed(self.evaluator.mi["model"])
+        self.logger.info(f"batchsize[{self.options.batchsize}], minibatch[{self.options.num_minibatch}] Iter[{i + 1}]")
+
+        if self.counter.counts["train"] > 0 and save:
+            self.saver.feed(self.evaluator.mi["model"])
+        self.counter.summary(global_counter=i)
+        self.evaluator.episode_summary(i)
+
+        self.episode_reset()
+
+        return self.evaluator.mi["model"].step
+
+    def setup(self, rl_method=None, mi=None, sampler=None):
+        ''' Setup `RLMethod`, ModelInterface` and `Sampler`
+
+        Args:
+            rl_method(RLmethod)
+            mi(`ModelInterface`)
+            sample(`Sampler`)
+        '''
+
+        # print("\u001b[31;1m|py|\u001b[0m\u001b[37m", "Trainer::", inspect.currentframe().f_code.co_name)
+        # print("\u001b[31;1m", os.path.dirname(os.path.abspath(__file__)), " - ", os.path.basename(__file__), "\u001b[0m")
+
+        self.rl_method = rl_method
+        self.evaluator.setup(mi=mi, sampler=sampler)
+        if self.options.save_first:
+            # print("Save first: ")
+            self.saver.feed(self.evaluator.mi["model"])
 
 
 

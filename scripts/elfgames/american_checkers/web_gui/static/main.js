@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 function DisplayBoard(boardData){
   var fieldClass;
 

@@ -12,30 +12,30 @@ MODEL=models/save-609280.bin
 game=elfgames.american_checkers.game \
 model=df_pred \
 model_file=elfgames.american_checkers.model_american_checkers \
-	python3 ./py/play_console.py \
-	--server_addr localhost --port 1234 \
-	\
-	--batchsize 64 \
-	--mode online			--keys_in_reply V rv \
-	--load $MODEL \
-	\
-	--replace_prefix resnet.module,resnet init_conv.module,init_conv \
-	--no_check_loaded_options \
-	--no_parameter_print \
-	\
-	--verbose					--gpu 0 \
-	--num_block 10		--dim 128 \
-	\
-	--mcts_virtual_loss 1 \
-	--mcts_rollout_per_batch 1 \
-	--mcts_persistent_tree \
-	--use_mcts							--mcts_verbose_time \
-	--mcts_use_prior				--mcts_puct 0.9 \
-	--mcts_threads 1				--mcts_rollout_per_thread 100 \
-	\
-	# --dump_record_prefix mcts \
-	
-	# 
-	# "$@"
+    python3 ./py/play_console.py \
+    --server_addr localhost --port 1234 \
+    \
+    --batchsize 64 \
+    --mode online   --keys_in_reply V rv \
+    --load $MODEL \
+    \
+    --replace_prefix resnet.module,resnet init_conv.module,init_conv \
+    --no_check_loaded_options \
+    --no_parameter_print \
+    \
+    --verbose       --gpu 0 \
+    --num_block 10  --dim 128 \
+    \
+    --mcts_virtual_loss 1 \
+    --mcts_rollout_per_batch 1 \
+    --mcts_persistent_tree \
+    --use_mcts          --mcts_verbose_time \
+    --mcts_use_prior    --mcts_puct 0.9 \
+    --mcts_threads 1    --mcts_rollout_per_thread 100 \
+    \
+    # --dump_record_prefix mcts \
+    
+    # 
+    # "$@"
 
-	# --replace_prefix resnet.module,resnet \
+    # --replace_prefix resnet.module,resnet \

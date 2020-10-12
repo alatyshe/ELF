@@ -16,9 +16,9 @@ namespace tree_search {
 template <>
 struct ActorTrait<MCTSGameActor> {
  public:
-	static std::string to_string(const MCTSGameActor& a) {
-		return a.info();
-	}
+  static std::string to_string(const MCTSGameActor& a) {
+    return a.info();
+  }
 };
 
 } // namespace tree_search
@@ -27,43 +27,43 @@ struct ActorTrait<MCTSGameActor> {
 
 
 /*
-	Tree search logic.
+  Tree search logic.
 */
 class MCTSGameAI : public elf::ai::tree_search::MCTSAI_T<MCTSGameActor> {
  public:
-	MCTSGameAI(
-			const elf::ai::tree_search::TSOptions& options,
-			std::function<MCTSGameActor*(int)> gen)
-			: elf::ai::tree_search::MCTSAI_T<MCTSGameActor>(options, gen) {
-	}
+  MCTSGameAI(
+      const elf::ai::tree_search::TSOptions& options,
+      std::function<MCTSGameActor*(int)> gen)
+      : elf::ai::tree_search::MCTSAI_T<MCTSGameActor>(options, gen) {
+  }
 
-	float getValue() const {
-		const MCTSResult& result = getLastResult();
-		if (result.total_visits == 0)
-			return result.root_value;
-		else
-			return result.best_edge_info.getQSA();
-	}
+  float getValue() const {
+    const MCTSResult& result = getLastResult();
+    if (result.total_visits == 0)
+      return result.root_value;
+    else
+      return result.best_edge_info.getQSA();
+  }
 
-	elf::ai::tree_search::MCTSPolicy<Coord> getMCTSPolicy() const {
-		const MCTSResult& result = getLastResult();
-		auto policy = result.mcts_policy;
+  elf::ai::tree_search::MCTSPolicy<Coord> getMCTSPolicy() const {
+    const MCTSResult& result = getLastResult();
+    auto policy = result.mcts_policy;
 
-		policy.normalize();
-		return policy;
-	}
+    policy.normalize();
+    return policy;
+  }
 
-	/*
-		Set current version of nn model to each mcts thread.
-	*/
-	void setRequiredVersion(int64_t ver) {
-		auto* engine = getEngine();
-		assert(engine != nullptr);
+  /*
+    Set current version of nn model to each mcts thread.
+  */
+  void setRequiredVersion(int64_t ver) {
+    auto* engine = getEngine();
+    assert(engine != nullptr);
 
-		for (size_t i = 0; i < engine->getNumActors(); ++i) {
-			engine->getActor(i).setRequiredVersion(ver);
-		}
-	}
+    for (size_t i = 0; i < engine->getNumActors(); ++i) {
+      engine->getActor(i).setRequiredVersion(ver);
+    }
+  }
 };
 
 
